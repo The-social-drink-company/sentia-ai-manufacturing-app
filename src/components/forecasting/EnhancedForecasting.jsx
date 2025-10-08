@@ -33,102 +33,6 @@ const EnhancedForecasting = () => {
     { value: 'optimistic', label: 'Optimistic', color: 'green', probability: '20%' }
   ];
 
-  // Demo data generator for development
-  const generateDemoForecastData = useCallback(() => {
-    const baseValue = 8500;
-    const predictions = [];
-
-    for (let i = 0; i < forecastHorizon; i++) {
-      const trend = 0.002 * i; // Slight upward trend
-      const seasonality = Math.sin((i * 2 * Math.PI) / 30) * 200; // 30-day cycle
-      const noise = (Math.random() - 0.5) * 300;
-
-      const value = Math.round(baseValue + trend * baseValue + seasonality + noise);
-      const confidence = Math.max(0.7, Math.min(0.95, 0.9 - (i / forecastHorizon) * 0.2));
-
-      predictions.push({
-        day: i + 1,
-        date: new Date(Date.now() + i * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        value,
-        confidence: Math.round(confidence * 100) / 100
-      });
-    }
-
-    return {
-      forecast: {
-        predictions,
-        confidence: 0.89,
-        modelContributions: { openai: 0.6, claude: 0.4 },
-        accuracy: 89
-      },
-      analytics: {
-        summary: {
-          averageDemand: Math.round(predictions.reduce((sum, p) => sum + p.value, 0) / predictions.length),
-          peakPeriods: [
-            { day: 15, value: 9200, confidence: 0.85 },
-            { day: 45, value: 9150, confidence: 0.82 }
-          ],
-          lowPeriods: [
-            { day: 30, value: 7800, confidence: 0.88 },
-            { day: 60, value: 7900, confidence: 0.84 }
-          ],
-          volatility: 0.15
-        },
-        trendAnalysis: {
-          direction: 'growth',
-          rate: 2.3,
-          recentAverage: 8650,
-          olderAverage: 8450
-        },
-        seasonalAnalysis: {
-          detected: true,
-          pattern: 'monthly',
-          correlation: 0.75
-        },
-        scenarios: {
-          scenarios: {
-            pessimistic: predictions.map(p => ({ ...p, value: Math.round(p.value * 0.85) })),
-            realistic: predictions,
-            optimistic: predictions.map(p => ({ ...p, value: Math.round(p.value * 1.15) }))
-          },
-          probability: { pessimistic: 0.2, realistic: 0.6, optimistic: 0.2 }
-        },
-        insights: [
-          {
-            type: 'opportunity',
-            message: 'Strong growth trend detected (2.3% increase)',
-            priority: 'high',
-            action: 'Consider increasing inventory and production capacity'
-          },
-          {
-            type: 'pattern',
-            message: 'Monthly seasonality pattern identified',
-            priority: 'medium',
-            action: 'Optimize inventory and staffing for seasonal variations'
-          }
-        ],
-        recommendations: [
-          {
-            category: 'capacity_planning',
-            priority: 'high',
-            title: 'Scale Production Capacity',
-            description: 'Increase production capacity to meet growing demand',
-            impact: 'high',
-            timeframe: '1-2 months'
-          }
-        ]
-      },
-      models: { openai: true, claude: true },
-      metadata: {
-        generated: new Date().toISOString(),
-        dataQuality: 0.92,
-        modelVersions: {
-          openai: 'gpt-4-turbo',
-          claude: 'claude-3-sonnet-20240229'
-        }
-      }
-    };
-  }, [forecastHorizon]);
 
   // Generate enhanced forecast using dual AI models
   const generateEnhancedForecast = useCallback(async () => {
@@ -165,12 +69,11 @@ const EnhancedForecasting = () => {
 
     } catch (error) {
       console.error('Enhanced forecast generation failed:', error);
-      // Fallback to demo data
-      setForecastData(generateDemoForecastData());
+      setForecastData(null); // Set null on error
     } finally {
       setIsLoading(false);
     }
-  }, [forecastHorizon, generateDemoForecastData]);
+  }, [forecastHorizon]);
 
   // Auto-generate forecast on component mount and horizon change
   useEffect(() => {

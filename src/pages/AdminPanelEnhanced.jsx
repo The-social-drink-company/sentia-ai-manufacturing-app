@@ -1,17 +1,10 @@
 ﻿import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 
-const ACCESS_REQUESTS = [
-  { name: 'Alicia Park', role: 'Operations Analyst', requested: '2025-05-03 09:12', status: 'Pending approval' },
-  { name: 'Victor Chen', role: 'Treasury Manager', requested: '2025-05-02 14:47', status: 'Approved' },
-  { name: 'Lauren Diaz', role: 'Procurement Lead', requested: '2025-05-01 17:05', status: 'Provisioned' }
-]
+// Real data should be fetched from API endpoints
+const ACCESS_REQUESTS = []
 
-const AUDIT_EVENTS = [
-  { time: '11:58', event: 'Role update', detail: 'Working capital editor → approver (MCP) – R. Singh' },
-  { time: '10:42', event: 'Integration sync', detail: 'Xero cash-flow data refreshed successfully' },
-  { time: '09:15', event: 'Alert escalation', detail: 'Quality variance threshold dispatched to operations' }
-]
+const AUDIT_EVENTS = []
 
 const AdminPanelEnhanced = () => (
   <section className="space-y-6">
@@ -43,16 +36,25 @@ const AdminPanelEnhanced = () => (
           <CardDescription>Outstanding provisioning tasks from finance and operations.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
-          {ACCESS_REQUESTS.map((request) => (
-            <div key={request.name} className="rounded-lg border border-border bg-muted/30 p-4 text-sm">
-              <div className="flex items-center justify-between">
-                <p className="font-semibold text-foreground">{request.name}</p>
-                <Badge variant={request.status.includes('Pending') ? 'secondary' : 'outline'}>{request.status}</Badge>
+          {ACCESS_REQUESTS.length === 0 ? (
+            <div className="flex items-center justify-center p-8">
+              <div className="text-center">
+                <p className="text-sm text-muted-foreground">No pending access requests</p>
+                <p className="text-xs text-muted-foreground">All user access is properly configured</p>
               </div>
-              <p className="text-xs text-muted-foreground">Role: {request.role}</p>
-              <p className="text-xs text-muted-foreground">Requested: {request.requested}</p>
             </div>
-          ))}
+          ) : (
+            ACCESS_REQUESTS.map((request) => (
+              <div key={request.name} className="rounded-lg border border-border bg-muted/30 p-4 text-sm">
+                <div className="flex items-center justify-between">
+                  <p className="font-semibold text-foreground">{request.name}</p>
+                  <Badge variant={request.status.includes('Pending') ? 'secondary' : 'outline'}>{request.status}</Badge>
+                </div>
+                <p className="text-xs text-muted-foreground">Role: {request.role}</p>
+                <p className="text-xs text-muted-foreground">Requested: {request.requested}</p>
+              </div>
+            ))
+          )}
         </CardContent>
       </Card>
 
@@ -62,15 +64,24 @@ const AdminPanelEnhanced = () => (
           <CardDescription>Rolling log of changes and automated escalations.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-3 text-sm">
-          {AUDIT_EVENTS.map((event) => (
-            <div key={event.time} className="rounded-lg border border-border bg-muted/30 p-3">
-              <div className="flex items-center justify-between text-xs text-muted-foreground">
-                <span>{event.time}</span>
-                <span>{event.event}</span>
+          {AUDIT_EVENTS.length === 0 ? (
+            <div className="flex items-center justify-center p-8">
+              <div className="text-center">
+                <p className="text-sm text-muted-foreground">No recent audit events</p>
+                <p className="text-xs text-muted-foreground">System is operating normally</p>
               </div>
-              <p className="text-foreground">{event.detail}</p>
             </div>
-          ))}
+          ) : (
+            AUDIT_EVENTS.map((event) => (
+              <div key={event.time} className="rounded-lg border border-border bg-muted/30 p-3">
+                <div className="flex items-center justify-between text-xs text-muted-foreground">
+                  <span>{event.time}</span>
+                  <span>{event.event}</span>
+                </div>
+                <p className="text-foreground">{event.detail}</p>
+              </div>
+            ))
+          )}
         </CardContent>
       </Card>
     </div>

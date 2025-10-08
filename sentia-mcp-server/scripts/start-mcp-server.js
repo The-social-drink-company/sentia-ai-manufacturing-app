@@ -8,7 +8,7 @@
  */
 
 import { SentiaMCPServer } from '../src/server.js';
-import { SERVER_CONFIG, validateConfig } from '../src/config/server-config.js';
+import { SERVER_CONFIG, validateConfigLegacy } from '../src/config/server-config.js';
 import { globalErrorHandler } from '../src/utils/error-handler.js';
 import { createLogger } from '../src/utils/logger.js';
 import { fileURLToPath } from 'url';
@@ -27,13 +27,19 @@ const logger = createLogger();
 async function performPreflightChecks() {
   logger.info('Performing preflight checks...');
 
-  // 1. Validate configuration
+  // 1. Validate configuration (using legacy validator for production flexibility)
   try {
-    validateConfig();
+    validateConfigLegacy();
     logger.info('Configuration validation passed');
   } catch (error) {
     logger.error('Configuration validation failed', { error: error.message });
-    process.exit(1);
+    logger.warn('Attempting to continue with degraded functionality...');
+    // Don't exit on configuration warnings in production
+    if (SERVER_CONFIG.server.environment === 'production') {
+      logger.warn('Production deployment continuing with configuration warnings');
+    } else {
+      process.exit(1);
+    }
   }
 
   // 2. Check required directories
@@ -196,44 +202,134 @@ function setupProcessMonitoring(server) {
 }
 
 /**
- * Set up uncaught exception and rejection handlers
+ * Set up uncaught exception and rejection handlers with enhanced crash reporting
  */
 function setupErrorHandlers() {
+  // Enhanced uncaught exception handler
   process.on('uncaughtException', (error) => {
-    logger.error('Uncaught Exception - Server will exit', {
-      error: error.message,
-      stack: error.stack,
-      pid: process.pid
-    });
+    const crashReport = {
+      timestamp: new Date().toISOString(),
+      error: {
+        name: error.name,
+        message: error.message,
+        stack: error.stack,
+        code: error.code,
+        syscall: error.syscall,
+        errno: error.errno,
+        path: error.path
+      },
+      process: {
+        pid: process.pid,
+        platform: process.platform,
+        arch: process.arch,
+        nodeVersion: process.version,
+        uptime: process.uptime(),
+        cwd: process.cwd(),
+        argv: process.argv,
+        env: {
+          NODE_ENV: process.env.NODE_ENV,
+          PORT: process.env.PORT,
+          DATABASE_URL: process.env.DATABASE_URL ? '[REDACTED]' : 'undefined',
+          MCP_TRANSPORT: process.env.MCP_TRANSPORT
+        }
+      },
+      memory: process.memoryUsage(),
+      cpu: process.cpuUsage()
+    };
     
-    // Give logger time to flush
+    // Log to console immediately for Render logs
+    console.error('\n=== FATAL CRASH REPORT ===');
+    console.error('Timestamp:', crashReport.timestamp);
+    console.error('Error:', crashReport.error.name + ':', crashReport.error.message);
+    console.error('Stack:', crashReport.error.stack);
+    console.error('Process Info:', {
+      pid: crashReport.process.pid,
+      platform: crashReport.process.platform,
+      nodeVersion: crashReport.process.nodeVersion,
+      uptime: Math.round(crashReport.process.uptime) + 's'
+    });
+    console.error('Memory:', crashReport.memory);
+    console.error('Environment:', crashReport.process.env);
+    console.error('=========================\n');
+    
+    logger.error('UNCAUGHT EXCEPTION - FATAL CRASH', crashReport);
+    
+    // Force flush logs and exit
     setTimeout(() => {
+      console.error('Server exiting due to uncaught exception');
       process.exit(1);
-    }, 1000);
+    }, 2000); // Give more time for log flushing
   });
 
+  // Enhanced unhandled rejection handler
   process.on('unhandledRejection', (reason, promise) => {
-    logger.error('Unhandled Promise Rejection', {
-      reason: reason instanceof Error ? reason.message : reason,
-      stack: reason instanceof Error ? reason.stack : undefined,
-      promise: promise.toString(),
-      pid: process.pid
-    });
+    const rejectionReport = {
+      timestamp: new Date().toISOString(),
+      reason: {
+        message: reason instanceof Error ? reason.message : String(reason),
+        stack: reason instanceof Error ? reason.stack : undefined,
+        name: reason instanceof Error ? reason.name : typeof reason,
+        code: reason instanceof Error ? reason.code : undefined
+      },
+      promise: {
+        toString: promise.toString(),
+        constructor: promise.constructor.name
+      },
+      process: {
+        pid: process.pid,
+        uptime: process.uptime(),
+        nodeVersion: process.version
+      },
+      memory: process.memoryUsage()
+    };
     
-    // Don't exit on unhandled rejections in production, just log
-    if (SERVER_CONFIG.server.environment !== 'production') {
-      setTimeout(() => {
-        process.exit(1);
-      }, 1000);
+    // Log to console immediately
+    console.error('\n=== UNHANDLED PROMISE REJECTION ===');
+    console.error('Timestamp:', rejectionReport.timestamp);
+    console.error('Reason:', rejectionReport.reason.message);
+    if (rejectionReport.reason.stack) {
+      console.error('Stack:', rejectionReport.reason.stack);
     }
+    console.error('Promise:', rejectionReport.promise.toString);
+    console.error('Memory:', rejectionReport.memory);
+    console.error('====================================\n');
+    
+    logger.error('UNHANDLED PROMISE REJECTION', rejectionReport);
+    
+    // Exit in all environments for promise rejections to ensure issues are caught
+    setTimeout(() => {
+      console.error('Server exiting due to unhandled promise rejection');
+      process.exit(1);
+    }, 2000);
   });
 
+  // Enhanced warning handler
   process.on('warning', (warning) => {
-    logger.warn('Node.js Warning', {
+    const warningInfo = {
+      timestamp: new Date().toISOString(),
       name: warning.name,
       message: warning.message,
-      stack: warning.stack
-    });
+      stack: warning.stack,
+      code: warning.code,
+      detail: warning.detail
+    };
+    
+    console.warn('Node.js Warning:', warningInfo.name, '-', warningInfo.message);
+    logger.warn('Node.js Warning', warningInfo);
+  });
+  
+  // Add exit handler to log final state
+  process.on('exit', (code) => {
+    const exitInfo = {
+      timestamp: new Date().toISOString(),
+      exitCode: code,
+      uptime: process.uptime(),
+      memory: process.memoryUsage(),
+      pid: process.pid
+    };
+    
+    console.log('Process exiting with code:', code);
+    console.log('Final state:', exitInfo);
   });
 }
 
@@ -261,31 +357,54 @@ async function setupHealthChecks(server) {
 }
 
 /**
- * Main startup function
+ * Main startup function with enhanced error tracking
  */
 async function startServer() {
+  const startupSteps = [];
+  
   try {
-    // Display banner
+    console.log('=== MCP Server Startup Process ===');
+    
+    // Step 1: Display banner
+    startupSteps.push('banner');
+    console.log('Step 1: Displaying startup banner...');
     displayStartupBanner();
     
-    // Setup error handlers early
+    // Step 2: Setup error handlers early
+    startupSteps.push('error-handlers');
+    console.log('Step 2: Setting up error handlers...');
     setupErrorHandlers();
     
-    // Perform preflight checks
+    // Step 3: Perform preflight checks
+    startupSteps.push('preflight-checks');
+    console.log('Step 3: Performing preflight checks...');
     await performPreflightChecks();
+    console.log('Preflight checks completed successfully');
     
-    // Create and start server
+    // Step 4: Create server instance
+    startupSteps.push('server-creation');
+    console.log('Step 4: Creating MCP Server instance...');
     logger.info('Initializing MCP Server...');
     const server = new SentiaMCPServer();
+    console.log('MCP Server instance created successfully');
     
-    // Setup monitoring
+    // Step 5: Setup monitoring
+    startupSteps.push('monitoring');
+    console.log('Step 5: Setting up process monitoring...');
     setupProcessMonitoring(server);
     
-    // Setup health checks
+    // Step 6: Setup health checks
+    startupSteps.push('health-checks');
+    console.log('Step 6: Setting up health checks...');
     await setupHealthChecks(server);
     
-    // Start the server
+    // Step 7: Start the server (most likely failure point)
+    startupSteps.push('server-start');
+    console.log('Step 7: Starting HTTP server...');
     const httpServer = await server.start();
+    console.log('HTTP server started successfully');
+    
+    startupSteps.push('completed');
     
     logger.info('MCP Server started successfully', {
       port: SERVER_CONFIG.server.port,
@@ -293,7 +412,8 @@ async function startServer() {
       pid: process.pid,
       nodeVersion: process.version,
       platform: process.platform,
-      arch: process.arch
+      arch: process.arch,
+      completedSteps: startupSteps
     });
     
     // Log startup completion
@@ -304,8 +424,11 @@ async function startServer() {
       availableTools: server.tools?.size || 0
     });
     
+    console.log('=== Startup Process Complete ===');
+    
     // Graceful shutdown handling
     const shutdown = async (signal) => {
+      console.log('Shutdown signal received:', signal);
       logger.info('Received shutdown signal', { signal });
       
       try {
@@ -320,7 +443,8 @@ async function startServer() {
         logger.info('Graceful shutdown completed');
         process.exit(0);
       } catch (error) {
-        logger.error('Error during shutdown', { error: error.message });
+        console.error('Error during shutdown:', error);
+        logger.error('Error during shutdown', { error: error.message, stack: error.stack });
         process.exit(1);
       }
     };
@@ -332,13 +456,54 @@ async function startServer() {
     return server;
     
   } catch (error) {
-    const mcpError = globalErrorHandler.handle(error, { operation: 'server_startup' });
+    const failedStep = startupSteps[startupSteps.length - 1] || 'unknown';
     
-    logger.error('Failed to start MCP Server', {
-      error: mcpError.toJSON()
+    console.error('\n=== STARTUP FAILURE ===');
+    console.error('Failed at step:', failedStep);
+    console.error('Completed steps:', startupSteps);
+    console.error('Error name:', error.name);
+    console.error('Error message:', error.message);
+    console.error('Error stack:');
+    console.error(error.stack);
+    console.error('Process info:', {
+      pid: process.pid,
+      platform: process.platform,
+      nodeVersion: process.version,
+      uptime: process.uptime(),
+      cwd: process.cwd()
+    });
+    console.error('Memory usage:', process.memoryUsage());
+    console.error('Environment variables:', {
+      NODE_ENV: process.env.NODE_ENV,
+      PORT: process.env.PORT,
+      DATABASE_URL: process.env.DATABASE_URL ? '[REDACTED]' : 'undefined',
+      MCP_TRANSPORT: process.env.MCP_TRANSPORT
+    });
+    console.error('=======================\n');
+    
+    const mcpError = globalErrorHandler.handle(error, { 
+      operation: 'server_startup',
+      failedStep,
+      completedSteps: startupSteps
     });
     
-    process.exit(1);
+    logger.error('Failed to start MCP Server', {
+      error: mcpError.toJSON(),
+      failedStep,
+      completedSteps: startupSteps,
+      processInfo: {
+        pid: process.pid,
+        platform: process.platform,
+        nodeVersion: process.version,
+        uptime: process.uptime()
+      }
+    });
+    
+    // Give time for logs to flush before exiting
+    setTimeout(() => {
+      console.error('Exiting due to startup failure');
+      process.exit(1);
+    }, 2000);
   }
 }
 

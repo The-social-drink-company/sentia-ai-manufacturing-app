@@ -31,6 +31,8 @@ import { readdirSync, statSync } from 'fs';
 import winston from 'winston';
 import { v4 as uuidv4 } from 'uuid';
 import { Pool } from 'pg';
+import { WebSocketServer } from 'ws';
+import http from 'http';
 
 // Import local modules
 import { SERVER_CONFIG, isContainerEnvironment, getContainerPlatform } from './config/server-config.js';
@@ -102,6 +104,7 @@ export class SentiaMCPServer {
     );
     
     this.tools = new Map();
+    this.prompts = new Map();
     this.connections = new Map();
     this.metrics = {
       requests: 0,
@@ -816,6 +819,16 @@ export class SentiaMCPServer {
         clearInterval(keepAlive);
       });
     });
+
+    // WebSocket upgrade endpoint for real-time connections
+    this.app.get('/ws', (req, res) => {
+      // This endpoint will be upgraded to WebSocket by the WebSocket server
+      res.status(426).json({
+        error: 'Upgrade Required',
+        message: 'This endpoint requires WebSocket protocol upgrade',
+        upgrade: 'websocket'
+      });
+    });
   }
 
   /**
@@ -1071,7 +1084,9 @@ export class SentiaMCPServer {
 
       // Create HTTP server with proper promise handling
       const httpServer = await new Promise((resolve, reject) => {
-        const server = this.app.listen(SERVER_CONFIG.server.port, SERVER_CONFIG.server.host, () => {
+        const server = http.createServer(this.app);
+        
+        server.listen(SERVER_CONFIG.server.port, SERVER_CONFIG.server.host, () => {
           logger.info('HTTP server listening', {
             port: SERVER_CONFIG.server.port,
             host: SERVER_CONFIG.server.host,
@@ -1089,6 +1104,96 @@ export class SentiaMCPServer {
         server.timeout = 30000; // 30 seconds
         server.keepAliveTimeout = 5000; // 5 seconds
         server.headersTimeout = 10000; // 10 seconds
+      });
+
+      // Set up WebSocket server
+      const wss = new WebSocketServer({ 
+        server: httpServer,
+        path: '/ws',
+        perMessageDeflate: false
+      });
+
+      // WebSocket connection handling
+      wss.on('connection', (ws, request) => {
+        const connectionId = uuidv4();
+        logger.info('WebSocket connection established', { 
+          connectionId,
+          origin: request.headers.origin,
+          userAgent: request.headers['user-agent']
+        });
+
+        // Store WebSocket connection
+        this.connections.set(connectionId, ws);
+
+        // Send welcome message
+        ws.send(JSON.stringify({
+          type: 'connection',
+          connectionId,
+          message: 'Connected to MCP Server WebSocket',
+          timestamp: new Date().toISOString()
+        }));
+
+        // Handle incoming messages
+        ws.on('message', (data) => {
+          try {
+            const message = JSON.parse(data.toString());
+            logger.info('WebSocket message received', { connectionId, type: message.type });
+            
+            // Echo back for now - can be extended for real-time tool execution
+            ws.send(JSON.stringify({
+              type: 'response',
+              data: message,
+              timestamp: new Date().toISOString()
+            }));
+          } catch (error) {
+            logger.error('WebSocket message parse error', { 
+              connectionId, 
+              error: error.message 
+            });
+            ws.send(JSON.stringify({
+              type: 'error',
+              error: 'Invalid message format',
+              timestamp: new Date().toISOString()
+            }));
+          }
+        });
+
+        // Handle connection close
+        ws.on('close', (code, reason) => {
+          this.connections.delete(connectionId);
+          logger.info('WebSocket connection closed', { 
+            connectionId, 
+            code, 
+            reason: reason.toString() 
+          });
+        });
+
+        // Handle errors
+        ws.on('error', (error) => {
+          logger.error('WebSocket error', { 
+            connectionId, 
+            error: error.message 
+          });
+          this.connections.delete(connectionId);
+        });
+
+        // Keep-alive ping
+        const pingInterval = setInterval(() => {
+          if (ws.readyState === ws.OPEN) {
+            ws.ping();
+          } else {
+            clearInterval(pingInterval);
+          }
+        }, 30000);
+
+        ws.on('close', () => {
+          clearInterval(pingInterval);
+        });
+      });
+
+      logger.info('WebSocket server initialized', {
+        path: '/ws',
+        perMessageDeflate: false
       });
 
       logger.info('MCP Server started successfully', {
@@ -1176,54 +1281,121 @@ export class SentiaMCPServer {
   }
 
   /**
-   * Setup graceful shutdown handling
+   * Setup graceful shutdown handling with enhanced crash reporting
    */
   setupGracefulShutdown(httpServer) {
     const shutdown = async (signal) => {
-      logger.info('Graceful shutdown initiated', { signal });
-
-      // Clear keep-alive interval
-      if (this.keepAliveInterval) {
-        clearInterval(this.keepAliveInterval);
-        logger.info('Keep-alive interval cleared');
-      }
-
-      // Close HTTP server
-      httpServer.close(() => {
-        logger.info('HTTP server closed');
+      console.log('\n=== SHUTDOWN INITIATED ===');
+      console.log('Signal:', signal);
+      console.log('Timestamp:', new Date().toISOString());
+      console.log('Uptime:', Math.round(process.uptime()) + 's');
+      
+      logger.info('Graceful shutdown initiated', { 
+        signal,
+        uptime: process.uptime(),
+        memory: process.memoryUsage(),
+        connections: this.connections.size
       });
 
-      // Close database connections
-      if (dbPool) {
-        await dbPool.end();
-        logger.info('Database connections closed');
-      }
-
-      // Close all SSE connections
-      for (const [connectionId, res] of this.connections) {
-        try {
-          res.end();
-        } catch (error) {
-          logger.warn('Error closing SSE connection', { connectionId });
+      try {
+        // Clear keep-alive interval
+        if (this.keepAliveInterval) {
+          clearInterval(this.keepAliveInterval);
+          logger.info('Keep-alive interval cleared');
         }
-      }
-      this.connections.clear();
 
-      logger.info('Graceful shutdown completed');
-      process.exit(0);
+        // Close HTTP server
+        httpServer.close(() => {
+          logger.info('HTTP server closed');
+        });
+
+        // Close database connections
+        if (dbPool) {
+          await dbPool.end();
+          logger.info('Database connections closed');
+        }
+
+        // Close all SSE connections
+        for (const [connectionId, res] of this.connections) {
+          try {
+            res.end();
+          } catch (error) {
+            logger.warn('Error closing SSE connection', { connectionId });
+          }
+        }
+        this.connections.clear();
+
+        logger.info('Graceful shutdown completed');
+        console.log('=== SHUTDOWN COMPLETE ===\n');
+        process.exit(0);
+      } catch (shutdownError) {
+        console.error('Error during shutdown:', shutdownError);
+        logger.error('Shutdown error', { error: shutdownError.message, stack: shutdownError.stack });
+        process.exit(1);
+      }
     };
 
     process.on('SIGTERM', () => shutdown('SIGTERM'));
     process.on('SIGINT', () => shutdown('SIGINT'));
     
-    // Handle uncaught exceptions
+    // Enhanced uncaught exception handler
     process.on('uncaughtException', (error) => {
-      logger.error('Uncaught exception', { error: error.message, stack: error.stack });
+      const crashInfo = {
+        timestamp: new Date().toISOString(),
+        signal: 'uncaughtException',
+        error: {
+          name: error.name,
+          message: error.message,
+          stack: error.stack,
+          code: error.code
+        },
+        server: {
+          uptime: process.uptime(),
+          connections: this.connections.size,
+          tools: this.tools.size,
+          metrics: this.metrics
+        },
+        process: {
+          pid: process.pid,
+          memory: process.memoryUsage(),
+          cpu: process.cpuUsage()
+        }
+      };
+      
+      console.error('\n=== UNCAUGHT EXCEPTION IN SERVER ===');
+      console.error('Error:', error.name + ':', error.message);
+      console.error('Stack:', error.stack);
+      console.error('Server state:', crashInfo.server);
+      console.error('=====================================\n');
+      
+      logger.error('Uncaught exception in MCP server', crashInfo);
       shutdown('uncaughtException');
     });
 
     process.on('unhandledRejection', (reason, promise) => {
-      logger.error('Unhandled rejection', { reason, promise });
+      const rejectionInfo = {
+        timestamp: new Date().toISOString(),
+        signal: 'unhandledRejection',
+        reason: reason instanceof Error ? {
+          name: reason.name,
+          message: reason.message,
+          stack: reason.stack
+        } : String(reason),
+        promise: promise.toString(),
+        server: {
+          uptime: process.uptime(),
+          connections: this.connections.size,
+          tools: this.tools.size
+        }
+      };
+      
+      console.error('\n=== UNHANDLED REJECTION IN SERVER ===');
+      console.error('Reason:', rejectionInfo.reason);
+      console.error('Promise:', rejectionInfo.promise);
+      console.error('Server state:', rejectionInfo.server);
+      console.error('======================================\n');
+      
+      logger.error('Unhandled rejection in MCP server', rejectionInfo);
       shutdown('unhandledRejection');
     });
   }
@@ -1231,9 +1403,38 @@ export class SentiaMCPServer {
 
 // Start the server if this file is executed directly
 if (import.meta.url === `file://${process.argv[1]}`) {
+  console.log('Starting MCP Server directly from server.js');
+  
+  // Enhanced startup with crash reporting
   const server = new SentiaMCPServer();
+  
   server.start().catch((error) => {
-    logger.error('Server startup failed', { error: error.message });
-    process.exit(1);
+    console.error('\n=== DIRECT STARTUP FAILURE ===');
+    console.error('File:', import.meta.url);
+    console.error('Error:', error.name + ':', error.message);
+    console.error('Stack:', error.stack);
+    console.error('Process:', {
+      pid: process.pid,
+      platform: process.platform,
+      nodeVersion: process.version,
+      uptime: process.uptime(),
+      memory: process.memoryUsage()
+    });
+    console.error('===============================\n');
+    
+    logger.error('Server startup failed from direct execution', { 
+      error: error.message,
+      stack: error.stack,
+      process: {
+        pid: process.pid,
+        platform: process.platform,
+        nodeVersion: process.version
+      }
+    });
+    
+    setTimeout(() => {
+      console.error('Exiting due to startup failure');
+      process.exit(1);
+    }, 1000);
   });
 }

@@ -398,6 +398,80 @@ export class UnleashedAnalytics {
     return recommendations;
   }
 
+  /**
+   * Analyze stock levels for optimization
+   */
+  analyzeStockLevels(inventoryData) {
+    try {
+      const analysis = {
+        summary: {
+          totalItems: inventoryData.length,
+          lowStock: 0,
+          overStock: 0,
+          optimal: 0
+        },
+        items: [],
+        recommendations: []
+      };
+
+      inventoryData.forEach(item => {
+        const stockRatio = item.onHand / (item.reorderPoint || 1);
+        let classification = 'optimal';
+        
+        if (stockRatio < 0.5) {
+          classification = 'low';
+          analysis.summary.lowStock++;
+        } else if (stockRatio > 3) {
+          classification = 'over';
+          analysis.summary.overStock++;
+        } else {
+          analysis.summary.optimal++;
+        }
+
+        analysis.items.push({
+          productCode: item.productCode,
+          productDescription: item.productDescription,
+          onHand: item.onHand,
+          classification,
+          stockRatio: Math.round(stockRatio * 100) / 100
+        });
+      });
+
+      // Generate recommendations
+      if (analysis.summary.lowStock > 0) {
+        analysis.recommendations.push({
+          type: 'reorder',
+          priority: 'high',
+          message: `${analysis.summary.lowStock} items require immediate reordering`
+        });
+      }
+
+      if (analysis.summary.overStock > 0) {
+        analysis.recommendations.push({
+          type: 'reduce',
+          priority: 'medium',
+          message: `${analysis.summary.overStock} items have excess stock`
+        });
+      }
+
+      logger.debug('Stock level analysis completed', {
+        totalItems: analysis.summary.totalItems,
+        lowStock: analysis.summary.lowStock
+      });
+
+      return analysis;
+
+    } catch (error) {
+      logger.error('Stock level analysis failed', { error: error.message });
+      return {
+        summary: { totalItems: 0, lowStock: 0, overStock: 0, optimal: 0 },
+        items: [],
+        recommendations: [],
+        error: error.message
+      };
+    }
+  }
+
   getStatus() {
     return {
       initialized: this.isInitialized,
@@ -405,6 +479,166 @@ export class UnleashedAnalytics {
       benchmarksLoaded: this.benchmarks.size,
       trendsTracked: this.trends.size
     };
+  }
+
+  // ========================================
+  // STUB METHODS TO PREVENT CRASHES
+  // These methods prevent the server from crashing on startup
+  // TODO: Implement full analytics functionality
+  // ========================================
+
+  analyzeInventoryValuation(inventoryData) {
+    logger.debug('analyzeInventoryValuation stub called');
+    return { summary: 'Not implemented', error: 'Method is a stub' };
+  }
+
+  performABCAnalysis(inventoryData) {
+    logger.debug('performABCAnalysis stub called');
+    return { summary: 'Not implemented', error: 'Method is a stub' };
+  }
+
+  assessInventoryRisks(inventoryData) {
+    logger.debug('assessInventoryRisks stub called');
+    return { summary: 'Not implemented', error: 'Method is a stub' };
+  }
+
+  analyzeSeasonality(inventoryData) {
+    logger.debug('analyzeSeasonality stub called');
+    return { summary: 'Not implemented', error: 'Method is a stub' };
+  }
+
+  generateInventoryRecommendations(inventoryData) {
+    logger.debug('generateInventoryRecommendations stub called');
+    return [];
+  }
+
+  calculateTurnoverAnalysis(inventoryData) {
+    logger.debug('calculateTurnoverAnalysis stub called');
+    return { summary: 'Not implemented', error: 'Method is a stub' };
+  }
+
+  calculateOverallEfficiency(productionOrders) {
+    logger.debug('calculateOverallEfficiency stub called');
+    return 0;
+  }
+
+  calculateCapacityUtilization(productionOrders) {
+    logger.debug('calculateCapacityUtilization stub called');
+    return 0;
+  }
+
+  calculateSchedulePerformance(completedOrders) {
+    logger.debug('calculateSchedulePerformance stub called');
+    return { summary: 'Not implemented', error: 'Method is a stub' };
+  }
+
+  calculateCostPerformance(completedOrders) {
+    logger.debug('calculateCostPerformance stub called');
+    return { summary: 'Not implemented', error: 'Method is a stub' };
+  }
+
+  calculateQualityMetrics(completedOrders) {
+    logger.debug('calculateQualityMetrics stub called');
+    return { summary: 'Not implemented', error: 'Method is a stub' };
+  }
+
+  analyzeWIP(inProgressOrders) {
+    logger.debug('analyzeWIP stub called');
+    return { summary: 'Not implemented', error: 'Method is a stub' };
+  }
+
+  identifyBottlenecks(productionOrders) {
+    logger.debug('identifyBottlenecks stub called');
+    return { summary: 'Not implemented', error: 'Method is a stub' };
+  }
+
+  generateProductionRecommendations(productionOrders) {
+    logger.debug('generateProductionRecommendations stub called');
+    return [];
+  }
+
+  scoreSupplierPerformance(suppliers) {
+    logger.debug('scoreSupplierPerformance stub called');
+    return { summary: 'Not implemented', error: 'Method is a stub' };
+  }
+
+  analyzeDeliveryPerformance(purchaseOrders) {
+    logger.debug('analyzeDeliveryPerformance stub called');
+    return { summary: 'Not implemented', error: 'Method is a stub' };
+  }
+
+  analyzeProcurementCosts(purchaseOrders) {
+    logger.debug('analyzeProcurementCosts stub called');
+    return { summary: 'Not implemented', error: 'Method is a stub' };
+  }
+
+  assessSupplierQuality(suppliers) {
+    logger.debug('assessSupplierQuality stub called');
+    return { summary: 'Not implemented', error: 'Method is a stub' };
+  }
+
+  evaluateSupplierRisks(suppliers) {
+    logger.debug('evaluateSupplierRisks stub called');
+    return { summary: 'Not implemented', error: 'Method is a stub' };
+  }
+
+  analyzeSupplierDiversification(suppliers) {
+    logger.debug('analyzeSupplierDiversification stub called');
+    return { summary: 'Not implemented', error: 'Method is a stub' };
+  }
+
+  generateSupplierRecommendations(suppliers, purchaseOrders) {
+    logger.debug('generateSupplierRecommendations stub called');
+    return [];
+  }
+
+  analyzeCustomerSegmentation(customers) {
+    logger.debug('analyzeCustomerSegmentation stub called');
+    return { summary: 'Not implemented', error: 'Method is a stub' };
+  }
+
+  analyzeCustomerProfitability(customers) {
+    logger.debug('analyzeCustomerProfitability stub called');
+    return { summary: 'Not implemented', error: 'Method is a stub' };
+  }
+
+  analyzeCustomerLoyalty(customers, salesOrders) {
+    logger.debug('analyzeCustomerLoyalty stub called');
+    return { summary: 'Not implemented', error: 'Method is a stub' };
+  }
+
+  assessChurnRisk(customers) {
+    logger.debug('assessChurnRisk stub called');
+    return { summary: 'Not implemented', error: 'Method is a stub' };
+  }
+
+  identifyGrowthOpportunities(customers, salesOrders) {
+    logger.debug('identifyGrowthOpportunities stub called');
+    return { summary: 'Not implemented', error: 'Method is a stub' };
+  }
+
+  analyzeGeographicDistribution(customers) {
+    logger.debug('analyzeGeographicDistribution stub called');
+    return { summary: 'Not implemented', error: 'Method is a stub' };
+  }
+
+  generateCustomerRecommendations(customers, salesOrders) {
+    logger.debug('generateCustomerRecommendations stub called');
+    return [];
+  }
+
+  benchmarkAgainst(metric, value) {
+    logger.debug('benchmarkAgainst stub called', { metric, value });
+    return { status: 'unknown', message: 'Benchmarking not implemented' };
+  }
+
+  assignGrade(score) {
+    logger.debug('assignGrade stub called', { score });
+    if (score >= 90) return 'A';
+    if (score >= 80) return 'B';
+    if (score >= 70) return 'C';
+    if (score >= 60) return 'D';
+    return 'F';
   }
 
   async cleanup() {

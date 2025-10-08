@@ -11,11 +11,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Clickable Sentia Logo** (`src/components/layout/Header.jsx:540-551`): Logo with "S" brand icon navigates to dashboard home
 - **Enterprise Sidebar Navigation** (`src/components/layout/Sidebar.jsx:131-230`): Complete navigation system with:
   - Overview: Dashboard home
-  - Planning & Analytics: Demand Forecasting, Inventory Management, Production Tracking, Quality Control, AI Analytics
+  - Planning & Analytics: Demand Forecasting, Inventory Management, AI Analytics
   - Financial Management: Working Capital, What-If Analysis, Financial Reports
   - Data Management: Data Import, Import Templates
   - Administration: Admin Panel, System Config
-- **Keyboard Shortcuts**: G+O (Dashboard), G+F (Forecasting), G+I (Inventory), G+P (Production), G+Q (Quality), G+W (Working Capital), G+A (What-If), G+R (Reports), G+D (Data Import)
+- **Keyboard Shortcuts**: G+O (Dashboard), G+F (Forecasting), G+I (Inventory), G+W (Working Capital), G+A (What-If), G+R (Reports), G+D (Data Import)
 - **Role-Based Access Control**: Navigation items filtered by user permissions
 - **Responsive Design**: Works on mobile, tablet, desktop with collapsible sidebar
 

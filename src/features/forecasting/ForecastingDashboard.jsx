@@ -21,33 +21,33 @@ export default function ForecastingDashboard() {
   const { user } = useAuth()
   const [data, setData] = useState([])
   const [analysis, setAnalysis] = useState(null)
-  const [loading] = useState(false)
+  const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [selectedDataSource, setSelectedDataSource] = useState('demand')
   const [selectedPeriod, setSelectedPeriod] = useState(12)
   const [autoRefresh, setAutoRefresh] = useState(false)
 
-  // Mock data sources
+  // Real data sources configuration
   const dataSources = {
     demand: {
       name: 'Product Demand',
-      description: 'Historical product demand data',
-      data: generateMockDemandData()
+      description: 'Historical product demand data from real sales analytics',
+      endpoint: '/api/analytics/demand'
     },
     inventory: {
       name: 'Inventory Levels',
-      description: 'Inventory level trends',
-      data: generateMockInventoryData()
+      description: 'Real-time inventory level trends across all locations',
+      endpoint: '/api/inventory/levels'
     },
     production: {
       name: 'Production Volume',
-      description: 'Manufacturing production volumes',
-      data: generateMockProductionData()
+      description: 'Manufacturing production volumes from shop floor systems',
+      endpoint: '/api/production/volume'
     },
     revenue: {
       name: 'Revenue',
-      description: 'Revenue trends and patterns',
-      data: generateMockRevenueData()
+      description: 'Revenue trends from financial systems integration',
+      endpoint: '/api/financial/revenue'
     }
   }
 
@@ -57,8 +57,33 @@ export default function ForecastingDashboard() {
   }
 
   useEffect(() => {
-    const sourceData = dataSources[selectedDataSource]?.data || []
-    setData(sourceData)
+    const fetchData = async () => {
+      try {
+        setLoading(true)
+        setError(null)
+        
+        const selectedSource = dataSources[selectedDataSource]
+        if (!selectedSource?.endpoint) {
+          throw new Error('No endpoint configured for selected data source')
+        }
+
+        const response = await fetch(selectedSource.endpoint)
+        if (!response.ok) {
+          throw new Error(`Failed to fetch ${selectedSource.name}: ${response.statusText}`)
+        }
+
+        const responseData = await response.json()
+        setData(Array.isArray(responseData) ? responseData : [])
+      } catch (error) {
+        console.error(`Error fetching ${selectedDataSource} data:`, error)
+        setError(error.message)
+        setData([]) // Set empty array on error
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchData()
   }, [selectedDataSource])
 
   const handleForecastUpdate = (forecastResult) => {
@@ -395,103 +420,3 @@ export default function ForecastingDashboard() {
   )
 }
 
-// Mock data generators
-function generateMockDemandData() {
-  const data = []
-  const startDate = new Date(2023, 0, 1)
-
-  for (let i = 0; i < 24; i++) {
-    const date = new Date(startDate)
-    date.setMonth(date.getMonth() + i)
-
-    // Create realistic demand pattern with seasonality and trend
-    const baseValue = 1000
-    const trendFactor = 1 + (i * 0.02) // 2% monthly growth
-    const seasonalFactor = 1 + Math.sin((i * 2 * Math.PI) / 12) * 0.3 // Annual seasonality
-    const randomFactor = 0.9 + Math.random() * 0.2 // ±10% noise
-
-    const value = baseValue * trendFactor * seasonalFactor * randomFactor
-
-    data.push({
-      date: date.toISOString(),
-      value: Math.round(value),
-      period: date.toISOString().slice(0, 7)
-    })
-  }
-
-  return data
-}
-
-function generateMockInventoryData() {
-  const data = []
-  const startDate = new Date(2023, 0, 1)
-
-  for (let i = 0; i < 24; i++) {
-    const date = new Date(startDate)
-    date.setMonth(date.getMonth() + i)
-
-    const baseValue = 500000
-    const cyclicalFactor = 1 + Math.sin((i * 2 * Math.PI) / 6) * 0.15 // Inventory cycles
-    const randomFactor = 0.95 + Math.random() * 0.1
-
-    const value = baseValue * cyclicalFactor * randomFactor
-
-    data.push({
-      date: date.toISOString(),
-      value: Math.round(value),
-      period: date.toISOString().slice(0, 7)
-    })
-  }
-
-  return data
-}
-
-function generateMockProductionData() {
-  const data = []
-  const startDate = new Date(2023, 0, 1)
-
-  for (let i = 0; i < 24; i++) {
-    const date = new Date(startDate)
-    date.setMonth(date.getMonth() + i)
-
-    const baseValue = 800
-    const efficiencyTrend = 1 + (i * 0.01) // 1% monthly improvement
-    const weekendEffect = Math.random() > 0.3 ? 1 : 0.7 // Weekend production
-    const randomFactor = 0.9 + Math.random() * 0.2
-
-    const value = baseValue * efficiencyTrend * weekendEffect * randomFactor
-
-    data.push({
-      date: date.toISOString(),
-      value: Math.round(value),
-      period: date.toISOString().slice(0, 7)
-    })
-  }
-
-  return data
-}
-
-function generateMockRevenueData() {
-  const data = []
-  const startDate = new Date(2023, 0, 1)
-
-  for (let i = 0; i < 24; i++) {
-    const date = new Date(startDate)
-    date.setMonth(date.getMonth() + i)
-
-    const baseValue = 250000
-    const growthTrend = 1 + (i * 0.015) // 1.5% monthly growth
-    const seasonalFactor = 1 + Math.sin((i * 2 * Math.PI) / 12 + Math.PI / 4) * 0.25 // Q4 peak
-    const marketVolatility = 0.85 + Math.random() * 0.3
-
-    const value = baseValue * growthTrend * seasonalFactor * marketVolatility
-
-    data.push({
-      date: date.toISOString(),
-      value: Math.round(value),
-      period: date.toISOString().slice(0, 7)
-    })
-  }
-
-  return data
-}

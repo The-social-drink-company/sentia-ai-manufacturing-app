@@ -25,6 +25,10 @@ class APIIntegration {
     
     // WebSocket connections for real-time updates
     this.websockets = new Map()
+    this.reconnectAttempts = 0
+    this.maxReconnectAttempts = 5
+    this.baseReconnectDelay = 1000 // Start with 1 second
+    
     this.initializeWebSockets()
   }
 
@@ -33,15 +37,54 @@ class APIIntegration {
    */
   initializeWebSockets() {
     try {
-      // MCP Server WebSocket
-      const mcpWS = new WebSocket(`${this.baseURLs.mcp.replace('https', 'wss')}/ws`)
+      // MCP Server WebSocket with proper error handling and reconnection
+      const mcpWSUrl = `${this.baseURLs.mcp.replace('https', 'wss')}/ws`;
+      console.log('Attempting WebSocket connection to:', mcpWSUrl);
+      
+      const mcpWS = new WebSocket(mcpWSUrl);
+      
+      mcpWS.onopen = (event) => {
+        console.log('MCP WebSocket connected successfully');
+        this.websockets.set('mcp', mcpWS);
+        // Reset reconnection attempts on successful connection
+        this.reconnectAttempts = 0;
+      };
+      
       mcpWS.onmessage = (event) => {
-        const data = JSON.parse(event.data)
-        this.handleRealTimeUpdate('mcp', data)
-      }
-      this.websockets.set('mcp', mcpWS)
+        try {
+          const data = JSON.parse(event.data);
+          console.log('MCP WebSocket message received:', data.type);
+          this.handleRealTimeUpdate('mcp', data);
+        } catch (error) {
+          console.error('Failed to parse WebSocket message:', error);
+        }
+      };
+      
+      mcpWS.onerror = (error) => {
+        console.error('MCP WebSocket error:', error);
+        this.websockets.delete('mcp');
+      };
+      
+      mcpWS.onclose = (event) => {
+        console.log('MCP WebSocket closed:', event.code);
+        this.websockets.delete('mcp');
+        
+        // Only attempt reconnection if we haven't exceeded max attempts
+        if (this.reconnectAttempts < this.maxReconnectAttempts) {
+          this.reconnectAttempts++;
+          const delay = this.baseReconnectDelay * Math.pow(2, this.reconnectAttempts - 1);
+          
+          console.log(`Attempting WebSocket reconnection... (attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts})`);
+          setTimeout(() => {
+            this.initializeWebSockets();
+          }, delay);
+        } else {
+          console.warn('Max WebSocket reconnection attempts reached. Switching to polling mode.');
+        }
+      };
+      
     } catch (error) {
-      console.warn('WebSocket connection failed, falling back to polling:', error)
+      console.warn('WebSocket connection failed, falling back to polling:', error);
     }
   }
 

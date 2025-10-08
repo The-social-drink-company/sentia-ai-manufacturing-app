@@ -121,8 +121,8 @@ USER mcpserver
 # Use tini as init system for proper signal handling and zombie reaping
 ENTRYPOINT ["tini", "--", "dumb-init", "--"]
 
-# Start the server with optimized Node.js flags
-CMD ["node", "--enable-source-maps", "--unhandled-rejections=strict", "scripts/start-mcp-server.js"]
+# Start the server with enhanced error reporting and debugging flags
+CMD ["node", "--enable-source-maps", "--trace-warnings", "--trace-uncaught", "--report-uncaught-exception", "--unhandled-rejections=warn", "scripts/start-mcp-server.js"]
 
 # Enhanced labels for enterprise container management
 LABEL maintainer="Sentia Manufacturing Team"

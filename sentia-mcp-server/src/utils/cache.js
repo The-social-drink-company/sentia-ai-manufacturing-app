@@ -335,7 +335,7 @@ export class CacheManager extends EventEmitter {
   /**
    * Get data from cache with multi-level fallback
    */
-  async get(key, strategy = 'default') => {
+  async get(key, strategy = 'default') {
     this.stats.total.operations++;
     
     try {

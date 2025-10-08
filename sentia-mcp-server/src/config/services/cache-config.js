@@ -82,7 +82,7 @@ export class CacheConfig {
         // Development cache settings
         type: 'memory',
         defaultTTL: 60, // 1 minute
-        maxSize: 100,
+        maxSize: 500, // Increased for testing
         keyPrefix: 'sentia-mcp:dev:',
         
         // Development Redis settings
@@ -96,7 +96,7 @@ export class CacheConfig {
         
         // Memory cache settings
         memory: {
-          maxSize: 100,
+          maxSize: 500,
           checkPeriod: 60, // 1 minute
           useClones: false,
           deleteOnExpire: true,
@@ -108,7 +108,14 @@ export class CacheConfig {
         logCacheOperations: true,
         enableCacheInvalidation: true,
         enableCacheMetrics: true,
-        enableCacheInspection: true
+        enableCacheInspection: true,
+        enablePerformanceAnalytics: true,
+        enableCacheWarming: true,
+        
+        // Performance optimization features
+        enableCompression: false, // Disable for faster development
+        enableBatching: false,
+        enableMultiLevel: true
       },
 
       testing: {
@@ -184,7 +191,7 @@ export class CacheConfig {
         // Production cache settings
         type: 'redis',
         defaultTTL: 300, // 5 minutes
-        maxSize: 5000,
+        maxSize: 10000, // Increased for production
         keyPrefix: 'sentia-mcp:prod:',
         
         // Production Redis settings
@@ -202,13 +209,13 @@ export class CacheConfig {
           maxMemoryPolicy: 'allkeys-lru'
         },
         
-        // Memory cache fallback
+        // Memory cache fallback (L1)
         memory: {
-          maxSize: 5000,
-          checkPeriod: 600, // 10 minutes
+          maxSize: 2000, // L1 cache size
+          checkPeriod: 300, // 5 minutes
           useClones: true,
           deleteOnExpire: true,
-          enableStatistics: false
+          enableStatistics: true
         },
         
         // Production features
@@ -217,7 +224,22 @@ export class CacheConfig {
         enableCacheEncryption: true,
         enableCacheMetrics: true,
         enableCacheReplication: false, // Enable when multi-region
-        enableCacheSharding: false // Enable when needed
+        enableCacheSharding: false, // Enable when needed
+        
+        // Performance optimization features
+        enablePerformanceAnalytics: true,
+        enableCacheWarming: true,
+        enableBatching: true,
+        enableMultiLevel: true,
+        enablePredictiveWarming: true,
+        enableCostAnalysis: true,
+        enableAnomalyDetection: true,
+        
+        // Advanced production features
+        enableGCOptimization: true,
+        enableConnectionPooling: true,
+        enableNetworkOptimization: true,
+        enableResponseCompression: true
       }
     };
 

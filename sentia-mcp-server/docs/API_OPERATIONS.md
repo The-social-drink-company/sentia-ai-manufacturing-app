@@ -50,6 +50,24 @@ This document provides comprehensive operational guidance for deploying, monitor
 - `POST /api/config/validate` - Validate configuration changes
 - `POST /api/config/reload` - Reload configuration from files
 
+#### **Cache Management** (Phase 5)
+- `GET /api/cache/stats` - Overall cache statistics and hit rates
+- `GET /api/cache/health` - Cache system health status
+- `GET /api/cache/analytics` - Real-time cache analytics dashboard
+- `GET /api/cache/performance` - Performance metrics and trends
+- `POST /api/cache/warm` - Trigger cache warming for specific keys
+- `POST /api/cache/invalidate` - Invalidate cache by pattern or rule
+- `DELETE /api/cache/clear` - Clear cache by strategy or all
+- `GET /api/cache/recommendations` - Optimization recommendations
+
+#### **Performance Optimization** (Phase 5)
+- `GET /api/performance/stats` - Performance optimization statistics
+- `GET /api/performance/metrics` - Real-time performance metrics
+- `POST /api/performance/optimize` - Trigger performance optimization
+- `GET /api/performance/compression` - Compression effectiveness metrics
+- `GET /api/performance/batching` - API batching performance data
+- `GET /api/performance/memory` - Memory usage and optimization status
+
 #### **Log Management**
 - `GET /api/logs/search` - Advanced log search with queries
 - `GET /api/logs/aggregate` - Log aggregation and analysis

@@ -25,9 +25,17 @@ export class CacheConfig {
     const baseConfig = this.getBaseConfiguration();
     const envConfig = this.getEnvironmentConfiguration();
     
-    return {
+    // Merge base and environment configs first
+    const mergedConfig = {
       ...baseConfig,
-      ...envConfig,
+      ...envConfig
+    };
+    
+    // Set the config temporarily so computed properties can access it
+    this.config = mergedConfig;
+    
+    return {
+      ...mergedConfig,
       // Computed properties
       connectionConfig: this.buildConnectionConfiguration(),
       redisConfig: this.buildRedisConfiguration(),

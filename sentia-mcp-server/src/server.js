@@ -18,6 +18,7 @@
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
+import { ListToolsRequestSchema, CallToolRequestSchema } from '@modelcontextprotocol/sdk/types.js';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -114,7 +115,7 @@ export class SentiaMCPServer {
       uptime: Date.now()
     };
     
-    this.setupToolHandlers();
+    // Load tools first, then setup handlers after tools are ready
     this.loadTools();
     this.initializeExpress();
   }
@@ -123,95 +124,147 @@ export class SentiaMCPServer {
    * Set up MCP tool handlers
    */
   setupToolHandlers() {
-    this.server.setRequestHandler('tools/list', async () => {
-      const toolsList = Array.from(this.tools.values()).map(tool => ({
-        name: tool.name,
-        description: tool.description,
-        inputSchema: tool.inputSchema || { type: 'object', properties: {} }
-      }));
+    try {
+      // Validate server instance exists
+      if (!this.server) {
+        throw new Error('MCP server instance not initialized');
+      }
 
-      logger.info('Tools list requested', { 
-        correlationId: uuidv4(),
-        toolsCount: toolsList.length 
+      // Validate tools collection exists
+      if (!this.tools) {
+        throw new Error('Tools collection not initialized');
+      }
+
+      logger.info('Registering MCP request handlers', {
+        serverInitialized: !!this.server,
+        toolsCount: this.tools.size
       });
 
-      return { tools: toolsList };
-    });
+      this.server.setRequestHandler(ListToolsRequestSchema, async () => {
+        const toolsList = Array.from(this.tools.values()).map(tool => {
+          // Validate each tool has required properties
+          if (!tool || typeof tool !== 'object') {
+            logger.warn('Invalid tool object found', { tool });
+            return null;
+          }
 
-    this.server.setRequestHandler('tools/call', async (request) => {
-      const correlationId = uuidv4();
-      const startTime = Date.now();
-      
-      try {
-        const { name, arguments: args } = request.params;
+          return {
+            name: tool.name || 'unknown',
+            description: tool.description || 'No description available',
+            inputSchema: tool.inputSchema || { type: 'object', properties: {} }
+          };
+        }).filter(Boolean); // Remove null entries
+
+        logger.info('Tools list requested', { 
+          correlationId: uuidv4(),
+          toolsCount: toolsList.length 
+        });
+
+        return { tools: toolsList };
+      });
+
+      this.server.setRequestHandler(CallToolRequestSchema, async (request) => {
+        const correlationId = uuidv4();
+        const startTime = Date.now();
         
-        logger.info('Tool execution started', {
-          correlationId,
-          toolName: name,
-          arguments: args
-        });
+        try {
+          // Validate request parameters
+          if (!request || !request.params) {
+            throw new Error('Invalid request format - missing params');
+          }
 
-        if (!this.tools.has(name)) {
-          throw new Error(`Tool ${name} not found`);
+          const { name, arguments: args } = request.params;
+          
+          if (!name || typeof name !== 'string') {
+            throw new Error('Invalid tool name provided');
+          }
+
+          logger.info('Tool execution started', {
+            correlationId,
+            toolName: name,
+            arguments: args
+          });
+
+          if (!this.tools.has(name)) {
+            throw new Error(`Tool ${name} not found`);
+          }
+
+          const tool = this.tools.get(name);
+          
+          // Validate tool has execute method
+          if (!tool || typeof tool.execute !== 'function') {
+            throw new Error(`Tool ${name} is missing execute method`);
+          }
+
+          // Validate parameters if schema exists
+          if (tool.inputSchema) {
+            this.validateToolParameters(args, tool.inputSchema);
+          }
+
+          // Execute tool with enhanced context
+          const result = await tool.execute({
+            ...args,
+            correlationId,
+            timestamp: new Date().toISOString(),
+            environment: SERVER_CONFIG.server.environment
+          });
+
+          const executionTime = Date.now() - startTime;
+          this.updateMetrics('toolExecution', executionTime);
+
+          logger.info('Tool execution completed', {
+            correlationId,
+            toolName: name,
+            executionTime,
+            success: true
+          });
+
+          return {
+            content: [
+              {
+                type: 'text',
+                text: typeof result === 'string' ? result : JSON.stringify(result, null, 2)
+              }
+            ]
+          };
+
+        } catch (error) {
+          const executionTime = Date.now() - startTime;
+          this.updateMetrics('error', executionTime);
+
+          logger.error('Tool execution failed', {
+            correlationId,
+            toolName: request?.params?.name || 'unknown',
+            error: error.message,
+            stack: error.stack,
+            executionTime
+          });
+
+          return {
+            content: [
+              {
+                type: 'text',
+                text: `Error executing tool: ${error.message}`
+              }
+            ],
+            isError: true
+          };
         }
+      });
 
-        const tool = this.tools.get(name);
-        
-        // Validate parameters if schema exists
-        if (tool.inputSchema) {
-          this.validateToolParameters(args, tool.inputSchema);
-        }
+      logger.info('MCP tool handlers registered successfully', {
+        toolsCount: this.tools.size
+      });
 
-        // Execute tool with enhanced context
-        const result = await tool.execute({
-          ...args,
-          correlationId,
-          timestamp: new Date().toISOString(),
-          environment: SERVER_CONFIG.server.environment
-        });
-
-        const executionTime = Date.now() - startTime;
-        this.updateMetrics('toolExecution', executionTime);
-
-        logger.info('Tool execution completed', {
-          correlationId,
-          toolName: name,
-          executionTime,
-          success: true
-        });
-
-        return {
-          content: [
-            {
-              type: 'text',
-              text: typeof result === 'string' ? result : JSON.stringify(result, null, 2)
-            }
-          ]
-        };
-
-      } catch (error) {
-        const executionTime = Date.now() - startTime;
-        this.updateMetrics('error', executionTime);
-
-        logger.error('Tool execution failed', {
-          correlationId,
-          toolName: request.params.name,
-          error: error.message,
-          stack: error.stack,
-          executionTime
-        });
-
-        return {
-          content: [
-            {
-              type: 'text',
-              text: `Error executing tool: ${error.message}`
-            }
-          ],
-          isError: true
-        };
-      }
-    });
+    } catch (error) {
+      logger.error('Failed to setup tool handlers', {
+        error: error.message,
+        stack: error.stack,
+        serverInitialized: !!this.server,
+        toolsInitialized: !!this.tools
+      });
+      throw error; // Re-throw to prevent server from starting with broken handlers
+    }
   }
 
 
@@ -236,6 +289,17 @@ export class SentiaMCPServer {
           const tool = toolModule.default || toolModule;
           
           if (tool && tool.name && typeof tool.execute === 'function') {
+            // Additional validation for tool properties
+            if (typeof tool.name !== 'string' || tool.name.trim() === '') {
+              logger.warn('Tool has invalid name', { file: toolFile, name: tool.name });
+              continue;
+            }
+
+            if (typeof tool.execute !== 'function') {
+              logger.warn('Tool execute method is not a function', { file: toolFile, name: tool.name });
+              continue;
+            }
+
             this.tools.set(tool.name, {
               name: tool.name,
               description: tool.description || `Execute ${tool.name}`,
@@ -251,7 +315,12 @@ export class SentiaMCPServer {
               file: toolFile
             });
           } else {
-            logger.warn('Invalid tool format', { file: toolFile });
+            logger.warn('Invalid tool format - missing name or execute method', { 
+              file: toolFile,
+              hasName: !!(tool && tool.name),
+              hasExecute: !!(tool && typeof tool.execute === 'function'),
+              toolType: typeof tool
+            });
           }
         } catch (error) {
           logger.error('Failed to load tool', {
@@ -1081,6 +1150,11 @@ export class SentiaMCPServer {
         version: SERVER_CONFIG.server.version,
         toolsLoaded: this.tools.size
       });
+
+      // Setup tool handlers after tools are loaded but before starting HTTP server
+      logger.info('Setting up MCP tool handlers...');
+      this.setupToolHandlers();
+      logger.info('Tool handlers configured successfully');
 
       // Create HTTP server with proper promise handling
       const httpServer = await new Promise((resolve, reject) => {

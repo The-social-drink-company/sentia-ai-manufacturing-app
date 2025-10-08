@@ -306,30 +306,46 @@ export class CacheManager extends EventEmitter {
    * Setup cache monitoring
    */
   setupMonitoring() {
-    // Monitor cache performance every minute
-    setInterval(() => {
-      this.collectMetrics();
-    }, 60000);
+    // Only setup monitoring in production or when explicitly enabled
+    if (process.env.NODE_ENV === 'production' || process.env.CACHE_MONITORING_ENABLED === 'true') {
+      // Monitor cache performance every minute
+      this.monitoringIntervals = [
+        setInterval(() => {
+          this.collectMetrics();
+        }, 60000),
 
-    // Monitor cache health every 5 minutes
-    setInterval(() => {
-      this.performHealthCheck();
-    }, 300000);
+        // Monitor cache health every 5 minutes
+        setInterval(() => {
+          this.performHealthCheck();
+        }, 300000),
 
-    // Cleanup old data every hour
-    setInterval(() => {
-      this.performCleanup();
-    }, 3600000);
+        // Cleanup old data every hour
+        setInterval(() => {
+          this.performCleanup();
+        }, 3600000)
+      ];
+      
+      logger.info('Cache monitoring started');
+    } else {
+      logger.info('Cache monitoring disabled for development');
+    }
   }
 
   /**
    * Setup cache warming
    */
   setupCacheWarming() {
-    // Process warming queue every 30 seconds
-    setInterval(() => {
-      this.processWarmupQueue();
-    }, 30000);
+    // Only setup cache warming in production or when explicitly enabled
+    if (process.env.NODE_ENV === 'production' || process.env.CACHE_WARMING_ENABLED === 'true') {
+      // Process warming queue every 30 seconds
+      this.warmingInterval = setInterval(() => {
+        this.processWarmupQueue();
+      }, 30000);
+      
+      logger.info('Cache warming started');
+    } else {
+      logger.info('Cache warming disabled for development');
+    }
   }
 
   /**

@@ -285,7 +285,9 @@ export class SentiaMCPServer {
 
       for (const toolFile of toolFiles) {
         try {
-          const toolModule = await import(toolFile);
+          // Convert Windows path to proper file:// URL for ES module import
+          const toolFileUrl = `file://${toolFile.replace(/\\/g, '/')}`;
+          const toolModule = await import(toolFileUrl);
           const tool = toolModule.default || toolModule;
           
           if (tool && tool.name && typeof tool.execute === 'function') {
@@ -1475,9 +1477,11 @@ export class SentiaMCPServer {
   }
 }
 
+console.log('[DEBUG] SentiaMCPServer class defined successfully');
+
 // Start the server if this file is executed directly
 if (import.meta.url === `file://${process.argv[1]}`) {
-  console.log('Starting MCP Server directly from server.js');
+  console.log('[DEBUG] Reached main execution point - Starting MCP Server directly from server.js');
   
   // Enhanced startup with crash reporting
   const server = new SentiaMCPServer();

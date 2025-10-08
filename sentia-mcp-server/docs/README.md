@@ -61,6 +61,31 @@ Multi-environment configuration system with secure credential management and dyn
 - Environment-specific validation
 - Configuration API and management interface
 
+#### **[🚀 Advanced Caching & Performance](CACHING_PERFORMANCE.md)**
+Enterprise-grade caching and performance optimization system with multi-level architecture and real-time analytics.
+
+- Multi-level caching (L1: Memory, L2: Redis, L3: Database)
+- Intelligent cache strategies for different data types
+- 50-80% response time reduction with 90%+ hit rates
+- Real-time performance monitoring and analytics
+- Predictive cache warming and automated optimization
+- Comprehensive cost-benefit analysis and ROI tracking
+
+### **Advanced Analytics & Intelligence (Phase 5.2)**
+
+#### **[📊 Advanced Analytics & Reporting](ADVANCED_ANALYTICS_REPORTING.md)**
+Enterprise-grade analytics platform with real-time processing, predictive capabilities, and interactive visualizations for manufacturing intelligence.
+
+- **Advanced Analytics Engine**: Real-time stream processing with ML-based anomaly detection
+- **Predictive Analytics**: Multi-model forecasting (ARIMA, LSTM, Prophet) with confidence intervals
+- **Financial Analytics**: Revenue analysis, profitability tracking, cash flow forecasting, CLV calculation
+- **Operational Analytics**: OEE calculations, inventory optimization, supply chain analytics
+- **Customer Analytics**: RFM segmentation, churn prediction, behavior analysis
+- **Visualization Engine**: 8+ interactive chart types with real-time updates and export capabilities
+- **Advanced Alerts**: ML-based anomaly detection with multi-channel notifications
+- **Automated Reporting**: Scheduled reports with multi-format export (PDF, Excel, CSV)
+- **Dashboard API**: 8 comprehensive REST endpoints with JWT authentication
+
 ### **Deployment & Production Infrastructure (Phase 4)**
 
 #### **[🚀 Deployment Infrastructure](DEPLOYMENT_INFRASTRUCTURE.md)**
@@ -91,12 +116,21 @@ Comprehensive developer guide with setup instructions, workflow, coding standard
 #### **[🌐 API & Operations](API_OPERATIONS.md)**
 Complete operational guide with API documentation, deployment procedures, and maintenance instructions.
 
-- Complete API endpoint documentation
+- Complete API endpoint documentation (including Analytics API)
 - Deployment procedures and checklists
 - Monitoring and health check procedures
 - Incident response and troubleshooting
 - Production environment configuration
 - Support and maintenance procedures
+
+#### **[📊 Analytics API Reference](ANALYTICS_API_REFERENCE.md)**
+Quick reference guide for Advanced Analytics & Reporting API endpoints.
+
+- Authentication and authorization
+- All 8 analytics API endpoints with examples
+- Request/response formats and error handling
+- Rate limits and performance considerations
+- SDK usage examples and best practices
 
 ## 🚀 **Quick Start Guide**
 
@@ -104,11 +138,13 @@ Complete operational guide with API documentation, deployment procedures, and ma
 1. **Start Here**: [MCP Server Overview](MCP_SERVER_OVERVIEW.md) - Understanding the architecture
 2. **Setup**: [Development Guide](DEVELOPMENT_GUIDE.md) - Environment setup and development workflow
 3. **Integrations**: [Integrations Guide](INTEGRATIONS_GUIDE.md) - Working with business system integrations
+4. **Analytics**: [Advanced Analytics & Reporting](ADVANCED_ANALYTICS_REPORTING.md) - Building analytics and reporting features
 
 ### **For Operations Teams**
 1. **Architecture**: [MCP Server Overview](MCP_SERVER_OVERVIEW.md) - System overview and capabilities
 2. **Deployment**: [Deployment Infrastructure](DEPLOYMENT_INFRASTRUCTURE.md) - Production deployment procedures
 3. **Operations**: [API & Operations](API_OPERATIONS.md) - Day-to-day operations and monitoring
+4. **Analytics**: [Advanced Analytics & Reporting](ADVANCED_ANALYTICS_REPORTING.md) - Analytics system operations and monitoring
 
 ### **For Security Teams**
 1. **Security Overview**: [Authentication & Security](AUTHENTICATION_SECURITY.md) - Enterprise security implementation

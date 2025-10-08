@@ -1,15 +1,16 @@
 /**
  * Xero Data Cache Manager
  * 
- * Intelligent caching system for Xero API responses to improve performance
- * and reduce API call limits. Supports both memory and Redis backends.
+ * Enhanced intelligent caching system for Xero API responses using the unified
+ * multi-level cache infrastructure for improved performance and efficiency.
  * 
- * @version 1.0.0
+ * @version 2.0.0 - Integrated with unified cache system
  */
 
-import NodeCache from 'node-cache';
 import crypto from 'crypto';
 import { createLogger } from '../../../utils/logger.js';
+import { cacheManager } from '../../../utils/cache.js';
+import { performanceOptimizer } from '../../../utils/performance.js';
 
 const logger = createLogger();
 
@@ -26,74 +27,63 @@ export class XeroCache {
       contactsTTL: options.contactsTTL || 3600, // 1 hour
       bankTransactionsTTL: options.bankTransactionsTTL || 900, // 15 minutes
       
-      // Cache size limits
-      maxKeys: options.maxKeys || 1000,
-      checkPeriod: options.checkPeriod || 120, // 2 minutes
-      
       // Enable/disable caching
       enabled: options.enabled !== false,
+      
+      // Cache strategy configuration
+      useUnifiedCache: options.useUnifiedCache !== false,
+      strategy: options.strategy || 'financial',
       
       ...options
     };
 
-    // Initialize cache based on environment
-    this.initializeCache();
-
-    logger.info('Xero cache initialized', {
-      type: this.cacheType,
-      enabled: this.options.enabled,
-      defaultTTL: this.options.defaultTTL,
-      maxKeys: this.options.maxKeys
-    });
-  }
-
-  /**
-   * Initialize cache backend (Memory or Redis)
-   */
-  initializeCache() {
-    // For now, use memory cache (can be extended to Redis in production)
-    this.cacheType = 'memory';
-    this.cache = new NodeCache({
-      stdTTL: this.options.defaultTTL,
-      checkperiod: this.options.checkPeriod,
-      maxKeys: this.options.maxKeys,
-      deleteOnExpire: true,
-      useClones: false // For better performance, but be careful with object mutations
-    });
-
+    // Use unified cache system
+    this.cache = cacheManager;
+    this.performance = performanceOptimizer;
+    
     // Cache statistics
     this.stats = {
       hits: 0,
       misses: 0,
       sets: 0,
       deletes: 0,
-      errors: 0
+      errors: 0,
+      apiCallsSaved: 0,
+      totalResponseTime: 0
     };
 
-    // Setup cache event listeners
-    this.cache.on('set', (key, value) => {
-      this.stats.sets++;
-      logger.debug('Cache set', { key: this.sanitizeKey(key) });
-    });
+    this.initialized = true;
 
-    this.cache.on('get', (key, value) => {
-      if (value !== undefined) {
-        this.stats.hits++;
-        logger.debug('Cache hit', { key: this.sanitizeKey(key) });
-      } else {
-        this.stats.misses++;
-        logger.debug('Cache miss', { key: this.sanitizeKey(key) });
+    logger.info('Enhanced Xero cache initialized with unified system', {
+      enabled: this.options.enabled,
+      strategy: this.options.strategy,
+      useUnifiedCache: this.options.useUnifiedCache,
+      defaultTTL: this.options.defaultTTL
+    });
+  }
+
+  /**
+   * Initialize cache with unified system integration
+   */
+  async initializeUnifiedCache() {
+    if (!this.options.useUnifiedCache) {
+      logger.info('Unified cache integration disabled for Xero cache');
+      return;
+    }
+
+    try {
+      // Wait for unified cache system to be ready
+      if (!this.cache.initialized) {
+        await new Promise(resolve => {
+          this.cache.on('cache:initialized', resolve);
+        });
       }
-    });
 
-    this.cache.on('del', (key, value) => {
-      this.stats.deletes++;
-      logger.debug('Cache delete', { key: this.sanitizeKey(key) });
-    });
-
-    this.cache.on('expired', (key, value) => {
-      logger.debug('Cache expired', { key: this.sanitizeKey(key) });
-    });
+      logger.info('Xero cache integrated with unified cache system');
+    } catch (error) {
+      logger.error('Failed to integrate with unified cache system', { error });
+      throw error;
+    }
   }
 
   /**
@@ -144,27 +134,39 @@ export class XeroCache {
   }
 
   /**
-   * Set data in cache
+   * Set data in cache using unified system
    */
   async set(key, data, ttl = null) {
     if (!this.options.enabled) {
       return false;
     }
 
+    const startTime = Date.now();
+
     try {
-      const cacheData = {
+      // Enhance data with metadata
+      const enhancedData = {
         data,
         cachedAt: new Date().toISOString(),
-        expiresAt: new Date(Date.now() + (ttl || this.options.defaultTTL) * 1000).toISOString()
+        source: 'xero',
+        version: '2.0.0',
+        size: JSON.stringify(data).length
       };
 
-      const success = this.cache.set(key, cacheData, ttl || this.options.defaultTTL);
+      // Use unified cache system with financial strategy
+      const success = await this.cache.set(key, enhancedData, this.options.strategy, ttl);
       
       if (success) {
-        logger.debug('Data cached successfully', {
+        this.stats.sets++;
+        const duration = Date.now() - startTime;
+        this.stats.totalResponseTime += duration;
+
+        logger.debug('Xero data cached successfully via unified system', {
           key: this.sanitizeKey(key),
-          ttl: ttl || this.options.defaultTTL,
-          size: JSON.stringify(data).length
+          ttl: ttl || this.getTTL('default'),
+          size: enhancedData.size,
+          duration,
+          strategy: this.options.strategy
         });
       }
 
@@ -172,7 +174,7 @@ export class XeroCache {
 
     } catch (error) {
       this.stats.errors++;
-      logger.error('Cache set failed', {
+      logger.error('Xero cache set failed', {
         error: error.message,
         key: this.sanitizeKey(key)
       });
@@ -181,37 +183,56 @@ export class XeroCache {
   }
 
   /**
-   * Get data from cache
+   * Get data from cache using unified system
    */
   async get(key) {
     if (!this.options.enabled) {
       return null;
     }
 
+    const startTime = Date.now();
+
     try {
-      const cacheData = this.cache.get(key);
+      // Get from unified cache system with financial strategy
+      const cacheData = await this.cache.get(key, this.options.strategy);
       
       if (cacheData && cacheData.data) {
-        logger.debug('Cache hit', {
+        this.stats.hits++;
+        this.stats.apiCallsSaved++;
+        const duration = Date.now() - startTime;
+        this.stats.totalResponseTime += duration;
+
+        logger.debug('Xero cache hit via unified system', {
           key: this.sanitizeKey(key),
-          cachedAt: cacheData.cachedAt
+          cachedAt: cacheData.cachedAt,
+          strategy: this.options.strategy,
+          duration,
+          cacheLevel: cacheData._cacheMetadata?.level
         });
         
         return {
           ...cacheData.data,
           _cacheMetadata: {
+            ...cacheData._cacheMetadata,
             cachedAt: cacheData.cachedAt,
-            expiresAt: cacheData.expiresAt,
-            fromCache: true
+            source: cacheData.source,
+            fromCache: true,
+            xeroCache: true
           }
         };
       }
+
+      this.stats.misses++;
+      logger.debug('Xero cache miss', {
+        key: this.sanitizeKey(key),
+        strategy: this.options.strategy
+      });
 
       return null;
 
     } catch (error) {
       this.stats.errors++;
-      logger.error('Cache get failed', {
+      logger.error('Xero cache get failed', {
         error: error.message,
         key: this.sanitizeKey(key)
       });
@@ -239,7 +260,7 @@ export class XeroCache {
   }
 
   /**
-   * Delete specific key from cache
+   * Delete specific key from cache using unified system
    */
   async delete(key) {
     if (!this.options.enabled) {
@@ -247,18 +268,22 @@ export class XeroCache {
     }
 
     try {
-      const result = this.cache.del(key);
+      const result = await this.cache.delete(key);
       
-      logger.debug('Cache delete', {
+      if (result) {
+        this.stats.deletes++;
+      }
+
+      logger.debug('Xero cache delete via unified system', {
         key: this.sanitizeKey(key),
-        success: result > 0
+        success: result
       });
 
-      return result > 0;
+      return result;
 
     } catch (error) {
       this.stats.errors++;
-      logger.error('Cache delete failed', {
+      logger.error('Xero cache delete failed', {
         error: error.message,
         key: this.sanitizeKey(key)
       });
@@ -371,30 +396,54 @@ export class XeroCache {
   }
 
   /**
-   * Get cache statistics
+   * Get enhanced cache statistics from unified system
    */
   async getStats() {
     try {
-      const cacheStats = this.cache.getStats();
+      // Get unified cache stats
+      const unifiedStats = this.cache.getStats();
+      
+      // Calculate Xero-specific metrics
+      const totalRequests = this.stats.hits + this.stats.misses;
+      const hitRate = totalRequests > 0 ? (this.stats.hits / totalRequests) * 100 : 0;
+      const averageResponseTime = this.stats.sets > 0 ? this.stats.totalResponseTime / this.stats.sets : 0;
       
       return {
-        ...this.stats,
-        keys: cacheStats.keys,
-        hits: cacheStats.hits || this.stats.hits,
-        misses: cacheStats.misses || this.stats.misses,
-        hitRate: this.stats.hits + this.stats.misses > 0 
-          ? (this.stats.hits / (this.stats.hits + this.stats.misses) * 100).toFixed(2) + '%'
-          : '0%',
-        ksize: cacheStats.ksize,
-        vsize: cacheStats.vsize
+        // Xero-specific stats
+        xero: {
+          ...this.stats,
+          hitRate: hitRate.toFixed(2) + '%',
+          averageResponseTime: averageResponseTime.toFixed(2) + 'ms',
+          apiCallsSaved: this.stats.apiCallsSaved,
+          estimatedCostSavings: (this.stats.apiCallsSaved * 0.001).toFixed(3) + ' USD'
+        },
+        
+        // Unified cache system stats
+        unified: {
+          overall: unifiedStats,
+          strategy: this.options.strategy,
+          useUnifiedCache: this.options.useUnifiedCache
+        },
+        
+        // Configuration
+        config: {
+          enabled: this.options.enabled,
+          strategy: this.options.strategy,
+          defaultTTL: this.options.defaultTTL,
+          financialReportsTTL: this.options.financialReportsTTL,
+          invoicesTTL: this.options.invoicesTTL,
+          contactsTTL: this.options.contactsTTL,
+          bankTransactionsTTL: this.options.bankTransactionsTTL
+        }
       };
 
     } catch (error) {
-      logger.error('Failed to get cache stats', {
+      logger.error('Failed to get Xero cache stats', {
         error: error.message
       });
       return {
-        error: error.message
+        error: error.message,
+        xero: this.stats
       };
     }
   }
@@ -412,7 +461,7 @@ export class XeroCache {
   }
 
   /**
-   * Warm up cache with commonly accessed data
+   * Warm up cache with commonly accessed data using unified system
    */
   async warmUp(tenantId, toolsToWarm = []) {
     if (!this.options.enabled) {
@@ -420,22 +469,32 @@ export class XeroCache {
     }
 
     try {
-      logger.info('Starting cache warm-up', {
+      logger.info('Starting Xero cache warm-up via unified system', {
         tenantId,
-        toolsCount: toolsToWarm.length
+        toolsCount: toolsToWarm.length,
+        strategy: this.options.strategy
       });
 
-      // This would typically pre-fetch commonly accessed data
-      // Implementation depends on the specific tools and their requirements
+      // Prepare warming keys for commonly accessed Xero data
+      const warmingKeys = toolsToWarm.map(tool => ({
+        key: this.generateKey(tool.name, { tenantId, ...tool.params }),
+        loader: tool.dataLoader,
+        strategy: this.options.strategy,
+        priority: tool.priority || 1
+      }));
+
+      // Use unified cache warming system
+      const result = await this.cache.warmCache(warmingKeys, this.options.strategy);
 
       return {
-        success: true,
+        success: result,
         warmedTools: toolsToWarm.length,
-        tenantId
+        tenantId,
+        strategy: this.options.strategy
       };
 
     } catch (error) {
-      logger.error('Cache warm-up failed', {
+      logger.error('Xero cache warm-up failed', {
         error: error.message,
         tenantId
       });
@@ -445,4 +504,197 @@ export class XeroCache {
       };
     }
   }
+
+  /**
+   * Invalidate Xero cache based on tenant or data type
+   */
+  async invalidateByRule(rule, context = {}) {
+    if (!this.options.enabled) {
+      return 0;
+    }
+
+    try {
+      // Use unified cache invalidation system
+      const invalidatedCount = await this.cache.invalidate(rule, {
+        ...context,
+        source: 'xero',
+        strategy: this.options.strategy
+      });
+
+      logger.info('Xero cache invalidation completed', {
+        rule,
+        invalidatedCount,
+        context
+      });
+
+      return invalidatedCount;
+
+    } catch (error) {
+      logger.error('Xero cache invalidation failed', {
+        rule,
+        error: error.message
+      });
+      return 0;
+    }
+  }
+
+  /**
+   * Get cache performance metrics for optimization
+   */
+  async getPerformanceMetrics() {
+    try {
+      const stats = await this.getStats();
+      
+      return {
+        efficiency: {
+          hitRate: parseFloat(stats.xero.hitRate),
+          apiCallsSaved: stats.xero.apiCallsSaved,
+          averageResponseTime: parseFloat(stats.xero.averageResponseTime)
+        },
+        cost: {
+          estimatedSavings: stats.xero.estimatedCostSavings,
+          currency: 'USD'
+        },
+        recommendations: this.generateCacheRecommendations(stats),
+        strategy: this.options.strategy,
+        timestamp: new Date().toISOString()
+      };
+
+    } catch (error) {
+      logger.error('Failed to get Xero cache performance metrics', {
+        error: error.message
+      });
+      return {
+        error: error.message
+      };
+    }
+  }
+
+  /**
+   * Generate cache optimization recommendations
+   */
+  generateCacheRecommendations(stats) {
+    const recommendations = [];
+    const hitRate = parseFloat(stats.xero.hitRate);
+    const avgResponseTime = parseFloat(stats.xero.averageResponseTime);
+
+    if (hitRate < 80) {
+      recommendations.push({
+        type: 'hit_rate',
+        priority: 'high',
+        message: 'Consider implementing cache warming for frequently accessed Xero data',
+        currentValue: hitRate + '%',
+        targetValue: '>85%'
+      });
+    }
+
+    if (avgResponseTime > 50) {
+      recommendations.push({
+        type: 'performance',
+        priority: 'medium',
+        message: 'Cache response time could be improved with L1 cache optimization',
+        currentValue: avgResponseTime + 'ms',
+        targetValue: '<30ms'
+      });
+    }
+
+    if (stats.xero.apiCallsSaved < 100) {
+      recommendations.push({
+        type: 'usage',
+        priority: 'low',
+        message: 'Consider extending cache TTL for stable financial data',
+        currentValue: stats.xero.apiCallsSaved + ' calls saved',
+        targetValue: '>200 calls saved'
+      });
+    }
+
+    return recommendations;
+  }
+
+  /**
+   * Enhanced cache key generation with strategy support
+   */
+  generateKeyWithStrategy(toolName, params = {}, strategy = null) {
+    const cacheStrategy = strategy || this.options.strategy;
+    const baseKey = this.generateKey(toolName, params);
+    
+    return `${cacheStrategy}:${baseKey}`;
+  }
+
+  /**
+   * Optimize cache for Xero-specific patterns
+   */
+  async optimizeForXero() {
+    try {
+      const stats = await this.getStats();
+      const recommendations = this.generateCacheRecommendations(stats);
+      
+      // Apply optimizations based on recommendations
+      let optimizationsApplied = 0;
+      
+      for (const rec of recommendations) {
+        switch (rec.type) {
+          case 'hit_rate':
+            // Implement cache warming for financial reports
+            await this.warmCommonFinancialData();
+            optimizationsApplied++;
+            break;
+            
+          case 'performance':
+            // Optimize cache strategy
+            this.options.strategy = 'financial'; // Ensure using financial strategy
+            optimizationsApplied++;
+            break;
+        }
+      }
+
+      logger.info('Xero cache optimization completed', {
+        recommendations: recommendations.length,
+        optimizationsApplied,
+        strategy: this.options.strategy
+      });
+
+      return {
+        success: true,
+        recommendations,
+        optimizationsApplied,
+        strategy: this.options.strategy
+      };
+
+    } catch (error) {
+      logger.error('Xero cache optimization failed', {
+        error: error.message
+      });
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  }
+
+  /**
+   * Warm common financial data for improved performance
+   */
+  async warmCommonFinancialData() {
+    const commonDataTypes = [
+      { name: 'xero-get-financial-reports', priority: 1 },
+      { name: 'xero-get-invoices', priority: 2 },
+      { name: 'xero-get-contacts', priority: 3 }
+    ];
+
+    return await this.warmUp('default', commonDataTypes);
+  }
 }
+
+// Export singleton instance
+export const xeroCache = new XeroCache();
+
+// Export utility functions for backward compatibility
+export const {
+  generateKey,
+  getTTL,
+  set: setXeroCache,
+  get: getXeroCache,
+  delete: deleteXeroCache,
+  getStats: getXeroCacheStats
+} = xeroCache;

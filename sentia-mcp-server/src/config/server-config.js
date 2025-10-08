@@ -232,7 +232,7 @@ export const SERVER_CONFIG = {
   tools: {
     directory: process.env.TOOLS_DIRECTORY || 'tools',
     enabledCategories: process.env.ENABLED_TOOL_CATEGORIES?.split(',') || [
-      'system', 'manufacturing', 'financial', 'database', 'integration'
+      'system', 'manufacturing', 'financial', 'database', 'integration', 'analytics'
     ],
     timeout: parseInt(process.env.TOOL_TIMEOUT) || 30000,
     maxConcurrent: parseInt(process.env.MAX_CONCURRENT_TOOLS) || 10,
@@ -240,6 +240,295 @@ export const SERVER_CONFIG = {
       enabled: process.env.TOOL_CACHING_ENABLED !== 'false',
       defaultTTL: parseInt(process.env.TOOL_CACHE_TTL) || 300, // 5 minutes
       maxSize: parseInt(process.env.TOOL_CACHE_MAX_SIZE) || 1000
+    }
+  },
+
+  // Advanced Analytics Configuration (Phase 5.2)
+  analytics: {
+    enabled: process.env.ANALYTICS_ENABLED !== 'false',
+    
+    // Advanced Analytics Engine
+    advancedAnalytics: {
+      enabled: process.env.ADVANCED_ANALYTICS_ENABLED !== 'false',
+      enableRealTimeProcessing: process.env.ENABLE_REALTIME_PROCESSING !== 'false',
+      enablePredictiveAnalytics: process.env.ENABLE_PREDICTIVE_ANALYTICS !== 'false',
+      enableAnomalyDetection: process.env.ENABLE_ANOMALY_DETECTION !== 'false',
+      enableMLModels: process.env.ENABLE_ML_MODELS !== 'false',
+      
+      // Processing configuration
+      processing: {
+        batchSize: parseInt(process.env.ANALYTICS_BATCH_SIZE) || 1000,
+        maxMemoryUsage: parseInt(process.env.ANALYTICS_MAX_MEMORY_MB) || 512,
+        timeout: parseInt(process.env.ANALYTICS_TIMEOUT) || 30000,
+        enableParallelProcessing: process.env.ENABLE_PARALLEL_PROCESSING !== 'false',
+        maxWorkers: parseInt(process.env.ANALYTICS_MAX_WORKERS) || 4
+      },
+      
+      // Machine Learning Models
+      mlModels: {
+        anomalyDetection: {
+          enabled: process.env.ML_ANOMALY_DETECTION_ENABLED !== 'false',
+          algorithm: process.env.ANOMALY_DETECTION_ALGORITHM || 'isolation_forest',
+          sensitivity: parseFloat(process.env.ANOMALY_DETECTION_SENSITIVITY) || 0.95,
+          trainingDataSize: parseInt(process.env.ANOMALY_TRAINING_DATA_SIZE) || 1000
+        },
+        forecasting: {
+          enabled: process.env.ML_FORECASTING_ENABLED !== 'false',
+          defaultModel: process.env.DEFAULT_FORECASTING_MODEL || 'arima',
+          availableModels: process.env.FORECASTING_MODELS?.split(',') || ['arima', 'lstm', 'prophet', 'linear'],
+          defaultHorizon: parseInt(process.env.DEFAULT_FORECAST_HORIZON) || 12,
+          maxHorizon: parseInt(process.env.MAX_FORECAST_HORIZON) || 52
+        },
+        trendAnalysis: {
+          enabled: process.env.ML_TREND_ANALYSIS_ENABLED !== 'false',
+          minDataPoints: parseInt(process.env.TREND_MIN_DATA_POINTS) || 10,
+          confidenceThreshold: parseFloat(process.env.TREND_CONFIDENCE_THRESHOLD) || 0.8
+        }
+      }
+    },
+    
+    // Financial Analytics
+    financialAnalytics: {
+      enabled: process.env.FINANCIAL_ANALYTICS_ENABLED !== 'false',
+      enableForecasting: process.env.FINANCIAL_FORECASTING_ENABLED !== 'false',
+      enableProfitabilityAnalysis: process.env.PROFITABILITY_ANALYSIS_ENABLED !== 'false',
+      enableCashFlowAnalysis: process.env.CASH_FLOW_ANALYSIS_ENABLED !== 'false',
+      enableCLVCalculation: process.env.CLV_CALCULATION_ENABLED !== 'false',
+      
+      // Currency handling
+      currency: {
+        default: process.env.DEFAULT_CURRENCY || 'USD',
+        enableMultiCurrency: process.env.ENABLE_MULTI_CURRENCY !== 'false',
+        exchangeRateProvider: process.env.EXCHANGE_RATE_PROVIDER || 'openexchangerates',
+        exchangeRateUpdateInterval: parseInt(process.env.EXCHANGE_RATE_UPDATE_INTERVAL) || 3600000 // 1 hour
+      },
+      
+      // Forecasting parameters
+      forecasting: {
+        defaultHorizon: parseInt(process.env.FINANCIAL_FORECAST_HORIZON) || 12,
+        confidenceIntervals: process.env.INCLUDE_CONFIDENCE_INTERVALS !== 'false',
+        includeSeasonality: process.env.INCLUDE_SEASONALITY !== 'false'
+      },
+      
+      // KPI thresholds
+      kpiThresholds: {
+        grossMarginWarning: parseFloat(process.env.GROSS_MARGIN_WARNING_THRESHOLD) || 0.4,
+        grossMarginCritical: parseFloat(process.env.GROSS_MARGIN_CRITICAL_THRESHOLD) || 0.2,
+        currentRatioWarning: parseFloat(process.env.CURRENT_RATIO_WARNING_THRESHOLD) || 1.5,
+        currentRatioCritical: parseFloat(process.env.CURRENT_RATIO_CRITICAL_THRESHOLD) || 1.0
+      }
+    },
+    
+    // Operational Analytics
+    operationalAnalytics: {
+      enabled: process.env.OPERATIONAL_ANALYTICS_ENABLED !== 'false',
+      enableRealTimeTracking: process.env.OPERATIONAL_REALTIME_TRACKING !== 'false',
+      enableOEECalculation: process.env.OEE_CALCULATION_ENABLED !== 'false',
+      enableQualityAnalysis: process.env.QUALITY_ANALYSIS_ENABLED !== 'false',
+      enableInventoryOptimization: process.env.INVENTORY_OPTIMIZATION_ENABLED !== 'false',
+      enableSupplyChainAnalysis: process.env.SUPPLY_CHAIN_ANALYSIS_ENABLED !== 'false',
+      
+      // OEE targets
+      oeeTargets: {
+        availability: parseFloat(process.env.OEE_AVAILABILITY_TARGET) || 0.9,
+        performance: parseFloat(process.env.OEE_PERFORMANCE_TARGET) || 0.85,
+        quality: parseFloat(process.env.OEE_QUALITY_TARGET) || 0.95,
+        overall: parseFloat(process.env.OEE_OVERALL_TARGET) || 0.85
+      },
+      
+      // Inventory thresholds
+      inventory: {
+        lowStockThreshold: parseFloat(process.env.LOW_STOCK_THRESHOLD) || 0.1,
+        highStockThreshold: parseFloat(process.env.HIGH_STOCK_THRESHOLD) || 0.9,
+        optimalTurnoverRate: parseFloat(process.env.OPTIMAL_TURNOVER_RATE) || 8,
+        enableABCAnalysis: process.env.ABC_ANALYSIS_ENABLED !== 'false',
+        enableXYZAnalysis: process.env.XYZ_ANALYSIS_ENABLED !== 'false'
+      },
+      
+      // Quality control
+      qualityControl: {
+        enableSPC: process.env.SPC_ENABLED !== 'false',
+        controlLimitSigma: parseFloat(process.env.CONTROL_LIMIT_SIGMA) || 3,
+        defectRateThreshold: parseFloat(process.env.DEFECT_RATE_THRESHOLD) || 0.05,
+        firstPassYieldTarget: parseFloat(process.env.FIRST_PASS_YIELD_TARGET) || 0.95
+      }
+    },
+    
+    // Customer Analytics
+    customerAnalytics: {
+      enabled: process.env.CUSTOMER_ANALYTICS_ENABLED !== 'false',
+      enableSegmentation: process.env.CUSTOMER_SEGMENTATION_ENABLED !== 'false',
+      enableCLVAnalysis: process.env.CUSTOMER_CLV_ANALYSIS_ENABLED !== 'false',
+      enableChurnPrediction: process.env.CHURN_PREDICTION_ENABLED !== 'false',
+      enableBehaviorAnalysis: process.env.BEHAVIOR_ANALYSIS_ENABLED !== 'false',
+      
+      // Segmentation parameters
+      segmentation: {
+        method: process.env.SEGMENTATION_METHOD || 'rfm',
+        numberOfSegments: parseInt(process.env.NUMBER_OF_SEGMENTS) || 5,
+        enableAutoSegmentation: process.env.AUTO_SEGMENTATION_ENABLED !== 'false',
+        updateInterval: parseInt(process.env.SEGMENTATION_UPDATE_INTERVAL) || 86400000 // 24 hours
+      },
+      
+      // CLV calculation
+      clv: {
+        discountRate: parseFloat(process.env.CLV_DISCOUNT_RATE) || 0.1,
+        timeHorizon: parseInt(process.env.CLV_TIME_HORIZON) || 36, // months
+        includeAcquisitionCost: process.env.INCLUDE_ACQUISITION_COST !== 'false'
+      },
+      
+      // Churn prediction
+      churn: {
+        predictionHorizon: parseInt(process.env.CHURN_PREDICTION_HORIZON) || 90, // days
+        riskThreshold: parseFloat(process.env.CHURN_RISK_THRESHOLD) || 0.7,
+        enablePreventionRecommendations: process.env.CHURN_PREVENTION_RECOMMENDATIONS !== 'false'
+      }
+    },
+    
+    // Visualization Engine
+    visualization: {
+      enabled: process.env.VISUALIZATION_ENABLED !== 'false',
+      enableInteractivity: process.env.INTERACTIVE_VISUALIZATIONS !== 'false',
+      enableRealTimeUpdates: process.env.REALTIME_VISUALIZATION_UPDATES !== 'false',
+      defaultTheme: process.env.DEFAULT_VISUALIZATION_THEME || 'sentia',
+      
+      // Performance settings
+      performance: {
+        maxDataPoints: parseInt(process.env.VIZ_MAX_DATA_POINTS) || 10000,
+        enableSampling: process.env.VIZ_ENABLE_SAMPLING !== 'false',
+        samplingThreshold: parseInt(process.env.VIZ_SAMPLING_THRESHOLD) || 5000,
+        renderTimeout: parseInt(process.env.VIZ_RENDER_TIMEOUT) || 30000,
+        enableWebGL: process.env.VIZ_ENABLE_WEBGL !== 'false'
+      },
+      
+      // Chart types
+      enabledChartTypes: process.env.ENABLED_CHART_TYPES?.split(',') || [
+        'line', 'bar', 'pie', 'scatter', 'heatmap', 'area', 'candlestick', 'histogram'
+      ],
+      
+      // Export options
+      export: {
+        enableSVG: process.env.VIZ_EXPORT_SVG !== 'false',
+        enablePNG: process.env.VIZ_EXPORT_PNG !== 'false',
+        enablePDF: process.env.VIZ_EXPORT_PDF !== 'false',
+        enableJSON: process.env.VIZ_EXPORT_JSON !== 'false',
+        maxExportSize: process.env.VIZ_MAX_EXPORT_SIZE || '10mb'
+      }
+    },
+    
+    // Advanced Alert Engine
+    advancedAlerts: {
+      enabled: process.env.ADVANCED_ALERTS_ENABLED !== 'false',
+      enableAnomalyAlerts: process.env.ANOMALY_ALERTS_ENABLED !== 'false',
+      enablePredictiveAlerts: process.env.PREDICTIVE_ALERTS_ENABLED !== 'false',
+      enableMLBasedAlerts: process.env.ML_ALERTS_ENABLED !== 'false',
+      
+      // Alert retention
+      retention: {
+        days: parseInt(process.env.ALERT_RETENTION_DAYS) || 30,
+        maxAlerts: parseInt(process.env.MAX_STORED_ALERTS) || 10000
+      },
+      
+      // Smart thresholds
+      smartThresholds: {
+        enabled: process.env.SMART_THRESHOLDS_ENABLED !== 'false',
+        adaptationPeriod: parseInt(process.env.THRESHOLD_ADAPTATION_PERIOD) || 7, // days
+        confidenceLevel: parseFloat(process.env.THRESHOLD_CONFIDENCE_LEVEL) || 0.95
+      },
+      
+      // Alert correlation
+      correlation: {
+        enabled: process.env.ALERT_CORRELATION_ENABLED !== 'false',
+        timeWindow: parseInt(process.env.ALERT_CORRELATION_WINDOW) || 300000, // 5 minutes
+        similarityThreshold: parseFloat(process.env.ALERT_SIMILARITY_THRESHOLD) || 0.8
+      }
+    },
+    
+    // Reporting System
+    reporting: {
+      enabled: process.env.REPORTING_ENABLED !== 'false',
+      enableScheduledReports: process.env.SCHEDULED_REPORTS_ENABLED !== 'false',
+      enableCustomReports: process.env.CUSTOM_REPORTS_ENABLED !== 'false',
+      enableAutomatedReports: process.env.AUTOMATED_REPORTS_ENABLED !== 'false',
+      
+      // Report generation
+      generation: {
+        maxReportsPerUser: parseInt(process.env.MAX_REPORTS_PER_USER) || 50,
+        maxReportSize: process.env.MAX_REPORT_SIZE || '100mb',
+        enablePDFGeneration: process.env.PDF_GENERATION_ENABLED !== 'false',
+        enableExcelGeneration: process.env.EXCEL_GENERATION_ENABLED !== 'false'
+      },
+      
+      // Report scheduling
+      scheduling: {
+        enableDaily: process.env.DAILY_REPORTS_ENABLED !== 'false',
+        enableWeekly: process.env.WEEKLY_REPORTS_ENABLED !== 'false',
+        enableMonthly: process.env.MONTHLY_REPORTS_ENABLED !== 'false',
+        enableCustomSchedule: process.env.CUSTOM_SCHEDULE_ENABLED !== 'false',
+        maxScheduledReports: parseInt(process.env.MAX_SCHEDULED_REPORTS) || 100
+      }
+    },
+    
+    // Data Integration
+    dataIntegration: {
+      enabled: process.env.DATA_INTEGRATION_ENABLED !== 'false',
+      enableMultiSourceCorrelation: process.env.MULTI_SOURCE_CORRELATION !== 'false',
+      enableDataQualityValidation: process.env.DATA_QUALITY_VALIDATION !== 'false',
+      enableRealTimeSync: process.env.REALTIME_DATA_SYNC !== 'false',
+      
+      // Data sources
+      supportedSources: process.env.SUPPORTED_DATA_SOURCES?.split(',') || [
+        'postgresql', 'mysql', 'mongodb', 'redis', 'elasticsearch', 'csv', 'json', 'xml'
+      ],
+      
+      // Synchronization
+      sync: {
+        interval: parseInt(process.env.DATA_SYNC_INTERVAL) || 300000, // 5 minutes
+        batchSize: parseInt(process.env.DATA_SYNC_BATCH_SIZE) || 1000,
+        enableIncrementalSync: process.env.INCREMENTAL_SYNC_ENABLED !== 'false',
+        conflictResolution: process.env.SYNC_CONFLICT_RESOLUTION || 'latest_wins'
+      }
+    },
+    
+    // Caching Configuration
+    caching: {
+      enabled: process.env.ANALYTICS_CACHING_ENABLED !== 'false',
+      
+      // Multi-level caching
+      levels: {
+        memory: {
+          enabled: process.env.MEMORY_CACHE_ENABLED !== 'false',
+          maxSize: process.env.MEMORY_CACHE_MAX_SIZE || '256mb',
+          ttl: parseInt(process.env.MEMORY_CACHE_TTL) || 300000 // 5 minutes
+        },
+        redis: {
+          enabled: process.env.REDIS_CACHE_ENABLED === 'true',
+          url: process.env.REDIS_CACHE_URL,
+          ttl: parseInt(process.env.REDIS_CACHE_TTL) || 3600000, // 1 hour
+          keyPrefix: process.env.REDIS_CACHE_PREFIX || 'analytics:'
+        },
+        database: {
+          enabled: process.env.DB_CACHE_ENABLED === 'true',
+          ttl: parseInt(process.env.DB_CACHE_TTL) || 86400000, // 24 hours
+          tableName: process.env.CACHE_TABLE_NAME || 'analytics_cache'
+        }
+      },
+      
+      // Cache strategies
+      strategies: {
+        analysisResults: {
+          ttl: parseInt(process.env.ANALYSIS_CACHE_TTL) || 1800000, // 30 minutes
+          invalidateOnDataUpdate: process.env.INVALIDATE_ON_DATA_UPDATE !== 'false'
+        },
+        visualizations: {
+          ttl: parseInt(process.env.VISUALIZATION_CACHE_TTL) || 900000, // 15 minutes
+          enableVersioning: process.env.VIZ_CACHE_VERSIONING !== 'false'
+        },
+        forecasts: {
+          ttl: parseInt(process.env.FORECAST_CACHE_TTL) || 3600000, // 1 hour
+          enablePredictiveInvalidation: process.env.PREDICTIVE_CACHE_INVALIDATION !== 'false'
+        }
+      }
     }
   },
 
@@ -456,15 +745,51 @@ export const SERVER_CONFIG = {
       // Environment-specific dashboard URLs for inter-service communication
       development: {
         url: 'https://sentia-manufacturing-dashboard-621h.onrender.com',
-        jwtSecret: process.env.MCP_JWT_SECRET || process.env.JWT_SECRET
+        jwtSecret: process.env.MCP_JWT_SECRET || process.env.JWT_SECRET,
+        analytics: {
+          enabled: true,
+          endpoints: {
+            analyze: '/api/dashboard/analytics/analyze',
+            visualize: '/api/dashboard/analytics/visualize',
+            insights: '/api/dashboard/analytics/insights',
+            forecast: '/api/dashboard/analytics/forecast',
+            alerts: '/api/dashboard/analytics/alerts',
+            performance: '/api/dashboard/analytics/performance',
+            export: '/api/dashboard/analytics/export'
+          }
+        }
       },
       testing: {
         url: 'https://sentia-manufacturing-dashboard-test.onrender.com',
-        jwtSecret: process.env.MCP_JWT_SECRET || process.env.JWT_SECRET
+        jwtSecret: process.env.MCP_JWT_SECRET || process.env.JWT_SECRET,
+        analytics: {
+          enabled: true,
+          endpoints: {
+            analyze: '/api/dashboard/analytics/analyze',
+            visualize: '/api/dashboard/analytics/visualize',
+            insights: '/api/dashboard/analytics/insights',
+            forecast: '/api/dashboard/analytics/forecast',
+            alerts: '/api/dashboard/analytics/alerts',
+            performance: '/api/dashboard/analytics/performance',
+            export: '/api/dashboard/analytics/export'
+          }
+        }
       },
       production: {
         url: 'https://sentia-manufacturing-dashboard-production.onrender.com',
-        jwtSecret: process.env.MCP_JWT_SECRET || process.env.JWT_SECRET
+        jwtSecret: process.env.MCP_JWT_SECRET || process.env.JWT_SECRET,
+        analytics: {
+          enabled: true,
+          endpoints: {
+            analyze: '/api/dashboard/analytics/analyze',
+            visualize: '/api/dashboard/analytics/visualize',
+            insights: '/api/dashboard/analytics/insights',
+            forecast: '/api/dashboard/analytics/forecast',
+            alerts: '/api/dashboard/analytics/alerts',
+            performance: '/api/dashboard/analytics/performance',
+            export: '/api/dashboard/analytics/export'
+          }
+        }
       }
     }
   }

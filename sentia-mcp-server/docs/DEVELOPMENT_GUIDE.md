@@ -114,7 +114,89 @@ src/
 ├── routes/                   # API route handlers
 ├── tools/                    # MCP tool integrations
 ├── utils/                    # Utility functions
+│   ├── cache.js              # Multi-level cache manager
+│   ├── performance.js        # Performance optimization
+│   └── cache-analytics.js    # Cache analytics
 └── tests/                    # Test files
+```
+
+## 🚀 **Caching & Performance Development** (Phase 5)
+
+### **Cache Integration**
+
+When developing new tools or endpoints, integrate with the unified caching system:
+
+```javascript
+import { cacheManager } from '../utils/cache.js';
+import { performanceOptimizer } from '../utils/performance.js';
+
+// Use appropriate cache strategy for your data type
+export async function getFinancialData(params) {
+  const cacheKey = generateCacheKey('financial', params);
+  
+  // Try cache first
+  const cached = await cacheManager.get(cacheKey, 'financial');
+  if (cached) {
+    return cached;
+  }
+  
+  // Fetch from source
+  const data = await fetchFromXero(params);
+  
+  // Cache with appropriate TTL
+  await cacheManager.set(cacheKey, data, 'financial', 1800); // 30 minutes
+  
+  return data;
+}
+```
+
+### **Performance Optimization**
+
+Optimize responses and API calls:
+
+```javascript
+// Optimize large responses
+const optimizedResponse = await performanceOptimizer.optimizeResponse(
+  response,
+  request
+);
+
+// Batch multiple API calls
+const batchedResults = await performanceOptimizer.batchApiRequests(
+  apiRequests,
+  { batchSize: 10 }
+);
+
+// Lazy load heavy resources
+const resource = await performanceOptimizer.lazyLoad(
+  'heavy-resource',
+  () => loadHeavyResource()
+);
+```
+
+### **Cache Strategies**
+
+Choose the right strategy for your data:
+
+- **financial**: Financial/accounting data (30min TTL)
+- **ecommerce**: Product/order data (15min TTL)
+- **manufacturing**: Production data (10min TTL)
+- **ai_analysis**: AI computation results (1hr TTL)
+- **api_response**: General API responses (5min TTL)
+
+### **Monitoring Integration**
+
+Add performance monitoring to your code:
+
+```javascript
+import { cacheAnalytics } from '../utils/cache-analytics.js';
+
+// Record custom events
+cacheAnalytics.recordCacheEvent('custom_operation', {
+  key: operationKey,
+  strategy: 'financial',
+  metadata: { operation: 'complex_calculation' }
+});
 ```
 
 ### **Coding Best Practices**

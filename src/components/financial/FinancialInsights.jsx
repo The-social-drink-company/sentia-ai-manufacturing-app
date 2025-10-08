@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { 
-  TrendingUpIcon, 
-  TrendingDownIcon, 
+  ArrowTrendingUpIcon, 
+  ArrowTrendingDownIcon, 
   ExclamationTriangleIcon,
   InformationCircleIcon,
   LightBulbIcon,
@@ -11,8 +11,8 @@ import { cn } from '@/utils/cn'
 
 const InsightIcon = ({ type, className }) => {
   const icons = {
-    positive: TrendingUpIcon,
-    negative: TrendingDownIcon,
+    positive: ArrowTrendingUpIcon,
+    negative: ArrowTrendingDownIcon,
     warning: ExclamationTriangleIcon,
     info: InformationCircleIcon,
     recommendation: LightBulbIcon,

@@ -104,6 +104,7 @@ export class SentiaMCPServer {
     );
     
     this.tools = new Map();
+    this.prompts = new Map();
     this.connections = new Map();
     this.metrics = {
       requests: 0,

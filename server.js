@@ -49,68 +49,92 @@ const __dirname = path.dirname(__filename);
 let prisma = null;
 let PrismaClient = null;
 
-// Multiple possible runtime locations for Prisma
-const prismaRuntimePaths = [
-  path.join(__dirname, '.prisma', 'client'),
-  path.join(__dirname, 'node_modules', '.prisma', 'client'),
-  path.join(__dirname, 'node_modules', '.pnpm', '@prisma+client@6.16.2_prisma@6.16.2', 'node_modules', '.prisma', 'client')
-];
-
-logger.info('Checking Prisma runtime locations...');
-prismaRuntimePaths.forEach((runtimePath, index) => {
-  const exists = fs.existsSync(runtimePath);
-  logger.info(`Path ${index + 1}: ${runtimePath} - ${exists ? 'EXISTS' : 'NOT FOUND'}`);
-});
-
-const prismaRuntimeAvailable = prismaRuntimePaths.some((runtimePath) => fs.existsSync(runtimePath));
-
-if (prismaRuntimeAvailable) {
+// Enhanced Prisma initialization with better error handling
+async function initializePrisma() {
   try {
     logger.info('Attempting to import Prisma client...');
+    
+    // Try to import Prisma client directly - this should work in production
     const pkg = await import('@prisma/client');
     PrismaClient = pkg?.PrismaClient ?? null;
 
     if (PrismaClient) {
       logger.info('Creating Prisma client instance...');
+      
+      // Create Prisma client with robust configuration
       prisma = new PrismaClient({
-        log: process.env.NODE_ENV === 'development' ? ['query', 'info', 'warn', 'error'] : ['warn', 'error'],
+        log: process.env.NODE_ENV === 'development' ? ['info', 'warn', 'error'] : ['warn', 'error'],
         datasources: {
           db: {
-            url:
-              process.env.DATABASE_URL ||
-              process.env[`${process.env.NODE_ENV?.toUpperCase()}_DATABASE_URL`] ||
-              process.env.DEV_DATABASE_URL
+            url: process.env.DATABASE_URL || 
+                 process.env[`${process.env.NODE_ENV?.toUpperCase()}_DATABASE_URL`] || 
+                 process.env.DEV_DATABASE_URL
           }
-        }
+        },
+        // Add error handling configuration
+        errorFormat: 'pretty',
+        // Disable query logging in production for performance
+        ...(process.env.NODE_ENV === 'production' && { log: ['error'] })
       });
-      logger.info('Prisma client initialized successfully');
-      logger.info(`Using database URL: ${process.env.DATABASE_URL ? 'FROM_ENV' : 'FALLBACK'}`);
+
+      // Test the connection immediately
+      await prisma.$connect();
+      logger.info('Prisma client initialized and connected successfully');
+      logger.info(`Database URL configured: ${process.env.DATABASE_URL ? 'YES' : 'FALLBACK'}`);
+      
+      return true;
     } else {
       logger.warn('Prisma client module did not export PrismaClient constructor');
+      return false;
     }
   } catch (error) {
-    logger.error('Prisma client failed to initialize:', error.message);
-    logger.error('Stack trace:', error.stack);
-    prisma = null;
+    logger.error('Prisma client initialization failed:', {
+      message: error.message,
+      code: error.code,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
+    
+    // Clean up on failed initialization
+    if (prisma) {
+      try {
+        await prisma.$disconnect();
+      } catch (disconnectError) {
+        logger.warn('Failed to disconnect Prisma during cleanup:', disconnectError.message);
+      }
+      prisma = null;
+    }
+    return false;
   }
-} else {
-  logger.warn('Prisma runtime (.prisma/client) not found in any expected location');
-  logger.warn('This will prevent database operations from working');
 }
+
+// Initialize Prisma asynchronously
+let prismaInitialized = false;
+(async () => {
+  prismaInitialized = await initializePrisma();
+})();
 // Test database connection
 async function testDatabaseConnection() {
-  if (!prisma) {
-    logger.warn('Database connection test skipped - Prisma client not available');
+  if (!prisma || !prismaInitialized) {
+    logger.warn('Database connection test skipped - Prisma client not initialized');
     return false;
   }
 
   try {
-    await prisma.$connect();
+    // Test basic connectivity
+    await prisma.$queryRaw`SELECT 1 as test`;
+    
+    // Get database version for health check
     const dbVersion = await prisma.$queryRaw`SELECT version()`;
-    logger.info('Database connected successfully', { dbVersion });
+    logger.info('Database connection verified', { 
+      status: 'connected',
+      version: dbVersion?.[0]?.version?.substring(0, 50) || 'unknown'
+    });
     return true;
   } catch (error) {
-    logger.error('Database connection failed', error);
+    logger.error('Database connection test failed:', {
+      message: error.message,
+      code: error.code
+    });
     return false;
   }
 }
@@ -148,10 +172,43 @@ app.use(helmet({
   crossOriginEmbedderPolicy: false
 }));
 
-// CORS configuration
+// CORS configuration - Standardized with MCP server
+const allowedOrigins = [
+  'https://sentia-manufacturing-dashboard-621h.onrender.com', // Development
+  'https://sentia-manufacturing-dashboard-test.onrender.com', // Testing
+  'https://sentia-manufacturing-dashboard-production.onrender.com', // Production
+  'http://localhost:3000', // Local development
+  'http://localhost:5173', // Vite dev server
+  'http://localhost:3001'  // Local MCP server
+];
+
 app.use(cors({
-  origin: true,
-  credentials: true
+  origin: (origin, callback) => {
+    // Allow requests with no origin (mobile apps, desktop apps, etc.)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    
+    // In development, allow all localhost origins
+    if (process.env.NODE_ENV === 'development' && origin.includes('localhost')) {
+      return callback(null, true);
+    }
+    
+    const msg = `The CORS policy for this site does not allow access from the specified Origin: ${origin}`;
+    return callback(new Error(msg), false);
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: [
+    'Content-Type', 
+    'Authorization', 
+    'X-Correlation-ID',
+    'x-dashboard-version',
+    'x-api-version',
+    'x-client-id'
+  ]
 }));
 
 // Compression and parsing
@@ -162,14 +219,11 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 // Enterprise logging middleware
 app.use(loggingMiddleware);
 
-// Initialize connections
-let dbConnected = false;
-(async () => {
-  dbConnected = await testDatabaseConnection();
-})();
-
 // Health check endpoint with REAL status
 app.get('/health', async (req, res) => {
+  // Test current database status
+  const currentDbStatus = await testDatabaseConnection();
+  
   const health = {
     status: 'healthy',
     service: 'sentia-manufacturing-dashboard',
@@ -178,7 +232,8 @@ app.get('/health', async (req, res) => {
     branch: BRANCH,
     timestamp: new Date().toISOString(),
     database: {
-      connected: dbConnected,
+      connected: currentDbStatus,
+      initialized: prismaInitialized,
       url: process.env.DATABASE_URL ? 'Configured' : 'Not configured'
     },
     environment: getEnvironmentStatus(),
@@ -189,14 +244,16 @@ app.get('/health', async (req, res) => {
     }
   };
 
-  // Test database connectivity
-  if (dbConnected && prisma) {
+  // Detailed database status
+  if (currentDbStatus && prisma) {
     try {
-      await prisma.$queryRaw`SELECT 1`;
+      await prisma.$queryRaw`SELECT 1 as health_check`;
       health.database.status = 'operational';
+      health.database.lastCheck = new Date().toISOString();
     } catch (error) {
       health.database.status = 'error';
       health.database.error = error.message;
+      health.database.lastCheck = new Date().toISOString();
     }
   } else if (!prisma) {
     health.database.status = 'unavailable';

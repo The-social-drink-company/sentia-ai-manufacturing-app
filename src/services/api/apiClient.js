@@ -5,12 +5,32 @@
 
 class APIClient {
   constructor() {
-    this.baseURL = import.meta.env.VITE_API_BASE_URL || '/api'
+    this.baseURL = this.getBaseURL()
     this.mcpServerURL = this.getMCPServerURL()
     this.defaultHeaders = {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
     }
+  }
+
+  /**
+   * Get base URL ensuring proper formatting
+   */
+  getBaseURL() {
+    const envURL = import.meta.env.VITE_API_BASE_URL
+    
+    // If no environment URL, use relative /api
+    if (!envURL) {
+      return '/api'
+    }
+    
+    // If it's already a relative path, use it
+    if (envURL.startsWith('/')) {
+      return envURL
+    }
+    
+    // If it's a full URL, ensure it ends properly
+    return envURL.endsWith('/') ? envURL.slice(0, -1) : envURL
   }
 
   /**
@@ -119,7 +139,22 @@ class APIClient {
    * Request to main server
    */
   async requestMain(endpoint, options = {}) {
-    const url = `${this.baseURL}${endpoint}`
+    // Construct URL properly
+    let url
+    if (endpoint.startsWith('http://') || endpoint.startsWith('https://')) {
+      // Endpoint is already a full URL
+      url = endpoint
+    } else if (this.baseURL.startsWith('http://') || this.baseURL.startsWith('https://')) {
+      // Base URL is full URL, concatenate carefully
+      const base = this.baseURL.endsWith('/') ? this.baseURL.slice(0, -1) : this.baseURL
+      const path = endpoint.startsWith('/') ? endpoint : `/${endpoint}`
+      url = `${base}${path}`
+    } else {
+      // Both are relative paths
+      const base = this.baseURL.endsWith('/') ? this.baseURL.slice(0, -1) : this.baseURL
+      const path = endpoint.startsWith('/') ? endpoint : `/${endpoint}`
+      url = `${base}${path}`
+    }
     
     const config = {
       headers: { ...this.defaultHeaders, ...options.headers },
@@ -127,10 +162,11 @@ class APIClient {
     }
 
     try {
+      console.log(`[APIClient] Making request to: ${url}`)
       const response = await fetch(url, config)
       
       if (!response.ok) {
-        throw new Error(`API Error: ${response.status} ${response.statusText}`)
+        throw new Error(`API Error: ${response.status}`)
       }
 
       const contentType = response.headers.get('content-type')
@@ -140,15 +176,15 @@ class APIClient {
       
       return await response.text()
     } catch (error) {
-      console.error(`[APIClient] Main server request failed for ${endpoint}:`, error)
+      console.error(`[APIClient] Main server request failed for ${url}:`, error)
       throw error
     }
   }
 
   // Convenience methods
-  async get(endpoint, params = {}) {
-    // Handle endpoint that may already include /api prefix
-    const cleanEndpoint = endpoint.startsWith('/api') ? endpoint : `${this.baseURL}${endpoint}`
+  async get(endpoint, options = {}) {
+    // Extract params from options if provided
+    const { params = {}, ...restOptions } = options
     
     // Handle query parameters properly
     let queryString = ''
@@ -161,7 +197,7 @@ class APIClient {
           // Handle different types of values
           if (typeof value === 'object') {
             // Serialize objects and arrays properly
-            searchParams.append(key, JSON.stringify(value))
+            searchParams.append('params', JSON.stringify({[key]: value}))
           } else {
             searchParams.append(key, String(value))
           }
@@ -173,8 +209,8 @@ class APIClient {
       }
     }
     
-    const fullEndpoint = cleanEndpoint + queryString
-    return this.request(fullEndpoint, { method: 'GET' })
+    const fullEndpoint = endpoint + queryString
+    return this.request(fullEndpoint, { method: 'GET', ...restOptions })
   }
 
   async post(endpoint, data = {}) {

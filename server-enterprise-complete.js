@@ -276,25 +276,38 @@ app.get('/api/dashboard/summary', (req, res) => {
 });
 
 // Working Capital endpoint
-app.get('/api/financial/working-capital', (req, res) => {
-  res.json({
-    data: [{
-      date: new Date().toISOString(),
-      currentAssets: 5420000,
-      currentLiabilities: 2340000,
-      workingCapital: 3080000,
-      ratio: 2.32,
-      cashFlow: 850000,
-      daysReceivable: 45
-    }],
-    latest: {
-      currentAssets: 5420000,
-      currentLiabilities: 2340000,
-      workingCapital: 3080000,
-      ratio: 2.32
-    },
-    dataSource: 'bulletproof-api'
-  });
+app.get('/api/financial/working-capital', async (req, res) => {
+  logger.info('Working capital data requested');
+  
+  try {
+    if (!prisma) {
+      return res.status(503).json({
+        success: false,
+        error: 'Database connection unavailable',
+        message: 'Unable to retrieve working capital data - database not connected',
+        timestamp: new Date().toISOString(),
+        userAction: 'Contact system administrator to check database configuration'
+      });
+    }
+
+    return res.status(503).json({
+      success: false,
+      error: 'Financial system integration required',
+      message: 'Working capital analysis requires connection to accounting and cash management systems',
+      timestamp: new Date().toISOString(),
+      userAction: 'Configure Xero, banking APIs, and cash management system integrations',
+      requiredIntegrations: ['Xero API', 'Banking APIs', 'Cash management systems']
+    });
+
+  } catch (error) {
+    logger.error('Failed to fetch working capital data:', error);
+    return res.status(500).json({
+      success: false,
+      error: 'Internal server error',
+      message: 'Unable to process working capital request',
+      timestamp: new Date().toISOString()
+    });
+  }
 });
 
 // Cash Flow endpoint
@@ -400,34 +413,26 @@ app.get('/api/dashboard/summary', async (req, res) => {
 app.get('/api/working-capital', async (req, res) => {
   logger.info('Working capital data requested');
   
-  const startTime = Date.now();
-  
   try {
-    // Direct database query or fallback data for working capital
-    const responseTime = Date.now() - startTime;
-    
-    // Success response with sample data
-    const response = {
-      success: true,
-      data: {
-        workingCapital: 1470000,
-        currentRatio: 2.1,
-        quickRatio: 1.8,
-        cash: 580000,
-        receivables: 1850000,
-        payables: 980000,
-        lastCalculated: new Date().toISOString()
-      },
-      metadata: {
-        dataSource: 'database',
-        lastUpdated: new Date().toISOString(),
-        responseTime: `${responseTime}ms`
-      }
-    };
-    
-    logger.info('Working capital data served successfully');
-    res.status(200).json(response);
-    
+    if (!prisma) {
+      return res.status(503).json({
+        success: false,
+        error: 'Database connection unavailable',
+        message: 'Unable to retrieve working capital data - database not connected',
+        timestamp: new Date().toISOString(),
+        userAction: 'Contact system administrator to check database configuration'
+      });
+    }
+
+    return res.status(503).json({
+      success: false,
+      error: 'Financial system integration required',
+      message: 'Working capital analysis requires connection to accounting and cash management systems',
+      timestamp: new Date().toISOString(),
+      userAction: 'Configure Xero, banking APIs, and cash management system integrations',
+      requiredIntegrations: ['Xero API', 'Banking APIs', 'Cash management systems']
+    });
+
   } catch (error) {
     logger.error('Working capital API error:', error.message);
     return res.status(500).json({
@@ -442,33 +447,32 @@ app.get('/api/working-capital', async (req, res) => {
 // Working Capital API endpoints
 app.get('/api/working-capital/overview', async (req, res) => {
   try {
-    // Real database query would go here
-    const data = {
-      cashFlow: {
-        current: 2450000,
-        projected: 2850000,
-        change: 16.3
-      },
-      receivables: {
-        current: 1850000,
-        dso: 42,
-        overdue: 320000
-      },
-      payables: {
-        current: 980000,
-        dpo: 38,
-        upcoming: 450000
-      },
-      inventory: {
-        value: 3200000,
-        turnover: 8.2,
-        daysOnHand: 44
-      }
-    };
-    res.json(data);
+    if (!prisma) {
+      return res.status(503).json({
+        success: false,
+        error: 'Database connection unavailable',
+        message: 'Unable to retrieve working capital overview - database not connected',
+        timestamp: new Date().toISOString(),
+        userAction: 'Contact system administrator to check database configuration'
+      });
+    }
+
+    return res.status(503).json({
+      success: false,
+      error: 'Financial system integration required',
+      message: 'Working capital overview requires connection to multiple financial data sources',
+      timestamp: new Date().toISOString(),
+      userAction: 'Configure comprehensive financial system integrations',
+      requiredIntegrations: ['Xero API', 'Banking APIs', 'Inventory management systems', 'Cash management platforms']
+    });
+
   } catch (error) {
     logger.error('Working capital API error', error);
-    res.status(500).json({ error: 'Failed to fetch working capital data' });
+    res.status(500).json({ 
+      success: false,
+      error: 'Failed to fetch working capital data',
+      timestamp: new Date().toISOString()
+    });
   }
 });
 
@@ -742,102 +746,161 @@ if (fs.existsSync(distPath)) {
   });
 
   // Financial KPI Summary endpoint
-  app.get('/api/financial/kpi-summary', (req, res) => {
+  app.get('/api/financial/kpi-summary', async (req, res) => {
     logger.info('📊 KPI summary data requested');
-    res.json({
-      success: true,
-      data: {
-        annualRevenue: {
-          value: '$32.4M',
-          helper: '+12.3% vs last year'
-        },
-        unitsSold: {
-          value: '145,650',
-          helper: '+8.7% vs last year'
-        },
-        grossMargin: {
-          value: '42.3%',
-          helper: '+2.1pp vs last year'
-        }
-      },
-      meta: {
-        timestamp: new Date().toISOString(),
-        dataSource: 'enterprise-server-fallback'
+    
+    try {
+      // Attempt to get real data from external APIs
+      if (!prisma) {
+        return res.status(503).json({
+          success: false,
+          error: 'Database connection unavailable',
+          message: 'Unable to retrieve KPI data - database not connected',
+          timestamp: new Date().toISOString(),
+          userAction: 'Contact system administrator to check database configuration'
+        });
       }
-    });
+
+      // Try to get data from database or external APIs
+      // This should integrate with real data sources like Xero, Shopify, etc.
+      return res.status(503).json({
+        success: false,
+        error: 'External API integration required',
+        message: 'KPI summary requires connection to external financial systems (Xero, Shopify, etc.)',
+        timestamp: new Date().toISOString(),
+        userAction: 'Configure external API integrations to view KPI data',
+        requiredIntegrations: ['Xero API', 'Shopify API', 'Unleashed API']
+      });
+
+    } catch (error) {
+      logger.error('Failed to fetch KPI summary:', error);
+      return res.status(500).json({
+        success: false,
+        error: 'Internal server error',
+        message: 'Unable to process KPI summary request',
+        timestamp: new Date().toISOString()
+      });
+    }
   });
 
   // Product Sales Performance endpoint
-  app.get('/api/sales/product-performance', (req, res) => {
+  app.get('/api/sales/product-performance', async (req, res) => {
     logger.info('📈 Product sales data requested');
     const period = req.query.period || 'year';
     
-    // Generate sample data based on period
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    const data = months.slice(0, period === 'quarter' ? 3 : 12).map((month, index) => ({
-      month,
-      revenue: 2500000 + (Math.random() * 500000),
-      units: 12000 + (Math.random() * 3000),
-      growth: (Math.random() * 20) - 5 // -5% to +15%
-    }));
-
-    res.json({
-      success: true,
-      data,
-      meta: {
-        timestamp: new Date().toISOString(),
-        period,
-        dataSource: 'enterprise-server-fallback'
+    try {
+      // Attempt to get real sales data from Shopify/Amazon APIs
+      if (!prisma) {
+        return res.status(503).json({
+          success: false,
+          error: 'Database connection unavailable',
+          message: 'Unable to retrieve sales data - database not connected',
+          timestamp: new Date().toISOString(),
+          userAction: 'Contact system administrator to check database configuration'
+        });
       }
-    });
+
+      // Check for external API integrations
+      return res.status(503).json({
+        success: false,
+        error: 'Sales data integration required',
+        message: 'Product sales performance requires connection to e-commerce platforms',
+        timestamp: new Date().toISOString(),
+        userAction: 'Configure Shopify, Amazon, or other sales platform integrations',
+        requiredIntegrations: ['Shopify API', 'Amazon SP-API'],
+        requestedPeriod: period
+      });
+
+    } catch (error) {
+      logger.error('Failed to fetch sales performance data:', error);
+      return res.status(500).json({
+        success: false,
+        error: 'Internal server error',
+        message: 'Unable to process sales performance request',
+        timestamp: new Date().toISOString()
+      });
+    }
   });
 
   // P&L Analysis endpoint
-  app.get('/api/financial/pl-analysis', (req, res) => {
+  app.get('/api/financial/pl-analysis', async (req, res) => {
     logger.info('💼 P&L analysis data requested');
     const period = req.query.period || 'year';
     
-    // Generate sample P&L data
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    const data = months.slice(0, period === 'quarter' ? 3 : 12).map((month, index) => ({
-      month,
-      revenue: 2700000 + (Math.random() * 300000),
-      cogs: 1500000 + (Math.random() * 200000),
-      grossProfit: 1200000 + (Math.random() * 150000),
-      operatingExpenses: 800000 + (Math.random() * 100000),
-      netIncome: 400000 + (Math.random() * 80000)
-    }));
-
-    res.json({
-      success: true,
-      data,
-      meta: {
-        timestamp: new Date().toISOString(),
-        period,
-        dataSource: 'enterprise-server-fallback'
+    try {
+      // Attempt to get real P&L data from financial systems
+      if (!prisma) {
+        return res.status(503).json({
+          success: false,
+          error: 'Database connection unavailable',
+          message: 'Unable to retrieve P&L data - database not connected',
+          timestamp: new Date().toISOString(),
+          userAction: 'Contact system administrator to check database configuration'
+        });
       }
-    });
+
+      // Check for financial system integrations
+      return res.status(503).json({
+        success: false,
+        error: 'Financial system integration required',
+        message: 'P&L analysis requires connection to accounting and financial systems',
+        timestamp: new Date().toISOString(),
+        userAction: 'Configure Xero, QuickBooks, or other accounting system integrations',
+        requiredIntegrations: ['Xero API', 'QuickBooks API', 'SAP integration'],
+        requestedPeriod: period
+      });
+
+    } catch (error) {
+      logger.error('Failed to fetch P&L analysis data:', error);
+      return res.status(500).json({
+        success: false,
+        error: 'Internal server error',
+        message: 'Unable to process P&L analysis request',
+        timestamp: new Date().toISOString()
+      });
+    }
   });
 
   // Regional Performance endpoint
-  app.get('/api/regional/performance', (req, res) => {
+  app.get('/api/regional/performance', async (req, res) => {
     logger.info('🌍 Regional performance data requested');
-    const regions = [
-      { name: 'North America', revenue: 12500000, growth: 15.2, market_share: 35 },
-      { name: 'Europe', revenue: 9800000, growth: 8.7, market_share: 28 },
-      { name: 'Asia Pacific', revenue: 7200000, growth: 22.1, market_share: 22 },
-      { name: 'Latin America', revenue: 3400000, growth: 5.8, market_share: 10 },
-      { name: 'Middle East & Africa', revenue: 1800000, growth: 12.4, market_share: 5 }
-    ];
-
-    res.json({
-      success: true,
-      data: regions,
-      meta: {
-        timestamp: new Date().toISOString(),
-        dataSource: 'enterprise-server-fallback'
+    
+    try {
+      // Attempt to get real regional data from multiple sources
+      if (!prisma) {
+        return res.status(503).json({
+          success: false,
+          error: 'Database connection unavailable',
+          message: 'Unable to retrieve regional data - database not connected',
+          timestamp: new Date().toISOString(),
+          userAction: 'Contact system administrator to check database configuration'
+        });
       }
-    });
+
+      // Check for regional data integrations
+      return res.status(503).json({
+        success: false,
+        error: 'Regional data integration required',
+        message: 'Regional performance requires connection to multiple regional data sources',
+        timestamp: new Date().toISOString(),
+        userAction: 'Configure regional sales, inventory, and financial system integrations',
+        requiredIntegrations: [
+          'Regional Shopify stores',
+          'Regional Amazon marketplaces', 
+          'Regional Xero entities',
+          'Regional inventory systems'
+        ]
+      });
+
+    } catch (error) {
+      logger.error('Failed to fetch regional performance data:', error);
+      return res.status(500).json({
+        success: false,
+        error: 'Internal server error',
+        message: 'Unable to process regional performance request',
+        timestamp: new Date().toISOString()
+      });
+    }
   });
 
   // SPA fallback - must be last AND must exclude API routes

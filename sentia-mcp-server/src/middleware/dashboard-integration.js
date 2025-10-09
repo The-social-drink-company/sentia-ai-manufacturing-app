@@ -184,16 +184,27 @@ export function requirePermission(permission) {
 export function validateDashboardRequest(req, res, next) {
   const { headers, body } = req;
   
-  // Validate required headers
-  const requiredHeaders = ['x-dashboard-version', 'x-correlation-id'];
-  const missingHeaders = requiredHeaders.filter(header => !headers[header]);
-  
-  if (missingHeaders.length > 0) {
-    return res.status(400).json({
-      error: 'Missing required headers',
-      missingHeaders,
-      correlationId: req.correlationId
-    });
+  // CRITICAL: Development mode should be more flexible with headers
+  if (isDevelopmentEnvironment()) {
+    // Provide default values for missing headers in development
+    if (!headers['x-dashboard-version']) {
+      headers['x-dashboard-version'] = '2.0.0';
+    }
+    if (!headers['x-correlation-id']) {
+      headers['x-correlation-id'] = req.correlationId || `dev-${Date.now()}`;
+    }
+  } else {
+    // Validate required headers in production
+    const requiredHeaders = ['x-dashboard-version', 'x-correlation-id'];
+    const missingHeaders = requiredHeaders.filter(header => !headers[header]);
+    
+    if (missingHeaders.length > 0) {
+      return res.status(400).json({
+        error: 'Missing required headers',
+        missingHeaders,
+        correlationId: req.correlationId
+      });
+    }
   }
   
   // Validate dashboard version compatibility

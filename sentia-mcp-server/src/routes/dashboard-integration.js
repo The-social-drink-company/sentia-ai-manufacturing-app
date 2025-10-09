@@ -28,6 +28,38 @@ router.use(enhanceDashboardResponse);
 router.get('/health', dashboardHealthCheck);
 
 /**
+ * Database health check endpoint for dashboard monitoring
+ */
+router.get('/database/health',
+  authenticateDashboard,
+  requirePermission('system.health'),
+  async (req, res, next) => {
+    try {
+      const { server } = req.app.locals;
+      
+      logger.info('Dashboard database health check request', {
+        correlationId: req.correlationId,
+        userId: req.dashboardUser?.id
+      });
+
+      const dbHealth = await server.checkDatabaseHealth();
+      
+      res.json({
+        success: true,
+        database: dbHealth,
+        metadata: {
+          executionTime: Date.now() - req.startTime,
+          correlationId: req.correlationId
+        }
+      });
+
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+/**
  * Dashboard authentication test endpoint
  */
 router.get('/auth/test', authenticateDashboard, (req, res) => {
@@ -42,6 +74,285 @@ router.get('/auth/test', authenticateDashboard, (req, res) => {
     message: 'Dashboard authentication successful'
   });
 });
+
+/**
+ * FINANCIAL API ENDPOINTS
+ * These are the specific endpoints the dashboard requests
+ */
+
+/**
+ * Financial KPI Summary endpoint
+ */
+router.get('/financial/kpi-summary', 
+  authenticateDashboard,
+  requirePermission('financial.read'),
+  async (req, res, next) => {
+    try {
+      const { server } = req.app.locals;
+      
+      logger.info('Dashboard KPI summary request', {
+        correlationId: req.correlationId,
+        userId: req.dashboardUser?.id
+      });
+
+      // Try to get financial KPIs through MCP tools
+      let kpiData = {
+        totalRevenue: 0,
+        totalExpenses: 0,
+        netProfit: 0,
+        grossMargin: 0,
+        operatingMargin: 0,
+        workingCapital: 0,
+        currentRatio: 0,
+        quickRatio: 0,
+        lastUpdated: new Date().toISOString(),
+        dataSource: 'mcp-server',
+        connectionStatus: 'attempting'
+      };
+
+      // Execute Xero integration tools for real financial data
+      if (server.tools.has('xero-profit-loss')) {
+        try {
+          const plTool = server.tools.get('xero-profit-loss');
+          const plResult = await plTool.execute({
+            fromDate: '2024-01-01',
+            toDate: new Date().toISOString().split('T')[0],
+            correlationId: req.correlationId
+          });
+
+          if (plResult && plResult.success) {
+            kpiData.totalRevenue = plResult.totalRevenue || 0;
+            kpiData.totalExpenses = plResult.totalExpenses || 0;
+            kpiData.netProfit = plResult.netProfit || 0;
+            kpiData.grossMargin = plResult.grossMargin || 0;
+            kpiData.connectionStatus = 'connected';
+          }
+        } catch (error) {
+          logger.warn('Xero P&L tool execution failed', { error: error.message });
+        }
+      }
+
+      // Execute working capital calculation if available
+      if (server.tools.has('xero-balance-sheet')) {
+        try {
+          const bsTool = server.tools.get('xero-balance-sheet');
+          const bsResult = await bsTool.execute({
+            date: new Date().toISOString().split('T')[0],
+            correlationId: req.correlationId
+          });
+
+          if (bsResult && bsResult.success) {
+            kpiData.workingCapital = bsResult.workingCapital || 0;
+            kpiData.currentRatio = bsResult.currentRatio || 0;
+            kpiData.quickRatio = bsResult.quickRatio || 0;
+          }
+        } catch (error) {
+          logger.warn('Xero Balance Sheet tool execution failed', { error: error.message });
+        }
+      }
+
+      res.json({
+        success: true,
+        data: kpiData,
+        metadata: {
+          executionTime: Date.now() - req.startTime,
+          toolsUsed: ['xero-profit-loss', 'xero-balance-sheet'],
+          correlationId: req.correlationId
+        }
+      });
+
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+/**
+ * Financial P&L Analysis endpoint
+ */
+router.get('/financial/pl-analysis',
+  authenticateDashboard,
+  requirePermission('financial.read'),
+  async (req, res, next) => {
+    try {
+      const { server } = req.app.locals;
+      const { periods = 3, timeframe = 'MONTH' } = req.query;
+      
+      logger.info('Dashboard P&L analysis request', {
+        correlationId: req.correlationId,
+        periods,
+        timeframe,
+        userId: req.dashboardUser?.id
+      });
+
+      let plData = {
+        periods: [],
+        summary: {
+          totalRevenue: 0,
+          totalExpenses: 0,
+          netProfit: 0,
+          profitMargin: 0
+        },
+        trends: {
+          revenueGrowth: 0,
+          expenseGrowth: 0,
+          profitGrowth: 0
+        },
+        lastUpdated: new Date().toISOString(),
+        dataSource: 'mcp-server'
+      };
+
+      // Execute Xero P&L analysis tool
+      if (server.tools.has('xero-profit-loss')) {
+        try {
+          const plTool = server.tools.get('xero-profit-loss');
+          const plResult = await plTool.execute({
+            periods: parseInt(periods),
+            timeframe,
+            fromDate: '2024-01-01',
+            toDate: new Date().toISOString().split('T')[0],
+            correlationId: req.correlationId
+          });
+
+          if (plResult && plResult.success) {
+            plData = {
+              ...plData,
+              ...plResult.data,
+              connectionStatus: 'connected'
+            };
+          } else {
+            plData.connectionStatus = 'failed';
+            plData.error = plResult?.error || 'P&L tool execution failed';
+          }
+        } catch (error) {
+          logger.error('P&L analysis tool failed', { error: error.message });
+          plData.connectionStatus = 'error';
+          plData.error = error.message;
+        }
+      } else {
+        plData.connectionStatus = 'tool-not-found';
+        plData.error = 'Xero P&L analysis tool not available';
+      }
+
+      res.json({
+        success: true,
+        data: plData,
+        metadata: {
+          executionTime: Date.now() - req.startTime,
+          parameters: { periods, timeframe },
+          correlationId: req.correlationId
+        }
+      });
+
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+/**
+ * SALES API ENDPOINTS
+ */
+
+/**
+ * Sales Product Performance endpoint
+ */
+router.get('/sales/product-performance',
+  authenticateDashboard,
+  requirePermission('sales.read'),
+  async (req, res, next) => {
+    try {
+      const { server } = req.app.locals;
+      const { period = 'year', limit = 10 } = req.query;
+      
+      logger.info('Dashboard product performance request', {
+        correlationId: req.correlationId,
+        period,
+        limit,
+        userId: req.dashboardUser?.id
+      });
+
+      let productData = {
+        products: [],
+        summary: {
+          totalProducts: 0,
+          totalRevenue: 0,
+          averagePrice: 0,
+          topCategory: null
+        },
+        period: period,
+        lastUpdated: new Date().toISOString(),
+        dataSource: 'mcp-server'
+      };
+
+      // Execute Shopify product performance tool
+      if (server.tools.has('shopify-product-analytics')) {
+        try {
+          const shopifyTool = server.tools.get('shopify-product-analytics');
+          const productResult = await shopifyTool.execute({
+            period,
+            limit: parseInt(limit),
+            includeVariants: true,
+            correlationId: req.correlationId
+          });
+
+          if (productResult && productResult.success) {
+            productData = {
+              ...productData,
+              ...productResult.data,
+              connectionStatus: 'connected'
+            };
+          } else {
+            productData.connectionStatus = 'failed';
+            productData.error = productResult?.error || 'Shopify tool execution failed';
+          }
+        } catch (error) {
+          logger.error('Shopify product analytics tool failed', { error: error.message });
+          productData.connectionStatus = 'error';
+          productData.error = error.message;
+        }
+      } else if (server.tools.has('shopify-get-products')) {
+        // Fallback to basic product listing tool
+        try {
+          const shopifyTool = server.tools.get('shopify-get-products');
+          const productResult = await shopifyTool.execute({
+            limit: parseInt(limit),
+            correlationId: req.correlationId
+          });
+
+          if (productResult && productResult.success) {
+            productData.products = productResult.products || [];
+            productData.summary.totalProducts = productResult.products?.length || 0;
+            productData.connectionStatus = 'connected';
+          } else {
+            productData.connectionStatus = 'failed';
+            productData.error = productResult?.error || 'Shopify basic tool execution failed';
+          }
+        } catch (error) {
+          logger.error('Shopify basic tool failed', { error: error.message });
+          productData.connectionStatus = 'error';
+          productData.error = error.message;
+        }
+      } else {
+        productData.connectionStatus = 'tool-not-found';
+        productData.error = 'Shopify product tools not available';
+      }
+
+      res.json({
+        success: true,
+        data: productData,
+        metadata: {
+          executionTime: Date.now() - req.startTime,
+          parameters: { period, limit },
+          correlationId: req.correlationId
+        }
+      });
+
+    } catch (error) {
+      next(error);
+    }
+  }
+);
 
 /**
  * Tool execution endpoint for dashboard

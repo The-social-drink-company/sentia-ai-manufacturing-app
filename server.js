@@ -293,20 +293,24 @@ app.get('/api/regional/performance/:region', async (req, res) => {
 
 // Financial API endpoints
 app.get('/api/financial/pl-analysis', async (req, res) => {
-  console.log('📊 P&L analysis requested');
+  console.log('📊 P&L analysis requested from main server');
   
   try {
     // Connect to MCP server for real Xero financial data
     if (!getMCPClient) {
+      console.error('❌ MCP Client not available for P&L analysis');
       return res.status(503).json({
         success: false,
         error: 'MCP Client not available',
         message: 'Financial data service is not configured. Please check MCP server connection.',
         timestamp: new Date().toISOString(),
+        endpoint: '/api/financial/pl-analysis',
+        source: 'main-server',
         userAction: 'Contact system administrator'
       });
     }
 
+    console.log('✅ MCP Client available for P&L analysis, attempting to connect...');
     const mcpClient = getMCPClient();
     
     // Get P&L data from Xero via MCP server
@@ -409,19 +413,23 @@ app.get('/api/financial/pl-summary', async (req, res) => {
 });
 
 app.get('/api/financial/kpi-summary', async (req, res) => {
-  console.log('📊 KPI summary requested');
+  console.log('📊 KPI summary requested from main server');
   
   try {
     // Connect to MCP server for real financial KPIs from Xero
     if (!getMCPClient) {
+      console.error('❌ MCP Client not available for KPI summary');
       return res.status(503).json({
         success: false,
         error: 'MCP Client not available',
         message: 'Financial data service is not configured. Please check MCP server connection.',
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        endpoint: '/api/financial/kpi-summary',
+        source: 'main-server'
       });
     }
 
+    console.log('✅ MCP Client available, attempting to connect...');
     const mcpClient = getMCPClient();
     
     // Get comprehensive financial KPIs from multiple sources via MCP
@@ -529,21 +537,25 @@ app.get('/api/financial/working-capital-summary', (req, res) => {
 
 // Sales API endpoints
 app.get('/api/sales/product-performance', async (req, res) => {
-  console.log('📈 Product performance requested');
+  console.log('📈 Product performance requested from main server');
   
   try {
     const { period = 'year' } = req.query;
     
     // Connect to MCP server for real Shopify product data
     if (!getMCPClient) {
+      console.error('❌ MCP Client not available for product performance');
       return res.status(503).json({
         success: false,
         error: 'MCP Client not available',
         message: 'Sales data service is not configured. Please check MCP server connection.',
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        endpoint: '/api/sales/product-performance',
+        source: 'main-server'
       });
     }
 
+    console.log('✅ MCP Client available for product performance, attempting to connect...');
     const mcpClient = getMCPClient();
     
     // Get product performance from Shopify via MCP server

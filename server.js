@@ -1039,7 +1039,7 @@ Health: http://localhost:${PORT}/health
 API Status: http://localhost:${PORT}/api/status
 Environment: ${NODE_ENV}
 Branch: ${BRANCH}
-Database: ${dbConnected ? 'Connected' : 'Not connected'}
+Database: ${prismaInitialized ? 'Connected' : 'Not connected'}
 ========================================
   `);
 });

@@ -850,7 +850,7 @@ app.get('/api/financial/kpi-summary', async (req, res) => {
     try {
       // Import services dynamically to avoid startup errors
       const { default: xeroService } = await import('./services/xeroService.js');
-      // const { default: shopifyMultiStore } = await import('./services/shopify-multistore.js');
+      const { default: shopifyMultiStore } = await import('./services/shopify-multistore.js');
 
       // Initialize services with error handling
       let xeroInitialized = false;
@@ -894,7 +894,7 @@ app.get('/api/financial/kpi-summary', async (req, res) => {
         },
         sources: {
           xero: xeroInitialized && xeroService.isConnected,
-          shopify: false, // temporarily disabled
+          shopify: shopifyMultiStore.isConnected,
           database: !!prisma
         }
       };
@@ -923,8 +923,8 @@ app.get('/api/financial/kpi-summary', async (req, res) => {
         }
       }
 
-      // Get sales data from Shopify if available (temporarily disabled)
-      if (false && shopifyMultiStore.isConnected) {
+      // Get sales data from Shopify if available
+      if (shopifyMultiStore.isConnected) {
         try {
           const salesData = await shopifyMultiStore.getConsolidatedSalesData();
           if (salesData && salesData.totalRevenue) {
@@ -1002,8 +1002,8 @@ app.get('/api/financial/kpi-summary', async (req, res) => {
     const period = req.query.period || 'year';
     
     try {
-      // Temporarily disable Shopify import for testing
-      // const { default: shopifyMultiStore } = await import('./services/shopify-multistore.js');
+      // Import services dynamically
+      const { default: shopifyMultiStore } = await import('./services/shopify-multistore.js');
 
       // Initialize date range based on period
       const now = new Date();
@@ -1046,8 +1046,8 @@ app.get('/api/financial/kpi-summary', async (req, res) => {
         }
       };
 
-      // Get Shopify sales data (temporarily disabled for testing)
-      if (false && shopifyMultiStore.storeConfigs && shopifyMultiStore.storeConfigs.length > 0) {
+      // Get Shopify sales data
+      if (shopifyMultiStore.storeConfigs && shopifyMultiStore.storeConfigs.length > 0) {
         try {
           await shopifyMultiStore.connect();
           
@@ -1201,7 +1201,7 @@ app.get('/api/financial/kpi-summary', async (req, res) => {
     try {
       // Import services dynamically
       const { default: xeroService } = await import('./services/xeroService.js');
-      // const { default: shopifyMultiStore } = await import('./services/shopify-multistore.js');
+      const { default: shopifyMultiStore } = await import('./services/shopify-multistore.js');
 
       // Initialize services with error handling
       let xeroInitialized = false;
@@ -1310,8 +1310,8 @@ app.get('/api/financial/kpi-summary', async (req, res) => {
         }
       }
 
-      // Supplement with Shopify revenue data if Xero not available (temporarily disabled)
-      if (false && !plData.sources.xero && shopifyMultiStore.storeConfigs && shopifyMultiStore.storeConfigs.length > 0) {
+      // Supplement with Shopify revenue data if Xero not available
+      if (!plData.sources.xero && shopifyMultiStore.storeConfigs && shopifyMultiStore.storeConfigs.length > 0) {
         try {
           await shopifyMultiStore.connect();
           

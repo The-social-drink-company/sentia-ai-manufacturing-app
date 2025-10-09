@@ -1183,6 +1183,26 @@ if (fs.existsSync(distPath)) {
     }
   });
 
+  // Debug endpoint to test Shopify import
+  app.get('/api/debug/shopify-import', async (req, res) => {
+    try {
+      const { default: shopifyMultiStore } = await import('./services/shopify-multistore.js');
+      res.json({
+        success: true,
+        message: 'Shopify import successful',
+        storeConfigsCount: shopifyMultiStore.storeConfigs?.length || 0,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: error.message,
+        stack: error.stack,
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
   // P&L Analysis endpoint
   app.get('/api/financial/pl-analysis', async (req, res) => {
     logger.info('💼 P&L analysis data requested');

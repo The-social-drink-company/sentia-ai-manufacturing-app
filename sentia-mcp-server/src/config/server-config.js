@@ -84,7 +84,15 @@ export const SERVER_CONFIG = {
     ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Correlation-ID', 'X-MCP-Token']
+    allowedHeaders: [
+      'Content-Type', 
+      'Authorization', 
+      'X-Correlation-ID', 
+      'X-MCP-Token',
+      'x-dashboard-version',
+      'x-api-version',
+      'x-client-id'
+    ]
   },
 
   // Security configuration (Enhanced with new authentication system)

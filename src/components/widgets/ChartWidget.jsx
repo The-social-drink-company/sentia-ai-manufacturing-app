@@ -30,7 +30,10 @@ const ChartWidget = ({
           <CardTitle>{title}</CardTitle>
         </CardHeader>
         <CardContent className="h-48 flex items-center justify-center">
-          <p className="text-sm text-muted-foreground">No data available</p>
+          <div className="text-center">
+            <p className="text-sm text-muted-foreground">No data available</p>
+            <p className="text-xs text-muted-foreground mt-1">Check API configuration</p>
+          </div>
         </CardContent>
       </Card>
     )

@@ -56,7 +56,7 @@ const DashboardLayout = ({ children }) => {
 
   return (
     <div className="flex min-h-screen bg-white text-gray-900">
-      <aside className="relative hidden w-72 flex-col border-r border-gray-200 bg-white px-4 py-6 lg:flex shadow-sm">
+      <aside className="relative w-72 flex-col border-r border-gray-200 bg-white px-4 py-6 flex shadow-sm">
         <div className="mb-8 flex items-center gap-3 pl-2">
           <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-sky-500 to-cyan-400 text-2xl font-bold text-white">S</div>
           <div>
@@ -115,7 +115,7 @@ const DashboardLayout = ({ children }) => {
           </div>
         </header>
 
-        <main className="flex-1 bg-gray-50 px-6 py-8">
+        <main className="flex-1 bg-gray-50 px-6 py-8 min-w-0">
           <div className="mx-auto max-w-6xl space-y-8">
             {children ?? <Outlet />}
           </div>

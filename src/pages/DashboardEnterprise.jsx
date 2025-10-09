@@ -209,8 +209,8 @@ const DashboardEnterprise = () => {
           ) : (
             (capitalKpis || []).map((item) => (
               <div key={item.label} className="rounded-lg border border-border bg-muted/30 p-4">
-                <p className="text-xs text-muted-foreground uppercase tracking-wide">{item.label}</p>
-                <p className="text-lg font-semibold text-foreground">{item.value}</p>
+                <p className="text-xs text-muted-foreground uppercase tracking-wide font-medium">{item.label}</p>
+                <p className="text-2xl font-bold text-foreground">{item.value}</p>
                 <p className="text-xs text-muted-foreground">{item.helper}</p>
               </div>
             ))
@@ -249,8 +249,8 @@ const DashboardEnterprise = () => {
           ) : (
             (performanceKpis || []).map((item) => (
               <div key={item.label} className="rounded-lg border border-border bg-muted/30 p-4">
-                <p className="text-xs text-muted-foreground uppercase tracking-wide">{item.label}</p>
-                <p className="text-lg font-semibold text-foreground">{item.value}</p>
+                <p className="text-xs text-muted-foreground uppercase tracking-wide font-medium">{item.label}</p>
+                <p className="text-2xl font-bold text-foreground">{item.value}</p>
                 <p className="text-xs text-muted-foreground">{item.helper}</p>
               </div>
             ))

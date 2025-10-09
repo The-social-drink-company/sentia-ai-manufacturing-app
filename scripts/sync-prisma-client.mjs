@@ -9,6 +9,7 @@ const projectRoot = path.resolve(__dirname, '..');
 // Multiple possible source locations for Prisma client
 const possibleSources = [
   path.join(projectRoot, 'node_modules', '.prisma'),
+  path.join(projectRoot, 'node_modules', '.pnpm', '@prisma+client@6.16.3_prisma@6.16.3', 'node_modules', '.prisma'),
   path.join(projectRoot, 'node_modules', '.pnpm', '@prisma+client@6.16.2_prisma@6.16.2', 'node_modules', '.prisma'),
   path.join(projectRoot, 'node_modules', '@prisma', 'client', '.prisma')
 ];

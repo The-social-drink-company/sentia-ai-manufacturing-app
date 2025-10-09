@@ -685,7 +685,14 @@ export class SentiaMCPServer {
       origin: SERVER_CONFIG.cors.origins,
       credentials: true,
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-      allowedHeaders: ['Content-Type', 'Authorization', 'X-Correlation-ID']
+      allowedHeaders: [
+        'Content-Type', 
+        'Authorization', 
+        'X-Correlation-ID',
+        'x-dashboard-version',
+        'x-api-version',
+        'x-client-id'
+      ]
     }));
 
     // Compression and parsing

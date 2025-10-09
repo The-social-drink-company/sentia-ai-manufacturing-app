@@ -860,7 +860,7 @@ if (fs.existsSync(distPath)) {
     try {
       // Import services dynamically to avoid startup errors
       const { default: xeroService } = await import('./services/xeroService.js');
-      const { default: shopifyMultiStore } = await import('./services/shopify-multistore.js');
+      // const { default: shopifyMultiStore } = await import('./services/shopify-multistore.js');
 
       // Initialize services with error handling
       let xeroInitialized = false;
@@ -904,7 +904,7 @@ if (fs.existsSync(distPath)) {
         },
         sources: {
           xero: xeroInitialized && xeroService.isConnected,
-          shopify: shopifyMultiStore.isConnected,
+          shopify: false, // temporarily disabled
           database: !!prisma
         }
       };
@@ -933,8 +933,8 @@ if (fs.existsSync(distPath)) {
         }
       }
 
-      // Get sales data from Shopify if available
-      if (shopifyMultiStore.isConnected) {
+      // Get sales data from Shopify if available (temporarily disabled)
+      if (false && shopifyMultiStore.isConnected) {
         try {
           const salesData = await shopifyMultiStore.getConsolidatedSalesData();
           if (salesData && salesData.totalRevenue) {
@@ -1211,7 +1211,7 @@ if (fs.existsSync(distPath)) {
     try {
       // Import services dynamically
       const { default: xeroService } = await import('./services/xeroService.js');
-      const { default: shopifyMultiStore } = await import('./services/shopify-multistore.js');
+      // const { default: shopifyMultiStore } = await import('./services/shopify-multistore.js');
 
       // Initialize services with error handling
       let xeroInitialized = false;
@@ -1320,8 +1320,8 @@ if (fs.existsSync(distPath)) {
         }
       }
 
-      // Supplement with Shopify revenue data if Xero not available
-      if (!plData.sources.xero && shopifyMultiStore.storeConfigs && shopifyMultiStore.storeConfigs.length > 0) {
+      // Supplement with Shopify revenue data if Xero not available (temporarily disabled)
+      if (false && !plData.sources.xero && shopifyMultiStore.storeConfigs && shopifyMultiStore.storeConfigs.length > 0) {
         try {
           await shopifyMultiStore.connect();
           

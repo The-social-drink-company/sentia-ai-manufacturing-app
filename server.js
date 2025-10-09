@@ -807,15 +807,6 @@ app.get('/api/regional/performance', async (req, res) => {
 });
 
 // Default API handler for undefined routes
-app.use('/api/*', (req, res) => {
-  console.log('⚠️ Unhandled API route:', req.path);
-  res.status(404).json({
-    error: 'API endpoint not found',
-    path: req.path,
-    timestamp: new Date().toISOString()
-  });
-});
-
 // Financial KPI Summary endpoint
 app.get('/api/financial/kpi-summary', (req, res) => {
   console.log('📊 KPI summary data requested');
@@ -912,6 +903,17 @@ app.get('/api/regional/performance', (req, res) => {
       timestamp: new Date().toISOString(),
       dataSource: 'main-server-fallback'
     }
+  });
+});
+
+// Catch-all API handler to prevent static file serving for API routes
+app.use('/api/*', (req, res) => {
+  console.log('⚠️ Unhandled API route:', req.path);
+  res.status(404).json({
+    error: 'API endpoint not found',
+    path: req.path,
+    method: req.method,
+    timestamp: new Date().toISOString()
   });
 });
 

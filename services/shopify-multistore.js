@@ -352,6 +352,138 @@ class ShopifyMultiStoreService {
     }
   }
 
+  async getProductPerformance(params = {}) {
+    try {
+      logInfo('SHOPIFY: Getting product performance data', params);
+      
+      if (!this.isConnected) {
+        throw new Error('Shopify multistore service not connected. Call connect() first.');
+      }
+
+      const { startDate, endDate, limit = 50 } = params;
+      const performanceData = {
+        products: [],
+        totalRevenue: 0,
+        totalOrders: 0,
+        averageOrderValue: 0,
+        dateRange: {
+          start: startDate || new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString(),
+          end: endDate || new Date().toISOString()
+        },
+        lastUpdated: new Date().toISOString(),
+        storeErrors: []
+      };
+
+      for (const [storeId, store] of this.stores.entries()) {
+        if (!store.isActive || !store.client) {
+          logWarn(`SHOPIFY: Skipping inactive store ${store.name} for performance data`);
+          performanceData.storeErrors.push({
+            storeId,
+            storeName: store.name,
+            error: 'Store not active or client not available'
+          });
+          continue;
+        }
+
+        try {
+          // Get orders with line items for the specified period
+          const ordersResponse = await store.client.get({
+            path: 'orders',
+            query: {
+              status: 'any',
+              financial_status: 'paid',
+              created_at_min: performanceData.dateRange.start,
+              created_at_max: performanceData.dateRange.end,
+              limit: 250,
+              fields: 'id,line_items,total_price,currency,created_at'
+            }
+          });
+
+          if (!ordersResponse.body || !ordersResponse.body.orders) {
+            throw new Error(`Invalid orders response from ${store.name}`);
+          }
+
+          const orders = ordersResponse.body.orders;
+          const productSales = new Map();
+
+          // Process each order to calculate product performance
+          orders.forEach(order => {
+            const orderValue = parseFloat(order.total_price || 0);
+            performanceData.totalRevenue += orderValue;
+            performanceData.totalOrders += 1;
+
+            if (order.line_items && Array.isArray(order.line_items)) {
+              order.line_items.forEach(item => {
+                const productId = item.product_id?.toString();
+                if (!productId) return;
+
+                const quantity = parseInt(item.quantity || 0);
+                const price = parseFloat(item.price || 0);
+                const revenue = quantity * price;
+
+                if (productSales.has(productId)) {
+                  const existing = productSales.get(productId);
+                  existing.unitsSold += quantity;
+                  existing.revenue += revenue;
+                } else {
+                  productSales.set(productId, {
+                    id: productId,
+                    title: item.title || item.name || 'Unknown Product',
+                    sku: item.sku || null,
+                    unitsSold: quantity,
+                    revenue: revenue,
+                    currency: order.currency || store.currency,
+                    storeId: store.id,
+                    storeName: store.name
+                  });
+                }
+              });
+            }
+          });
+
+          // Add products from this store to the overall results
+          for (const product of productSales.values()) {
+            performanceData.products.push(product);
+          }
+
+          logInfo(`SHOPIFY: Retrieved performance data for ${store.name}: ${orders.length} orders, ${productSales.size} products`);
+
+        } catch (storeError) {
+          logError(`SHOPIFY: Failed to get performance data from ${store.name}:`, storeError);
+          performanceData.storeErrors.push({
+            storeId,
+            storeName: store.name,
+            error: storeError.message,
+            details: storeError.response?.data || null
+          });
+        }
+      }
+
+      // Sort products by revenue and apply limit
+      performanceData.products.sort((a, b) => b.revenue - a.revenue);
+      if (limit) {
+        performanceData.products = performanceData.products.slice(0, limit);
+      }
+
+      // Calculate final metrics
+      performanceData.averageOrderValue = performanceData.totalOrders > 0 
+        ? performanceData.totalRevenue / performanceData.totalOrders 
+        : 0;
+
+      // Check if we have any data
+      if (performanceData.products.length === 0 && performanceData.storeErrors.length > 0) {
+        throw new Error(`No product performance data available. Store errors: ${performanceData.storeErrors.map(e => `${e.storeName}: ${e.error}`).join('; ')}`);
+      }
+
+      logInfo(`SHOPIFY: Product performance retrieved successfully: ${performanceData.products.length} products, £${performanceData.totalRevenue.toFixed(2)} revenue`);
+      return performanceData;
+
+    } catch (error) {
+      logError('SHOPIFY: Error getting product performance:', error);
+      throw new Error(`Failed to retrieve product performance data: ${error.message}`);
+    }
+  }
+
   async getInventorySync() {
     const consolidated = await this.getConsolidatedData();
     

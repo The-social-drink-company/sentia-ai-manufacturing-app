@@ -262,6 +262,105 @@ app.get('/api/mcp/status', async (req, res) => {
   }
 });
 
+// Financial KPI Summary endpoint
+app.get('/api/financial/kpi-summary', (req, res) => {
+  console.log('📊 KPI summary data requested');
+  res.json({
+    success: true,
+    data: {
+      annualRevenue: {
+        value: '$32.4M',
+        helper: '+12.3% vs last year'
+      },
+      unitsSold: {
+        value: '145,650',
+        helper: '+8.7% vs last year'
+      },
+      grossMargin: {
+        value: '42.3%',
+        helper: '+2.1pp vs last year'
+      }
+    },
+    meta: {
+      timestamp: new Date().toISOString(),
+      dataSource: 'main-server-fallback'
+    }
+  });
+});
+
+// Product Sales Performance endpoint
+app.get('/api/sales/product-performance', (req, res) => {
+  console.log('📈 Product sales data requested');
+  const period = req.query.period || 'year';
+  
+  // Generate sample data based on period
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const data = months.slice(0, period === 'quarter' ? 3 : 12).map((month, index) => ({
+    month,
+    revenue: 2500000 + (Math.random() * 500000),
+    units: 12000 + (Math.random() * 3000),
+    growth: (Math.random() * 20) - 5 // -5% to +15%
+  }));
+
+  res.json({
+    success: true,
+    data,
+    meta: {
+      timestamp: new Date().toISOString(),
+      period,
+      dataSource: 'main-server-fallback'
+    }
+  });
+});
+
+// P&L Analysis endpoint
+app.get('/api/financial/pl-analysis', (req, res) => {
+  console.log('💼 P&L analysis data requested');
+  const period = req.query.period || 'year';
+  
+  // Generate sample P&L data
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const data = months.slice(0, period === 'quarter' ? 3 : 12).map((month, index) => ({
+    month,
+    revenue: 2700000 + (Math.random() * 300000),
+    cogs: 1500000 + (Math.random() * 200000),
+    grossProfit: 1200000 + (Math.random() * 150000),
+    operatingExpenses: 800000 + (Math.random() * 100000),
+    netIncome: 400000 + (Math.random() * 80000)
+  }));
+
+  res.json({
+    success: true,
+    data,
+    meta: {
+      timestamp: new Date().toISOString(),
+      period,
+      dataSource: 'main-server-fallback'
+    }
+  });
+});
+
+// Regional Performance endpoint
+app.get('/api/regional/performance', (req, res) => {
+  console.log('🌍 Regional performance data requested');
+  const regions = [
+    { name: 'North America', revenue: 12500000, growth: 15.2, market_share: 35 },
+    { name: 'Europe', revenue: 9800000, growth: 8.7, market_share: 28 },
+    { name: 'Asia Pacific', revenue: 7200000, growth: 22.1, market_share: 22 },
+    { name: 'Latin America', revenue: 3400000, growth: 5.8, market_share: 10 },
+    { name: 'Middle East & Africa', revenue: 1800000, growth: 12.4, market_share: 5 }
+  ];
+
+  res.json({
+    success: true,
+    data: regions,
+    meta: {
+      timestamp: new Date().toISOString(),
+      dataSource: 'main-server-fallback'
+    }
+  });
+});
+
 // Catch-all API handler to prevent static file serving for API routes
 app.use('/api/*', (req, res) => {
   res.status(404).json({

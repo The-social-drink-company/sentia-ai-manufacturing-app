@@ -15,6 +15,7 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { createLogger } from '../../../utils/logger.js';
 import NodeCache from 'node-cache';
+import crypto from 'crypto';
 
 const logger = createLogger();
 
@@ -361,7 +362,7 @@ export class ClaudeClient {
     });
     
     // Create hash of the key
-    return require('crypto').createHash('md5').update(key).digest('hex');
+    return crypto.createHash('md5').update(key).digest('hex');
   }
 
   /**

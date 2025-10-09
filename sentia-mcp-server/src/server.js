@@ -365,8 +365,38 @@ export class SentiaMCPServer {
         const fullPath = join(dir, entry.name);
         
         if (entry.isDirectory()) {
+          // Skip integration directories - they have their own loading mechanism
+          const skipDirs = ['openai', 'anthropic', 'shopify', 'xero', 'amazon', 'unleashed'];
+          if (skipDirs.includes(entry.name)) {
+            logger.debug('Skipping integration directory', { directory: entry.name });
+            continue;
+          }
           files.push(...this.findToolFiles(fullPath));
         } else if (entry.name.endsWith('.js') && !entry.name.endsWith('.test.js')) {
+          // Skip common non-tool files
+          const skipFiles = [
+            'index.js',
+            'config.js',
+            'auth.js',
+            'client.js',
+            'utils.js',
+            'webhook-handler.js',
+            'integration.js',
+            'analytics.js',
+            'cost-tracker.js',
+            'response-parser.js',
+            'prompt-builder.js',
+            'function-calling.js',
+            'prompt-optimizer.js',
+            'response-validator.js',
+            'cost-optimizer.js'
+          ];
+          
+          if (skipFiles.includes(entry.name)) {
+            logger.debug('Skipping non-tool file', { file: entry.name });
+            continue;
+          }
+          
           files.push(fullPath);
         }
       }
@@ -607,6 +637,9 @@ export class SentiaMCPServer {
   initializeExpress() {
     this.app = express();
 
+    // Trust proxy for proper IP detection (Render uses proxies)
+    this.app.set('trust proxy', true);
+
     // Security middleware
     this.app.use(helmet({
       contentSecurityPolicy: {
@@ -632,7 +665,7 @@ export class SentiaMCPServer {
     this.app.use(express.json({ limit: '10mb' }));
     this.app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-    // Rate limiting
+    // Rate limiting with trusted proxy and internal IP handling
     const limiter = rateLimit({
       windowMs: SERVER_CONFIG.security.rateLimitWindow,
       max: SERVER_CONFIG.security.rateLimitMax,
@@ -642,6 +675,49 @@ export class SentiaMCPServer {
       },
       standardHeaders: true,
       legacyHeaders: false,
+      // Skip rate limiting for internal Render traffic and health checks
+      skip: (req) => {
+        const ip = req.ip || req.connection.remoteAddress;
+        const forwardedFor = req.get('X-Forwarded-For');
+        const userAgent = req.get('User-Agent') || '';
+        
+        // Skip for internal Render network IPs (10.x.x.x range)
+        if (ip && ip.startsWith('10.')) {
+          logger.debug('Skipping rate limit for internal IP', { ip, path: req.path });
+          return true;
+        }
+        
+        // Skip for forwarded internal IPs
+        if (forwardedFor && forwardedFor.includes('10.')) {
+          logger.debug('Skipping rate limit for forwarded internal IP', { forwardedFor, path: req.path });
+          return true;
+        }
+        
+        // Skip for health checks and monitoring
+        if (req.path === '/health' || req.path === '/metrics' || req.path === '/status') {
+          return true;
+        }
+        
+        // Skip for Render infrastructure user agents
+        if (userAgent.includes('Render') || userAgent.includes('render.com')) {
+          logger.debug('Skipping rate limit for Render infrastructure', { userAgent, path: req.path });
+          return true;
+        }
+        
+        // Skip in development mode
+        if (process.env.NODE_ENV === 'development') {
+          return true;
+        }
+        
+        return false;
+      },
+      // Use a custom key generator to properly identify users behind proxies
+      keyGenerator: (req) => {
+        const forwarded = req.get('X-Forwarded-For');
+        const realIP = req.get('X-Real-IP');
+        const ip = realIP || (forwarded ? forwarded.split(',')[0].trim() : req.ip);
+        return ip;
+      }
     });
     this.app.use('/api/', limiter);
 
@@ -932,6 +1008,45 @@ export class SentiaMCPServer {
   async authenticateRequest(req, res, next) {
     // Use the new authentication middleware
     return authenticateRequest(req, res, next);
+  }
+
+  /**
+   * Add a tool to the server's tool registry
+   * This method is called by integration modules to register their tools
+   */
+  addTool(tool) {
+    if (!tool || typeof tool !== 'object') {
+      logger.warn('Invalid tool object provided to addTool', { tool });
+      return false;
+    }
+
+    if (!tool.name || typeof tool.name !== 'string') {
+      logger.warn('Tool missing required name property', { tool });
+      return false;
+    }
+
+    if (!tool.execute || typeof tool.execute !== 'function') {
+      logger.warn('Tool missing required execute method', { toolName: tool.name });
+      return false;
+    }
+
+    // Add tool to registry with validation
+    this.tools.set(tool.name, {
+      name: tool.name,
+      description: tool.description || `Execute ${tool.name}`,
+      inputSchema: tool.inputSchema || { type: 'object', properties: {} },
+      execute: tool.execute.bind(tool),
+      category: tool.category || 'integration',
+      version: tool.version || '1.0.0'
+    });
+
+    logger.info('Tool registered successfully', {
+      toolName: tool.name,
+      category: tool.category,
+      hasSchema: !!tool.inputSchema
+    });
+
+    return true;
   }
 
   /**

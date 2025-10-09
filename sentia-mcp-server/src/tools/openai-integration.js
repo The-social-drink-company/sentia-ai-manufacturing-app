@@ -166,21 +166,25 @@ export class OpenAIIntegration {
   async registerTools() {
     try {
       for (const [toolName, tool] of this.tools) {
-        // Register tool with server
-        this.server.registerTool(toolName, {
+        // Create tool wrapper for server registration
+        const toolWrapper = {
           name: toolName,
-          description: tool.getDescription(),
-          category: tool.category,
-          version: tool.version,
-          inputSchema: tool.getInputSchema(),
+          description: tool.getDescription ? tool.getDescription() : tool.description || `OpenAI ${toolName}`,
+          category: tool.category || 'openai',
+          version: tool.version || '1.0.0',
+          inputSchema: tool.getInputSchema ? tool.getInputSchema() : tool.inputSchema || { type: 'object', properties: {} },
           execute: async (params) => {
             // Track usage
-            this.analytics.trackToolUsage(toolName);
+            if (this.analytics && this.analytics.trackToolUsage) {
+              this.analytics.trackToolUsage(toolName);
+            }
             
-            // Validate input
-            const validationResult = this.responseValidator.validateInput(params, tool.getInputSchema());
-            if (!validationResult.valid) {
-              throw new Error(`Invalid input: ${validationResult.errors.join(', ')}`);
+            // Validate input if validator available
+            if (this.responseValidator && this.responseValidator.validateInput) {
+              const validationResult = this.responseValidator.validateInput(params, tool.getInputSchema ? tool.getInputSchema() : tool.inputSchema);
+              if (validationResult && !validationResult.valid) {
+                throw new Error(`Invalid input: ${validationResult.errors.join(', ')}`);
+              }
             }
             
             // Execute tool
@@ -188,38 +192,50 @@ export class OpenAIIntegration {
             try {
               const result = await tool.execute(params);
               
-              // Track metrics
-              const duration = Date.now() - startTime;
-              this.costTracker.trackUsage(toolName, {
-                duration,
-                inputTokens: result.usage?.prompt_tokens || 0,
-                outputTokens: result.usage?.completion_tokens || 0,
-                model: this.config.model
-              });
+              // Track metrics if available
+              if (this.costTracker && this.costTracker.trackUsage) {
+                const duration = Date.now() - startTime;
+                this.costTracker.trackUsage(toolName, {
+                  duration,
+                  inputTokens: result.usage?.prompt_tokens || 0,
+                  outputTokens: result.usage?.completion_tokens || 0,
+                  model: this.config.model
+                });
+              }
               
               return result;
               
             } catch (error) {
-              this.analytics.trackError(toolName, error);
+              if (this.analytics && this.analytics.trackError) {
+                this.analytics.trackError(toolName, error);
+              }
               throw error;
             }
           }
-        });
+        };
 
-        logger.info('OpenAI tool registered', {
-          tool: toolName,
-          category: tool.category,
-          version: tool.version
-        });
+        // Register tool with server using addTool method
+        const registered = this.server.addTool(toolWrapper);
+        
+        if (registered) {
+          logger.info('OpenAI tool registered', {
+            tool: toolName,
+            category: toolWrapper.category,
+            version: toolWrapper.version
+          });
+        } else {
+          logger.warn('Failed to register OpenAI tool', { tool: toolName });
+        }
       }
 
-      logger.info('All OpenAI tools registered successfully', {
+      logger.info('All OpenAI tools registration completed', {
         registeredTools: Array.from(this.tools.keys())
       });
 
     } catch (error) {
       logger.error('Failed to register OpenAI tools', {
-        error: error.message
+        error: error.message,
+        stack: error.stack
       });
       throw error;
     }

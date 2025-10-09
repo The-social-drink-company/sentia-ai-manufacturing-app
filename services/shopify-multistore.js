@@ -12,22 +12,13 @@ class ShopifyMultiStoreService {
     
     this.storeConfigs = [
       {
-        id: 'uk_store',
-        name: 'Sentia UK Store',
+        id: 'uk_eu_store',
+        name: 'Sentia UK/EU Store',
         shopDomain: process.env.SHOPIFY_UK_SHOP_DOMAIN,
         accessToken: process.env.SHOPIFY_UK_ACCESS_TOKEN,
         apiVersion: '2024-01',
-        region: 'uk',
+        region: 'uk_eu',
         currency: 'GBP'
-      },
-      {
-        id: 'eu_store', 
-        name: 'Sentia EU Store',
-        shopDomain: process.env.SHOPIFY_EU_SHOP_DOMAIN,
-        accessToken: process.env.SHOPIFY_EU_ACCESS_TOKEN,
-        apiVersion: '2024-01',
-        region: 'eu',
-        currency: 'EUR'
       },
       {
         id: 'us_store',

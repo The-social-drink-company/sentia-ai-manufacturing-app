@@ -862,8 +862,15 @@ if (fs.existsSync(distPath)) {
       const { default: xeroService } = await import('./services/xeroService.js');
       const { default: shopifyMultiStore } = await import('./services/shopify-multistore.js');
 
-      // Initialize services
-      xeroService.ensureInitialized();
+      // Initialize services with error handling
+      let xeroInitialized = false;
+      try {
+        xeroService.ensureInitialized();
+        xeroInitialized = true;
+      } catch (xeroError) {
+        logger.warn('Xero service initialization failed:', xeroError.message);
+        xeroInitialized = false;
+      }
 
       // Gather financial data from multiple sources
       const kpiData = {
@@ -896,14 +903,14 @@ if (fs.existsSync(distPath)) {
           }
         },
         sources: {
-          xero: xeroService.isConnected,
+          xero: xeroInitialized && xeroService.isConnected,
           shopify: shopifyMultiStore.isConnected,
           database: !!prisma
         }
       };
 
       // Try to get Xero financial data
-      if (xeroService.isConnected) {
+      if (xeroInitialized && xeroService.isConnected) {
         try {
           const profitLoss = await xeroService.getProfitAndLoss();
           if (profitLoss && profitLoss.length > 0) {
@@ -1186,8 +1193,15 @@ if (fs.existsSync(distPath)) {
       const { default: xeroService } = await import('./services/xeroService.js');
       const { default: shopifyMultiStore } = await import('./services/shopify-multistore.js');
 
-      // Initialize services
-      xeroService.ensureInitialized();
+      // Initialize services with error handling
+      let xeroInitialized = false;
+      try {
+        xeroService.ensureInitialized();
+        xeroInitialized = true;
+      } catch (xeroError) {
+        logger.warn('Xero service initialization failed:', xeroError.message);
+        xeroInitialized = false;
+      }
 
       // Initialize date range based on period
       const now = new Date();

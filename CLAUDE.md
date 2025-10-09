@@ -371,6 +371,26 @@ scripts/               # Utility scripts
 - **Testing**: sentia-manufacturing-dashboard-test.onrender.com [test environment for users]
 - **Production**: sentia-manufacturing-dashboard-production.onrender.com [live environment updated after test has passed after UAT]
 
+#### Server File Configuration (CRITICAL - October 2025)
+**IMPORTANT**: The actual server file used by Render deployment:
+
+- **Render Configuration**: `render.yaml` specifies `startCommand: "node server.js"` for ALL environments
+- **Active Server File**: `/server.js` (root level) - THIS is the file that gets deployed to production
+- **Development Server**: `server/index.js` used only for local development (`npm run dev:server`)
+- **Alternative Servers**: Multiple server files exist but are NOT used in production:
+  - `server-enterprise-complete.js` - Full enterprise version (not deployed)
+  - `server/index.js` - Development server only
+  - `render-start.js` - Migration utility (uses `start:render` script)
+
+**To Deploy API Changes**: Always modify `/server.js` (root level), NOT `server/index.js`
+
+**Key Lessons Learned (October 2025)**:
+- Multiple server files caused confusion during API endpoint additions
+- API endpoints must be defined BEFORE catch-all handlers (`app.use('/api/*', ...)`) 
+- Route order matters: specific routes first, catch-all routes last
+- Deployment uses root `server.js`, not `server/index.js`
+- Always verify endpoint routing order to prevent 404 errors
+
 #### MCP Server (AI Central Nervous System)
 - **MCP Server**: mcp-server-tkyu.onrender.com
 

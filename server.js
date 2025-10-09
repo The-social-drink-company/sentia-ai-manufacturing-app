@@ -101,18 +101,28 @@ async function initializePrisma(retryCount = 0, maxRetries = 3) {
       }, 10000);
 
       try {
+        logger.info('Attempting database connection...');
         await prisma.$connect();
         clearTimeout(connectionTimeout);
+        logger.info('Database connection established');
         
         // Verify connection with a simple query
-        await prisma.$queryRaw`SELECT 1 as test`;
+        logger.info('Testing database with simple query...');
+        const testResult = await prisma.$queryRaw`SELECT 1 as test`;
+        logger.info('Database query test successful:', testResult);
         
         logger.info('Prisma client initialized and connected successfully');
-        logger.info(`Database connection verified`);
+        logger.info(`Database connection verified and ready`);
         
         return true;
       } catch (connectError) {
         clearTimeout(connectionTimeout);
+        logger.error('Database connection failed with details:', {
+          message: connectError.message,
+          code: connectError.code,
+          name: connectError.name,
+          stack: process.env.NODE_ENV === 'development' ? connectError.stack : undefined
+        });
         throw connectError;
       }
     } else {

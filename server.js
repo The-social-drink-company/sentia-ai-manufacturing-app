@@ -49,46 +49,78 @@ const __dirname = path.dirname(__filename);
 let prisma = null;
 let PrismaClient = null;
 
-// Enhanced Prisma initialization with better error handling
-async function initializePrisma() {
+// Enhanced Prisma initialization with retry logic
+async function initializePrisma(retryCount = 0, maxRetries = 3) {
   try {
-    logger.info('Attempting to import Prisma client...');
+    logger.info(`Attempting to import Prisma client... (attempt ${retryCount + 1}/${maxRetries + 1})`);
     
-    // Try to import Prisma client directly - this should work in production
-    const pkg = await import('@prisma/client');
+    // Try to import Prisma client directly from the generated location
+    let pkg;
+    try {
+      pkg = await import('@prisma/client');
+      logger.info('Successfully imported @prisma/client package');
+    } catch (importError) {
+      logger.error('Failed to import @prisma/client:', importError.message);
+      throw new Error('Prisma client package not found or not properly generated');
+    }
+    
     PrismaClient = pkg?.PrismaClient ?? null;
 
     if (PrismaClient) {
       logger.info('Creating Prisma client instance...');
+      
+      // Log database URL for debugging (without credentials)
+      const dbUrl = process.env.DATABASE_URL || process.env[`${process.env.NODE_ENV?.toUpperCase()}_DATABASE_URL`] || process.env.DEV_DATABASE_URL;
+      if (dbUrl) {
+        const maskedUrl = dbUrl.replace(/\/\/[^@]+@/, '//***:***@');
+        logger.info(`Database URL pattern: ${maskedUrl.substring(0, 50)}...`);
+      } else {
+        logger.warn('No database URL found in environment variables');
+      }
       
       // Create Prisma client with robust configuration
       prisma = new PrismaClient({
         log: process.env.NODE_ENV === 'development' ? ['info', 'warn', 'error'] : ['warn', 'error'],
         datasources: {
           db: {
-            url: process.env.DATABASE_URL || 
-                 process.env[`${process.env.NODE_ENV?.toUpperCase()}_DATABASE_URL`] || 
-                 process.env.DEV_DATABASE_URL
+            url: dbUrl
           }
         },
         // Add error handling configuration
         errorFormat: 'pretty',
-        // Disable query logging in production for performance
-        ...(process.env.NODE_ENV === 'production' && { log: ['error'] })
+        // Connection pool configuration
+        ...(process.env.NODE_ENV === 'production' && { 
+          log: ['error'],
+          connectionLimit: 10 
+        })
       });
 
-      // Test the connection immediately
-      await prisma.$connect();
-      logger.info('Prisma client initialized and connected successfully');
-      logger.info(`Database URL configured: ${process.env.DATABASE_URL ? 'YES' : 'FALLBACK'}`);
-      
-      return true;
+      // Test the connection with timeout
+      const connectionTimeout = setTimeout(() => {
+        throw new Error('Database connection timeout after 10 seconds');
+      }, 10000);
+
+      try {
+        await prisma.$connect();
+        clearTimeout(connectionTimeout);
+        
+        // Verify connection with a simple query
+        await prisma.$queryRaw`SELECT 1 as test`;
+        
+        logger.info('Prisma client initialized and connected successfully');
+        logger.info(`Database connection verified`);
+        
+        return true;
+      } catch (connectError) {
+        clearTimeout(connectionTimeout);
+        throw connectError;
+      }
     } else {
       logger.warn('Prisma client module did not export PrismaClient constructor');
       return false;
     }
   } catch (error) {
-    logger.error('Prisma client initialization failed:', {
+    logger.error(`Prisma client initialization failed (attempt ${retryCount + 1}):`, {
       message: error.message,
       code: error.code,
       stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
@@ -103,6 +135,15 @@ async function initializePrisma() {
       }
       prisma = null;
     }
+    
+    // Retry logic
+    if (retryCount < maxRetries) {
+      logger.info(`Retrying Prisma initialization in 2 seconds...`);
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      return initializePrisma(retryCount + 1, maxRetries);
+    }
+    
+    logger.error('All Prisma initialization attempts failed');
     return false;
   }
 }

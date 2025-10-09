@@ -9,10 +9,11 @@
     "dev": "concurrently \"pnpm run dev:client\" \"pnpm run dev:server\"",
     "dev:client": "vite --host --port 3000",
     "dev:server": "nodemon server/index.js",
-    "build": "vite build",
-    "build:dev": "vite build --mode development",
-    "build:test": "vite build --mode testing",
+    "build": "prisma generate && vite build",
+    "build:dev": "prisma generate && vite build --mode development", 
+    "build:test": "prisma generate && vite build --mode testing",
     "start": "node server.js",
+    "start:render": "prisma generate && node server.js",
     "preview": "vite preview",
     "test": "echo 'No tests configured' && exit 0",
     "test:run": "vitest run",
@@ -23,7 +24,7 @@
     "format": "prettier --write \"src/**/*.{js,jsx,json}\" \"server/**/*.{js,json}\" \"*.{js,json,md}\"",
     "format:check": "prettier --check \"src/**/*.{js,jsx,json}\" \"server/**/*.{js,json}\" \"*.{js,json,md}\"",
     "typecheck": "echo 'TypeScript check passed' && exit 0",
-    "postinstall": "prisma generate && node scripts/sync-prisma-client.mjs"
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@azure/msal-browser": "^3.26.1",

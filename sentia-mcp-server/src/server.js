@@ -366,9 +366,13 @@ export class SentiaMCPServer {
         
         if (entry.isDirectory()) {
           // Skip integration directories - they have their own loading mechanism
-          const skipDirs = ['openai', 'anthropic', 'shopify', 'xero', 'amazon', 'unleashed'];
+          // Also skip utility directories that contain only support files
+          const skipDirs = [
+            'openai', 'anthropic', 'shopify', 'xero', 'amazon', 'unleashed',
+            'utils', 'auth', 'config', 'webhooks'
+          ];
           if (skipDirs.includes(entry.name)) {
-            logger.debug('Skipping integration directory', { directory: entry.name });
+            logger.debug('Skipping integration/utility directory', { directory: entry.name });
             continue;
           }
           files.push(...this.findToolFiles(fullPath));
@@ -389,7 +393,31 @@ export class SentiaMCPServer {
             'function-calling.js',
             'prompt-optimizer.js',
             'response-validator.js',
-            'cost-optimizer.js'
+            'cost-optimizer.js',
+            'claude-client.js',
+            'claude-auth.js',
+            'openai-client.js',
+            'openai-auth.js',
+            'shopify-auth.js',
+            'amazon-auth.js',
+            'unleashed-auth.js',
+            'oauth.js',
+            'token-manager.js',
+            'api-client.js',
+            'marketplace-auth.js',
+            'sp-api-auth.js',
+            'cache.js',
+            'error-handler.js',
+            'rate-limiter.js',
+            'data-validator.js',
+            'compliance.js',
+            // Integration entry points (handle their own tool registration)
+            'openai-integration.js',
+            'anthropic-integration.js',
+            'shopify-integration.js',
+            'amazon-integration.js',
+            'xero-integration.js',
+            'unleashed-integration.js'
           ];
           
           if (skipFiles.includes(entry.name)) {

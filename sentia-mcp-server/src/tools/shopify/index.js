@@ -103,14 +103,22 @@ export class ShopifyIntegration {
    */
   initializeClients() {
     try {
+      // Log environment variable status for debugging
+      logger.info('Shopify environment variables check', {
+        hasApiKey: !!process.env.SHOPIFY_API_KEY,
+        hasApiSecret: !!process.env.SHOPIFY_API_SECRET,
+        hasApiSecretKey: !!process.env.SHOPIFY_API_SECRET_KEY,
+        hasAppUrl: !!process.env.SHOPIFY_APP_URL
+      });
+      
       Object.entries(this.config.stores).forEach(([storeKey, storeConfig]) => {
         if (storeConfig.shopDomain && storeConfig.accessToken) {
           this.clients[storeKey] = shopifyApi({
             apiKey: process.env.SHOPIFY_API_KEY,
-            apiSecretKey: process.env.SHOPIFY_API_SECRET,
+            apiSecretKey: process.env.SHOPIFY_API_SECRET_KEY || process.env.SHOPIFY_API_SECRET,
             scopes: ['read_products', 'read_orders', 'read_customers', 'read_inventory', 'read_analytics'],
             hostName: process.env.SHOPIFY_APP_URL || 'localhost',
-            apiVersion: storeConfig.apiVersion,
+            apiVersion: storeConfig.apiVersion || 'UNSTABLE',
             isEmbeddedApp: false,
             logger: {
               log: (severity, message) => {

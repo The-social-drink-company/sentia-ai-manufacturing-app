@@ -7,6 +7,7 @@
  */
 
 import { config } from 'dotenv';
+import os from 'os';
 
 config();
 
@@ -214,7 +215,7 @@ export class PerformanceConfig {
         maxCPUUsage: 75,
         maxConcurrentRequests: 1000,
         maxConcurrentTools: 20,
-        workerPoolSize: require('os').cpus().length,
+        workerPoolSize: os.cpus().length,
         
         // Optimized timeouts
         requestTimeout: 30000, // 30 seconds

@@ -343,16 +343,20 @@ export class CacheConfig {
    * Build memory cache configuration
    */
   buildMemoryConfiguration() {
-    const config = this.config;
+    const config = this.config || {};
     const memoryConfig = config.memory || {};
+    
+    // Provide fallback defaults in case config is not fully loaded
+    const defaultTTL = config.defaultTTL || 300;
+    const defaultMaxSize = config.maxSize || 1000;
     
     return {
       // Size management
-      maxSize: memoryConfig.maxSize || config.maxSize,
+      maxSize: memoryConfig.maxSize || defaultMaxSize,
       maxMemory: parseInt(process.env.MEMORY_CACHE_MAX_MEMORY) || 100 * 1024 * 1024, // 100MB
       
       // TTL settings
-      defaultTTL: config.defaultTTL,
+      defaultTTL: defaultTTL,
       checkPeriod: memoryConfig.checkPeriod || 600, // 10 minutes
       
       // Behavior settings
@@ -361,7 +365,7 @@ export class CacheConfig {
       enableStatistics: memoryConfig.enableStatistics === true,
       
       // Performance settings
-      stdTTL: config.defaultTTL,
+      stdTTL: defaultTTL,
       checkperiod: memoryConfig.checkPeriod || 600,
       errorOnMissing: false,
       useClones: memoryConfig.useClones !== false,

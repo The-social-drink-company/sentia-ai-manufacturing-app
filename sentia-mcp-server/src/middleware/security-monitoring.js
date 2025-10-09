@@ -337,10 +337,34 @@ export class SecurityMonitor {
    * Check rate limiting
    */
   async checkRateLimit(context) {
+    // Whitelist internal Render IPs and infrastructure
+    const whitelistedIPs = [
+      '10.228.19.151',  // Render internal infrastructure
+      '::1',            // IPv6 localhost
+      '127.0.0.1',      // IPv4 localhost
+    ];
+    
+    // Check for internal/whitelisted IPs
+    const isWhitelisted = whitelistedIPs.some(ip => context.ip === ip) || 
+                         context.ip?.startsWith('10.') ||     // Private network
+                         context.ip?.startsWith('192.168.') || // Private network
+                         context.ip?.startsWith('172.');       // Private network
+    
+    if (isWhitelisted) {
+      return {
+        exceeded: false,
+        currentCount: 0,
+        limit: 'unlimited',
+        windowMs: 0,
+        retryAfter: 0,
+        whitelisted: true
+      };
+    }
+    
     const key = context.userId || context.ip;
     const now = Date.now();
     const windowMs = 15 * 60 * 1000; // 15 minutes
-    const maxRequests = 100; // Default limit
+    const maxRequests = 1000; // Increased from 100 to 1000
     
     const requests = this.rateLimits.get(key) || [];
     const recentRequests = requests.filter(time => (now - time) < windowMs);

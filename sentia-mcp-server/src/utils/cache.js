@@ -33,8 +33,27 @@ export class CacheManager extends EventEmitter {
   constructor(config = {}) {
     super();
     
+    // Get cache configuration with fallback defaults
+    let baseConfig;
+    try {
+      baseConfig = getCacheConfig() || {};
+    } catch (error) {
+      logger.warn('Failed to load cache configuration, using defaults', { error: error.message });
+      baseConfig = {};
+    }
+    
+    // Ensure essential cache configuration exists
     this.config = {
-      ...getCacheConfig(),
+      type: 'memory',
+      defaultTTL: 300,
+      maxSize: 1000,
+      keyPrefix: 'sentia-mcp:',
+      memory: {
+        defaultTTL: 300,
+        checkPeriod: 120,
+        maxSize: 1000
+      },
+      ...baseConfig,
       ...config
     };
 
@@ -103,12 +122,19 @@ export class CacheManager extends EventEmitter {
    * Initialize L1 Memory Cache
    */
   async initializeL1Cache() {
-    const memoryConfig = this.config.memory;
+    const memoryConfig = this.config.memory || {};
+    
+    // Fallback defaults for missing memory configuration
+    const defaultMemoryConfig = {
+      defaultTTL: 300,
+      checkPeriod: 120,
+      maxSize: 1000
+    };
     
     this.l1Cache = new NodeCache({
-      stdTTL: memoryConfig.defaultTTL || 300,
-      checkperiod: memoryConfig.checkPeriod || 120,
-      maxKeys: memoryConfig.maxSize || 1000,
+      stdTTL: memoryConfig.defaultTTL || defaultMemoryConfig.defaultTTL,
+      checkperiod: memoryConfig.checkPeriod || defaultMemoryConfig.checkPeriod,
+      maxKeys: memoryConfig.maxSize || defaultMemoryConfig.maxSize,
       deleteOnExpire: true,
       useClones: false // Better performance, handle mutations carefully
     });
@@ -141,8 +167,8 @@ export class CacheManager extends EventEmitter {
     });
 
     logger.info('L1 Memory cache initialized', {
-      maxSize: memoryConfig.maxSize,
-      defaultTTL: memoryConfig.defaultTTL
+      maxSize: memoryConfig.maxSize || defaultMemoryConfig.maxSize,
+      defaultTTL: memoryConfig.defaultTTL || defaultMemoryConfig.defaultTTL
     });
   }
 

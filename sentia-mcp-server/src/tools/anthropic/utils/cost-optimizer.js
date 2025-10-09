@@ -14,6 +14,7 @@
 
 import { createLogger } from '../../../utils/logger.js';
 import NodeCache from 'node-cache';
+import crypto from 'crypto';
 
 const logger = createLogger();
 
@@ -553,7 +554,7 @@ export class CostOptimizer {
       messages: params.messages,
       analysisType: this.getAnalysisType(params)
     });
-    return require('crypto').createHash('md5').update(key).digest('hex');
+    return crypto.createHash('md5').update(key).digest('hex');
   }
 
   sanitizeParams(params) {

@@ -1,4 +1,5 @@
-import { shopifyApi } from '@shopify/shopify-api';
+import '@shopify/shopify-api/adapters/node';
+import { shopifyApi, ApiVersion } from '@shopify/shopify-api';
 import redisCacheService from './redis-cache.js';
 import { logDebug, logInfo, logWarn, logError } from '../src/utils/logger';
 
@@ -9,6 +10,7 @@ class ShopifyMultiStoreService {
     this.isConnected = false;
     this.syncInterval = null;
     this.syncFrequency = 15 * 60 * 1000; // 15 minutes
+    this.shopify = null;
     
     this.storeConfigs = [
       {
@@ -36,6 +38,17 @@ class ShopifyMultiStoreService {
     try {
       logDebug('SHOPIFY: Initializing multi-store connections...');
       
+      // Initialize Shopify API if not already done
+      if (!this.shopify) {
+        this.shopify = shopifyApi({
+          apiKey: 'not-needed-for-private-apps',
+          apiSecretKey: 'not-needed-for-private-apps',
+          scopes: ['read_orders', 'read_products', 'read_customers'],
+          hostName: 'localhost', // Not used for direct API calls
+          apiVersion: ApiVersion.January24
+        });
+      }
+      
       for (const config of this.storeConfigs) {
         if (!config.shopDomain || !config.accessToken) {
           logWarn(`SHOPIFY: Missing credentials for ${config.name}, skipping`);
@@ -43,13 +56,17 @@ class ShopifyMultiStoreService {
         }
 
         try {
-          const client = new shopifyApi.clients.Rest({
-            session: {
-              shop: config.shopDomain,
-              accessToken: config.accessToken
-            },
-            apiVersion: config.apiVersion
-          });
+          // Create a session for this store
+          const session = {
+            id: `${config.id}-session`,
+            shop: config.shopDomain,
+            state: 'active',
+            isOnline: false,
+            accessToken: config.accessToken,
+            scope: 'read_orders,read_products,read_customers'
+          };
+
+          const client = new this.shopify.clients.Rest({ session });
 
           const shopResponse = await client.get({
             path: 'shop'
@@ -59,18 +76,20 @@ class ShopifyMultiStoreService {
             this.stores.set(config.id, {
               ...config,
               client,
+              session,
               shopInfo: shopResponse.body.shop,
               lastSync: null,
               isActive: true
             });
             
-            logDebug(`SHOPIFY: Connected to ${config.name} (${config.shopDomain})`);
+            logInfo(`SHOPIFY: Connected to ${config.name} (${config.shopDomain})`);
           }
         } catch (storeError) {
           logError(`SHOPIFY: Failed to connect to ${config.name}:`, storeError.message);
           this.stores.set(config.id, {
             ...config,
             client: null,
+            session: null,
             shopInfo: null,
             lastSync: null,
             isActive: false,

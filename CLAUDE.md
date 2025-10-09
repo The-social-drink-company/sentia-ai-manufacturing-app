@@ -371,25 +371,28 @@ scripts/               # Utility scripts
 - **Testing**: sentia-manufacturing-dashboard-test.onrender.com [test environment for users]
 - **Production**: sentia-manufacturing-dashboard-production.onrender.com [live environment updated after test has passed after UAT]
 
-#### Server File Configuration (CRITICAL - October 2025)
-**IMPORTANT**: The actual server file used by Render deployment:
+#### Server File Configuration (SIMPLIFIED - October 2025)
+**SIMPLIFIED CONFIGURATION**: Server startup confusion has been eliminated.
 
+**Current Production Configuration**:
 - **Render Configuration**: `render.yaml` specifies `startCommand: "node server.js"` for ALL environments
-- **Active Server File**: `/server.js` (root level) - THIS is the file that gets deployed to production
+- **Production Server**: `/server.js` (root level) - Contains full enterprise functionality
 - **Development Server**: `server/index.js` used only for local development (`npm run dev:server`)
-- **Alternative Servers**: Multiple server files exist but are NOT used in production:
-  - `server-enterprise-complete.js` - Full enterprise version (not deployed)
-  - `server/index.js` - Development server only
-  - `render-start.js` - Migration utility (uses `start:render` script)
+- **Legacy Files**: All other server files moved to `archive/` folder for safety
 
-**To Deploy API Changes**: Always modify `/server.js` (root level), NOT `server/index.js`
+**Configuration Clarity**:
+- ✅ **What configs say**: `node server.js`
+- ✅ **What actually runs**: `server.js` (same file)
+- ✅ **No Hidden Overrides**: No render-start.js or conflicting scripts
+- ✅ **Single Source of Truth**: One production server file
 
-**Key Lessons Learned (October 2025)**:
-- Multiple server files caused confusion during API endpoint additions
-- API endpoints must be defined BEFORE catch-all handlers (`app.use('/api/*', ...)`) 
-- Route order matters: specific routes first, catch-all routes last
-- Deployment uses root `server.js`, not `server/index.js`
-- Always verify endpoint routing order to prevent 404 errors
+**To Deploy API Changes**: Modify `/server.js` (root level) - the only production server
+
+**Configuration Simplification (October 2025)**:
+- **FIXED**: Eliminated hidden `render-start.js` override that caused confusion
+- **FIXED**: Consolidated enterprise functionality into main `server.js`
+- **FIXED**: Removed conflicting server files and scripts
+- **RESULT**: Configuration transparency - what you see is what runs
 
 #### MCP Server (AI Central Nervous System)
 - **MCP Server**: mcp-server-tkyu.onrender.com

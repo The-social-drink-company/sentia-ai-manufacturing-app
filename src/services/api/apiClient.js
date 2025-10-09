@@ -65,6 +65,13 @@ class APIClient {
   }
 
   /**
+   * Generate correlation ID for request tracking
+   */
+  generateCorrelationId() {
+    return `dash-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+  }
+
+  /**
    * Request to MCP server
    */
   async requestMCP(endpoint, options = {}) {
@@ -76,8 +83,16 @@ class APIClient {
 
     const url = `${this.mcpServerURL}${mcpEndpoint}`
     
+    // Add required MCP server headers
+    const mcpHeaders = {
+      'x-dashboard-version': '2.0.0',
+      'x-correlation-id': this.generateCorrelationId(),
+      ...this.defaultHeaders,
+      ...options.headers
+    }
+    
     const config = {
-      headers: { ...this.defaultHeaders, ...options.headers },
+      headers: mcpHeaders,
       ...options,
     }
 
@@ -134,14 +149,32 @@ class APIClient {
   async get(endpoint, params = {}) {
     // Handle endpoint that may already include /api prefix
     const cleanEndpoint = endpoint.startsWith('/api') ? endpoint : `${this.baseURL}${endpoint}`
-    const url = new URL(cleanEndpoint, window.location.origin)
-    Object.keys(params).forEach(key => {
-      if (params[key] !== undefined && params[key] !== null) {
-        url.searchParams.append(key, params[key])
-      }
-    })
     
-    return this.request(url.pathname + url.search, { method: 'GET' })
+    // Handle query parameters properly
+    let queryString = ''
+    if (params && Object.keys(params).length > 0) {
+      const searchParams = new URLSearchParams()
+      
+      Object.keys(params).forEach(key => {
+        const value = params[key]
+        if (value !== undefined && value !== null) {
+          // Handle different types of values
+          if (typeof value === 'object') {
+            // Serialize objects and arrays properly
+            searchParams.append(key, JSON.stringify(value))
+          } else {
+            searchParams.append(key, String(value))
+          }
+        }
+      })
+      
+      if (searchParams.toString()) {
+        queryString = '?' + searchParams.toString()
+      }
+    }
+    
+    const fullEndpoint = cleanEndpoint + queryString
+    return this.request(fullEndpoint, { method: 'GET' })
   }
 
   async post(endpoint, data = {}) {

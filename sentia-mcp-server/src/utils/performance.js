@@ -17,6 +17,7 @@ import { promisify } from 'util';
 import zlib from 'zlib';
 import cluster from 'cluster';
 import os from 'os';
+import crypto from 'crypto';
 import { createLogger } from './logger.js';
 import { monitoring } from './monitoring.js';
 import { cacheManager } from './cache.js';
@@ -337,7 +338,6 @@ export class PerformanceOptimizer extends EventEmitter {
    * Hash query for caching
    */
   hashQuery(query) {
-    const crypto = require('crypto');
     return crypto.createHash('md5').update(query).digest('hex');
   }
 

@@ -17,6 +17,7 @@
 
 import { EventEmitter } from 'events';
 import { performance, PerformanceObserver } from 'perf_hooks';
+import v8 from 'v8';
 import { createLogger } from './logger.js';
 import { monitoring } from './monitoring.js';
 
@@ -786,7 +787,6 @@ class MemoryLeakDetector {
 
   getHeapStatistics() {
     try {
-      const v8 = require('v8');
       return v8.getHeapStatistics();
     } catch (error) {
       return null;
@@ -841,8 +841,6 @@ class GCMonitor {
 
   start() {
     try {
-      const { PerformanceObserver } = require('perf_hooks');
-      
       this.observer = new PerformanceObserver((list) => {
         const entries = list.getEntries();
         for (const entry of entries) {

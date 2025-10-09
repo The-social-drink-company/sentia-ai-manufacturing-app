@@ -90,6 +90,16 @@ export class AmazonAuth {
    * Validate authentication configuration
    */
   validateConfiguration() {
+    // Log environment variable status for debugging
+    console.log('Amazon environment variables check:', {
+      hasClientId: !!process.env.AMAZON_CLIENT_ID,
+      hasClientSecret: !!process.env.AMAZON_CLIENT_SECRET,
+      hasRefreshToken: !!process.env.AMAZON_REFRESH_TOKEN,
+      configClientId: !!this.config.clientId,
+      configClientSecret: !!this.config.clientSecret,
+      configRefreshToken: !!this.config.refreshToken
+    });
+    
     const required = ['clientId', 'clientSecret', 'refreshToken'];
     const missing = required.filter(key => !this.config[key]);
     

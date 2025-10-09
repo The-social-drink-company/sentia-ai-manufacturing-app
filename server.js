@@ -1012,8 +1012,8 @@ if (fs.existsSync(distPath)) {
     const period = req.query.period || 'year';
     
     try {
-      // Import services dynamically
-      const { default: shopifyMultiStore } = await import('./services/shopify-multistore.js');
+      // Temporarily disable Shopify import for testing
+      // const { default: shopifyMultiStore } = await import('./services/shopify-multistore.js');
 
       // Initialize date range based on period
       const now = new Date();
@@ -1056,8 +1056,8 @@ if (fs.existsSync(distPath)) {
         }
       };
 
-      // Get Shopify sales data
-      if (shopifyMultiStore.storeConfigs && shopifyMultiStore.storeConfigs.length > 0) {
+      // Get Shopify sales data (temporarily disabled for testing)
+      if (false && shopifyMultiStore.storeConfigs && shopifyMultiStore.storeConfigs.length > 0) {
         try {
           await shopifyMultiStore.connect();
           

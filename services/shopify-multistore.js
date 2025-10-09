@@ -125,7 +125,7 @@ class ShopifyMultiStoreService {
     await this.syncAllStores();
 
     // Schedule regular syncs
-    this.syncInterval = setInterval(async _() => {
+    this.syncInterval = setInterval(async () => {
       try {
         await this.syncAllStores();
       } catch (error) {

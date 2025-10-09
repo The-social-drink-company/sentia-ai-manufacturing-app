@@ -842,19 +842,9 @@ function broadcastSSE(eventType, data) {
 // Make broadcast function globally available
 global.broadcastSSE = broadcastSSE;
 
-// Serve static files from dist directory (exclude API routes)
-const distPath = path.join(__dirname, 'dist');
-if (fs.existsSync(distPath)) {
-  app.use((req, res, next) => {
-    // Skip static file serving for API routes
-    if (req.path.startsWith('/api/')) {
-      return next();
-    }
-    express.static(distPath)(req, res, next);
-  });
-
-  // Financial KPI Summary endpoint
-  app.get('/api/financial/kpi-summary', async (req, res) => {
+// API Routes - MUST be defined BEFORE static file serving
+// Financial KPI Summary endpoint
+app.get('/api/financial/kpi-summary', async (req, res) => {
     logger.info('📊 KPI summary data requested');
     
     try {
@@ -1453,6 +1443,17 @@ if (fs.existsSync(distPath)) {
         timestamp: new Date().toISOString()
       });
     }
+  });
+
+// Serve static files from dist directory (after API routes are defined)
+const distPath = path.join(__dirname, 'dist');
+if (fs.existsSync(distPath)) {
+  app.use((req, res, next) => {
+    // Skip static file serving for API routes
+    if (req.path.startsWith('/api/')) {
+      return next();
+    }
+    express.static(distPath)(req, res, next);
   });
 
   // SPA fallback - must be last AND must exclude API routes

@@ -707,6 +707,23 @@ app.get('/api/forecasting/demand', async (req, res) => {
 // Analytics API endpoints
 app.get('/api/analytics/kpis', async (req, res) => {
   try {
+    // Test Shopify connection
+    let shopifyStatus = { error: 'not tested' };
+    try {
+      const { default: shopifyMultiStore } = await import('./services/shopify-multistore.js');
+      shopifyStatus = {
+        storeConfigsCount: shopifyMultiStore.storeConfigs?.length || 0,
+        hasCredentials: {
+          ukDomain: !!process.env.SHOPIFY_UK_SHOP_DOMAIN,
+          ukToken: !!process.env.SHOPIFY_UK_ACCESS_TOKEN,
+          usDomain: !!process.env.SHOPIFY_US_SHOP_DOMAIN,
+          usToken: !!process.env.SHOPIFY_US_ACCESS_TOKEN
+        }
+      };
+    } catch (shopifyError) {
+      shopifyStatus = { error: shopifyError.message };
+    }
+
     const kpis = {
       revenue: {
         value: 8500000,
@@ -722,7 +739,9 @@ app.get('/api/analytics/kpis', async (req, res) => {
         defectRate: 0.018,
         customerSatisfaction: 0.92,
         onTimeDelivery: 0.94
-      }
+      },
+      // Debug info
+      shopifyStatus
     };
     res.json(kpis);
   } catch (error) {

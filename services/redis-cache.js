@@ -1,4 +1,4 @@
-import Redis from 'redis';
+import redis from 'redis';
 import { logDebug, logInfo, logWarn, logError } from '../src/utils/logger';
 
 
@@ -18,7 +18,7 @@ class RedisCacheService {
 
       const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
       
-      this.client = Redis.createClient({
+      this.client = redis.createClient({
         url: redisUrl,
         socket: {
           reconnectStrategy: (retries) => {

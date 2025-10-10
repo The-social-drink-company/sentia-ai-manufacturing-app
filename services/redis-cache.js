@@ -1,5 +1,10 @@
 import redis from 'redis';
-import { logDebug, logInfo, logWarn, logError } from '../src/utils/logger';
+
+// Simple fallback logger
+const logDebug = (...args) => console.log('[REDIS DEBUG]', ...args);
+const logInfo = (...args) => console.log('[REDIS INFO]', ...args); 
+const logWarn = (...args) => console.warn('[REDIS WARN]', ...args);
+const logError = (...args) => console.error('[REDIS ERROR]', ...args);
 
 
 class RedisCacheService {

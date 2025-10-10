@@ -1047,15 +1047,22 @@ app.get('/api/financial/kpi-summary', async (req, res) => {
       };
 
       // Get Shopify sales data
+      logger.info('Checking Shopify multistore configuration...');
+      logger.info(`Store configs available: ${shopifyMultiStore.storeConfigs?.length || 0}`);
+      
       if (shopifyMultiStore.storeConfigs && shopifyMultiStore.storeConfigs.length > 0) {
         try {
+          logger.info('Attempting Shopify connection...');
           await shopifyMultiStore.connect();
+          logger.info('Shopify connection successful, fetching product performance...');
           
           const shopifyData = await shopifyMultiStore.getProductPerformance({
             startDate: startDate.toISOString(),
             endDate: now.toISOString(),
             limit: 50
           });
+          
+          logger.info(`Shopify data retrieved: ${shopifyData?.products?.length || 0} products`);
 
           if (shopifyData && shopifyData.products) {
             salesData.products = shopifyData.products.map(product => ({
@@ -1166,7 +1173,8 @@ app.get('/api/financial/kpi-summary', async (req, res) => {
       logger.error('Failed to fetch sales performance data:', error);
       return res.status(500).json({
         success: false,
-        error: 'Internal server error',
+        error: error.message || 'Internal server error',
+        stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
         message: 'Unable to process sales performance request',
         timestamp: new Date().toISOString()
       });

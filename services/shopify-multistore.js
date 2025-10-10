@@ -1,7 +1,7 @@
 import '@shopify/shopify-api/adapters/node';
 import { shopifyApi, ApiVersion } from '@shopify/shopify-api';
 import redisCacheService from './redis-cache.js';
-import { logDebug, logInfo, logWarn, logError } from '../src/utils/logger.js';
+import { logDebug, logInfo, logWarn, logError } from './logger.js';
 
 
 class ShopifyMultiStoreService {

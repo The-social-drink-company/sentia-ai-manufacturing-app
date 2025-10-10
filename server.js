@@ -1470,30 +1470,19 @@ app.get('/api/financial/kpi-summary', async (req, res) => {
     logger.info('🌍 Regional performance data requested');
     
     try {
-      // Attempt to get real regional data from multiple sources
-      if (!prisma) {
-        return res.status(503).json({
-          success: false,
-          error: 'Database connection unavailable',
-          message: 'Unable to retrieve regional data - database not connected',
-          timestamp: new Date().toISOString(),
-          userAction: 'Contact system administrator to check database configuration'
-        });
-      }
-
-      // Check for regional data integrations
-      return res.status(503).json({
-        success: false,
-        error: 'Regional data integration required',
-        message: 'Regional performance requires connection to multiple regional data sources',
+      // Get real regional data from Shopify multistore
+      const { default: shopifyMultiStore } = await import('./services/shopify-multistore.js');
+      await shopifyMultiStore.connect();
+      
+      // Get regional performance from connected stores
+      const regionalData = await shopifyMultiStore.getRegionalPerformance();
+      logger.info(`Regional data retrieved from ${regionalData.length} regions`);
+      
+      return res.json({
+        success: true,
+        data: regionalData,
         timestamp: new Date().toISOString(),
-        userAction: 'Configure regional sales, inventory, and financial system integrations',
-        requiredIntegrations: [
-          'Regional Shopify stores',
-          'Regional Amazon marketplaces', 
-          'Regional Xero entities',
-          'Regional inventory systems'
-        ]
+        source: 'shopify_multistore'
       });
 
     } catch (error) {

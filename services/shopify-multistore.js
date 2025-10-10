@@ -541,6 +541,102 @@ class ShopifyMultiStoreService {
     };
   }
 
+  async getRegionalPerformance() {
+    try {
+      const regionalData = [];
+      
+      for (const [storeId, store] of this.stores) {
+        if (!store.isActive || !store.client) {
+          continue;
+        }
+
+        try {
+          // Get orders from last 30 days for this store
+          const thirtyDaysAgo = new Date();
+          thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+          
+          const ordersResponse = await store.client.get({
+            path: 'orders',
+            query: {
+              status: 'any',
+              created_at_min: thirtyDaysAgo.toISOString(),
+              limit: 250,
+              financial_status: 'paid'
+            }
+          });
+
+          if (ordersResponse.body && ordersResponse.body.orders) {
+            const orders = ordersResponse.body.orders;
+            const revenue = orders.reduce((sum, order) => sum + parseFloat(order.total_price || 0), 0);
+            
+            regionalData.push({
+              name: store.name,
+              region: store.region,
+              revenue: revenue,
+              orders: orders.length,
+              currency: store.currency,
+              growth: 0, // Would need historical data for growth calculation
+              market_share: 0, // Would need total market data
+              source: 'shopify'
+            });
+          }
+        } catch (storeError) {
+          logError(`Failed to get regional data from ${store.name}:`, storeError);
+        }
+      }
+
+      return regionalData;
+    } catch (error) {
+      logError('Error getting regional performance:', error);
+      throw error;
+    }
+  }
+
+  async getAllOrders(params = {}) {
+    try {
+      const allOrders = [];
+      
+      for (const [storeId, store] of this.stores) {
+        if (!store.isActive || !store.client) {
+          continue;
+        }
+
+        try {
+          const ordersResponse = await store.client.get({
+            path: 'orders',
+            query: {
+              status: 'any',
+              limit: params.limit || 250,
+              created_at_min: params.created_at_min || '',
+              financial_status: 'paid',
+              ...params
+            }
+          });
+
+          if (ordersResponse.body && ordersResponse.body.orders) {
+            const orders = ordersResponse.body.orders.map(order => ({
+              ...order,
+              store_region: store.region,
+              store_currency: store.currency
+            }));
+            allOrders.push(...orders);
+          }
+        } catch (storeError) {
+          logError(`Failed to get orders from ${store.name}:`, storeError);
+        }
+      }
+
+      return allOrders;
+    } catch (error) {
+      logError('Error getting all orders:', error);
+      throw error;
+    }
+  }
+
+  getActiveStoreCount() {
+    return Array.from(this.stores.values()).filter(store => store.isActive).length;
+  }
+
   getConnectionStatus() {
     const storeStatuses = Array.from(this.stores.values()).map(store => ({
       id: store.id,

@@ -1181,6 +1181,20 @@ app.get('/api/financial/kpi-summary', async (req, res) => {
     }
   });
 
+  // Simple test endpoint to check imports
+  app.get('/api/debug/simple-test', (req, res) => {
+    res.json({
+      success: true,
+      message: 'Simple endpoint working',
+      timestamp: new Date().toISOString(),
+      environment: {
+        NODE_ENV: process.env.NODE_ENV,
+        SHOPIFY_UK_SHOP_DOMAIN: !!process.env.SHOPIFY_UK_SHOP_DOMAIN,
+        SHOPIFY_US_SHOP_DOMAIN: !!process.env.SHOPIFY_US_SHOP_DOMAIN
+      }
+    });
+  });
+
   // Debug endpoint to test Shopify import
   app.get('/api/debug/shopify-import', async (req, res) => {
     try {

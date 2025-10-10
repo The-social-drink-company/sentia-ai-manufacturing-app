@@ -1176,14 +1176,35 @@ app.get('/api/financial/kpi-summary', async (req, res) => {
   // Debug endpoint to test Shopify import
   app.get('/api/debug/shopify-import', async (req, res) => {
     try {
+      logger.info('Testing Shopify import...');
+      
+      // Test environment variables first
+      const envCheck = {
+        SHOPIFY_UK_SHOP_DOMAIN: !!process.env.SHOPIFY_UK_SHOP_DOMAIN,
+        SHOPIFY_UK_ACCESS_TOKEN: !!process.env.SHOPIFY_UK_ACCESS_TOKEN,
+        SHOPIFY_US_SHOP_DOMAIN: !!process.env.SHOPIFY_US_SHOP_DOMAIN,
+        SHOPIFY_US_ACCESS_TOKEN: !!process.env.SHOPIFY_US_ACCESS_TOKEN
+      };
+      
+      logger.info('Environment variables check:', envCheck);
+      
       const { default: shopifyMultiStore } = await import('./services/shopify-multistore.js');
+      
+      // Try to connect
+      const connectionResult = await shopifyMultiStore.connect();
+      const connectionStatus = shopifyMultiStore.getConnectionStatus();
+      
       res.json({
         success: true,
-        message: 'Shopify import successful',
+        message: 'Shopify import and connection test completed',
+        environmentVariables: envCheck,
         storeConfigsCount: shopifyMultiStore.storeConfigs?.length || 0,
+        connectionResult,
+        connectionStatus,
         timestamp: new Date().toISOString()
       });
     } catch (error) {
+      logger.error('Shopify debug endpoint error:', error);
       res.status(500).json({
         success: false,
         error: error.message,

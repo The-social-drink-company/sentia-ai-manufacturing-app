@@ -8,1277 +8,1421 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ===== FORECASTING MODELS =====
-model ForecastResult {
-  id             String   @id @default(cuid())
-  productSKU     String
-  period         String
-  horizon        Int      // Days ahead
-  demandForecast Float
-  confidence     Float?
-  accuracy       Float?
-  method         String?  // "ai", "statistical", "hybrid"
-  modelVersion   String?
-  parameters     Json?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+model ApiKey {
+  id             String    @id @default(cuid())
+  organizationId String    @default("default")
+  service        String
+  keyName        String
+  value          String?
+  encryptedData  String?
+  isActive       Boolean   @default(true)
+  lastUsed       DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  createdBy      String?
 
-  validations ForecastValidation[]
-
-  @@index([productSKU], name: "idx_forecast_result_sku")
-  @@index([period], name: "idx_forecast_result_period")
-  @@index([horizon], name: "idx_forecast_result_horizon")
-  @@index([createdAt], name: "idx_forecast_result_created")
+  @@unique([organizationId, service, keyName])
 }
 
-model ForecastValidation {
-  id               String        @id @default(cuid())
-  forecastResultId String
-  forecastResult   ForecastResult @relation(fields: [forecastResultId], references: [id])
-  actualDemand     Float
-  absoluteError    Float
-  percentageError  Float
-  validationDate   DateTime
-  notes            String?
-  createdAt        DateTime      @default(now())
+model ApiConnectionStatus {
+  id             String   @id
+  organizationId String   @default("default")
+  service        String
+  status         String
+  lastChecked    DateTime @default(now())
+  responseTime   Int?
+  errorMessage   String?
+  metadata       Json?
 
-  @@index([forecastResultId], name: "idx_forecast_validation_result")
-  @@index([validationDate], name: "idx_forecast_validation_date")
+  @@unique([organizationId, service])
 }
 
-model DemandHistory {
-  id          String   @id @default(cuid())
-  productSKU  String
-  date        DateTime
-  demand      Float
-  source      String?  // "sales", "orders", "consumption"
-  category    String?
-  seasonality Float?
-  trend       Float?
-  metadata    Json?
-  createdAt   DateTime @default(now())
+model ApiUsageLog {
+  id             String   @id
+  organizationId String   @default("default")
+  service        String
+  endpoint       String?
+  method         String?
+  statusCode     Int?
+  responseTime   Int?
+  requestSize    Int?
+  responseSize   Int?
+  timestamp      DateTime @default(now())
+  userId         String?
+  metadata       Json?
 
-  @@unique([productSKU, date])
-  @@index([productSKU], name: "idx_demand_history_sku")
-  @@index([date], name: "idx_demand_history_date")
-  @@index([source], name: "idx_demand_history_source")
+  @@index([organizationId, service, timestamp])
+  @@index([timestamp])
 }
 
-enum Role {
-  ADMIN
-  MANAGER
-  OPERATOR
-  VIEWER
+model agent_approvals {
+  id            String    @id @db.Uuid
+  run_id        String    @db.Uuid
+  step_id       String    @db.Uuid
+  approver_id   String    @db.Uuid
+  approver_role String    @db.VarChar(50)
+  decision      String    @db.VarChar(20)
+  reason        String?
+  step_up_token String?   @db.VarChar(255)
+  expires_at    DateTime  @db.Timestamptz(6)
+  approved_at   DateTime? @db.Timestamptz(6)
+  created_at    DateTime  @default(now()) @db.Timestamptz(6)
+
+  @@index([approver_id])
+  @@index([decision])
+  @@index([expires_at])
+  @@index([run_id, step_id])
 }
 
-enum ProductionStatus {
+model agent_eval_cases {
+  id           String      @id @db.Uuid
+  eval_id      String      @db.Uuid
+  tool         String      @db.VarChar(100)
+  params_json  Json        @db.Json
+  metrics_json Json        @db.Json
+  agent_evals  agent_evals @relation(fields: [eval_id], references: [id])
+
+  @@index([eval_id])
+}
+
+model agent_eval_scores {
+  id             String      @id @db.Uuid
+  eval_id        String      @db.Uuid
+  scorecard_json Json        @db.Json
+  passed         Boolean
+  agent_evals    agent_evals @relation(fields: [eval_id], references: [id])
+
+  @@index([eval_id])
+  @@index([passed])
+}
+
+model agent_evals {
+  id                String              @id @db.Uuid
+  goal              String
+  dataset_key       String?             @db.VarChar(100)
+  simulate          Boolean             @default(true)
+  started_at        DateTime            @db.Timestamptz(6)
+  finished_at       DateTime?           @db.Timestamptz(6)
+  status            String              @db.VarChar(20)
+  agent_eval_cases  agent_eval_cases[]
+  agent_eval_scores agent_eval_scores[]
+
+  @@index([status])
+}
+
+model agent_policies {
+  id                    String   @id @db.Uuid
+  name                  String   @db.VarChar(100)
+  description           String?
+  role_scope            String   @db.VarChar(50)
+  allowed_tools         String[]
+  default_mode          String   @default("DRY_RUN") @db.VarChar(20)
+  max_steps             Int      @default(12)
+  wall_clock_ms         Int      @default(180000)
+  per_tool_budgets_json Json?    @db.Json
+  numeric_clamps_json   Json?    @db.Json
+  require_step_up       Boolean  @default(true)
+  active                Boolean  @default(true)
+  created_by            String?  @db.Uuid
+  created_at            DateTime @default(now()) @db.Timestamptz(6)
+  updated_at            DateTime @db.Timestamptz(6)
+
+  @@index([created_at])
+  @@index([role_scope, active])
+}
+
+model agent_runs {
+  id               String             @id @db.Uuid
+  goal             String
+  mode             String             @db.VarChar(20)
+  scope            Json?              @db.Json
+  budgets          Json?              @db.Json
+  status           String             @db.VarChar(20)
+  userId           String?            @db.Uuid
+  started_at       DateTime           @db.Timestamptz(6)
+  completed_at     DateTime?          @db.Timestamptz(6)
+  outcomes         Json?              @db.Json
+  reflection       Json?              @db.Json
+  lessons          Json?              @db.Json
+  next_steps       Json?              @db.Json
+  error            String?
+  users            users?             @relation(fields: [userId], references: [id])
+  agent_steps      agent_steps[]
+  approvals        approvals[]
+  reflections      reflections[]
+  tool_invocations tool_invocations[]
+
+  @@index([status])
+  @@index([userId, started_at])
+}
+
+model agent_safety_metrics {
+  id                    String   @id @db.Uuid
+  period                DateTime @unique @db.Date
+  blocked_plans         Int      @default(0)
+  blocked_steps_by_rule Json     @db.Json
+  exceeded_budgets      Int      @default(0)
+  disallowed_tools      Json     @db.Json
+  approval_requests     Int      @default(0)
+  approvals_granted     Int      @default(0)
+  approvals_rejected    Int      @default(0)
+  rate_limit_hits       Int      @default(0)
+  freeze_window_blocks  Int      @default(0)
+  created_at            DateTime @default(now()) @db.Timestamptz(6)
+
+  @@index([period])
+}
+
+model agent_schedules {
+  id                 String    @id @db.Uuid
+  name               String    @db.VarChar(100)
+  cron               String    @db.VarChar(100)
+  tz                 String    @db.VarChar(50)
+  mode               String    @db.VarChar(20)
+  entity_id          String?   @db.Uuid
+  region             String?   @db.VarChar(10)
+  preset_key         String?   @db.VarChar(50)
+  enabled            Boolean   @default(true)
+  freeze_window_cron String?   @db.VarChar(100)
+  last_run_at        DateTime? @db.Timestamptz(6)
+
+  @@index([enabled])
+  @@index([last_run_at])
+}
+
+model agent_steps {
+  id               String     @id @db.Uuid
+  run_id           String     @db.Uuid
+  step_number      Int
+  tool_id          String     @db.VarChar(100)
+  params           Json       @db.Json
+  dependencies     Json?      @db.Json
+  expected_outcome Json?      @db.Json
+  status           String     @db.VarChar(20)
+  result           Json?      @db.Json
+  completed_at     DateTime?  @db.Timestamptz(6)
+  agent_runs       agent_runs @relation(fields: [run_id], references: [id])
+
+  @@index([run_id, step_number])
+  @@index([status])
+}
+
+model ap_policies {
+  id                     String    @id @db.Uuid
+  supplier_id            String    @db.VarChar(100)
+  supplier_name          String    @db.VarChar(200)
+  term_days              Int
+  early_pay_discount_pct Decimal?  @db.Decimal(5, 4)
+  early_pay_days         Int?
+  strategy               String    @default("due") @db.VarChar(20)
+  active_from            DateTime  @db.Date
+  active_to              DateTime? @db.Date
+  created_by             String?   @db.Uuid
+  created_at             DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at             DateTime  @db.Timestamptz(6)
+  users                  users?    @relation(fields: [created_by], references: [id])
+
+  @@unique([supplier_id, active_from])
+  @@index([supplier_id, active_from], map: "ix_ap_policy_supplier_active")
+}
+
+model approvals {
+  id          String     @id @db.Uuid
+  run_id      String     @db.Uuid
+  step_id     String     @db.VarChar(100)
+  approver_id String?    @db.Uuid
+  decision    String     @db.VarChar(20)
+  reason      String?
+  approved_at DateTime?  @db.Timestamptz(6)
+  users       users?     @relation(fields: [approver_id], references: [id])
+  agent_runs  agent_runs @relation(fields: [run_id], references: [id])
+
+  @@index([approver_id])
+  @@index([run_id, step_id])
+}
+
+model ar_policies {
+  id             String         @id @db.Uuid
+  channel_id     String         @db.Uuid
+  term_days      Int
+  pct_share      Decimal        @db.Decimal(5, 4)
+  fees_pct       Decimal        @db.Decimal(5, 4)
+  bad_debt_pct   Decimal        @db.Decimal(5, 4)
+  active_from    DateTime       @db.Date
+  active_to      DateTime?      @db.Date
+  created_by     String?        @db.Uuid
+  created_at     DateTime       @default(now()) @db.Timestamptz(6)
+  updated_at     DateTime       @db.Timestamptz(6)
+  sales_channels sales_channels @relation(fields: [channel_id], references: [id], onDelete: Cascade)
+  users          users?         @relation(fields: [created_by], references: [id])
+
+  @@unique([channel_id, active_from])
+  @@index([channel_id, active_from], map: "ix_ar_policy_channel_active")
+}
+
+model audit_logs {
+  id            String   @id @db.Uuid
+  user_id       String?  @db.Uuid
+  event_type    String   @db.VarChar(50)
+  event_data    Json?    @db.Json
+  ip_address    String?  @db.VarChar(45)
+  user_agent    String?  @db.VarChar(500)
+  session_id    String?  @db.Uuid
+  resource_type String?  @db.VarChar(50)
+  resource_id   String?  @db.Uuid
+  old_value     Json?    @db.Json
+  new_value     Json?    @db.Json
+  severity      String   @default("info") @db.VarChar(10)
+  environment   String   @default("production") @db.VarChar(20)
+  created_at    DateTime @default(now()) @db.Timestamptz(6)
+  users         users?   @relation(fields: [user_id], references: [id])
+
+  @@index([created_at], map: "ix_audit_created")
+  @@index([event_type, created_at], map: "ix_audit_event_time")
+  @@index([resource_type, resource_id], map: "ix_audit_resource")
+  @@index([severity, created_at], map: "ix_audit_severity_time")
+  @@index([user_id, created_at], map: "ix_audit_user_time")
+}
+
+model currencies {
+  code                                                                  String             @id @db.VarChar(3)
+  name                                                                  String             @db.VarChar(100)
+  symbol                                                                String             @db.VarChar(10)
+  decimal_places                                                        Int                @default(2)
+  is_active                                                             Boolean            @default(true)
+  created_at                                                            DateTime           @default(now()) @db.Timestamptz(6)
+  updated_at                                                            DateTime           @db.Timestamptz(6)
+  forecasts_forecasts_currency_code_baseTocurrencies                    forecasts[]        @relation("forecasts_currency_code_baseTocurrencies")
+  forecasts_forecasts_currency_code_txTocurrencies                      forecasts[]        @relation("forecasts_currency_code_txTocurrencies")
+  fx_rates_fx_rates_base_codeTocurrencies                               fx_rates[]         @relation("fx_rates_base_codeTocurrencies")
+  fx_rates_fx_rates_quote_codeTocurrencies                              fx_rates[]         @relation("fx_rates_quote_codeTocurrencies")
+  historical_sales_historical_sales_currency_code_baseTocurrencies      historical_sales[] @relation("historical_sales_currency_code_baseTocurrencies")
+  historical_sales_historical_sales_currency_code_txTocurrencies        historical_sales[] @relation("historical_sales_currency_code_txTocurrencies")
+  inventory_levels_inventory_levels_currency_code_baseTocurrencies      inventory_levels[] @relation("inventory_levels_currency_code_baseTocurrencies")
+  inventory_levels_inventory_levels_currency_code_valuationTocurrencies inventory_levels[] @relation("inventory_levels_currency_code_valuationTocurrencies")
+  working_capital_working_capital_currency_code_baseTocurrencies        working_capital[]  @relation("working_capital_currency_code_baseTocurrencies")
+  working_capital_working_capital_currency_codeTocurrencies             working_capital[]  @relation("working_capital_currency_codeTocurrencies")
+}
+
+model data_imports {
+  id                          String          @id @db.Uuid
+  import_name                 String          @db.VarChar(200)
+  import_type                 importtype
+  import_description          String?
+  original_filename           String?         @db.VarChar(255)
+  file_type                   filetype
+  file_path                   String?         @db.VarChar(500)
+  file_size_bytes             BigInt?
+  file_hash                   String?         @db.VarChar(64)
+  status                      importstatus
+  progress_percentage         Int?
+  current_step                String?         @db.VarChar(100)
+  total_rows                  Int?
+  processed_rows              Int?
+  successful_rows             Int?
+  failed_rows                 Int?
+  duplicate_rows              Int?
+  data_quality_score          Decimal?        @db.Decimal(3, 2)
+  completeness_score          Decimal?        @db.Decimal(3, 2)
+  accuracy_score              Decimal?        @db.Decimal(3, 2)
+  import_settings             Json?           @db.Json
+  validation_rules            Json?           @db.Json
+  field_mappings              Json?           @db.Json
+  started_at                  DateTime?       @db.Timestamptz(6)
+  completed_at                DateTime?       @db.Timestamptz(6)
+  processing_duration_seconds Int?
+  error_message               String?
+  error_details               Json?           @db.Json
+  rollback_completed          Boolean?
+  created_by                  String          @db.Uuid
+  created_at                  DateTime        @db.Timestamptz(6)
+  updated_at                  DateTime        @db.Timestamptz(6)
+  users                       users           @relation(fields: [created_by], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  import_errors               import_errors[]
+  import_logs                 import_logs[]
+
+  @@index([created_at, created_by], map: "ix_data_imports_created_user")
+  @@index([import_type], map: "ix_data_imports_import_type")
+  @@index([status, started_at], map: "ix_data_imports_processing")
+  @@index([status], map: "ix_data_imports_status")
+  @@index([status, import_type], map: "ix_data_imports_status_type")
+}
+
+model dq_findings {
+  id                String   @id @db.Uuid
+  run_id            String   @db.Uuid
+  rule_key          String   @db.VarChar(100)
+  severity          String   @db.VarChar(10)
+  count             Int      @default(0)
+  sample_ref        String?
+  impact_value_base Decimal? @db.Decimal(15, 2)
+  impact_currency   String?  @db.VarChar(3)
+  notes             String?
+  dq_runs           dq_runs  @relation(fields: [run_id], references: [id])
+
+  @@index([rule_key, severity])
+  @@index([run_id])
+}
+
+model dq_rules {
+  id          String   @id @db.Uuid
+  dataset     String   @db.VarChar(100)
+  rule_key    String   @db.VarChar(100)
+  severity    String   @db.VarChar(10)
+  config_json Json?    @db.Json
+  active      Boolean  @default(true)
+  created_at  DateTime @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime @db.Timestamptz(6)
+
+  @@unique([dataset, rule_key])
+  @@index([dataset, active])
+}
+
+model dq_runs {
+  id           String        @id @db.Uuid
+  dataset      String        @db.VarChar(100)
+  started_at   DateTime      @db.Timestamptz(6)
+  finished_at  DateTime?     @db.Timestamptz(6)
+  status       String        @db.VarChar(20)
+  profile_id   String?       @db.Uuid
+  ruleset_hash String?       @db.VarChar(64)
+  total_rules  Int           @default(0)
+  passed_rules Int           @default(0)
+  failed_rules Int           @default(0)
+  warned_rules Int           @default(0)
+  dq_findings  dq_findings[]
+
+  @@index([dataset, started_at])
+  @@index([status])
+}
+
+model entities {
+  id               String             @id @db.Uuid
+  name             String             @db.VarChar(100)
+  country_code     String             @db.VarChar(2)
+  currency_code    String             @db.VarChar(3)
+  tax_number       String?            @db.VarChar(50)
+  address          String?
+  is_active        Boolean            @default(true)
+  created_at       DateTime           @default(now()) @db.Timestamptz(6)
+  updated_at       DateTime           @db.Timestamptz(6)
+  created_by       String?            @db.Uuid
+  updated_by       String?            @db.Uuid
+  forecasts        forecasts[]
+  historical_sales historical_sales[]
+  inventory_levels inventory_levels[]
+  working_capital  working_capital[]
+
+  @@index([is_active], map: "ix_entity_active")
+  @@index([country_code], map: "ix_entity_country")
+  @@index([currency_code], map: "ix_entity_currency")
+}
+
+model feature_flags {
+  id           String   @id @db.Uuid
+  name         String   @unique @db.VarChar(100)
+  description  String?  @db.VarChar(500)
+  is_enabled   Boolean  @default(false)
+  rollout_pct  Int      @default(0)
+  environments Json?    @db.Json
+  user_filters Json?    @db.Json
+  created_at   DateTime @default(now()) @db.Timestamptz(6)
+  updated_at   DateTime @db.Timestamptz(6)
+}
+
+model forecasts {
+  id                                                  String         @id @db.Uuid
+  product_id                                          String         @db.Uuid
+  sales_channel_id                                    String         @db.Uuid
+  forecast_date                                       DateTime       @db.Date
+  forecast_period                                     String         @db.VarChar(20)
+  forecast_horizon_days                               Int
+  predicted_demand                                    Int
+  demand_lower_bound                                  Int?
+  demand_upper_bound                                  Int?
+  confidence_score                                    Decimal?       @db.Decimal(3, 2)
+  predicted_revenue                                   Decimal?       @db.Decimal(12, 2)
+  revenue_lower_bound                                 Decimal?       @db.Decimal(12, 2)
+  revenue_upper_bound                                 Decimal?       @db.Decimal(12, 2)
+  seasonal_factor                                     Decimal?       @db.Decimal(5, 4)
+  trend_factor                                        Decimal?       @db.Decimal(5, 4)
+  promotional_factor                                  Decimal?       @db.Decimal(5, 4)
+  external_factors                                    Json?          @db.Json
+  model_type                                          String         @db.VarChar(50)
+  model_version                                       String?        @db.VarChar(20)
+  training_data_start                                 DateTime?      @db.Date
+  training_data_end                                   DateTime?      @db.Date
+  model_accuracy_score                                Decimal?       @db.Decimal(5, 4)
+  status                                              String         @db.VarChar(20)
+  is_approved                                         Boolean
+  approved_by                                         String?        @db.Uuid
+  approved_at                                         DateTime?      @db.Timestamptz(6)
+  actual_demand                                       Int?
+  actual_revenue                                      Decimal?       @db.Decimal(12, 2)
+  forecast_error                                      Decimal?       @db.Decimal(8, 2)
+  forecast_accuracy                                   Decimal?       @db.Decimal(5, 4)
+  notes                                               String?
+  manual_adjustments                                  Json?          @db.Json
+  entity_id                                           String?        @db.Uuid
+  region                                              String?        @db.VarChar(10)
+  currency_code_tx                                    String?        @db.VarChar(3)
+  currency_code_base                                  String?        @db.VarChar(3)
+  predicted_revenue_tx                                Decimal?       @db.Decimal(18, 4)
+  predicted_revenue_base                              Decimal?       @db.Decimal(18, 4)
+  fx_rate_assumption                                  Decimal?       @db.Decimal(18, 8)
+  series_id                                           String?        @db.VarChar(200)
+  created_at                                          DateTime       @default(now()) @db.Timestamptz(6)
+  updated_at                                          DateTime       @db.Timestamptz(6)
+  created_by                                          String?        @db.Uuid
+  updated_by                                          String?        @db.Uuid
+  users_forecasts_approved_byTousers                  users?         @relation("forecasts_approved_byTousers", fields: [approved_by], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users_forecasts_created_byTousers                   users?         @relation("forecasts_created_byTousers", fields: [created_by], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  currencies_forecasts_currency_code_baseTocurrencies currencies?    @relation("forecasts_currency_code_baseTocurrencies", fields: [currency_code_base], references: [code], onDelete: NoAction, onUpdate: NoAction)
+  currencies_forecasts_currency_code_txTocurrencies   currencies?    @relation("forecasts_currency_code_txTocurrencies", fields: [currency_code_tx], references: [code], onDelete: NoAction, onUpdate: NoAction)
+  entities                                            entities?      @relation(fields: [entity_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  products                                            products       @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  sales_channels                                      sales_channels @relation(fields: [sales_channel_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([product_id, sales_channel_id, forecast_date, forecast_period], map: "uq_forecast_product_channel_date_period")
+  @@index([forecast_date, sales_channel_id], map: "ix_forecast_date_channel")
+  @@index([forecast_date, product_id], map: "ix_forecast_date_product")
+  @@index([entity_id, forecast_date], map: "ix_forecast_entity_date")
+  @@index([model_type], map: "ix_forecast_model_type")
+  @@index([product_id, sales_channel_id, forecast_date], map: "ix_forecast_product_channel_date")
+  @@index([region, forecast_date], map: "ix_forecast_region_date")
+  @@index([series_id, forecast_date], map: "ix_forecast_series_date")
+  @@index([series_id], map: "ix_forecast_series_id")
+  @@index([status, is_approved], map: "ix_forecast_status_approved")
+  @@index([forecast_date], map: "ix_forecasts_forecast_date")
+}
+
+model fx_rates {
+  id                                         String     @id @db.Uuid
+  as_of_date                                 DateTime   @db.Date
+  base_code                                  String     @db.VarChar(3)
+  quote_code                                 String     @db.VarChar(3)
+  rate                                       Decimal    @db.Decimal(18, 8)
+  source                                     String     @default("ecb") @db.VarChar(50)
+  created_at                                 DateTime   @default(now()) @db.Timestamptz(6)
+  currencies_fx_rates_base_codeTocurrencies  currencies @relation("fx_rates_base_codeTocurrencies", fields: [base_code], references: [code])
+  currencies_fx_rates_quote_codeTocurrencies currencies @relation("fx_rates_quote_codeTocurrencies", fields: [quote_code], references: [code])
+
+  @@unique([as_of_date, base_code, quote_code])
+  @@index([as_of_date], map: "ix_fx_rate_date")
+  @@index([base_code, quote_code], map: "ix_fx_rate_pair")
+}
+
+model historical_sales {
+  id                                                         String         @id @db.Uuid
+  product_id                                                 String         @db.Uuid
+  sales_channel_id                                           String         @db.Uuid
+  sale_date                                                  DateTime       @db.Date
+  sale_datetime                                              DateTime       @db.Timestamptz(6)
+  quantity_sold                                              Int
+  unit_price                                                 Decimal        @db.Decimal(10, 2)
+  gross_revenue                                              Decimal        @db.Decimal(12, 2)
+  discounts                                                  Decimal?       @db.Decimal(10, 2)
+  net_revenue                                                Decimal        @db.Decimal(12, 2)
+  cost_of_goods_sold                                         Decimal?       @db.Decimal(10, 2)
+  shipping_cost                                              Decimal?       @db.Decimal(8, 2)
+  platform_fees                                              Decimal?       @db.Decimal(8, 2)
+  taxes                                                      Decimal?       @db.Decimal(8, 2)
+  net_profit                                                 Decimal?       @db.Decimal(10, 2)
+  order_id                                                   String?        @db.VarChar(100)
+  order_item_id                                              String?        @db.VarChar(100)
+  customer_type                                              String?        @db.VarChar(20)
+  fulfillment_method                                         String?        @db.VarChar(20)
+  shipping_country                                           String?        @db.VarChar(10)
+  shipping_region                                            String?        @db.VarChar(50)
+  season                                                     String?        @db.VarChar(20)
+  data_source                                                String?        @db.VarChar(50)
+  data_quality_score                                         Decimal?       @db.Decimal(3, 2)
+  is_validated                                               Boolean
+  validation_notes                                           String?
+  entity_id                                                  String?        @db.Uuid
+  region                                                     String?        @db.VarChar(10)
+  currency_code_tx                                           String?        @db.VarChar(3)
+  currency_code_base                                         String?        @db.VarChar(3)
+  amount_tx                                                  Decimal?       @db.Decimal(18, 4)
+  amount_base                                                Decimal?       @db.Decimal(18, 4)
+  fx_rate_used                                               Decimal?       @db.Decimal(18, 8)
+  import_batch_id                                            String?        @db.Uuid
+  created_at                                                 DateTime       @default(now()) @db.Timestamptz(6)
+  updated_at                                                 DateTime       @db.Timestamptz(6)
+  created_by                                                 String?        @db.Uuid
+  updated_by                                                 String?        @db.Uuid
+  users                                                      users?         @relation(fields: [created_by], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  currencies_historical_sales_currency_code_baseTocurrencies currencies?    @relation("historical_sales_currency_code_baseTocurrencies", fields: [currency_code_base], references: [code], onDelete: NoAction, onUpdate: NoAction)
+  currencies_historical_sales_currency_code_txTocurrencies   currencies?    @relation("historical_sales_currency_code_txTocurrencies", fields: [currency_code_tx], references: [code], onDelete: NoAction, onUpdate: NoAction)
+  entities                                                   entities?      @relation(fields: [entity_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  products                                                   products       @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  sales_channels                                             sales_channels @relation(fields: [sales_channel_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([import_batch_id], map: "ix_historical_sales_batch")
+  @@index([currency_code_tx, sale_date], map: "ix_historical_sales_currency_date")
+  @@index([sale_date, sales_channel_id], map: "ix_historical_sales_date_channel")
+  @@index([sale_date, product_id], map: "ix_historical_sales_date_product")
+  @@index([entity_id, sale_date], map: "ix_historical_sales_entity_date")
+  @@index([order_id], map: "ix_historical_sales_order")
+  @@index([product_id, sales_channel_id, sale_date], map: "ix_historical_sales_product_channel_date")
+  @@index([region, sale_date], map: "ix_historical_sales_region_date")
+  @@index([sale_date], map: "ix_historical_sales_sale_date")
+  @@index([product_id, sales_channel_id, sale_date, quantity_sold], map: "ix_historical_sales_timeseries")
+  @@index([is_validated, data_quality_score], map: "ix_historical_sales_validated")
+}
+
+model import_errors {
+  id                String       @id @db.Uuid
+  import_id         String       @db.Uuid
+  row_number        Int?
+  column_name       String?      @db.VarChar(100)
+  error_type        String       @db.VarChar(50)
+  error_code        String?      @db.VarChar(20)
+  error_message     String
+  error_severity    String?      @db.VarChar(20)
+  original_value    String?
+  suggested_value   String?
+  row_data          Json?        @db.Json
+  is_resolved       Boolean?
+  resolution_method String?      @db.VarChar(50)
+  resolved_by       String?      @db.Uuid
+  resolved_at       DateTime?    @db.Timestamptz(6)
+  resolution_notes  String?
+  created_at        DateTime     @db.Timestamptz(6)
+  data_imports      data_imports @relation(fields: [import_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users             users?       @relation(fields: [resolved_by], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([import_id, error_severity], map: "ix_import_errors_import_severity")
+  @@index([import_id, row_number], map: "ix_import_errors_row")
+  @@index([error_type, is_resolved], map: "ix_import_errors_type_resolved")
+}
+
+model import_job {
+  id                Int                 @id @default(autoincrement())
+  filename          String              @db.VarChar(255)
+  file_path         String              @db.VarChar(500)
+  file_size         Int
+  file_type         String              @db.VarChar(100)
+  data_type         String              @db.VarChar(50)
+  status            String              @default("uploaded") @db.VarChar(50)
+  mapping_config    Json?               @db.Json
+  validation_rules  Json?               @db.Json
+  total_rows        Int                 @default(0)
+  processed_rows    Int                 @default(0)
+  error_rows        Int                 @default(0)
+  warnings          Json?               @db.Json
+  uploaded_by       String?             @db.Uuid
+  uploaded_at       DateTime            @db.Timestamptz(6)
+  processed_at      DateTime?           @db.Timestamptz(6)
+  completed_at      DateTime?           @db.Timestamptz(6)
+  users             users?              @relation(fields: [uploaded_by], references: [id], onUpdate: NoAction)
+  validation_result validation_result[]
+
+  @@index([status, uploaded_at], map: "ix_import_jobs_status_date")
+  @@index([uploaded_by, uploaded_at], map: "ix_import_jobs_user_date")
+}
+
+model import_lineage {
+  id                    String   @id @db.Uuid
+  import_job_id         Int
+  validation_profile_id String?  @db.Uuid
+  lineage_tag           String
+  ruleset_hash          String?  @db.VarChar(64)
+  rows_affected         Int      @default(0)
+  created_at            DateTime @default(now()) @db.Timestamptz(6)
+
+  @@index([import_job_id])
+  @@index([lineage_tag])
+}
+
+model import_logs {
+  id                 String       @id @db.Uuid
+  import_id          String       @db.Uuid
+  log_level          String       @db.VarChar(20)
+  log_message        String
+  log_context        Json?        @db.Json
+  step_name          String?      @db.VarChar(100)
+  row_number         Int?
+  processing_time_ms Int?
+  created_at         DateTime     @db.Timestamptz(6)
+  data_imports       data_imports @relation(fields: [import_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([created_at], map: "ix_import_logs_created")
+  @@index([import_id, log_level], map: "ix_import_logs_import_level")
+}
+
+model import_provenance {
+  id               String   @id @db.Uuid
+  import_job_id    String?  @db.Uuid
+  source_system    String   @db.VarChar(100)
+  batch_identifier String   @db.VarChar(100)
+  import_timestamp DateTime @default(now()) @db.Timestamptz(6)
+  record_count     Int
+  created_at       DateTime @default(now()) @db.Timestamptz(6)
+
+  @@index([batch_identifier], map: "ix_provenance_batch")
+  @@index([source_system, import_timestamp], map: "ix_provenance_system_time")
+}
+
+model import_templates {
+  id                 String     @id @db.Uuid
+  template_name      String     @unique @db.VarChar(100)
+  import_type        importtype
+  version            String?    @db.VarChar(20)
+  description        String?
+  file_format        filetype
+  field_definitions  Json       @db.Json
+  sample_data        Json?      @db.Json
+  validation_rules   Json?      @db.Json
+  template_file_path String?    @db.VarChar(500)
+  documentation_path String?    @db.VarChar(500)
+  download_count     Int?
+  usage_count        Int?
+  success_rate       Decimal?   @db.Decimal(5, 2)
+  is_active          Boolean?
+  is_system_template Boolean?
+  created_by         String     @db.Uuid
+  created_at         DateTime   @db.Timestamptz(6)
+  updated_at         DateTime   @db.Timestamptz(6)
+  users              users      @relation(fields: [created_by], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([import_type, is_active], map: "ix_import_templates_type_active")
+  @@index([usage_count, success_rate], map: "ix_import_templates_usage")
+}
+
+model inventory_levels {
+  id                                                              String      @id @db.Uuid
+  product_id                                                      String      @db.Uuid
+  location_type                                                   String      @db.VarChar(50)
+  location_id                                                     String      @db.VarChar(100)
+  location_name                                                   String?     @db.VarChar(200)
+  country_code                                                    String?     @db.VarChar(10)
+  available_quantity                                              Int
+  reserved_quantity                                               Int?
+  inbound_quantity                                                Int?
+  defective_quantity                                              Int?
+  total_quantity                                                  Int
+  reorder_point                                                   Int?
+  safety_stock                                                    Int?
+  maximum_stock                                                   Int?
+  economic_order_quantity                                         Int?
+  unit_cost                                                       Decimal?    @db.Decimal(10, 2)
+  total_value                                                     Decimal?    @db.Decimal(12, 2)
+  storage_cost_per_unit_monthly                                   Decimal?    @db.Decimal(8, 4)
+  average_age_days                                                Int?
+  oldest_stock_date                                               DateTime?   @db.Date
+  turnover_rate_monthly                                           Decimal?    @db.Decimal(6, 4)
+  expected_demand_30d                                             Int?
+  days_of_supply                                                  Int?
+  stock_out_risk_score                                            Decimal?    @db.Decimal(3, 2)
+  status                                                          String      @db.VarChar(20)
+  last_movement_date                                              DateTime?   @db.Date
+  last_count_date                                                 DateTime?   @db.Date
+  requires_recount                                                Boolean?
+  data_source                                                     String?     @db.VarChar(50)
+  last_sync_at                                                    DateTime?   @db.Timestamptz(6)
+  sync_status                                                     String?     @db.VarChar(20)
+  notes                                                           String?
+  adjustment_reason                                               String?     @db.VarChar(200)
+  snapshot_date                                                   DateTime    @db.Date
+  entity_id                                                       String?     @db.Uuid
+  region                                                          String?     @db.VarChar(10)
+  currency_code_valuation                                         String?     @db.VarChar(3)
+  currency_code_base                                              String?     @db.VarChar(3)
+  unit_cost_base                                                  Decimal?    @db.Decimal(18, 4)
+  total_value_base                                                Decimal?    @db.Decimal(18, 4)
+  fx_rate_valuation                                               Decimal?    @db.Decimal(18, 8)
+  created_at                                                      DateTime    @default(now()) @db.Timestamptz(6)
+  updated_at                                                      DateTime    @db.Timestamptz(6)
+  created_by                                                      String?     @db.Uuid
+  updated_by                                                      String?     @db.Uuid
+  users                                                           users?      @relation(fields: [created_by], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  currencies_inventory_levels_currency_code_baseTocurrencies      currencies? @relation("inventory_levels_currency_code_baseTocurrencies", fields: [currency_code_base], references: [code], onDelete: NoAction, onUpdate: NoAction)
+  currencies_inventory_levels_currency_code_valuationTocurrencies currencies? @relation("inventory_levels_currency_code_valuationTocurrencies", fields: [currency_code_valuation], references: [code], onDelete: NoAction, onUpdate: NoAction)
+  entities                                                        entities?   @relation(fields: [entity_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  products                                                        products    @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([product_id, location_id, snapshot_date], map: "uq_inventory_product_location_date")
+  @@index([country_code], map: "ix_inventory_country")
+  @@index([currency_code_valuation, snapshot_date], map: "ix_inventory_currency_date")
+  @@index([entity_id, snapshot_date], map: "ix_inventory_entity_date")
+  @@index([snapshot_date], map: "ix_inventory_levels_snapshot_date")
+  @@index([location_type], map: "ix_inventory_location_type")
+  @@index([product_id, location_id], map: "ix_inventory_product_location")
+  @@index([region, snapshot_date], map: "ix_inventory_region_date")
+  @@index([snapshot_date], map: "ix_inventory_snapshot_date")
+  @@index([status, snapshot_date], map: "ix_inventory_status_date")
+}
+
+model inventory_policies {
+  id             String    @id @db.Uuid
+  sku            String    @db.VarChar(50)
+  product_id     String    @db.Uuid
+  target_dio     Int
+  service_level  Decimal   @db.Decimal(4, 3)
+  rop            Int
+  ss             Int
+  effective_from DateTime  @db.Date
+  effective_to   DateTime? @db.Date
+  created_by     String?   @db.Uuid
+  created_at     DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at     DateTime  @db.Timestamptz(6)
+  users          users?    @relation(fields: [created_by], references: [id])
+  products       products  @relation(fields: [product_id], references: [id], onDelete: Cascade)
+
+  @@unique([product_id, effective_from])
+  @@index([product_id, effective_from], map: "ix_inventory_policy_product_active")
+  @@index([sku], map: "ix_inventory_policy_sku")
+}
+
+model jobs {
+  id              String     @id @db.Uuid
+  job_number      String     @unique(map: "ix_jobs_job_number") @db.VarChar(50)
+  customer_name   String     @db.VarChar(200)
+  product_type    String?    @db.VarChar(100)
+  quantity        Int
+  priority        Int?
+  status          String?    @db.VarChar(20)
+  created_at      DateTime?  @db.Timestamptz(6)
+  due_date        DateTime   @db.Timestamptz(6)
+  start_date      DateTime?  @db.Timestamptz(6)
+  completion_date DateTime?  @db.Timestamptz(6)
+  estimated_hours Float?
+  actual_hours    Float?
+  notes           String?
+  schedule_id     String?    @db.Uuid
+  schedules       schedules? @relation(fields: [schedule_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model lessons {
+  id             String   @id @db.Uuid
+  run_id         String   @db.Uuid
+  type           String   @db.VarChar(50)
+  content        String
+  recommendation String?
+  created_at     DateTime @default(now()) @db.Timestamptz(6)
+
+  @@index([run_id])
+  @@index([type])
+}
+
+model markets {
+  id                      String            @id @db.Uuid
+  code                    String            @unique(map: "ix_markets_code") @db.VarChar(10)
+  name                    String            @db.VarChar(100)
+  region                  String            @db.VarChar(50)
+  currency_code           String            @db.VarChar(3)
+  tax_rate                Decimal?          @db.Decimal(5, 4)
+  standard_shipping_days  Int?
+  express_shipping_days   Int?
+  customs_requirements    String?
+  regulatory_requirements Json?             @db.Json
+  import_restrictions     String?
+  is_active               Boolean
+  created_at              DateTime          @db.Timestamptz(6)
+  updated_at              DateTime          @db.Timestamptz(6)
+  created_by              String?           @db.Uuid
+  users                   users?            @relation(fields: [created_by], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  sales_channels          sales_channels[]
+  working_capital         working_capital[]
+}
+
+model model_artifacts {
+  id              String            @id @db.Uuid
+  type            String            @db.VarChar(20)
+  run_id          String?           @db.Uuid
+  entity_id       String?           @db.Uuid
+  region          String?           @db.VarChar(10)
+  created_at      DateTime          @default(now()) @db.Timestamptz(6)
+  created_by      String?           @db.Uuid
+  metrics_json    Json?             @db.Json
+  params_json     Json?             @db.Json
+  artifact_url    String?
+  status          String            @db.VarChar(20)
+  tags            String[]
+  version         String?           @db.VarChar(50)
+  model_baselines model_baselines[]
+
+  @@index([entity_id, region])
+  @@index([status])
+  @@index([type, created_at])
+}
+
+model model_baselines {
+  id              String          @id @db.Uuid
+  type            String          @db.VarChar(20)
+  entity_id       String?         @db.Uuid
+  region          String?         @db.VarChar(10)
+  active_from     DateTime        @db.Timestamptz(6)
+  active_to       DateTime?       @db.Timestamptz(6)
+  artifact_id     String          @db.Uuid
+  approver_id     String?         @db.Uuid
+  approved_at     DateTime?       @db.Timestamptz(6)
+  notes           String?
+  snapshot_json   Json?           @db.Json
+  model_artifacts model_artifacts @relation(fields: [artifact_id], references: [id])
+
+  @@unique([type, entity_id, region, active_from])
+  @@index([artifact_id])
+  @@index([type, entity_id, region, active_to])
+}
+
+model password_history {
+  id            Int      @id @default(autoincrement())
+  user_id       String   @db.Uuid
+  password_hash String
+  created_at    DateTime @default(now()) @db.Timestamptz(6)
+
+  @@index([user_id, created_at], map: "ix_password_history_user_date")
+}
+
+model password_reset_tokens {
+  id         String    @id @db.Uuid
+  user_id    String    @db.Uuid
+  token_hash String    @db.VarChar(255)
+  ip_address String?   @db.VarChar(45)
+  user_agent String?   @db.VarChar(500)
+  expires_at DateTime  @db.Timestamptz(6)
+  used_at    DateTime? @db.Timestamptz(6)
+  created_at DateTime  @default(now()) @db.Timestamptz(6)
+  users      users     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([expires_at], map: "ix_reset_tokens_expires")
+  @@index([token_hash], map: "ix_reset_tokens_hash")
+  @@index([user_id], map: "ix_reset_tokens_user")
+}
+
+model products {
+  id                    String               @id @db.Uuid
+  sku                   String               @unique(map: "ix_products_sku") @db.VarChar(50)
+  name                  String               @db.VarChar(100)
+  category              String               @db.VarChar(50)
+  market_region         String               @db.VarChar(10)
+  weight_kg             Decimal?             @db.Decimal(8, 3)
+  dimensions_cm         String?              @db.VarChar(50)
+  unit_cost             Decimal?             @db.Decimal(10, 2)
+  selling_price         Decimal?             @db.Decimal(10, 2)
+  production_time_hours Decimal?             @db.Decimal(6, 2)
+  batch_size_min        Int?
+  batch_size_max        Int?
+  is_active             Boolean
+  created_at            DateTime             @db.Timestamptz(6)
+  updated_at            DateTime             @db.Timestamptz(6)
+  created_by            String?              @db.Uuid
+  forecasts             forecasts[]
+  historical_sales      historical_sales[]
+  inventory_levels      inventory_levels[]
+  inventory_policies    inventory_policies[]
+  users                 users?               @relation(fields: [created_by], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  working_capital       working_capital[]
+
+  @@index([is_active, created_at], map: "ix_product_active_created")
+  @@index([category, market_region], map: "ix_product_category_market")
+}
+
+model reflections {
+  id         String     @id @db.Uuid
+  run_id     String     @db.Uuid
+  content    Json       @db.Json
+  score      Decimal    @db.Decimal(3, 2)
+  created_at DateTime   @default(now()) @db.Timestamptz(6)
+  agent_runs agent_runs @relation(fields: [run_id], references: [id])
+
+  @@index([run_id])
+}
+
+model resources {
+  id                String    @id @db.Uuid
+  name              String    @db.VarChar(100)
+  type              String    @db.VarChar(50)
+  capacity          Float?
+  status            String?   @db.VarChar(20)
+  created_at        DateTime? @db.Timestamptz(6)
+  last_maintenance  DateTime? @db.Timestamptz(6)
+  next_maintenance  DateTime? @db.Timestamptz(6)
+  efficiency_rating Float?
+  cost_per_hour     Float?
+  location          String?   @db.VarChar(100)
+  description       String?
+
+  @@index([name], map: "ix_resources_name")
+}
+
+model sales_channels {
+  id                        String             @id @db.Uuid
+  name                      String             @db.VarChar(100)
+  channel_type              String             @db.VarChar(50)
+  market_code               String             @db.VarChar(10)
+  api_endpoint              String?            @db.VarChar(255)
+  api_credentials_encrypted String?
+  marketplace_id            String?            @db.VarChar(100)
+  commission_rate           Decimal?           @db.Decimal(5, 4)
+  fulfillment_method        String?            @db.VarChar(20)
+  average_processing_days   Int?
+  sync_enabled              Boolean
+  sync_frequency_minutes    Int?
+  last_sync_at              DateTime?          @db.Timestamptz(6)
+  sync_status               String?            @db.VarChar(20)
+  sync_error_message        String?
+  monthly_sales_target      Decimal?           @db.Decimal(12, 2)
+  conversion_rate           Decimal?           @db.Decimal(5, 4)
+  return_rate               Decimal?           @db.Decimal(5, 4)
+  is_active                 Boolean
+  created_at                DateTime           @db.Timestamptz(6)
+  updated_at                DateTime           @db.Timestamptz(6)
+  created_by                String?            @db.Uuid
+  ar_policies               ar_policies[]
+  forecasts                 forecasts[]
+  historical_sales          historical_sales[]
+  users                     users?             @relation(fields: [created_by], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  markets                   markets            @relation(fields: [market_code], references: [code], onDelete: NoAction, onUpdate: NoAction)
+  working_capital           working_capital[]
+
+  @@index([is_active, sync_enabled], map: "ix_sales_channel_active_sync")
+  @@index([last_sync_at], map: "ix_sales_channel_last_sync")
+  @@index([channel_type, market_code], map: "ix_sales_channel_type_market")
+}
+
+model sales_tax_us {
+  id         String    @id @db.Uuid
+  state_code String    @db.VarChar(2)
+  locality   String?   @db.VarChar(100)
+  rate_pct   Decimal   @db.Decimal(5, 4)
+  valid_from DateTime  @db.Date
+  valid_to   DateTime? @db.Date
+  created_at DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at DateTime  @db.Timestamptz(6)
+
+  @@index([state_code, valid_from], map: "ix_sales_tax_state_date")
+}
+
+model schedules {
+  id                 String    @id @db.Uuid
+  name               String    @db.VarChar(100)
+  version            Int?
+  status             String?   @db.VarChar(20)
+  created_at         DateTime? @db.Timestamptz(6)
+  created_by         String?   @db.Uuid
+  start_date         DateTime  @db.Timestamptz(6)
+  end_date           DateTime  @db.Timestamptz(6)
+  optimization_score Float?
+  total_jobs         Int?
+  completed_jobs     Int?
+  jobs               jobs[]
+  users              users?    @relation(fields: [created_by], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model sso_providers {
+  id                String   @id @db.Uuid
+  name              String   @db.VarChar(100)
+  provider_type     String   @db.VarChar(50)
+  metadata_url      String?  @db.VarChar(500)
+  client_id         String?  @db.VarChar(255)
+  client_secret     String?  @db.VarChar(255)
+  domain_whitelist  Json?    @db.Json
+  default_role      String   @default("viewer") @db.VarChar(20)
+  default_entity_id String?  @db.Uuid
+  is_active         Boolean  @default(false)
+  created_at        DateTime @default(now()) @db.Timestamptz(6)
+  updated_at        DateTime @db.Timestamptz(6)
+}
+
+model system_settings {
+  id                                      String    @id @db.Uuid
+  category                                String    @db.VarChar(50)
+  key                                     String    @db.VarChar(100)
+  name                                    String    @db.VarChar(200)
+  description                             String?
+  value_text                              String?
+  value_integer                           BigInt?
+  value_decimal                           Decimal?  @db.Decimal(20, 8)
+  value_boolean                           Boolean?
+  value_json                              Json?     @db.Json
+  value_date                              DateTime? @db.Date
+  value_datetime                          DateTime? @db.Timestamptz(6)
+  data_type                               String    @db.VarChar(20)
+  is_encrypted                            Boolean
+  validation_rules                        Json?     @db.Json
+  default_value                           String?
+  is_system_setting                       Boolean
+  is_sensitive                            Boolean
+  requires_restart                        Boolean
+  environment                             String?   @db.VarChar(20)
+  scope                                   String?   @db.VarChar(50)
+  scope_id                                String?   @db.VarChar(100)
+  version                                 Int
+  is_active                               Boolean
+  effective_from                          DateTime? @db.Timestamptz(6)
+  effective_to                            DateTime? @db.Timestamptz(6)
+  previous_value                          String?
+  change_reason                           String?   @db.VarChar(200)
+  created_at                              DateTime  @db.Timestamptz(6)
+  updated_at                              DateTime  @db.Timestamptz(6)
+  created_by                              String?   @db.Uuid
+  updated_by                              String?   @db.Uuid
+  users_system_settings_created_byTousers users?    @relation("system_settings_created_byTousers", fields: [created_by], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users_system_settings_updated_byTousers users?    @relation("system_settings_updated_byTousers", fields: [updated_by], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([category, key, scope, scope_id, environment, version], map: "uq_system_settings_active")
+  @@index([is_active, effective_from, effective_to], map: "ix_system_settings_active_effective")
+  @@index([category], map: "ix_system_settings_category")
+  @@index([category, key], map: "ix_system_settings_category_key")
+  @@index([environment], map: "ix_system_settings_environment")
+  @@index([key], map: "ix_system_settings_key")
+  @@index([scope, scope_id], map: "ix_system_settings_scope")
+}
+
+model tool_invocations {
+  id           String     @id @db.Uuid
+  run_id       String     @db.Uuid
+  step_id      String     @db.VarChar(100)
+  tool_id      String     @db.VarChar(100)
+  params       Json       @db.Json
+  result       Json?      @db.Json
+  status       String     @db.VarChar(20)
+  started_at   DateTime   @db.Timestamptz(6)
+  finished_at  DateTime?  @db.Timestamptz(6)
+  metrics_json Json?      @db.Json
+  agent_runs   agent_runs @relation(fields: [run_id], references: [id])
+
+  @@index([run_id, step_id])
+  @@index([tool_id, started_at])
+}
+
+model user_sessions {
+  id                 String    @id @db.Uuid
+  user_id            String    @db.Uuid
+  refresh_token_hash String    @db.VarChar(255)
+  access_token_hash  String?   @db.VarChar(255)
+  device_name        String?   @db.VarChar(200)
+  user_agent         String?   @db.VarChar(500)
+  ip_address         String?   @db.VarChar(45)
+  ip_country         String?   @db.VarChar(2)
+  ip_city            String?   @db.VarChar(100)
+  created_at         DateTime  @default(now()) @db.Timestamptz(6)
+  last_used_at       DateTime  @default(now()) @db.Timestamptz(6)
+  expires_at         DateTime  @db.Timestamptz(6)
+  revoked_at         DateTime? @db.Timestamptz(6)
+  revoked_reason     String?   @db.VarChar(100)
+  is_suspicious      Boolean   @default(false)
+  users              users     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([expires_at], map: "ix_sessions_expires")
+  @@index([ip_address, created_at], map: "ix_sessions_ip_time")
+  @@index([refresh_token_hash], map: "ix_sessions_refresh_token")
+  @@index([is_suspicious, created_at], map: "ix_sessions_suspicious")
+  @@index([user_id, revoked_at], map: "ix_sessions_user_active")
+}
+
+model users {
+  id                                                   String                  @id @db.Uuid
+  username                                             String                  @unique(map: "ix_users_username") @db.VarChar(64)
+  email                                                String                  @unique(map: "ix_users_email") @db.VarChar(120)
+  password_hash                                        String?                 @db.VarChar(256)
+  first_name                                           String?                 @db.VarChar(50)
+  last_name                                            String?                 @db.VarChar(50)
+  display_name                                         String?                 @db.VarChar(100)
+  role                                                 String                  @db.VarChar(20)
+  permissions                                          Json?                   @db.Json
+  is_active                                            Boolean
+  is_admin                                             Boolean
+  department                                           String?                 @db.VarChar(50)
+  access_regions                                       Json?                   @db.Json
+  last_login                                           DateTime?               @db.Timestamptz(6)
+  last_login_ip                                        String?                 @db.VarChar(45)
+  login_count                                          Int?
+  password_reset_token                                 String?                 @db.VarChar(255)
+  password_reset_expires                               DateTime?               @db.Timestamptz(6)
+  failed_login_attempts                                Int?
+  account_locked_until                                 DateTime?               @db.Timestamptz(6)
+  two_factor_enabled                                   Boolean
+  two_factor_secret                                    String?                 @db.VarChar(32)
+  backup_codes                                         Json?                   @db.Json
+  session_token                                        String?                 @db.VarChar(255)
+  session_expires                                      DateTime?               @db.Timestamptz(6)
+  locked_until                                         DateTime?               @db.Timestamptz(6)
+  failed_login_count                                   Int?                    @default(0)
+  last_failed_login                                    DateTime?               @db.Timestamptz(6)
+  password_changed_at                                  DateTime?               @db.Timestamptz(6)
+  default_entity_id                                    String?                 @db.Uuid
+  allowed_entity_ids                                   Json?
+  allowed_regions                                      Json?
+  preferred_currency_code                              String?                 @db.VarChar(3)
+  preferred_locale                                     String?                 @db.VarChar(10)
+  preferred_timezone                                   String?                 @db.VarChar(50)
+  sso_provider                                         String?                 @db.VarChar(50)
+  last_sso_login                                       DateTime?               @db.Timestamptz(6)
+  created_via_jit                                      Boolean?                @default(false)
+  approved                                             Boolean                 @default(false)
+  force_password_change                                Boolean
+  preferences                                          Json?                   @db.Json
+  created_at                                           DateTime                @default(now()) @db.Timestamptz(6)
+  updated_at                                           DateTime                @db.Timestamptz(6)
+  created_by                                           String?                 @db.Uuid
+  updated_by                                           String?                 @db.Uuid
+  deleted_at                                           DateTime?               @db.Timestamptz(6)
+  organizationId                                       String?                 @default("default")
+  agent_runs                                           agent_runs[]
+  ap_policies                                          ap_policies[]
+  approvals                                            approvals[]
+  ar_policies                                          ar_policies[]
+  audit_logs                                           audit_logs[]
+  data_imports                                         data_imports[]
+  forecasts_forecasts_approved_byTousers               forecasts[]             @relation("forecasts_approved_byTousers")
+  forecasts_forecasts_created_byTousers                forecasts[]             @relation("forecasts_created_byTousers")
+  historical_sales                                     historical_sales[]
+  import_errors                                        import_errors[]
+  import_job                                           import_job[]
+  import_templates                                     import_templates[]
+  inventory_levels                                     inventory_levels[]
+  inventory_policies                                   inventory_policies[]
+  markets                                              markets[]
+  password_reset_tokens                                password_reset_tokens[]
+  products                                             products[]
+  sales_channels                                       sales_channels[]
+  schedules                                            schedules[]
+  system_settings_system_settings_created_byTousers    system_settings[]       @relation("system_settings_created_byTousers")
+  system_settings_system_settings_updated_byTousers    system_settings[]       @relation("system_settings_updated_byTousers")
+  user_sessions                                        user_sessions[]
+  wc_kpis                                              wc_kpis[]
+  wc_optimizations_wc_optimizations_approved_byTousers wc_optimizations[]      @relation("wc_optimizations_approved_byTousers")
+  wc_optimizations_wc_optimizations_created_byTousers  wc_optimizations[]      @relation("wc_optimizations_created_byTousers")
+  wc_projections                                       wc_projections[]
+  wc_scenarios_wc_scenarios_approved_byTousers         wc_scenarios[]          @relation("wc_scenarios_approved_byTousers")
+  wc_scenarios_wc_scenarios_created_byTousers          wc_scenarios[]          @relation("wc_scenarios_created_byTousers")
+  working_capital_working_capital_approved_byTousers   working_capital[]       @relation("working_capital_approved_byTousers")
+  working_capital_working_capital_created_byTousers    working_capital[]       @relation("working_capital_created_byTousers")
+
+  @@index([last_login], map: "ix_user_last_login")
+  @@index([role, is_active], map: "ix_user_role_active")
+}
+
+model validation_result {
+  id             Int        @id @default(autoincrement())
+  import_job_id  Int
+  row_number     Int
+  status         String     @db.VarChar(20)
+  errors         Json?      @db.Json
+  warnings       Json?      @db.Json
+  original_data  Json       @db.Json
+  processed_data Json?      @db.Json
+  created_at     DateTime   @default(now()) @db.Timestamptz(6)
+  import_job     import_job @relation(fields: [import_job_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([import_job_id, row_number], map: "ix_validation_results_job_row")
+  @@index([import_job_id, status], map: "ix_validation_results_job_status")
+}
+
+model vat_rates {
+  id           String    @id @db.Uuid
+  country_code String    @db.VarChar(2)
+  rate_name    String    @db.VarChar(50)
+  rate_pct     Decimal   @db.Decimal(5, 4)
+  valid_from   DateTime  @db.Date
+  valid_to     DateTime? @db.Date
+  created_at   DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at   DateTime  @db.Timestamptz(6)
+
+  @@index([country_code, valid_from], map: "ix_vat_rate_country_date")
+  @@index([valid_from, valid_to], map: "ix_vat_rate_validity")
+}
+
+model wc_kpis {
+  id                   String         @id @db.Uuid
+  run_id               String         @db.Uuid
+  projection_id        String         @db.Uuid
+  scenario             String         @default("baseline") @db.VarChar(50)
+  dso                  Decimal        @db.Decimal(6, 2)
+  dpo                  Decimal        @db.Decimal(6, 2)
+  dio                  Decimal        @db.Decimal(6, 2)
+  ccc                  Decimal        @db.Decimal(6, 2)
+  inv_turnover         Decimal        @db.Decimal(6, 2)
+  wc_turnover          Decimal        @db.Decimal(6, 2)
+  min_cash             Decimal        @db.Decimal(15, 2)
+  facility_utilization Decimal        @db.Decimal(5, 4)
+  created_by           String?        @db.Uuid
+  created_at           DateTime       @default(now()) @db.Timestamptz(6)
+  users                users?         @relation(fields: [created_by], references: [id])
+  wc_projections       wc_projections @relation(fields: [projection_id], references: [id], onDelete: Cascade)
+
+  @@unique([run_id, projection_id, scenario])
+  @@index([ccc], map: "ix_wc_kpis_ccc")
+  @@index([run_id, scenario], map: "ix_wc_kpis_run_scenario")
+}
+
+model wc_optimizations {
+  id                                        String    @id @db.Uuid
+  run_id                                    String    @db.Uuid
+  recommendation_type                       String    @db.VarChar(50)
+  current_state                             Json      @db.Json
+  recommended_state                         Json      @db.Json
+  impact_analysis                           Json      @db.Json
+  implementation_notes                      String?
+  priority_score                            Decimal   @db.Decimal(3, 1)
+  confidence_level                          Decimal   @db.Decimal(3, 2)
+  status                                    String    @default("pending") @db.VarChar(20)
+  implemented_at                            DateTime? @db.Timestamptz(6)
+  created_by                                String?   @db.Uuid
+  approved_by                               String?   @db.Uuid
+  approved_at                               DateTime? @db.Timestamptz(6)
+  created_at                                DateTime  @default(now()) @db.Timestamptz(6)
+  users_wc_optimizations_approved_byTousers users?    @relation("wc_optimizations_approved_byTousers", fields: [approved_by], references: [id])
+  users_wc_optimizations_created_byTousers  users?    @relation("wc_optimizations_created_byTousers", fields: [created_by], references: [id])
+
+  @@index([run_id], map: "ix_wc_optimization_run")
+  @@index([status, priority_score], map: "ix_wc_optimization_status_priority")
+  @@index([recommendation_type, priority_score], map: "ix_wc_optimization_type_priority")
+}
+
+model wc_projections {
+  id            String    @id @db.Uuid
+  run_id        String    @db.Uuid
+  month         DateTime  @db.Date
+  cash_in       Decimal   @db.Decimal(15, 2)
+  cash_out      Decimal   @db.Decimal(15, 2)
+  net_change    Decimal   @db.Decimal(15, 2)
+  ending_cash   Decimal   @db.Decimal(15, 2)
+  scenario      String    @default("baseline") @db.VarChar(50)
+  currency_code String    @default("GBP") @db.VarChar(3)
+  created_by    String?   @db.Uuid
+  created_at    DateTime  @default(now()) @db.Timestamptz(6)
+  wc_kpis       wc_kpis[]
+  users         users?    @relation(fields: [created_by], references: [id])
+
+  @@unique([run_id, month, scenario])
+  @@index([month], map: "ix_wc_projection_month")
+  @@index([run_id, scenario], map: "ix_wc_projection_run_scenario")
+}
+
+model wc_scenarios {
+  id                                    String    @id @db.Uuid
+  name                                  String    @db.VarChar(100)
+  description                           String?
+  scenario_type                         String    @db.VarChar(20)
+  parameters                            Json      @db.Json
+  status                                String    @default("draft") @db.VarChar(20)
+  run_id                                String?   @db.Uuid
+  created_by                            String?   @db.Uuid
+  approved_by                           String?   @db.Uuid
+  approved_at                           DateTime? @db.Timestamptz(6)
+  created_at                            DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at                            DateTime  @db.Timestamptz(6)
+  users_wc_scenarios_approved_byTousers users?    @relation("wc_scenarios_approved_byTousers", fields: [approved_by], references: [id])
+  users_wc_scenarios_created_byTousers  users?    @relation("wc_scenarios_created_byTousers", fields: [created_by], references: [id])
+
+  @@index([created_by], map: "ix_wc_scenario_creator")
+  @@index([scenario_type, status], map: "ix_wc_scenario_type_status")
+}
+
+model working_capital {
+  id                                                        String          @id @db.Uuid
+  projection_date                                           DateTime        @db.Date
+  projection_period                                         String          @db.VarChar(20)
+  product_id                                                String?         @db.Uuid
+  market_code                                               String?         @db.VarChar(10)
+  sales_channel_id                                          String?         @db.Uuid
+  currency_code                                             String          @db.VarChar(3)
+  projected_sales_revenue                                   Decimal?        @db.Decimal(15, 2)
+  actual_sales_revenue                                      Decimal?        @db.Decimal(15, 2)
+  payment_terms_days                                        Int?
+  collection_rate                                           Decimal?        @db.Decimal(5, 4)
+  cost_of_goods_sold                                        Decimal?        @db.Decimal(12, 2)
+  inventory_investment                                      Decimal?        @db.Decimal(12, 2)
+  manufacturing_costs                                       Decimal?        @db.Decimal(12, 2)
+  raw_materials_cost                                        Decimal?        @db.Decimal(12, 2)
+  labor_costs                                               Decimal?        @db.Decimal(12, 2)
+  marketing_spend                                           Decimal?        @db.Decimal(10, 2)
+  platform_fees                                             Decimal?        @db.Decimal(10, 2)
+  shipping_costs                                            Decimal?        @db.Decimal(10, 2)
+  storage_fees                                              Decimal?        @db.Decimal(8, 2)
+  administrative_costs                                      Decimal?        @db.Decimal(8, 2)
+  vat_gst_payable                                           Decimal?        @db.Decimal(10, 2)
+  corporate_tax_payable                                     Decimal?        @db.Decimal(10, 2)
+  customs_duties                                            Decimal?        @db.Decimal(8, 2)
+  accounts_receivable                                       Decimal?        @db.Decimal(12, 2)
+  inventory_value                                           Decimal?        @db.Decimal(12, 2)
+  accounts_payable                                          Decimal?        @db.Decimal(12, 2)
+  accrued_expenses                                          Decimal?        @db.Decimal(10, 2)
+  net_cash_flow                                             Decimal?        @db.Decimal(15, 2)
+  cumulative_cash_flow                                      Decimal?        @db.Decimal(15, 2)
+  cash_conversion_cycle_days                                Int?
+  working_capital_requirement                               Decimal?        @db.Decimal(15, 2)
+  working_capital_turnover                                  Decimal?        @db.Decimal(6, 4)
+  days_sales_outstanding                                    Int?
+  days_inventory_outstanding                                Int?
+  days_payable_outstanding                                  Int?
+  scenario_type                                             String?         @db.VarChar(20)
+  confidence_level                                          Decimal?        @db.Decimal(3, 2)
+  risk_factors                                              Json?           @db.Json
+  sensitivity_analysis                                      Json?           @db.Json
+  status                                                    String          @db.VarChar(20)
+  is_approved                                               Boolean
+  approved_by                                               String?         @db.Uuid
+  approved_at                                               DateTime?       @db.Timestamptz(6)
+  notes                                                     String?
+  assumptions                                               Json?           @db.Json
+  data_sources                                              Json?           @db.Json
+  created_at                                                DateTime        @db.Timestamptz(6)
+  updated_at                                                DateTime        @db.Timestamptz(6)
+  created_by                                                String?         @db.Uuid
+  entity_id                                                 String?         @db.Uuid
+  region                                                    String?         @db.VarChar(10)
+  currency_code_base                                        String?         @db.VarChar(3)
+  fx_rate_to_base                                           Decimal?        @db.Decimal(18, 8)
+  tax_jurisdiction                                          String?         @db.VarChar(10)
+  vat_rate_applied                                          Decimal?        @db.Decimal(5, 4)
+  import_duty_rate                                          Decimal?        @db.Decimal(5, 4)
+  compliance_status                                         String?         @db.VarChar(20)
+  risk_category                                             String?         @db.VarChar(20)
+  consolidation_group                                       String?         @db.VarChar(50)
+  intercompany_elimination_flag                             Boolean?        @default(false)
+  users_working_capital_approved_byTousers                  users?          @relation("working_capital_approved_byTousers", fields: [approved_by], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users_working_capital_created_byTousers                   users?          @relation("working_capital_created_byTousers", fields: [created_by], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  currencies_working_capital_currency_code_baseTocurrencies currencies?     @relation("working_capital_currency_code_baseTocurrencies", fields: [currency_code_base], references: [code], onDelete: NoAction, onUpdate: NoAction)
+  currencies_working_capital_currency_codeTocurrencies      currencies      @relation("working_capital_currency_codeTocurrencies", fields: [currency_code], references: [code], onDelete: NoAction, onUpdate: NoAction)
+  entities                                                  entities?       @relation(fields: [entity_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  markets                                                   markets?        @relation(fields: [market_code], references: [code], onDelete: NoAction, onUpdate: NoAction)
+  products                                                  products?       @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  sales_channels                                            sales_channels? @relation(fields: [sales_channel_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([product_id, market_code, sales_channel_id, projection_date, projection_period, scenario_type], map: "uq_working_capital_projection")
+  @@index([currency_code_base, projection_date], map: "ix_wc_base_currency_date")
+  @@index([compliance_status, risk_category], map: "ix_wc_compliance_risk")
+  @@index([consolidation_group, projection_date], map: "ix_wc_consolidation_date")
+  @@index([entity_id, projection_date, scenario_type], map: "ix_wc_entity_date_scenario")
+  @@index([intercompany_elimination_flag, projection_date], map: "ix_wc_interco_elimination")
+  @@index([region, projection_date], map: "ix_wc_region_date")
+  @@index([tax_jurisdiction, projection_date], map: "ix_wc_tax_jurisdiction")
+  @@index([currency_code], map: "ix_working_capital_currency")
+  @@index([projection_date], map: "ix_working_capital_date")
+  @@index([market_code, projection_date], map: "ix_working_capital_market_date")
+  @@index([product_id, projection_date], map: "ix_working_capital_product_date")
+  @@index([projection_date], map: "ix_working_capital_projection_date")
+  @@index([scenario_type, status], map: "ix_working_capital_scenario_status")
+}
+
+enum filetype {
+  CSV
+  XLSX
+  JSON
+  XML
+  API
+}
+
+enum importstatus {
   PENDING
-  IN_PROGRESS
+  PROCESSING
+  VALIDATING
   COMPLETED
-  DELAYED
+  FAILED
   CANCELLED
 }
 
-enum Priority {
-  LOW
-  MEDIUM
-  HIGH
-  CRITICAL
-}
-
-enum MovementType {
-  IN
-  OUT
-  ADJUSTMENT
-  TRANSFER
-}
-
-model User {
-  id          String      @id @default(cuid())
-  email       String      @unique
-  name        String?
-  role        Role
-  preferences Json?
-  dashboards  Dashboard[]
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-
-  @@index([role], name: "idx_user_role")
-}
-
-model WorkingCapital {
-  id                  String   @id @default(cuid())
-  date                DateTime @default(now())
-  currentAssets       Float
-  currentLiabilities  Float
-  inventory           Float
-  accountsReceivable  Float
-  accountsPayable     Float
-  cash                Float
-  dso                 Int
-  dpo                 Int
-  dio                 Int
-  cashConversionCycle Int
-  workingCapitalRatio Float
-  quickRatio          Float
-  createdAt           DateTime @default(now())
-
-  @@index([date], name: "idx_working_capital_date")
-}
-
-model CashRunway {
-  id              String   @id @default(cuid())
-  date            DateTime
-  cashBalance     Float
-  monthlyBurnRate Float
-  monthlyRevenue  Float
-  netBurnRate     Float
-  runwayMonths    Float
-  coverageDay30   Float
-  coverageDay60   Float
-  coverageDay90   Float
-  coverageDay120  Float
-  coverageDay180  Float
-  createdAt       DateTime @default(now())
-
-  @@index([date], name: "idx_cash_runway_date")
-}
-
-model Production {
-  id                String           @id @default(cuid())
-  jobNumber         String           @unique
-  productName       String
-  productSKU        String?
-  quantity          Int
-  targetQuantity    Int
-  completedQuantity Int              @default(0)
-  status            ProductionStatus
-  priority          Priority
-  startDate         DateTime
-  targetDate        DateTime
-  completionDate    DateTime?
-  qualityScore      Float?
-  defectRate        Float?
-  efficiency        Float?
-  createdAt         DateTime         @default(now())
-  updatedAt         DateTime         @updatedAt
-
-  qualityChecks QualityCheck[]
-
-  @@index([status], name: "idx_production_status")
-  @@index([priority], name: "idx_production_priority")
-  @@index([targetDate], name: "idx_production_target_date")
-}
-
-model Inventory {
-  id              String              @id @default(cuid())
-  sku             String              @unique
-  name            String
-  description     String?
-  quantity        Int
-  reorderPoint    Int
-  reorderQuantity Int
-  location        String
-  warehouse       String
-  unitCost        Float
-  totalValue      Float
-  lastMovement    DateTime?
-  movements       InventoryMovement[]
-  createdAt       DateTime            @default(now())
-  updatedAt       DateTime            @updatedAt
-
-  @@index([warehouse, location], name: "idx_inventory_location")
-  @@index([quantity], name: "idx_inventory_quantity")
-}
-
-model InventoryMovement {
-  id          String       @id @default(cuid())
-  inventoryId String
-  inventory   Inventory    @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
-  type        MovementType
-  quantity    Int
-  reference   String?
-  reason      String?
-  performedBy String?
-  createdAt   DateTime     @default(now())
-
-  @@index([inventoryId, createdAt], name: "idx_inventory_movement_inventory_time")
-  @@index([type, createdAt], name: "idx_inventory_movement_type_time")
-}
-
-model AIInsight {
-  id         String   @id @default(cuid())
-  type       String
-  category   String
-  title      String
-  content    String   @db.Text
-  confidence Float
-  priority   String
-  embedding  Float[]
-  metadata   Json
-  actionable Boolean  @default(false)
-  actioned   Boolean  @default(false)
-  createdAt  DateTime @default(now())
-
-  @@index([type, category], name: "idx_ai_insight_type_category")
-  @@index([actionable, actioned], name: "idx_ai_insight_actionability")
-  @@index([confidence], name: "idx_ai_insight_confidence")
-}
-
-model Dashboard {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  name      String
-  type      String
-  layout    Json
-  widgets   Json
-  isDefault Boolean  @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@unique([userId, name], name: "uix_dashboard_user_name")
-  @@index([userId, type], name: "idx_dashboard_user_type")
-  @@index([isDefault], name: "idx_dashboard_is_default")
-}
-
-model Analytics {
-  id        String   @id @default(cuid())
-  date      DateTime
-  metric    String
-  value     Float
-  dimension String?
-  forecast  Float?
-  actual    Float?
-  variance  Float?
-  metadata  Json
-  createdAt DateTime @default(now())
-
-  @@index([date, metric], name: "idx_analytics_date_metric")
-  @@index([metric, dimension], name: "idx_analytics_metric_dimension")
-}
-
-model MCPRequest {
-  id             String   @id @default(cuid())
-  tool           String
-  request        Json
-  response       Json?
-  status         String
-  processingTime Int?
-  error          String?
-  createdAt      DateTime @default(now())
-
-  @@index([tool, status], name: "idx_mcp_request_tool_status")
-  @@index([createdAt], name: "idx_mcp_request_created_at")
-}
-
-// ===== EXTERNAL API INTEGRATION MODELS =====
-
-// Unleashed Integration Models
-model UnleashedProduct {
-  id                String   @id @default(cuid())
-  unleashedId       String   @unique
-  productCode       String   @unique
-  productDescription String
-  unitOfMeasure     String?
-  packSize          Float?
-  width             Float?
-  height            Float?
-  depth             Float?
-  weight            Float?
-  defaultPurchasePrice Float?
-  defaultSellPrice  Float?
-  barcode           String?
-  binLocation       String?
-  notes             String?
-  obsolete          Boolean  @default(false)
-  lastSyncAt        DateTime @default(now())
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-
-  stockLevels UnleashedStockLevel[]
-  salesOrderLines UnleashedSalesOrderLine[]
-  purchaseOrderLines UnleashedPurchaseOrderLine[]
-
-  @@index([unleashedId], name: "idx_unleashed_product_unleashed_id")
-  @@index([productCode], name: "idx_unleashed_product_code")
-  @@index([obsolete], name: "idx_unleashed_product_obsolete")
-  @@index([lastSyncAt], name: "idx_unleashed_product_sync")
-}
-
-model UnleashedStockLevel {
-  id                   String             @id @default(cuid())
-  productId            String
-  product              UnleashedProduct   @relation(fields: [productId], references: [id], onDelete: Cascade)
-  warehouse            String
-  qtyOnHand            Float
-  qtyAllocated         Float
-  qtyAvailable         Float
-  qtyOnOrder           Float
-  qtyStockTake         Float?
-  lastCostPrice        Float?
-  averageCostPrice     Float?
-  lastSyncAt           DateTime           @default(now())
-  createdAt            DateTime           @default(now())
-  updatedAt            DateTime           @updatedAt
-
-  @@unique([productId, warehouse])
-  @@index([productId], name: "idx_unleashed_stock_level_product")
-  @@index([warehouse], name: "idx_unleashed_stock_level_warehouse")
-  @@index([qtyAvailable], name: "idx_unleashed_stock_level_available")
-  @@index([lastSyncAt], name: "idx_unleashed_stock_level_sync")
-}
-
-model UnleashedSalesOrder {
-  id                String   @id @default(cuid())
-  unleashedId       String   @unique
-  orderNumber       String   @unique
-  orderDate         DateTime
-  orderStatus       String
-  customer          Json
-  deliveryAddress   Json?
-  subtotal          Float
-  taxTotal          Float
-  total             Float
-  completedDate     DateTime?
-  notes             String?
-  lastSyncAt        DateTime @default(now())
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-
-  lines UnleashedSalesOrderLine[]
-
-  @@index([unleashedId], name: "idx_unleashed_sales_order_unleashed_id")
-  @@index([orderNumber], name: "idx_unleashed_sales_order_number")
-  @@index([orderStatus], name: "idx_unleashed_sales_order_status")
-  @@index([orderDate], name: "idx_unleashed_sales_order_date")
-  @@index([lastSyncAt], name: "idx_unleashed_sales_order_sync")
-}
-
-model UnleashedSalesOrderLine {
-  id            String                @id @default(cuid())
-  orderId       String
-  order         UnleashedSalesOrder   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  productId     String?
-  product       UnleashedProduct?     @relation(fields: [productId], references: [id])
-  lineNumber    Int
-  orderQuantity Float
-  unitPrice     Float
-  lineTotal     Float
-  comments      String?
-
-  @@index([orderId], name: "idx_unleashed_sales_order_line_order")
-  @@index([productId], name: "idx_unleashed_sales_order_line_product")
-}
-
-model UnleashedPurchaseOrder {
-  id                String   @id @default(cuid())
-  unleashedId       String   @unique
-  orderNumber       String   @unique
-  orderDate         DateTime
-  orderStatus       String
-  supplier          Json
-  deliveryAddress   Json?
-  subtotal          Float
-  taxTotal          Float
-  total             Float
-  completedDate     DateTime?
-  notes             String?
-  lastSyncAt        DateTime @default(now())
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-
-  lines UnleashedPurchaseOrderLine[]
-
-  @@index([unleashedId], name: "idx_unleashed_purchase_order_unleashed_id")
-  @@index([orderNumber], name: "idx_unleashed_purchase_order_number")
-  @@index([orderStatus], name: "idx_unleashed_purchase_order_status")
-  @@index([orderDate], name: "idx_unleashed_purchase_order_date")
-  @@index([lastSyncAt], name: "idx_unleashed_purchase_order_sync")
-}
-
-model UnleashedPurchaseOrderLine {
-  id            String                   @id @default(cuid())
-  orderId       String
-  order         UnleashedPurchaseOrder   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  productId     String?
-  product       UnleashedProduct?        @relation(fields: [productId], references: [id])
-  lineNumber    Int
-  orderQuantity Float
-  unitPrice     Float
-  lineTotal     Float
-  comments      String?
-
-  @@index([orderId], name: "idx_unleashed_purchase_order_line_order")
-  @@index([productId], name: "idx_unleashed_purchase_order_line_product")
-}
-
-// Data Synchronization Tracking
-model SyncLog {
-  id          String   @id @default(cuid())
-  service     String   // 'xero', 'shopify_uk', 'shopify_usa', 'amazon_uk', 'amazon_usa', 'unleashed'
-  syncType    String   // 'full', 'incremental', 'manual'
-  status      String   // 'pending', 'running', 'completed', 'failed'
-  startTime   DateTime @default(now())
-  endTime     DateTime?
-  recordsSync Int      @default(0)
-  errors      Json?
-  metadata    Json?
-  createdAt   DateTime @default(now())
-
-  @@index([service, status], name: "idx_sync_log_service_status")
-  @@index([startTime], name: "idx_sync_log_start_time")
-}
-
-// API Rate Limiting and Health
-model ApiHealth {
-  id              String   @id @default(cuid())
-  service         String   @unique
-  status          String   // 'healthy', 'degraded', 'down'
-  lastCheckTime   DateTime @default(now())
-  responseTime    Int?     // milliseconds
-  errorRate       Float    @default(0)
-  requestCount    Int      @default(0)
-  quotaRemaining  Int?
-  quotaResetTime  DateTime?
-  lastError       String?
-  metadata        Json?
-  updatedAt       DateTime @updatedAt
-
-  @@index([service, status], name: "idx_api_health_service_status")
-  @@index([lastCheckTime], name: "idx_api_health_check_time")
-}
-
-// Webhook Event Logging
-model WebhookLog {
-  id             String   @id @default(cuid())
-  service        String   // 'shopify_uk', 'shopify_usa', 'xero', 'amazon_uk', 'amazon_usa', 'unleashed'
-  event          String   // Event type/topic
-  data           Json     // Webhook payload
-  headers        Json?    // Request headers
-  source         String?  // Source identifier (shop domain, etc.)
-  receivedAt     DateTime @default(now())
-  processed      Boolean  @default(false)
-  processingTime Int?     // Processing time in milliseconds
-  error          String?  // Error message if processing failed
-  retryCount     Int      @default(0)
-  lastRetryAt    DateTime?
-
-  @@index([service, event], name: "idx_webhook_log_service_event")
-  @@index([receivedAt], name: "idx_webhook_log_received_at")
-  @@index([processed], name: "idx_webhook_log_processed")
-}
-
-model CashLedger {
-  id               String   @id @default(cuid())
-  date             DateTime @default(now())
-  description      String
-  category         String
-  subCategory      String?
-  amount           Float
-  balance          Float
-  source           String
-  sourceId         String?
-  reconciledStatus String   @default("pending")
-  tags             String[]
-  metadata         Json?
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-
-  @@index([date], name: "idx_cash_ledger_date")
-  @@index([category, subCategory], name: "idx_cash_ledger_category")
-  @@index([source, sourceId], name: "idx_cash_ledger_source")
-}
-
-model CashProjection {
-  id               String   @id @default(cuid())
-  projectionDate   DateTime
-  projectedAmount  Float
-  actualAmount     Float?
-  variance         Float?
-  confidenceLevel  Float
-  scenarioType     String   @default("base")
-  assumptions      Json
-  projectionMethod String
-  dataSource       String
-  isAdjusted       Boolean  @default(false)
-  adjustmentReason String?
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-
-  @@index([projectionDate], name: "idx_cash_projection_date")
-  @@index([scenarioType], name: "idx_cash_projection_scenario")
-}
-
-model Expense {
-  id              String   @id @default(cuid())
-  date            DateTime @default(now())
-  vendor          String
-  category        String
-  subCategory     String?
-  amount          Float
-  currency        String   @default("USD")
-  paymentMethod   String
-  invoiceNumber   String?
-  approvedBy      String?
-  department      String?
-  project         String?
-  isRecurring     Boolean  @default(false)
-  recurringPeriod String?
-  taxAmount       Float?
-  tags            String[]
-  attachments     String[]
-  notes           String?
-  status          String   @default("pending")
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-
-  @@index([date], name: "idx_expense_date")
-  @@index([vendor], name: "idx_expense_vendor")
-  @@index([category, subCategory], name: "idx_expense_category")
-  @@index([status], name: "idx_expense_status")
-}
-
-model ExecutiveMetric {
-  id   String   @id @default(cuid())
-  date DateTime @default(now())
-
-  // Financial KPIs
-  revenue            Float
-  revenueTarget      Float
-  revenueTrend       Float
-  cashFlow           Float
-  cashFlowTarget     Float
-  cashFlowTrend      Float
-  currentRatio       Float
-  currentRatioTarget Float @default(2.0)
-  currentRatioTrend  Float
-  quickRatio         Float
-  quickRatioTarget   Float @default(1.0)
-  quickRatioTrend    Float
-
-  // Operational KPIs
-  oee              Float
-  oeeTarget        Float @default(85)
-  oeeTrend         Float
-  throughput       Float
-  throughputTarget Float
-  throughputTrend  Float
-
-  // Strategic KPIs
-  marketShare                Float
-  marketShareTarget          Float
-  marketShareTrend           Float
-  customerSatisfaction       Float
-  customerSatisfactionTarget Float @default(90)
-  customerSatisfactionTrend  Float
-
-  // Working Capital Components
-  currentAssets      Float
-  currentLiabilities Float
-  inventory          Float
-  daysInventory      Float
-  daysReceivables    Float
-  daysPayables       Float
-  cashUnlock         Float
-
-  // Metadata
-  isActual   Boolean @default(true)
-  confidence Float   @default(1.0)
-  dataSource String  @default("system")
-  notes      String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([date], name: "idx_executive_metric_date")
-  @@index([isActual], name: "idx_executive_metric_type")
-}
-
-model ExecutiveAlert {
-  id          String    @id @default(cuid())
-  severity    String // critical, warning, info
-  type        String // risk, opportunity, notification
-  category    String // financial, operational, strategic
-  title       String
-  description String    @db.Text
-  impact      String?
-  action      String?
-  source      String
-  metrics     Json?
-  isActive    Boolean   @default(true)
-  isDismissed Boolean   @default(false)
-  dismissedBy String?
-  dismissedAt DateTime?
-  expiresAt   DateTime?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-
-  @@index([severity, isActive], name: "idx_executive_alert_severity")
-  @@index([type, category], name: "idx_executive_alert_type")
-  @@index([isActive, isDismissed], name: "idx_executive_alert_status")
-  @@index([createdAt], name: "idx_executive_alert_created")
-}
-
-model EnterpriseCashCoverage {
-  id           String   @id @default(cuid())
-  period       DateTime
-  startingCash Float    @default(0)
-  endingCash   Float    @default(0)
-
-  // Revenue components
-  salesRevenue        Float @default(0)
-  subscriptionRevenue Float @default(0)
-  serviceRevenue      Float @default(0)
-  otherRevenue        Float @default(0)
-  totalRevenue        Float @default(0)
-
-  // Operating expenses
-  payrollExpenses        Float @default(0)
-  rentExpenses           Float @default(0)
-  utilitiesExpenses      Float @default(0)
-  marketingExpenses      Float @default(0)
-  suppliesExpenses       Float @default(0)
-  maintenanceExpenses    Float @default(0)
-  insuranceExpenses      Float @default(0)
-  professionalFees       Float @default(0)
-  otherOperatingExpenses Float @default(0)
-  totalOperatingExpenses Float @default(0)
-
-  // Non-operating items
-  capitalExpenses           Float @default(0)
-  loanPayments              Float @default(0)
-  taxPayments               Float @default(0)
-  dividendPayments          Float @default(0)
-  otherNonOperatingExpenses Float @default(0)
-
-  // Cash flow metrics
-  netCashFlow       Float @default(0)
-  operatingCashFlow Float @default(0)
-  financingCashFlow Float @default(0)
-  investingCashFlow Float @default(0)
-
-  // Coverage ratios
-  cashCoverageRatio        Float @default(0)
-  quickRatio               Float @default(0)
-  currentRatio             Float @default(0)
-  debtServiceCoverageRatio Float @default(0)
-
-  // Working capital items
-  accountsReceivable Float @default(0)
-  accountsPayable    Float @default(0)
-  inventory          Float @default(0)
-  prepaidExpenses    Float @default(0)
-  accruedLiabilities Float @default(0)
-
-  // Key metrics
-  daysOfCashOnHand Float @default(0)
-  burnRate         Float @default(0)
-  runwayMonths     Float @default(0)
-
-  // Analysis flags
-  isActual        Boolean @default(false)
-  isForecast      Boolean @default(true)
-  confidenceScore Float   @default(0.5)
-
-  // Source tracking
-  dataSource   String  @default("manual")
-  importedFrom String?
-
-  // Metadata
-  notes       String?
-  adjustments Json?
-  metadata    Json?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@unique([period])
-  @@index([period], name: "idx_enterprise_cash_coverage_period")
-  @@index([isActual, isForecast], name: "idx_enterprise_cash_coverage_type")
-  @@index([dataSource], name: "idx_enterprise_cash_coverage_source")
-}
-
-// ===== XERO INTEGRATION MODELS =====
-model XeroAccount {
-  id                      String   @id @default(cuid())
-  xeroId                  String   @unique
-  code                    String?
-  name                    String
-  type                    String
-  bankAccountNumber       String?
-  status                  String
-  description             String?
-  class                   String?
-  systemAccount           String?
-  enablePaymentsToAccount Boolean  @default(false)
-  showInExpenseClaims     Boolean  @default(true)
-  createdAt               DateTime @default(now())
-  updatedAt               DateTime @updatedAt
-
-  @@index([xeroId], name: "idx_xero_account_xero_id")
-  @@index([type], name: "idx_xero_account_type")
-}
-
-model XeroContact {
-  id              String   @id @default(cuid())
-  xeroId          String   @unique
-  name            String
-  firstName       String?
-  lastName        String?
-  emailAddress    String?
-  contactStatus   String?
-  isSupplier      Boolean  @default(false)
-  isCustomer      Boolean  @default(false)
-  defaultCurrency String?
-  accountNumber   String?
-  companyNumber   String?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-
-  invoices XeroInvoice[]
-  bills    XeroBill[]
-  payments XeroPayment[]
-
-  @@index([xeroId], name: "idx_xero_contact_xero_id")
-  @@index([isSupplier, isCustomer], name: "idx_xero_contact_type")
-}
-
-model XeroInvoice {
-  id              String      @id @default(cuid())
-  xeroId          String      @unique
-  invoiceNumber   String?
-  reference       String?
-  type            String
-  contactId       String
-  contact         XeroContact @relation(fields: [contactId], references: [id])
-  date            DateTime?
-  dueDate         DateTime?
-  status          String
-  lineAmountTypes String?
-  subTotal        Float?
-  totalTax        Float?
-  total           Float?
-  amountDue       Float?
-  amountPaid      Float?
-  amountCredited  Float?
-  currencyCode    String      @default("USD")
-  fullyPaidOnDate DateTime?
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
-
-  payments XeroPayment[]
-
-  @@index([xeroId], name: "idx_xero_invoice_xero_id")
-  @@index([contactId], name: "idx_xero_invoice_contact")
-  @@index([status], name: "idx_xero_invoice_status")
-  @@index([dueDate], name: "idx_xero_invoice_due_date")
-}
-
-model XeroBill {
-  id              String      @id @default(cuid())
-  xeroId          String      @unique
-  billNumber      String?
-  reference       String?
-  type            String
-  contactId       String
-  contact         XeroContact @relation(fields: [contactId], references: [id])
-  date            DateTime?
-  dueDate         DateTime?
-  status          String
-  lineAmountTypes String?
-  subTotal        Float?
-  totalTax        Float?
-  total           Float?
-  amountDue       Float?
-  amountPaid      Float?
-  amountCredited  Float?
-  currencyCode    String      @default("USD")
-  fullyPaidOnDate DateTime?
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
-
-  payments XeroPayment[]
-
-  @@index([xeroId], name: "idx_xero_bill_xero_id")
-  @@index([contactId], name: "idx_xero_bill_contact")
-  @@index([status], name: "idx_xero_bill_status")
-  @@index([dueDate], name: "idx_xero_bill_due_date")
-}
-
-model XeroPayment {
-  id             String    @id @default(cuid())
-  xeroId         String    @unique
-  date           DateTime?
-  amount         Float?
-  currencyCode   String    @default("USD")
-  paymentType    String?
-  status         String?
-  isReconciled   Boolean   @default(false)
-  reference      String?
-  batchPaymentId String?
-
-  // Relations
-  contactId String?
-  contact   XeroContact? @relation(fields: [contactId], references: [id])
-  invoiceId String?
-  invoice   XeroInvoice? @relation(fields: [invoiceId], references: [id])
-  billId    String?
-  bill      XeroBill?    @relation(fields: [billId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([xeroId], name: "idx_xero_payment_xero_id")
-  @@index([date], name: "idx_xero_payment_date")
-  @@index([status], name: "idx_xero_payment_status")
-}
-
-model XeroBankTransaction {
-  id            String    @id @default(cuid())
-  xeroId        String    @unique
-  bankAccountId String?
-  type          String
-  date          DateTime?
-  reference     String?
-  amount        Float?
-  currencyCode  String    @default("USD")
-  status        String?
-  isReconciled  Boolean   @default(false)
-  description   String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-
-  @@index([xeroId], name: "idx_xero_bank_transaction_xero_id")
-  @@index([date], name: "idx_xero_bank_transaction_date")
-  @@index([type], name: "idx_xero_bank_transaction_type")
-  @@index([isReconciled], name: "idx_xero_bank_transaction_reconciled")
-}
-
-model XeroItem {
-  id                   String   @id @default(cuid())
-  xeroId               String   @unique
-  code                 String?
-  name                 String
-  description          String?
-  salesDetails         Json?
-  purchaseDetails      Json?
-  isTrackedAsInventory Boolean  @default(false)
-  isSold               Boolean  @default(true)
-  isPurchased          Boolean  @default(true)
-  createdAt            DateTime @default(now())
-  updatedAt            DateTime @updatedAt
-
-  @@index([xeroId], name: "idx_xero_item_xero_id")
-  @@index([code], name: "idx_xero_item_code")
-  @@index([isTrackedAsInventory], name: "idx_xero_item_inventory")
-}
-
-// ===== AMAZON SP-API MODELS =====
-model AmazonOrder {
-  id                     String    @id @default(cuid())
-  amazonOrderId          String    @unique
-  marketplace            String
-  orderStatus            String
-  fulfillmentChannel     String?
-  salesChannel           String?
-  orderType              String?
-  purchaseDate           DateTime?
-  lastUpdateDate         DateTime?
-  orderTotal             Float?
-  currency               String    @default("USD")
-  numberOfItemsShipped   Int       @default(0)
-  numberOfItemsUnshipped Int       @default(0)
-  buyerEmail             String?
-  isBusinessOrder        Boolean   @default(false)
-  isPrime                Boolean   @default(false)
-  isGlobalExpressEnabled Boolean   @default(false)
-  isReplacementOrder     Boolean   @default(false)
-  createdAt              DateTime  @default(now())
-  updatedAt              DateTime  @updatedAt
-
-  orderItems AmazonOrderItem[]
-
-  @@index([amazonOrderId], name: "idx_amazon_order_id")
-  @@index([marketplace], name: "idx_amazon_order_marketplace")
-  @@index([orderStatus], name: "idx_amazon_order_status")
-  @@index([purchaseDate], name: "idx_amazon_order_purchase_date")
-}
-
-model AmazonOrderItem {
-  id                    String      @id @default(cuid())
-  orderItemId           String
-  amazonOrderId         String
-  order                 AmazonOrder @relation(fields: [amazonOrderId], references: [amazonOrderId])
-  asin                  String
-  sellerSKU             String?
-  title                 String?
-  quantityOrdered       Int
-  quantityShipped       Int         @default(0)
-  itemPrice             Float?
-  itemTax               Float?
-  shippingPrice         Float?
-  shippingTax           Float?
-  giftWrapPrice         Float?
-  giftWrapTax           Float?
-  itemPromotionDiscount Float?
-  shipPromotionDiscount Float?
-  currency              String      @default("USD")
-  conditionNote         String?
-  conditionId           String?
-  conditionSubtypeId    String?
-  createdAt             DateTime    @default(now())
-  updatedAt             DateTime    @updatedAt
-
-  @@unique([orderItemId, amazonOrderId])
-  @@index([amazonOrderId], name: "idx_amazon_order_item_order")
-  @@index([asin], name: "idx_amazon_order_item_asin")
-  @@index([sellerSKU], name: "idx_amazon_order_item_sku")
-}
-
-model AmazonInventory {
-  id                       String    @id @default(cuid())
-  sellerSKU                String    @unique
-  asin                     String?
-  fnSKU                    String?
-  productName              String?
-  condition                String?
-  totalQuantity            Int       @default(0)
-  inStockQuantity          Int       @default(0)
-  availableQuantity        Int       @default(0)
-  fulfillableQuantity      Int       @default(0)
-  inboundWorkingQuantity   Int       @default(0)
-  inboundShippedQuantity   Int       @default(0)
-  inboundReceivingQuantity Int       @default(0)
-  reservedQuantity         Int       @default(0)
-  unfulfillableQuantity    Int       @default(0)
-  lastUpdated              DateTime?
-  createdAt                DateTime  @default(now())
-  updatedAt                DateTime  @updatedAt
-
-  @@index([sellerSKU], name: "idx_amazon_inventory_sku")
-  @@index([asin], name: "idx_amazon_inventory_asin")
-  @@index([lastUpdated], name: "idx_amazon_inventory_updated")
-}
-
-// ===== SHOPIFY MODELS =====
-model ShopifyOrder {
-  id                String    @id @default(cuid())
-  shopifyOrderId    String    @unique
-  orderNumber       String?
-  email             String?
-  phone             String?
-  name              String?
-  financialStatus   String?
-  fulfillmentStatus String?
-  tags              String?
-  totalPrice        Float?
-  totalTax          Float?
-  totalDiscounts    Float?
-  totalWeight       Float?
-  currency          String    @default("USD")
-  processedAt       DateTime?
-  closedAt          DateTime?
-  cancelledAt       DateTime?
-  test              Boolean   @default(false)
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
-
-  lineItems ShopifyLineItem[]
-
-  @@index([shopifyOrderId], name: "idx_shopify_order_id")
-  @@index([orderNumber], name: "idx_shopify_order_number")
-  @@index([financialStatus], name: "idx_shopify_order_financial_status")
-  @@index([fulfillmentStatus], name: "idx_shopify_order_fulfillment_status")
-  @@index([processedAt], name: "idx_shopify_order_processed")
-}
-
-model ShopifyLineItem {
-  id                 String       @id @default(cuid())
-  lineItemId         String
-  shopifyOrderId     String
-  order              ShopifyOrder @relation(fields: [shopifyOrderId], references: [shopifyOrderId])
-  productId          String?
-  variantId          String?
-  title              String?
-  variantTitle       String?
-  sku                String?
-  vendor             String?
-  quantity           Int
-  price              Float?
-  totalDiscount      Float?
-  grams              Float?
-  requiresShipping   Boolean      @default(true)
-  taxable            Boolean      @default(true)
-  fulfillmentService String?
-  fulfillmentStatus  String?
-  createdAt          DateTime     @default(now())
-  updatedAt          DateTime     @updatedAt
-
-  @@unique([lineItemId, shopifyOrderId])
-  @@index([shopifyOrderId], name: "idx_shopify_line_item_order")
-  @@index([productId], name: "idx_shopify_line_item_product")
-  @@index([sku], name: "idx_shopify_line_item_sku")
-}
-
-model ShopifyProduct {
-  id               String    @id @default(cuid())
-  shopifyProductId String    @unique
-  title            String
-  handle           String?
-  vendor           String?
-  productType      String?
-  tags             String?
-  status           String?
-  description      String?   @db.Text
-  publishedAt      DateTime?
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
-
-  variants ShopifyVariant[]
-
-  @@index([shopifyProductId], name: "idx_shopify_product_id")
-  @@index([handle], name: "idx_shopify_product_handle")
-  @@index([vendor], name: "idx_shopify_product_vendor")
-  @@index([status], name: "idx_shopify_product_status")
-}
-
-model ShopifyVariant {
-  id                 String         @id @default(cuid())
-  shopifyVariantId   String         @unique
-  shopifyProductId   String
-  product            ShopifyProduct @relation(fields: [shopifyProductId], references: [shopifyProductId])
-  title              String?
-  price              Float?
-  compareAtPrice     Float?
-  sku                String?
-  barcode            String?
-  grams              Float?
-  weight             Float?
-  weightUnit         String?
-  inventoryQuantity  Int            @default(0)
-  inventoryPolicy    String?
-  inventoryTracking  String?
-  requiresShipping   Boolean        @default(true)
-  taxable            Boolean        @default(true)
-  fulfillmentService String?
-  position           Int?
-  createdAt          DateTime       @default(now())
-  updatedAt          DateTime       @updatedAt
-
-  @@index([shopifyVariantId], name: "idx_shopify_variant_id")
-  @@index([shopifyProductId], name: "idx_shopify_variant_product")
-  @@index([sku], name: "idx_shopify_variant_sku")
-  @@index([barcode], name: "idx_shopify_variant_barcode")
-}
-
-// ===== MANUFACTURING MODELS =====
-model Machine {
-  id             String    @id @default(cuid())
-  machineId      String    @unique
-  name           String
-  type           String
-  location       String
-  manufacturer   String?
-  model          String?
-  serialNumber   String?
-  installDate    DateTime?
-  status         String    @default("online")
-  isActive       Boolean   @default(true)
-  configuration  Json?
-  specifications Json?
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
-
-  sensors            MachineSensor[]
-  alerts             MachineAlert[]
-  maintenanceRecords MachineMaintenanceRecord[]
-
-  @@index([machineId], name: "idx_machine_machine_id")
-  @@index([type], name: "idx_machine_type")
-  @@index([status], name: "idx_machine_status")
-  @@index([location], name: "idx_machine_location")
-}
-
-model MachineSensor {
-  id         String   @id @default(cuid())
-  machineId  String
-  machine    Machine  @relation(fields: [machineId], references: [id])
-  sensorType String
-  sensorName String
-  value      Float
-  unit       String?
-  threshold  Float?
-  minValue   Float?
-  maxValue   Float?
-  status     String   @default("normal")
-  timestamp  DateTime @default(now())
-  createdAt  DateTime @default(now())
-
-  @@index([machineId, sensorType], name: "idx_machine_sensor_machine_type")
-  @@index([timestamp], name: "idx_machine_sensor_timestamp")
-  @@index([status], name: "idx_machine_sensor_status")
-}
-
-model MachineAlert {
-  id             String    @id @default(cuid())
-  machineId      String
-  machine        Machine   @relation(fields: [machineId], references: [id])
-  severity       String
-  type           String
-  title          String
-  description    String?
-  acknowledged   Boolean   @default(false)
-  acknowledgedBy String?
-  acknowledgedAt DateTime?
-  resolvedAt     DateTime?
-  metadata       Json?
-  createdAt      DateTime  @default(now())
-
-  @@index([machineId], name: "idx_machine_alert_machine")
-  @@index([severity], name: "idx_machine_alert_severity")
-  @@index([acknowledged], name: "idx_machine_alert_acknowledged")
-  @@index([createdAt], name: "idx_machine_alert_created")
-}
-
-model MachineMaintenanceRecord {
-  id            String    @id @default(cuid())
-  machineId     String
-  machine       Machine   @relation(fields: [machineId], references: [id])
-  type          String
-  description   String
-  performedBy   String?
-  scheduledDate DateTime?
-  completedDate DateTime?
-  duration      Int?
-  cost          Float?
-  status        String    @default("scheduled")
-  notes         String?
-  attachments   String[]
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-
-  @@index([machineId], name: "idx_machine_maintenance_machine")
-  @@index([type], name: "idx_machine_maintenance_type")
-  @@index([status], name: "idx_machine_maintenance_status")
-  @@index([scheduledDate], name: "idx_machine_maintenance_scheduled")
-}
-
-model QualityCheck {
-  id           String      @id @default(cuid())
-  productionId String?
-  production   Production? @relation(fields: [productionId], references: [id])
-  checkType    String
-  checkDate    DateTime    @default(now())
-  inspector    String?
-  passed       Boolean
-  score        Float?
-  defectCount  Int         @default(0)
-  sampleSize   Int?
-  notes        String?
-  corrective   String?
-  attachments  String[]
-  metadata     Json?
-  createdAt    DateTime    @default(now())
-
-  @@index([productionId], name: "idx_quality_check_production")
-  @@index([checkType], name: "idx_quality_check_type")
-  @@index([checkDate], name: "idx_quality_check_date")
-  @@index([passed], name: "idx_quality_check_passed")
-}
-
-model ProductionOrder {
-  id               String           @id @default(cuid())
-  orderNumber      String           @unique
-  productSKU       String
-  quantity         Int
-  priority         Priority         @default(MEDIUM)
-  status           ProductionStatus @default(PENDING)
-  scheduledStart   DateTime?
-  scheduledEnd     DateTime?
-  actualStart      DateTime?
-  actualEnd        DateTime?
-  assignedMachine  String?
-  assignedOperator String?
-  batchNumber      String?
-  qualityGrade     String?
-  yield            Float?
-  efficiency       Float?
-  notes            String?
-  metadata         Json?
-  createdAt        DateTime         @default(now())
-  updatedAt        DateTime         @updatedAt
-
-  @@index([orderNumber], name: "idx_production_order_number")
-  @@index([productSKU], name: "idx_production_order_sku")
-  @@index([status], name: "idx_production_order_status")
-  @@index([priority], name: "idx_production_order_priority")
-  @@index([scheduledStart], name: "idx_production_order_scheduled")
-}
-
-// ===== SECURITY MODELS =====
-model ApiKey {
-  id            String    @id @default(cuid())
-  keyId         String    @unique // Unique identifier for the key
-  service       String    // Service name (xero, shopify, amazon, etc.)
-  keyName       String    // Key type (api_key, client_secret, etc.)
-  encryptedKey  String    // AES-256-GCM encrypted key
-  isActive      Boolean   @default(true)
-  expiresAt     DateTime? // Key expiration date
-  lastUsed      DateTime? // Last time key was accessed
-  deactivatedAt DateTime? // When key was deactivated
-  metadata      Json?     // Additional key metadata
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-
-  @@index([service, keyName], name: "idx_api_key_service_name")
-  @@index([isActive], name: "idx_api_key_active")
-  @@index([expiresAt], name: "idx_api_key_expires")
-  @@index([lastUsed], name: "idx_api_key_last_used")
-}
-
-model AuditLog {
-  id        String   @id @default(cuid())
-  operation String   // Operation type (API_KEY_STORE, API_KEY_ACCESS, etc.)
-  service   String?  // Service involved
-  userId    String?  // User who performed the operation
-  ipAddress String?  // IP address of the request
-  details   Json?    // Additional operation details
-  timestamp DateTime @default(now())
-
-  @@index([operation], name: "idx_audit_log_operation")
-  @@index([service], name: "idx_audit_log_service")
-  @@index([userId], name: "idx_audit_log_user")
-  @@index([timestamp], name: "idx_audit_log_timestamp")
-}
-
-// ===== MONITORING MODELS =====
-model SystemMetric {
-  id          String   @id @default(cuid())
-  type        String   // Metric type (performance, resources, health)
-  data        Json     // Metric data as JSON
-  environment String   // Environment (development, test, production)
-  timestamp   DateTime @default(now())
-
-  @@index([type], name: "idx_system_metric_type")
-  @@index([environment], name: "idx_system_metric_environment")
-  @@index([timestamp], name: "idx_system_metric_timestamp")
-}
-
-model SystemAlert {
-  id          String   @id @default(cuid())
-  type        String   // Alert type (PERFORMANCE_DB_SLOW, HEALTH_SYSTEM_UNHEALTHY, etc.)
-  severity    String   // Alert severity (low, medium, high, critical)
-  message     String   // Human-readable alert message
-  details     Json?    // Additional alert details
-  isResolved  Boolean  @default(false)
-  resolvedAt  DateTime?
-  environment String   // Environment (development, test, production)
-  timestamp   DateTime @default(now())
-
-  @@index([type], name: "idx_system_alert_type")
-  @@index([severity], name: "idx_system_alert_severity")
-  @@index([isResolved], name: "idx_system_alert_resolved")
-  @@index([environment], name: "idx_system_alert_environment")
-  @@index([timestamp], name: "idx_system_alert_timestamp")
+enum importtype {
+  PRODUCTS
+  HISTORICAL_SALES
+  INVENTORY_LEVELS
+  MANUFACTURING_DATA
+  FINANCIAL_DATA
+  FORECASTS
 }

@@ -233,6 +233,27 @@ git push origin production
 2. Copy environment template: `cp .env.template .env` and configure
 3. Start development servers: `npm run dev`
 
+### **CRITICAL DEPENDENCY MANAGEMENT RULE** ⚠️
+**MANDATORY**: When adding any new package to `package.json`:
+
+1. **ALWAYS run `pnpm install` immediately after adding to package.json**
+2. **Verify the installation worked locally**
+3. **THEN commit and push changes**
+
+**NEVER commit package.json changes without running pnpm install first!**
+
+```bash
+# Correct workflow:
+1. Add package to package.json
+2. pnpm install              # MANDATORY STEP
+3. Test that it works locally
+4. git add -A
+5. git commit -m "Add package"
+6. git push
+```
+
+**Why**: Render deployments fail when package.json and pnpm-lock.yaml are out of sync. Running `pnpm install` updates the lockfile to match package.json changes.
+
 ### Environment Configuration
 Required environment variables:
 

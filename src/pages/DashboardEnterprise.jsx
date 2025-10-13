@@ -1,6 +1,8 @@
 ﻿import { Suspense, lazy, useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import XeroConnectionBanner from '@/components/XeroConnectionBanner'
+import { useXero } from '@/contexts/XeroContext'
 
 const RegionalContributionChart = lazy(() => import('@/components/dashboard/RegionalContributionChart'))
 const PLAnalysisChart = lazy(() => import('@/components/dashboard/PLAnalysisChart'))
@@ -15,6 +17,8 @@ import regionalPerformanceApi from '@/services/api/regionalPerformanceApi'
 import workingCapitalApi from '@/services/api/workingCapitalApi'
 
 const DashboardEnterprise = () => {
+  const { isConnected: xeroConnected, isLoading: xeroLoading } = useXero()
+  
   const [plData, setPLData] = useState([])
   const [plLoading, setPLLoading] = useState(true)
   const [plError, setPLError] = useState(null)
@@ -30,6 +34,7 @@ const DashboardEnterprise = () => {
   const [capitalKpis, setCapitalKpis] = useState([])
   const [capitalLoading, setCapitalLoading] = useState(true)
   const [capitalError, setCapitalError] = useState(null)
+  const [requiresXeroConnection, setRequiresXeroConnection] = useState(false)
 
   // Fetch P&L analysis data
   useEffect(() => {
@@ -64,6 +69,14 @@ const DashboardEnterprise = () => {
         setKpiError(null)
         
         const response = await plAnalysisApi.getKPISummary()
+        
+        // Check if Xero connection is required
+        if (response.requiresXeroConnection) {
+          setRequiresXeroConnection(true)
+          setPerformanceKpis([])
+          return
+        }
+        
         if (response.success && response.data) {
           const kpiData = response.data
           setPerformanceKpis([
@@ -84,7 +97,7 @@ const DashboardEnterprise = () => {
     }
 
     fetchKPIData()
-  }, [])
+  }, [xeroConnected])
 
   // Fetch product sales data
   useEffect(() => {
@@ -144,6 +157,14 @@ const DashboardEnterprise = () => {
         setCapitalError(null)
         
         const response = await workingCapitalApi.getWorkingCapitalSummary()
+        
+        // Check if Xero connection is required
+        if (response.requiresXeroConnection) {
+          setRequiresXeroConnection(true)
+          setCapitalKpis([])
+          return
+        }
+        
         if (response.success && response.data) {
           // Transform working capital data into KPI format
           const data = response.data
@@ -166,10 +187,19 @@ const DashboardEnterprise = () => {
     }
 
     fetchCapitalKpis()
-  }, [])
+  }, [xeroConnected])
 
   return (
     <section className="space-y-6">
+      {/* Xero Connection Banner - Show when connection is required */}
+      {requiresXeroConnection && !xeroConnected && (
+        <XeroConnectionBanner 
+          variant="full"
+          showDismiss={false}
+          className="mb-6"
+        />
+      )}
+
       <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-3xl font-semibold tracking-tight">Enterprise dashboard</h1>

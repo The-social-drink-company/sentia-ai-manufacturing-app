@@ -67,9 +67,10 @@ $allVariables = @{
     "CLERK_WEBHOOK_SECRET" = "whsec_REDACTED"
     
     # Xero
-    "XERO_CLIENT_ID" = "9C0CAB921C134476A249E48BBECB8C4B"
-    "XERO_CLIENT_SECRET" = "f0TJpJSRX_B9NI51sknz7TuKbbSfhO4dEhTM4m4fWBlph9F5"
+    "XERO_CLIENT_ID" = "06091C3170694972BBA906A335074AB3"
+    "XERO_CLIENT_SECRET" = "zMo43sRySgQCVDyL66PrrvIFUgr-jqFXV0zCUstHX7Zbmhri"
     "XERO_REDIRECT_URI" = "https://sentia-manufacturing-dashboard-production.onrender.com/api/xero/callback"
+    "XERO_SYNC_INTERVAL" = "*/30 * * * *"
     
     # Shopify UK
     "SHOPIFY_UK_API_KEY" = "7a30cd84e7a106b852c8e0fb789de10e"
@@ -111,7 +112,6 @@ $allVariables = @{
     
     # Sync Configuration
     "AUTO_SYNC_ENABLED" = "true"
-    "XERO_SYNC_INTERVAL" = "*/30 * * * *"
     "SHOPIFY_SYNC_INTERVAL" = "*/15 * * * *"
     "AMAZON_SYNC_INTERVAL" = "*/60 * * * *"
     "DATABASE_SYNC_INTERVAL" = "0 */6 * * *"

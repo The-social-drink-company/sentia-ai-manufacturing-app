@@ -17,13 +17,15 @@ import AgingChart from './components/AgingChart'
 import CashConversionCycle from './components/CashConversionCycle'
 import CashFlowForecast from './components/CashFlowForecast'
 import OptimizationRecommendations from './components/OptimizationRecommendations'
-import XeroConnection from './components/XeroConnection'
+import XeroConnectionBanner from '@/components/XeroConnectionBanner'
+import { useXero } from '@/contexts/XeroContext'
 import { logError, devLog } from '../../utils/structuredLogger'
 
 const SUPPORTED_EXPORTS = ['csv', 'json']
 
 export default function WorkingCapitalDashboard() {
   const { user } = useAuth()
+  const { isConnected: xeroConnected } = useXero()
   const [selectedPeriod, setSelectedPeriod] = useState('current')
   const [selectedCurrency, setSelectedCurrency] = useState('USD')
   const {
@@ -209,18 +211,15 @@ export default function WorkingCapitalDashboard() {
       </div>
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
-          <XeroConnection
-            onConnectionChange={(connected, status) => {
-              devLog.log('Xero connection state changed', { connected, status })
-              audit.trackAction('xero_connection_changed', {
-                connected,
-                tenantName: status?.tenantName,
-                isUsingRealData: connected && isUsingRealData
-              })
-            }}
-          />
-        </div>
+        {/* Show Xero connection banner if not connected */}
+        {!xeroConnected && (
+          <div className="mb-8">
+            <XeroConnectionBanner 
+              variant="compact"
+              showDismiss={true}
+            />
+          </div>
+        )}
 
         <div className="mb-6">
           <div

@@ -473,47 +473,211 @@ app.get('/api/auth/me', async (req, res) => {
   });
 });
 
-// Dashboard Summary endpoint - BULLETPROOF JSON ONLY
+// Xero OAuth endpoints
+app.get('/api/xero/auth', async (req, res) => {
+  logger.info('🔒 Xero OAuth authorization initiated');
+  
+  try {
+    const xeroModule = await import('./services/xeroService.js');
+    const xeroService = xeroModule.default;
+    
+    if (!xeroService) {
+      return res.status(503).json({
+        success: false,
+        error: 'Xero service not available',
+        message: 'Xero integration service is not initialized'
+      });
+    }
+
+    xeroService.ensureInitialized();
+    const authUrl = await xeroService.getAuthUrl();
+    
+    logger.info('✅ Xero auth URL generated, redirecting user');
+    res.redirect(authUrl);
+    
+  } catch (error) {
+    logger.error('❌ Failed to initiate Xero OAuth:', error);
+    res.status(500).json({
+      success: false,
+      error: 'OAuth initialization failed',
+      message: error.message
+    });
+  }
+});
+
+app.get('/api/xero/callback', async (req, res) => {
+  logger.info('🔄 Xero OAuth callback received');
+  
+  const { code, state, error } = req.query;
+  
+  if (error) {
+    logger.error('❌ Xero OAuth error:', error);
+    return res.status(400).json({
+      success: false,
+      error: 'OAuth authorization failed',
+      message: error
+    });
+  }
+
+  if (!code) {
+    logger.error('❌ No authorization code received');
+    return res.status(400).json({
+      success: false,
+      error: 'Missing authorization code',
+      message: 'Authorization code not found in callback'
+    });
+  }
+
+  try {
+    const xeroModule = await import('./services/xeroService.js');
+    const xeroService = xeroModule.default;
+    
+    xeroService.ensureInitialized();
+    const tokenSet = await xeroService.exchangeCodeForTokens(code);
+    
+    if (tokenSet) {
+      logger.info('✅ Xero tokens obtained successfully');
+      
+      // Redirect to dashboard with success message
+      res.redirect('/dashboard?xero_connected=true');
+    } else {
+      throw new Error('Token exchange failed');
+    }
+    
+  } catch (error) {
+    logger.error('❌ Failed to exchange Xero code for tokens:', error);
+    res.redirect('/dashboard?xero_error=true');
+  }
+});
+
+app.get('/api/xero/status', async (req, res) => {
+  logger.info('📊 Xero connection status requested');
+  
+  try {
+    const xeroModule = await import('./services/xeroService.js');
+    const xeroService = xeroModule.default;
+    
+    xeroService.ensureInitialized();
+    
+    const status = {
+      connected: xeroService.isConnected,
+      hasTokens: !!(xeroService.tokenSet && xeroService.tokenSet.access_token),
+      organizationId: xeroService.organizationId,
+      lastSync: xeroService.lastSyncTime || null,
+      tokenExpiry: xeroService.tokenSet && xeroService.tokenSet.expires_at || null
+    };
+    
+    res.json({
+      success: true,
+      status: status,
+      timestamp: new Date().toISOString()
+    });
+    
+  } catch (error) {
+    logger.error('❌ Failed to get Xero status:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Status check failed',
+      message: error.message
+    });
+  }
+});
+
+app.post('/api/xero/disconnect', async (req, res) => {
+  logger.info('🔌 Xero disconnect requested');
+  
+  try {
+    const xeroModule = await import('./services/xeroService.js');
+    const xeroService = xeroModule.default;
+    
+    xeroService.ensureInitialized();
+    await xeroService.disconnect();
+    
+    logger.info('✅ Xero disconnected successfully');
+    res.json({
+      success: true,
+      message: 'Xero integration disconnected successfully',
+      timestamp: new Date().toISOString()
+    });
+    
+  } catch (error) {
+    logger.error('❌ Failed to disconnect from Xero:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Disconnect failed',
+      message: error.message
+    });
+  }
+});
+
+// Dashboard Summary endpoint - REQUIRES XERO CONNECTION
 app.get('/api/dashboard/summary', async (req, res) => {
   try {
+    // Check Xero connection status
+    let xeroService = null;
+    let xeroConnected = false;
+    
+    try {
+      const xeroModule = await import('./services/xeroService.js');
+      xeroService = xeroModule.default;
+      xeroService.ensureInitialized();
+      xeroConnected = xeroService.isConnected;
+    } catch (error) {
+      logger.warn('Xero service not available:', error.message);
+    }
+    
+    if (!xeroConnected) {
+      // No fallback data - require Xero connection
+      return res.json({
+        success: false,
+        requiresXeroConnection: true,
+        message: 'Real-time financial data requires Xero connection',
+        authUrl: '/api/xero/auth',
+        timestamp: new Date().toISOString()
+      });
+    }
+    
+    // Get real data from Xero
+    const [profitLoss, cashFlow] = await Promise.allSettled([
+      xeroService.getProfitAndLoss({ periods: 12 }),
+      xeroService.getCashFlow({ periods: 12 })
+    ]);
+    
     const dashboardData = {
       revenue: {
-        monthly: 2543000,
-        quarterly: 7850000,
-        yearly: 32400000,
-        growth: 12.3
+        monthly: profitLoss.status === 'fulfilled' ? profitLoss.value.monthlyRevenue || 0 : 0,
+        quarterly: profitLoss.status === 'fulfilled' ? profitLoss.value.quarterlyRevenue || 0 : 0,
+        yearly: profitLoss.status === 'fulfilled' ? profitLoss.value.totalRevenue || 0 : 0,
+        growth: profitLoss.status === 'fulfilled' ? profitLoss.value.revenueGrowth || 0 : 0
       },
       workingCapital: {
-        current: 1945000,
-        ratio: 2.76,
-        cashFlow: 850000,
-        daysReceivable: 45
-      },
-      production: {
-        efficiency: 94.2,
-        unitsProduced: 12543,
-        defectRate: 0.8,
-        oeeScore: 87.5
-      },
-      inventory: {
-        value: 1234000,
-        turnover: 4.2,
-        skuCount: 342,
-        lowStock: 8
+        current: cashFlow.status === 'fulfilled' ? cashFlow.value.currentRatio || 0 : 0,
+        ratio: cashFlow.status === 'fulfilled' ? cashFlow.value.workingCapitalRatio || 0 : 0,
+        cashFlow: cashFlow.status === 'fulfilled' ? cashFlow.value.operatingCashFlow || 0 : 0,
+        daysReceivable: cashFlow.status === 'fulfilled' ? cashFlow.value.daysReceivable || 0 : 0
       },
       financial: {
-        grossMargin: 42.3,
-        netMargin: 18.7,
-        ebitda: 485000,
-        roi: 23.4
+        grossMargin: profitLoss.status === 'fulfilled' ? profitLoss.value.grossMargin || 0 : 0,
+        netMargin: profitLoss.status === 'fulfilled' ? profitLoss.value.netMargin || 0 : 0,
+        ebitda: profitLoss.status === 'fulfilled' ? profitLoss.value.ebitda || 0 : 0,
+        roi: profitLoss.status === 'fulfilled' ? profitLoss.value.roi || 0 : 0
       },
       timestamp: new Date().toISOString(),
-      dataSource: 'enterprise-complete-api'
+      dataSource: 'xero-live-data',
+      xeroConnected: true
     };
-    res.json(dashboardData);
+    
+    res.json({
+      success: true,
+      data: dashboardData
+    });
   } catch (error) {
     logger.error('Dashboard summary API error', error);
-    res.status(500).json({ error: 'Failed to fetch dashboard summary' });
+    res.status(500).json({ 
+      success: false,
+      error: 'Failed to fetch dashboard data from Xero',
+      message: error.message 
+    });
   }
 });
 
@@ -707,6 +871,23 @@ app.get('/api/forecasting/demand', async (req, res) => {
 // Analytics API endpoints
 app.get('/api/analytics/kpis', async (req, res) => {
   try {
+    // Test Shopify connection
+    let shopifyStatus = { error: 'not tested' };
+    try {
+      const { default: shopifyMultiStore } = await import('./services/shopify-multistore.js');
+      shopifyStatus = {
+        storeConfigsCount: shopifyMultiStore.storeConfigs?.length || 0,
+        hasCredentials: {
+          ukDomain: !!process.env.SHOPIFY_UK_SHOP_DOMAIN,
+          ukToken: !!process.env.SHOPIFY_UK_ACCESS_TOKEN,
+          usDomain: !!process.env.SHOPIFY_US_SHOP_DOMAIN,
+          usToken: !!process.env.SHOPIFY_US_ACCESS_TOKEN
+        }
+      };
+    } catch (shopifyError) {
+      shopifyStatus = { error: shopifyError.message };
+    }
+
     const kpis = {
       revenue: {
         value: 8500000,
@@ -722,7 +903,9 @@ app.get('/api/analytics/kpis', async (req, res) => {
         defectRate: 0.018,
         customerSatisfaction: 0.92,
         onTimeDelivery: 0.94
-      }
+      },
+      // Debug info
+      shopifyStatus
     };
     res.json(kpis);
   } catch (error) {
@@ -746,6 +929,54 @@ app.post('/api/ai/analyze', async (req, res) => {
   } catch (error) {
     logger.error('AI API error', error);
     res.status(500).json({ error: 'Failed to process AI analysis' });
+  }
+});
+
+// Unleashed API connection test endpoint
+app.get('/api/unleashed/test-connection', async (req, res) => {
+  try {
+    // Import the UnleashedClient
+    const { getUnleashedClient } = await import('./services/unleashed/UnleashedClient.js');
+    const client = getUnleashedClient();
+    
+    // Test basic connection
+    const connectionResult = await client.testConnection();
+    
+    if (connectionResult.success) {
+      // Test a few endpoints to get sample data
+      const [products, warehouses] = await Promise.allSettled([
+        client.getProducts(1, 3),
+        client.getWarehouses()
+      ]);
+      
+      res.json({
+        status: 'connected',
+        message: connectionResult.message,
+        timestamp: new Date().toISOString(),
+        sampleData: {
+          products: products.status === 'fulfilled' ? {
+            count: products.value.items?.length || 0,
+            total: products.value.total || 0
+          } : { error: products.reason?.message },
+          warehouses: warehouses.status === 'fulfilled' ? {
+            count: warehouses.value.items?.length || 0
+          } : { error: warehouses.reason?.message }
+        }
+      });
+    } else {
+      res.status(400).json({
+        status: 'disconnected',
+        message: connectionResult.message,
+        timestamp: new Date().toISOString()
+      });
+    }
+  } catch (error) {
+    logger.error('Unleashed connection test failed', error);
+    res.status(500).json({
+      status: 'error',
+      message: error.message,
+      timestamp: new Date().toISOString()
+    });
   }
 });
 
@@ -842,28 +1073,40 @@ function broadcastSSE(eventType, data) {
 // Make broadcast function globally available
 global.broadcastSSE = broadcastSSE;
 
-// Serve static files from dist directory (exclude API routes)
-const distPath = path.join(__dirname, 'dist');
-if (fs.existsSync(distPath)) {
-  app.use((req, res, next) => {
-    // Skip static file serving for API routes
-    if (req.path.startsWith('/api/')) {
-      return next();
-    }
-    express.static(distPath)(req, res, next);
-  });
-
-  // Financial KPI Summary endpoint
-  app.get('/api/financial/kpi-summary', async (req, res) => {
+// API Routes - MUST be defined BEFORE static file serving
+// Financial KPI Summary endpoint
+app.get('/api/financial/kpi-summary', async (req, res) => {
     logger.info('📊 KPI summary data requested');
     
     try {
-      // Import services dynamically to avoid startup errors
-      const { default: xeroService } = await import('./services/xeroService.js');
-      const { default: shopifyMultiStore } = await import('./services/shopify-multistore.js');
+      // Initialize services with comprehensive error handling
+      let xeroService = null;
+      let shopifyMultiStore = null;
+      let xeroInitialized = false;
+      let shopifyInitialized = false;
 
-      // Initialize services
-      xeroService.ensureInitialized();
+      // Try to import Xero service
+      try {
+        const xeroModule = await import('./services/xeroService.js');
+        xeroService = xeroModule.default;
+        if (xeroService) {
+          xeroService.ensureInitialized();
+          xeroInitialized = xeroService.isConnected;
+        }
+      } catch (xeroError) {
+        logger.warn('Xero service failed to initialize:', xeroError.message);
+        xeroInitialized = false;
+      }
+
+      // Try to import Shopify service
+      try {
+        const shopifyModule = await import('./services/shopify-multistore.js');
+        shopifyMultiStore = shopifyModule.default;
+        shopifyInitialized = true;
+      } catch (shopifyError) {
+        logger.warn('Shopify service failed to import:', shopifyError.message);
+        shopifyInitialized = false;
+      }
 
       // Gather financial data from multiple sources
       const kpiData = {
@@ -896,14 +1139,14 @@ if (fs.existsSync(distPath)) {
           }
         },
         sources: {
-          xero: xeroService.isConnected,
-          shopify: shopifyMultiStore.isConnected,
+          xero: xeroInitialized && xeroService && xeroService.isConnected,
+          shopify: shopifyInitialized && shopifyMultiStore && shopifyMultiStore.isConnected,
           database: !!prisma
         }
       };
 
       // Try to get Xero financial data
-      if (xeroService.isConnected) {
+      if (xeroInitialized && xeroService && xeroService.isConnected) {
         try {
           const profitLoss = await xeroService.getProfitAndLoss();
           if (profitLoss && profitLoss.length > 0) {
@@ -927,7 +1170,7 @@ if (fs.existsSync(distPath)) {
       }
 
       // Get sales data from Shopify if available
-      if (shopifyMultiStore.isConnected) {
+      if (shopifyInitialized && shopifyMultiStore && shopifyMultiStore.isConnected) {
         try {
           const salesData = await shopifyMultiStore.getConsolidatedSalesData();
           if (salesData && salesData.totalRevenue) {
@@ -942,50 +1185,49 @@ if (fs.existsSync(distPath)) {
         }
       }
 
-      // Query database for historical trends
-      if (prisma) {
-        try {
-          // Get historical data for growth calculations
-          const thirtyDaysAgo = new Date();
-          thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      // No database fallback - Xero connection required for real financial data
 
-          const recentOrders = await prisma.order.aggregate({
-            _sum: { totalAmount: true },
-            where: {
-              createdAt: { gte: thirtyDaysAgo }
-            }
-          });
-
-          const previousOrders = await prisma.order.aggregate({
-            _sum: { totalAmount: true },
-            where: {
-              createdAt: { 
-                gte: new Date(thirtyDaysAgo.getTime() - 30 * 24 * 60 * 60 * 1000),
-                lt: thirtyDaysAgo
-              }
-            }
-          });
-
-          if (recentOrders._sum.totalAmount) {
-            kpiData.financial.revenue.current = recentOrders._sum.totalAmount;
-            kpiData.financial.revenue.previous = previousOrders._sum.totalAmount || 0;
-            
-            if (kpiData.financial.revenue.previous > 0) {
-              kpiData.financial.revenue.growth = 
-                ((kpiData.financial.revenue.current - kpiData.financial.revenue.previous) / 
-                 kpiData.financial.revenue.previous) * 100;
-            }
-          }
-        } catch (dbError) {
-          logger.warn('Database query failed for KPIs:', dbError.message);
-          kpiData.sources.database = false;
-        }
+      // Require Xero connection - no fallback data
+      if (!kpiData.sources.xero) {
+        return res.json({
+          success: false,
+          requiresXeroConnection: true,
+          message: 'Real-time financial KPIs require Xero connection',
+          authUrl: '/api/xero/auth',
+          timestamp: new Date().toISOString(),
+          sources: kpiData.sources
+        });
       }
 
       return res.json({
         success: true,
-        data: kpiData,
-        message: 'KPI summary retrieved successfully'
+        data: {
+          annualRevenue: {
+            value: kpiData.financial.revenue.current > 0 
+              ? `$${(kpiData.financial.revenue.current / 1000000).toFixed(1)}M`
+              : 'N/A',
+            helper: kpiData.financial.revenue.growth > 0 
+              ? `${kpiData.financial.revenue.growth > 0 ? '+' : ''}${kpiData.financial.revenue.growth.toFixed(1)}% vs last year`
+              : 'Awaiting data'
+          },
+          unitsSold: {
+            value: 'N/A',
+            helper: 'Xero integration required'
+          },
+          grossMargin: {
+            value: kpiData.financial.profit.margin > 0 
+              ? `${kpiData.financial.profit.margin.toFixed(1)}%`
+              : 'N/A',
+            helper: kpiData.financial.profit.margin > 0 ? 'Current period' : 'Awaiting data'
+          }
+        },
+        meta: {
+          timestamp: new Date().toISOString(),
+          dataSource: kpiData.sources.xero ? 'xero' : 
+                     kpiData.sources.shopify ? 'shopify' : 
+                     kpiData.sources.database ? 'database' : 'no-data',
+          sources: kpiData.sources
+        }
       });
 
     } catch (error) {
@@ -1050,15 +1292,22 @@ if (fs.existsSync(distPath)) {
       };
 
       // Get Shopify sales data
+      logger.info('Checking Shopify multistore configuration...');
+      logger.info(`Store configs available: ${shopifyMultiStore.storeConfigs?.length || 0}`);
+      
       if (shopifyMultiStore.storeConfigs && shopifyMultiStore.storeConfigs.length > 0) {
         try {
+          logger.info('Attempting Shopify connection...');
           await shopifyMultiStore.connect();
+          logger.info('Shopify connection successful, fetching product performance...');
           
           const shopifyData = await shopifyMultiStore.getProductPerformance({
             startDate: startDate.toISOString(),
             endDate: now.toISOString(),
             limit: 50
           });
+          
+          logger.info(`Shopify data retrieved: ${shopifyData?.products?.length || 0} products`);
 
           if (shopifyData && shopifyData.products) {
             salesData.products = shopifyData.products.map(product => ({
@@ -1169,8 +1418,64 @@ if (fs.existsSync(distPath)) {
       logger.error('Failed to fetch sales performance data:', error);
       return res.status(500).json({
         success: false,
-        error: 'Internal server error',
+        error: error.message || 'Internal server error',
+        stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
         message: 'Unable to process sales performance request',
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  // Simple test endpoint to check imports
+  app.get('/api/debug/simple-test', (req, res) => {
+    res.json({
+      success: true,
+      message: 'Simple endpoint working',
+      timestamp: new Date().toISOString(),
+      environment: {
+        NODE_ENV: process.env.NODE_ENV,
+        SHOPIFY_UK_SHOP_DOMAIN: !!process.env.SHOPIFY_UK_SHOP_DOMAIN,
+        SHOPIFY_US_SHOP_DOMAIN: !!process.env.SHOPIFY_US_SHOP_DOMAIN
+      }
+    });
+  });
+
+  // Debug endpoint to test Shopify import
+  app.get('/api/debug/shopify-import', async (req, res) => {
+    try {
+      logger.info('Testing Shopify import...');
+      
+      // Test environment variables first
+      const envCheck = {
+        SHOPIFY_UK_SHOP_DOMAIN: !!process.env.SHOPIFY_UK_SHOP_DOMAIN,
+        SHOPIFY_UK_ACCESS_TOKEN: !!process.env.SHOPIFY_UK_ACCESS_TOKEN,
+        SHOPIFY_US_SHOP_DOMAIN: !!process.env.SHOPIFY_US_SHOP_DOMAIN,
+        SHOPIFY_US_ACCESS_TOKEN: !!process.env.SHOPIFY_US_ACCESS_TOKEN
+      };
+      
+      logger.info('Environment variables check:', envCheck);
+      
+      const { default: shopifyMultiStore } = await import('./services/shopify-multistore.js');
+      
+      // Try to connect
+      const connectionResult = await shopifyMultiStore.connect();
+      const connectionStatus = shopifyMultiStore.getConnectionStatus();
+      
+      res.json({
+        success: true,
+        message: 'Shopify import and connection test completed',
+        environmentVariables: envCheck,
+        storeConfigsCount: shopifyMultiStore.storeConfigs?.length || 0,
+        connectionResult,
+        connectionStatus,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      logger.error('Shopify debug endpoint error:', error);
+      res.status(500).json({
+        success: false,
+        error: error.message,
+        stack: error.stack,
         timestamp: new Date().toISOString()
       });
     }
@@ -1182,12 +1487,34 @@ if (fs.existsSync(distPath)) {
     const period = req.query.period || 'year';
     
     try {
-      // Import services dynamically
-      const { default: xeroService } = await import('./services/xeroService.js');
-      const { default: shopifyMultiStore } = await import('./services/shopify-multistore.js');
+      // Initialize services with comprehensive error handling
+      let xeroService = null;
+      let shopifyMultiStore = null;
+      let xeroInitialized = false;
+      let shopifyInitialized = false;
 
-      // Initialize services
-      xeroService.ensureInitialized();
+      // Try to import Xero service
+      try {
+        const xeroModule = await import('./services/xeroService.js');
+        xeroService = xeroModule.default;
+        if (xeroService) {
+          xeroService.ensureInitialized();
+          xeroInitialized = xeroService.isConnected;
+        }
+      } catch (xeroError) {
+        logger.warn('Xero service failed to initialize:', xeroError.message);
+        xeroInitialized = false;
+      }
+
+      // Try to import Shopify service
+      try {
+        const shopifyModule = await import('./services/shopify-multistore.js');
+        shopifyMultiStore = shopifyModule.default;
+        shopifyInitialized = true;
+      } catch (shopifyError) {
+        logger.warn('Shopify service failed to import:', shopifyError.message);
+        shopifyInitialized = false;
+      }
 
       // Initialize date range based on period
       const now = new Date();
@@ -1243,14 +1570,14 @@ if (fs.existsSync(distPath)) {
           marginTrend: 'stable'
         },
         sources: {
-          xero: false,
-          shopify: false,
+          xero: xeroInitialized && xeroService && xeroService.isConnected,
+          shopify: shopifyInitialized && shopifyMultiStore && shopifyMultiStore.isConnected,
           database: !!prisma
         }
       };
 
       // Get Xero P&L data if available
-      if (xeroService.isConnected) {
+      if (xeroInitialized && xeroService && xeroService.isConnected) {
         try {
           const xeroPL = await xeroService.getProfitAndLoss({
             fromDate: startDate.toISOString().split('T')[0],
@@ -1287,7 +1614,7 @@ if (fs.existsSync(distPath)) {
       }
 
       // Supplement with Shopify revenue data if Xero not available
-      if (!plData.sources.xero && shopifyMultiStore.storeConfigs && shopifyMultiStore.storeConfigs.length > 0) {
+      if (!plData.sources.xero && shopifyInitialized && shopifyMultiStore && shopifyMultiStore.storeConfigs && shopifyMultiStore.storeConfigs.length > 0) {
         try {
           await shopifyMultiStore.connect();
           
@@ -1362,10 +1689,26 @@ if (fs.existsSync(distPath)) {
         }
       }
 
+      // Require Xero connection for P&L analysis - no fallback data
+      if (!plData.sources.xero) {
+        return res.json({
+          success: false,
+          requiresXeroConnection: true,
+          message: 'Real-time P&L analysis requires Xero connection',
+          authUrl: '/api/xero/auth',
+          timestamp: new Date().toISOString(),
+          sources: plData.sources
+        });
+      }
+
       return res.json({
         success: true,
         data: plData,
-        message: `P&L analysis for ${period} retrieved successfully`
+        message: `P&L analysis for ${period} retrieved successfully`,
+        meta: {
+          sources: plData.sources,
+          timestamp: new Date().toISOString()
+        }
       });
 
     } catch (error) {
@@ -1384,30 +1727,19 @@ if (fs.existsSync(distPath)) {
     logger.info('🌍 Regional performance data requested');
     
     try {
-      // Attempt to get real regional data from multiple sources
-      if (!prisma) {
-        return res.status(503).json({
-          success: false,
-          error: 'Database connection unavailable',
-          message: 'Unable to retrieve regional data - database not connected',
-          timestamp: new Date().toISOString(),
-          userAction: 'Contact system administrator to check database configuration'
-        });
-      }
-
-      // Check for regional data integrations
-      return res.status(503).json({
-        success: false,
-        error: 'Regional data integration required',
-        message: 'Regional performance requires connection to multiple regional data sources',
+      // Get real regional data from Shopify multistore
+      const { default: shopifyMultiStore } = await import('./services/shopify-multistore.js');
+      await shopifyMultiStore.connect();
+      
+      // Get regional performance from connected stores
+      const regionalData = await shopifyMultiStore.getRegionalPerformance();
+      logger.info(`Regional data retrieved from ${regionalData.length} regions`);
+      
+      return res.json({
+        success: true,
+        data: regionalData,
         timestamp: new Date().toISOString(),
-        userAction: 'Configure regional sales, inventory, and financial system integrations',
-        requiredIntegrations: [
-          'Regional Shopify stores',
-          'Regional Amazon marketplaces', 
-          'Regional Xero entities',
-          'Regional inventory systems'
-        ]
+        source: 'shopify_multistore'
       });
 
     } catch (error) {
@@ -1419,6 +1751,17 @@ if (fs.existsSync(distPath)) {
         timestamp: new Date().toISOString()
       });
     }
+  });
+
+// Serve static files from dist directory (after API routes are defined)
+const distPath = path.join(__dirname, 'dist');
+if (fs.existsSync(distPath)) {
+  app.use((req, res, next) => {
+    // Skip static file serving for API routes
+    if (req.path.startsWith('/api/')) {
+      return next();
+    }
+    express.static(distPath)(req, res, next);
   });
 
   // SPA fallback - must be last AND must exclude API routes

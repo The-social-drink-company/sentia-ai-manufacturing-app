@@ -5,7 +5,7 @@ import { existsSync, mkdirSync } from 'fs'
 const { combine, timestamp, printf, colorize, errors } = winston.format
 
 // Custom log format
-const logFormat = printf(({ _level, _message, _timestamp, stack, ...meta }) => {
+const logFormat = printf(({ level, message, timestamp, stack, ...meta }) => {
   let logEntry = `${timestamp} [${level}]: ${message}`
   
   if (stack) {
@@ -81,7 +81,7 @@ if (process.env.NODE_ENV !== 'production' || isRailwayOrRender) {
     format: combine(
       colorize(),
       timestamp({ format: 'HH:mm:ss' }),
-      printf(({ _level, _message, _timestamp, stack }) => {
+      printf(({ level, message, timestamp, stack }) => {
         let logEntry = `${timestamp} [${level}]: ${message}`
         if (stack) {
           logEntry += `\n${stack}`

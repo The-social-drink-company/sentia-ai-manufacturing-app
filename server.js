@@ -915,18 +915,33 @@ app.get('/api/financial/kpi-summary', async (req, res) => {
     logger.info('📊 KPI summary data requested');
     
     try {
-      // Import services dynamically to avoid startup errors
-      const { default: xeroService } = await import('./services/xeroService.js');
-      const { default: shopifyMultiStore } = await import('./services/shopify-multistore.js');
-
-      // Initialize services with error handling
+      // Initialize services with comprehensive error handling
+      let xeroService = null;
+      let shopifyMultiStore = null;
       let xeroInitialized = false;
+      let shopifyInitialized = false;
+
+      // Try to import Xero service
       try {
-        xeroService.ensureInitialized();
-        xeroInitialized = true;
+        const xeroModule = await import('./services/xeroService.js');
+        xeroService = xeroModule.default;
+        if (xeroService) {
+          xeroService.ensureInitialized();
+          xeroInitialized = xeroService.isConnected;
+        }
       } catch (xeroError) {
-        logger.warn('Xero service initialization failed:', xeroError.message);
+        logger.warn('Xero service failed to initialize:', xeroError.message);
         xeroInitialized = false;
+      }
+
+      // Try to import Shopify service
+      try {
+        const shopifyModule = await import('./services/shopify-multistore.js');
+        shopifyMultiStore = shopifyModule.default;
+        shopifyInitialized = true;
+      } catch (shopifyError) {
+        logger.warn('Shopify service failed to import:', shopifyError.message);
+        shopifyInitialized = false;
       }
 
       // Gather financial data from multiple sources
@@ -960,14 +975,14 @@ app.get('/api/financial/kpi-summary', async (req, res) => {
           }
         },
         sources: {
-          xero: xeroInitialized && xeroService.isConnected,
-          shopify: shopifyMultiStore.isConnected,
+          xero: xeroInitialized && xeroService && xeroService.isConnected,
+          shopify: shopifyInitialized && shopifyMultiStore && shopifyMultiStore.isConnected,
           database: !!prisma
         }
       };
 
       // Try to get Xero financial data
-      if (xeroInitialized && xeroService.isConnected) {
+      if (xeroInitialized && xeroService && xeroService.isConnected) {
         try {
           const profitLoss = await xeroService.getProfitAndLoss();
           if (profitLoss && profitLoss.length > 0) {
@@ -991,7 +1006,7 @@ app.get('/api/financial/kpi-summary', async (req, res) => {
       }
 
       // Get sales data from Shopify if available
-      if (shopifyMultiStore.isConnected) {
+      if (shopifyInitialized && shopifyMultiStore && shopifyMultiStore.isConnected) {
         try {
           const salesData = await shopifyMultiStore.getConsolidatedSalesData();
           if (salesData && salesData.totalRevenue) {
@@ -1046,10 +1061,46 @@ app.get('/api/financial/kpi-summary', async (req, res) => {
         }
       }
 
+      // Return appropriate response based on data availability
+      if (!kpiData.sources.xero && !kpiData.sources.shopify && !kpiData.sources.database) {
+        return res.status(503).json({
+          success: false,
+          error: 'Service unavailable',
+          message: 'No data sources available. Please check Xero and Shopify connections.',
+          timestamp: new Date().toISOString(),
+          sources: kpiData.sources
+        });
+      }
+
       return res.json({
         success: true,
-        data: kpiData,
-        message: 'KPI summary retrieved successfully'
+        data: {
+          annualRevenue: {
+            value: kpiData.financial.revenue.current > 0 
+              ? `$${(kpiData.financial.revenue.current / 1000000).toFixed(1)}M`
+              : 'N/A',
+            helper: kpiData.financial.revenue.growth > 0 
+              ? `${kpiData.financial.revenue.growth > 0 ? '+' : ''}${kpiData.financial.revenue.growth.toFixed(1)}% vs last year`
+              : 'Awaiting data'
+          },
+          unitsSold: {
+            value: 'N/A',
+            helper: 'Xero integration required'
+          },
+          grossMargin: {
+            value: kpiData.financial.profit.margin > 0 
+              ? `${kpiData.financial.profit.margin.toFixed(1)}%`
+              : 'N/A',
+            helper: kpiData.financial.profit.margin > 0 ? 'Current period' : 'Awaiting data'
+          }
+        },
+        meta: {
+          timestamp: new Date().toISOString(),
+          dataSource: kpiData.sources.xero ? 'xero' : 
+                     kpiData.sources.shopify ? 'shopify' : 
+                     kpiData.sources.database ? 'database' : 'no-data',
+          sources: kpiData.sources
+        }
       });
 
     } catch (error) {
@@ -1309,18 +1360,33 @@ app.get('/api/financial/kpi-summary', async (req, res) => {
     const period = req.query.period || 'year';
     
     try {
-      // Import services dynamically
-      const { default: xeroService } = await import('./services/xeroService.js');
-      const { default: shopifyMultiStore } = await import('./services/shopify-multistore.js');
-
-      // Initialize services with error handling
+      // Initialize services with comprehensive error handling
+      let xeroService = null;
+      let shopifyMultiStore = null;
       let xeroInitialized = false;
+      let shopifyInitialized = false;
+
+      // Try to import Xero service
       try {
-        xeroService.ensureInitialized();
-        xeroInitialized = true;
+        const xeroModule = await import('./services/xeroService.js');
+        xeroService = xeroModule.default;
+        if (xeroService) {
+          xeroService.ensureInitialized();
+          xeroInitialized = xeroService.isConnected;
+        }
       } catch (xeroError) {
-        logger.warn('Xero service initialization failed:', xeroError.message);
+        logger.warn('Xero service failed to initialize:', xeroError.message);
         xeroInitialized = false;
+      }
+
+      // Try to import Shopify service
+      try {
+        const shopifyModule = await import('./services/shopify-multistore.js');
+        shopifyMultiStore = shopifyModule.default;
+        shopifyInitialized = true;
+      } catch (shopifyError) {
+        logger.warn('Shopify service failed to import:', shopifyError.message);
+        shopifyInitialized = false;
       }
 
       // Initialize date range based on period
@@ -1377,14 +1443,14 @@ app.get('/api/financial/kpi-summary', async (req, res) => {
           marginTrend: 'stable'
         },
         sources: {
-          xero: false,
-          shopify: false,
+          xero: xeroInitialized && xeroService && xeroService.isConnected,
+          shopify: shopifyInitialized && shopifyMultiStore && shopifyMultiStore.isConnected,
           database: !!prisma
         }
       };
 
       // Get Xero P&L data if available
-      if (xeroService.isConnected) {
+      if (xeroInitialized && xeroService && xeroService.isConnected) {
         try {
           const xeroPL = await xeroService.getProfitAndLoss({
             fromDate: startDate.toISOString().split('T')[0],
@@ -1421,7 +1487,7 @@ app.get('/api/financial/kpi-summary', async (req, res) => {
       }
 
       // Supplement with Shopify revenue data if Xero not available
-      if (!plData.sources.xero && shopifyMultiStore.storeConfigs && shopifyMultiStore.storeConfigs.length > 0) {
+      if (!plData.sources.xero && shopifyInitialized && shopifyMultiStore && shopifyMultiStore.storeConfigs && shopifyMultiStore.storeConfigs.length > 0) {
         try {
           await shopifyMultiStore.connect();
           
@@ -1496,10 +1562,25 @@ app.get('/api/financial/kpi-summary', async (req, res) => {
         }
       }
 
+      // Return appropriate response based on data availability
+      if (!plData.sources.xero && !plData.sources.shopify && !plData.sources.database) {
+        return res.status(503).json({
+          success: false,
+          error: 'Service unavailable',
+          message: 'No data sources available for P&L analysis. Please check Xero and Shopify connections.',
+          timestamp: new Date().toISOString(),
+          sources: plData.sources
+        });
+      }
+
       return res.json({
         success: true,
         data: plData,
-        message: `P&L analysis for ${period} retrieved successfully`
+        message: `P&L analysis for ${period} retrieved successfully`,
+        meta: {
+          sources: plData.sources,
+          timestamp: new Date().toISOString()
+        }
       });
 
     } catch (error) {

@@ -1,4 +1,4 @@
-# 🏢 Sentia Manufacturing Dashboard
+# 🏢 Sentia AI Manufacturing App
 
 [![Security Review](https://img.shields.io/badge/Security-A%2B-green)](./security)
 [![Code Quality](https://img.shields.io/badge/Code%20Quality-95%25-blue)](./docs)
@@ -8,7 +8,7 @@
 
 ## 🎯 Enterprise Manufacturing Intelligence Platform
 
-World-class manufacturing dashboard with AI-powered analytics, real-time monitoring, and comprehensive business intelligence for Sentia Spirits.
+World-class AI manufacturing application with AI-powered analytics, real-time monitoring, and comprehensive business intelligence for Sentia Spirits.
 
 ## 🛠️ Technology Stack
 
@@ -42,6 +42,116 @@ World-class manufacturing dashboard with AI-powered analytics, real-time monitor
 - **Express Rate Limit** - DDoS protection
 - **Express Validator** - Input validation and sanitization
 - **Prometheus** - Metrics collection and monitoring
+
+## 🚀 Local Development Setup
+
+### Prerequisites
+
+- **Node.js** v24.4.1 (Required - use exact version)
+- **pnpm** (Preferred) or npm (Alternative)
+- **PostgreSQL** 16+ with pgvector extension (Optional for local development)
+- **Git** for version control
+
+### Installation Steps
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/The-social-drink-company/sentia-manufacturing-dashboard.git
+   cd sentia-manufacturing-dashboard
+   ```
+
+2. **Install dependencies**
+   ```bash
+   pnpm install
+   # or
+   npm install
+   ```
+
+3. **Configure environment variables**
+   ```bash
+   cp .env.template .env
+   # Edit .env file with your configuration
+   ```
+
+4. **Start development servers**
+   ```bash
+   pnpm run dev
+   # Frontend: http://localhost:3000
+   # Backend: http://localhost:5000
+   # MCP Server: http://localhost:3001 (optional)
+   ```
+
+### Environment Configuration
+
+Required environment variables:
+
+```env
+# Authentication (Clerk)
+VITE_CLERK_PUBLISHABLE_KEY=pk_live_YOUR_KEY
+CLERK_SECRET_KEY=sk_live_YOUR_KEY
+VITE_CLERK_DOMAIN=clerk.financeflo.ai
+CLERK_ENVIRONMENT=production
+
+# API Configuration
+VITE_API_BASE_URL=http://localhost:5000/api
+NODE_ENV=development
+PORT=5000
+
+# Database (Optional for local development)
+DATABASE_URL=postgresql://user:password@localhost:5432/sentia_dev
+```
+
+### Available Scripts
+
+```bash
+# Development
+pnpm run dev              # Start both frontend and backend
+pnpm run dev:client       # Start frontend only (port 3000)
+pnpm run dev:server       # Start backend only (port 5000)
+pnpm run dev:mcp          # Start MCP AI server (port 3001)
+
+# Code Quality
+pnpm run lint             # Run ESLint with auto-fix
+pnpm run lint:check       # Check linting issues
+pnpm run format           # Format code with Prettier
+pnpm run format:check     # Check formatting issues
+
+# Testing
+pnpm run test             # Run unit tests with Vitest
+pnpm run test:ui          # Run tests with UI
+pnpm run test:coverage    # Generate coverage report
+pnpm run test:e2e         # Run E2E tests with Playwright
+
+# Build & Production
+pnpm run build            # Build for production
+pnpm run preview          # Preview production build
+pnpm run start            # Start production server
+
+# Database (if using local PostgreSQL)
+pnpm run db:generate      # Generate Prisma client
+pnpm run db:migrate       # Run database migrations
+pnpm run db:studio        # Open Prisma Studio
+```
+
+### Troubleshooting
+
+**Port conflicts:**
+```bash
+# Kill processes on specific ports
+npx kill-port 3000 5000 3001
+```
+
+**Node modules issues:**
+```bash
+# Clean install
+rm -rf node_modules pnpm-lock.yaml
+pnpm install
+```
+
+**Environment variables not loading:**
+- Ensure `.env` file exists in root directory
+- Variables starting with `VITE_` are for frontend
+- Restart development servers after changes
 
 ## Project Structure
 
@@ -604,3 +714,4 @@ For technical issues or questions:
 # Force redeploy Tue, Sep  9, 2025  6:51:53 PM
 # MCP Server restart - Tue, Sep 10, 2025  7:03:00 AM
 # Latest deployment: Wed, Sep 10, 2025  2:47:08 PM
+# Deployment trigger Sun Sep 28 17:34:36 EDT 2025

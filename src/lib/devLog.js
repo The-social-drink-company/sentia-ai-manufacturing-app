@@ -1,15 +1,15 @@
 // Development logging utility
 const devLog = {
-  log: (...args) => {},
-  info: (...args) => {},
-  warn: (...args) => {},
-  error: (...args) => {},
-  debug: (...args) => {},
-  table: (data) => {},
-  time: (label) => {},
-  timeEnd: (label) => {},
-  group: (label) => {},
-  groupCollapsed: (label) => {},
+  log: () => {},
+  info: () => {},
+  warn: () => {},
+  error: () => {},
+  debug: () => {},
+  table: () => {},
+  time: () => {},
+  timeEnd: () => {},
+  group: () => {},
+  groupCollapsed: () => {},
   groupEnd: () => {}
 };
 

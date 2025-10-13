@@ -3,6 +3,8 @@ import { PrismaClient } from '@prisma/client';
 import { requireAuth, requireRole, requireManager } from '../middleware/clerkAuth.js';
 import { rateLimiters } from '../middleware/rateLimiter.js';
 import { asyncHandler } from '../lib/asyncHandler.js';
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -38,7 +40,7 @@ router.get('/dashboard-layout',
         });
       }
     } catch (error) {
-      console.error('Error fetching dashboard layout:', error);
+      logError('Error fetching dashboard layout:', error);
       res.status(500).json({
         success: false,
         error: 'Failed to fetch dashboard layout'
@@ -77,7 +79,7 @@ router.post('/dashboard-layout',
         preferences: userPreferences
       });
     } catch (error) {
-      console.error('Error saving dashboard layout:', error);
+      logError('Error saving dashboard layout:', error);
       res.status(500).json({
         success: false,
         error: 'Failed to save dashboard layout'
@@ -108,7 +110,7 @@ router.get('/preferences',
         }
       });
     } catch (error) {
-      console.error('Error fetching user preferences:', error);
+      logError('Error fetching user preferences:', error);
       res.status(500).json({
         success: false,
         error: 'Failed to fetch preferences'
@@ -150,7 +152,7 @@ router.put('/preferences',
         preferences
       });
     } catch (error) {
-      console.error('Error updating preferences:', error);
+      logError('Error updating preferences:', error);
       res.status(500).json({
         success: false,
         error: 'Failed to update preferences'

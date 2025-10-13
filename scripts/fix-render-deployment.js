@@ -42,7 +42,7 @@ if (fs.existsSync('render.yaml')) {
     console.log(`${colors.yellow}⚠${colors.reset} render.yaml uses server-render.js (fixing...)`);
 
     const fixed = renderYaml.replace(
-      /startCommand: node server-render\.js/g,
+      /startCommand: node server-render.js/g,
       'startCommand: node server.js'
     );
 
@@ -68,7 +68,7 @@ if (fs.existsSync('render-environments-complete.yaml')) {
     console.log(`${colors.yellow}⚠${colors.reset} Found server-render.js references (fixing...)`);
 
     const fixed = envYaml.replace(
-      /startCommand: node server-render\.js/g,
+      /startCommand: node server-render.js/g,
       'startCommand: node server.js'
     );
 

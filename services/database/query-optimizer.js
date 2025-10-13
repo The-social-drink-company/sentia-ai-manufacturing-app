@@ -3,6 +3,8 @@
 
 import prismaEnhanced from '../../lib/prisma-enhanced.js';
 import redisCache from '../cache/redis-cache.js';
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+
 
 class QueryOptimizer {
   constructor() {
@@ -118,7 +120,7 @@ class QueryOptimizer {
       } catch (error) {
         // Reject all promises on error
         batch.resolvers.forEach(resolve => resolve([]));
-        console.error('Batch query error:', error);
+        logError('Batch query error:', error);
       }
     }
   }
@@ -131,7 +133,7 @@ class QueryOptimizer {
     const complexity = this.calculateQueryComplexity(query);
 
     if (complexity > 10) {
-      console.warn(`High complexity query detected (score: ${complexity})`);
+      logWarn(`High complexity query detected (score: ${complexity})`);
 
       // Split into multiple simpler queries if possible
       if (include && Object.keys(include).length > 3) {
@@ -301,7 +303,7 @@ class QueryOptimizer {
       if (!cached) {
         // Check if model exists in prismaEnhanced before accessing
         if (!prismaEnhanced[model]) {
-          console.warn(`Model ${model} not found in prismaEnhanced, skipping prefetch`);
+          logWarn(`Model ${model} not found in prismaEnhanced, skipping prefetch`);
           return { model, count: 0, skipped: true };
         }
 
@@ -314,7 +316,7 @@ class QueryOptimizer {
     });
 
     const results = await Promise.all(prefetchPromises);
-    console.log('Prefetch complete:', results);
+    logDebug('Prefetch complete:', results);
     return results;
   }
 
@@ -323,7 +325,7 @@ class QueryOptimizer {
     const insights = [];
 
     // Analyze query patterns
-    this.metrics.queryPatterns.forEach((pattern, key) => {
+    this.metrics.queryPatterns.forEach((pattern, _key) => {
       if (pattern.count > 100 && pattern.suggestions.length > 0) {
         insights.push({
           pattern: key,

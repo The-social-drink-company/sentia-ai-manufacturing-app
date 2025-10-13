@@ -20,7 +20,7 @@ export const generateCSPNonce = () => {
 
 // Enhanced security headers middleware
 export const securityHeaders = () => {
-  return (req, res, next) => {
+  return (req, res, _next) => {
     // Generate and attach CSP nonce if enabled
     if (SECURITY_CONFIG.CSP_NONCE_MODE) {
       res.locals.cspNonce = generateCSPNonce();
@@ -125,7 +125,7 @@ export const verifyWebhookSignature = (secret, signatureHeader = 'x-webhook-sign
 
 // IP allowlist middleware for webhooks
 export const webhookIPAllowlist = (allowlist = SECURITY_CONFIG.WEBHOOK_IP_ALLOWLIST) => {
-  return (req, res, next) => {
+  return (req, res, _next) => {
     if (!allowlist || allowlist.length === 0) {
       // No allowlist configured, allow all
       return next();
@@ -137,7 +137,7 @@ export const webhookIPAllowlist = (allowlist = SECURITY_CONFIG.WEBHOOK_IP_ALLOWL
     const isAllowed = allowlist.some(allowedIP => {
       if (allowedIP.includes('*')) {
         // Support wildcard matching
-        const pattern = allowedIP.replace(/\./g, '\\.').replace(/\*/g, '.*');
+        const pattern = allowedIP.replace(/./g, '\.').replace(/*/g, '.*');
         return new RegExp(`^${pattern}$`).test(clientIP);
       }
       return clientIP === allowedIP;
@@ -158,7 +158,7 @@ export const webhookIPAllowlist = (allowlist = SECURITY_CONFIG.WEBHOOK_IP_ALLOWL
 
 // Request sanitization middleware
 export const sanitizeRequest = () => {
-  return (req, res, next) => {
+  return (req, res, _next) => {
     // Sanitize headers
     const suspiciousHeaders = [
       'x-forwarded-host',
@@ -196,7 +196,7 @@ export const sanitizeRequest = () => {
         const sqlPatterns = [
           /(\bUNION\b|\bSELECT\b|\bINSERT\b|\bUPDATE\b|\bDELETE\b|\bDROP\b)/i,
           /(\bOR\b\s*\d+\s*=\s*\d+|\bAND\b\s*\d+\s*=\s*\d+)/i,
-          /(--|\#|\/\*|\*\/)/
+          /(--|\#|/*|*/)/
         ];
         
         if (sqlPatterns.some(pattern => pattern.test(req.query[key]))) {
@@ -224,7 +224,7 @@ export const antiAutomation = () => {
     /python|java|ruby|perl|php|curl|wget/i
   ];
   
-  return (req, res, next) => {
+  return (req, res, _next) => {
     const userAgent = req.headers['user-agent'] || '';
     const clientId = `${req.ip}-${userAgent}`;
     const now = Date.now();
@@ -287,7 +287,7 @@ export const csrfProtection = () => {
   const TOKEN_EXPIRY = 3600000; // 1 hour
   
   return {
-    generateToken: (req, res, next) => {
+    generateToken: (req, res, _next) => {
       if (!SECURITY_CONFIG.ENABLE_CSRF) {
         return next();
       }
@@ -304,7 +304,7 @@ export const csrfProtection = () => {
       next();
     },
     
-    validateToken: (req, res, next) => {
+    validateToken: (req, res, _next) => {
       if (!SECURITY_CONFIG.ENABLE_CSRF) {
         return next();
       }
@@ -355,7 +355,7 @@ export const csrfProtection = () => {
 
 // Security audit logging
 export const auditLog = () => {
-  return (req, res, next) => {
+  return (req, res, _next) => {
     // Log security-relevant actions
     const auditableActions = [
       '/api/admin',

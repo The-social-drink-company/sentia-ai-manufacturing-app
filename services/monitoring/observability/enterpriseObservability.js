@@ -1,6 +1,8 @@
 import EventEmitter from 'events';
 import os from 'os';
 import process from 'process';
+import { logDebug, logInfo, logWarn, logError } from '../../../src/utils/logger';
+
 
 /**
  * Enterprise Observability & Monitoring System
@@ -98,7 +100,7 @@ export class EnterpriseObservabilityService extends EventEmitter {
     // Setup data retention
     this.setupDataRetention();
     
-    console.log('📊 Enterprise Observability System initialized');
+    logDebug('📊 Enterprise Observability System initialized');
   }
 
   /**
@@ -181,7 +183,7 @@ export class EnterpriseObservabilityService extends EventEmitter {
       });
 
     } catch (error) {
-      console.error('Metric collection failed:', error);
+      logError('Metric collection failed:', error);
       this.logError('metric_collection_failed', error);
     }
   }
@@ -223,7 +225,7 @@ export class EnterpriseObservabilityService extends EventEmitter {
       // Calculate overall health
       const healthScores = Object.values(healthResults.checks).map(check => check.score || 0);
       healthResults.score = healthScores.length > 0 ? 
-        Math.round(healthScores.reduce((a, b) => a + b, 0) / healthScores.length) : 100;
+        Math.round(healthScores.reduce((a, _b) => a + b, 0) / healthScores.length) : 100;
       
       // Determine overall status
       if (healthResults.score >= 90) {
@@ -254,7 +256,7 @@ export class EnterpriseObservabilityService extends EventEmitter {
       return healthResults;
 
     } catch (error) {
-      console.error('Health check failed:', error);
+      logError('Health check failed:', error);
       this.logError('health_check_failed', error);
       return {
         timestamp: new Date().toISOString(),
@@ -320,7 +322,7 @@ export class EnterpriseObservabilityService extends EventEmitter {
       return alert;
 
     } catch (error) {
-      console.error('Alert generation failed:', error);
+      logError('Alert generation failed:', error);
       this.logError('alert_generation_failed', error);
     }
   }
@@ -348,7 +350,7 @@ export class EnterpriseObservabilityService extends EventEmitter {
     
     // Console output
     if (this.shouldLogToConsole(level)) {
-      console.log(JSON.stringify(logEntry));
+      logDebug(JSON.stringify(logEntry));
     }
     
     // Emit log event
@@ -449,7 +451,7 @@ export class EnterpriseObservabilityService extends EventEmitter {
       await this.collectSystemMetrics();
     }, this.config.monitoring.interval);
     
-    console.log(`📈 Metric collection started (${this.config.monitoring.interval}ms interval)`);
+    logDebug(`📈 Metric collection started (${this.config.monitoring.interval}ms interval)`);
   }
 
   /**
@@ -460,7 +462,7 @@ export class EnterpriseObservabilityService extends EventEmitter {
       await this.performHealthChecks();
     }, this.config.health.interval);
     
-    console.log(`🏥 Health monitoring started (${this.config.health.interval}ms interval)`);
+    logDebug(`🏥 Health monitoring started (${this.config.health.interval}ms interval)`);
   }
 
   /**
@@ -471,7 +473,7 @@ export class EnterpriseObservabilityService extends EventEmitter {
       this.processAlerts();
     }, 10000); // Every 10 seconds
     
-    console.log('🚨 Alert processing started');
+    logDebug('🚨 Alert processing started');
   }
 
   /**
@@ -482,7 +484,7 @@ export class EnterpriseObservabilityService extends EventEmitter {
       this.cleanupOldData();
     }, 3600000); // Every hour
     
-    console.log('🗄️ Data retention policies configured');
+    logDebug('🗄️ Data retention policies configured');
   }
 
   /**
@@ -619,14 +621,14 @@ export class EnterpriseObservabilityService extends EventEmitter {
   
   async sendAlertNotifications(alert) {
     // Implementation would send to configured channels
-    console.log(`🚨 Alert: [${alert.severity.toUpperCase()}] ${alert.message}`);
+    logDebug(`🚨 Alert: [${alert.severity.toUpperCase()}] ${alert.message}`);
   }
   
   escalateAlert(alertId) {
     const alert = this.activeAlerts.get(alertId);
     if (alert) {
       alert.escalated = true;
-      console.log(`⚠️ Alert escalated: ${alert.message}`);
+      logDebug(`⚠️ Alert escalated: ${alert.message}`);
     }
   }
   

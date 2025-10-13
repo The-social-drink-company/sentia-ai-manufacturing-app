@@ -5,7 +5,7 @@
 
 import { PrismaClient } from '@prisma/client'
 import xeroService from './xeroService.js'
-import shopifyService from './shopifyService.js'
+import shopifyMultiStore from './shopify-multistore.js'
 import amazonService from './amazonService.js'
 import unleashedService from './unleashedService.js'
 import { logInfo, logWarn, logError } from './observability/structuredLogger.js'
@@ -121,35 +121,40 @@ async function refreshXeroData() {
  */
 async function refreshShopifyData() {
   try {
-    // Get recent orders from Shopify
-    const orders = await shopifyService.getOrders({ 
+    // Connect to Shopify multistore service
+    await shopifyMultiStore.connect()
+    
+    // Get recent orders from all connected stores
+    const allOrders = await shopifyMultiStore.getAllOrders({
       limit: 250, 
-      created_at_min: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString() 
+      created_at_min: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
     })
     
     // Convert Shopify orders to historical sales
-    const salesData = orders.map(order => ({
+    const salesData = allOrders.map(order => ({
       external_order_id: order.id.toString(),
       sale_date: new Date(order.created_at),
       gross_revenue: parseFloat(order.total_price || 0),
       net_revenue: parseFloat(order.total_price || 0) - parseFloat(order.total_discounts || 0),
-      quantity_sold: order.line_items.reduce((sum, item) => sum + item.quantity, 0),
+      quantity_sold: order.line_items?.reduce((sum, item) => sum + item.quantity, 0) || 0,
       customer_email: order.customer?.email,
       source: 'shopify',
-      currency: order.currency || 'USD'
+      currency: order.currency || 'GBP',
+      store_region: order.store_region || 'uk_eu'
     }))
     
     // Update historical sales data
     await updateHistoricalSales(salesData)
     
     return {
-      orders: orders.length,
+      orders: allOrders.length,
       totalRevenue: salesData.reduce((sum, sale) => sum + sale.gross_revenue, 0),
-      totalQuantity: salesData.reduce((sum, sale) => sum + sale.quantity_sold, 0)
+      totalQuantity: salesData.reduce((sum, sale) => sum + sale.quantity_sold, 0),
+      storeCount: shopifyMultiStore.getActiveStoreCount()
     }
     
   } catch (error) {
-    logWarn('Shopify service not configured or unavailable')
+    logWarn('Shopify multistore service not configured or unavailable')
     return { status: 'not_configured', error: error.message }
   }
 }

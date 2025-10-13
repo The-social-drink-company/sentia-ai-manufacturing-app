@@ -817,7 +817,7 @@ class InventoryOptimizationService {
   generateRiskRecommendations(riskFactors) {
     const recommendations = [];
     
-    Object.entries(riskFactors).forEach(([factor, risk]) => {
+    Object.entries(riskFactors).forEach(_([factor, _risk]) => {
       if (risk.level === 'high') {
         switch (factor) {
           case 'demandVolatility':

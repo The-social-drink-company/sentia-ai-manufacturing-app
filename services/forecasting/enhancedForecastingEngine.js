@@ -19,6 +19,8 @@
 
 import DualAIOrchestrator from '../ai/dualAIOrchestrator.js';
 import EventEmitter from 'events';
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+
 
 class EnhancedForecastingEngine extends EventEmitter {
     constructor(config = {}) {
@@ -101,10 +103,10 @@ class EnhancedForecastingEngine extends EventEmitter {
                 timestamp: new Date().toISOString()
             });
             
-            console.log('✅ Enhanced Forecasting Engine initialized successfully');
+            logDebug('✅ Enhanced Forecasting Engine initialized successfully');
             
         } catch (error) {
-            console.error('❌ Failed to initialize forecasting engine:', error);
+            logError('❌ Failed to initialize forecasting engine:', error);
             this.emit('initialization_error', error);
             throw error;
         }
@@ -161,11 +163,11 @@ class EnhancedForecastingEngine extends EventEmitter {
         this.on('error', this.handleError.bind(this));
         
         // AI Orchestrator events
-        this.aiOrchestrator.on('forecast_complete', (result) => {
+        this.aiOrchestrator.on(_'forecast_complete', (result) => {
             this.emit('ai_forecast_complete', result);
         });
         
-        this.aiOrchestrator.on('metrics_updated', (metrics) => {
+        this.aiOrchestrator.on(_'metrics_updated', _(metrics) => {
             this.updateAIMetrics(metrics);
         });
     }
@@ -192,7 +194,7 @@ class EnhancedForecastingEngine extends EventEmitter {
             const cachedResult = this.getCachedForecast(cacheKey);
             
             if (cachedResult && !forecastOptions.forceRefresh) {
-                console.log('📋 Returning cached forecast');
+                logDebug('📋 Returning cached forecast');
                 this.updateMetrics('cache_hit', Date.now() - startTime);
                 return cachedResult;
             }
@@ -240,7 +242,7 @@ class EnhancedForecastingEngine extends EventEmitter {
             
         } catch (error) {
             const responseTime = Date.now() - startTime;
-            console.error('❌ Forecast generation failed:', error);
+            logError('❌ Forecast generation failed:', error);
             
             this.updateMetrics('error', responseTime);
             this.emit('forecast_error', { requestId, error, responseTime });
@@ -272,7 +274,7 @@ class EnhancedForecastingEngine extends EventEmitter {
      */
     async generateAIForecast(data, options) {
         try {
-            console.log('🤖 Generating AI forecast...');
+            logDebug('🤖 Generating AI forecast...');
             
             const aiResult = await this.aiOrchestrator.generateForecast(data, {
                 horizon: options.horizon,
@@ -303,7 +305,7 @@ class EnhancedForecastingEngine extends EventEmitter {
             };
             
         } catch (error) {
-            console.error('❌ AI forecast failed:', error);
+            logError('❌ AI forecast failed:', error);
             throw error;
         }
     }
@@ -313,7 +315,7 @@ class EnhancedForecastingEngine extends EventEmitter {
      */
     async generateEnsembleForecast(data, options) {
         try {
-            console.log('🔮 Generating ensemble forecast...');
+            logDebug('🔮 Generating ensemble forecast...');
             
             const models = Object.keys(this.config.models).filter(
                 model => this.config.models[model].enabled
@@ -324,7 +326,7 @@ class EnhancedForecastingEngine extends EventEmitter {
                     try {
                         return await this.generateModelForecast(data, model, options);
                     } catch (error) {
-                        console.warn(`⚠️ Model ${model} failed:`, error.message);
+                        logWarn(`⚠️ Model ${model} failed:`, error.message);
                         return null;
                     }
                 })
@@ -360,7 +362,7 @@ class EnhancedForecastingEngine extends EventEmitter {
             };
             
         } catch (error) {
-            console.error('❌ Ensemble forecast failed:', error);
+            logError('❌ Ensemble forecast failed:', error);
             throw error;
         }
     }
@@ -370,7 +372,7 @@ class EnhancedForecastingEngine extends EventEmitter {
      */
     async generateTraditionalForecast(data, options) {
         try {
-            console.log('📊 Generating traditional forecast...');
+            logDebug('📊 Generating traditional forecast...');
             
             // Use ARIMA as the primary traditional model
             const arimaResult = await this.generateModelForecast(data, 'arima', options);
@@ -400,7 +402,7 @@ class EnhancedForecastingEngine extends EventEmitter {
             };
             
         } catch (error) {
-            console.error('❌ Traditional forecast failed:', error);
+            logError('❌ Traditional forecast failed:', error);
             throw error;
         }
     }
@@ -410,16 +412,16 @@ class EnhancedForecastingEngine extends EventEmitter {
      */
     async generateHybridForecast(data, options) {
         try {
-            console.log('🔄 Generating hybrid forecast...');
+            logDebug('🔄 Generating hybrid forecast...');
             
             // Generate both AI and traditional forecasts in parallel
             const [aiResult, traditionalResult] = await Promise.all([
                 this.generateAIForecast(data, options).catch(error => {
-                    console.warn('⚠️ AI forecast failed in hybrid mode:', error.message);
+                    logWarn('⚠️ AI forecast failed in hybrid mode:', error.message);
                     return null;
                 }),
                 this.generateTraditionalForecast(data, options).catch(error => {
-                    console.warn('⚠️ Traditional forecast failed in hybrid mode:', error.message);
+                    logWarn('⚠️ Traditional forecast failed in hybrid mode:', error.message);
                     return null;
                 })
             ]);
@@ -460,7 +462,7 @@ class EnhancedForecastingEngine extends EventEmitter {
             };
             
         } catch (error) {
-            console.error('❌ Hybrid forecast failed:', error);
+            logError('❌ Hybrid forecast failed:', error);
             throw error;
         }
     }
@@ -488,7 +490,7 @@ class EnhancedForecastingEngine extends EventEmitter {
             }
             
         } catch (error) {
-            console.error(`❌ Model ${model} forecast failed:`, error);
+            logError(`❌ Model ${model} forecast failed:`, error);
             throw error;
         }
     }
@@ -742,29 +744,29 @@ class EnhancedForecastingEngine extends EventEmitter {
         const normalizedWeights = weights.map(weight => weight / totalWeight);
         
         // Combine forecast values
-        const combinedValues = results[0].forecast.values.map((_, index) => {
-            return results.reduce((sum, result, resultIndex) => {
+        const combinedValues = results[0].forecast.values.map(_(_, index) => {
+            return results.reduce(_(sum, result, _resultIndex) => {
                 const value = result.forecast.values[index] || 0;
                 return sum + (value * normalizedWeights[resultIndex]);
             }, 0);
         });
         
         // Combine confidence intervals
-        const combinedLower = results[0].forecast.confidence_intervals.lower.map((_, index) => {
+        const combinedLower = results[0].forecast.confidence_intervals.lower.map(_(_, index) => {
             return Math.min(...results.map(result => result.forecast.confidence_intervals.lower[index] || 0));
         });
         
-        const combinedUpper = results[0].forecast.confidence_intervals.upper.map((_, index) => {
+        const combinedUpper = results[0].forecast.confidence_intervals.upper.map(_(_, index) => {
             return Math.max(...results.map(result => result.forecast.confidence_intervals.upper[index] || 0));
         });
         
         // Calculate weighted accuracy
-        const combinedAccuracy = results.reduce((sum, result, index) => {
+        const combinedAccuracy = results.reduce(_(sum, result, index) => {
             return sum + (result.accuracy * normalizedWeights[index]);
         }, 0);
         
         // Calculate weighted confidence
-        const combinedConfidence = results.reduce((sum, result, index) => {
+        const combinedConfidence = results.reduce(_(sum, result, index) => {
             return sum + (result.confidence * normalizedWeights[index]);
         }, 0);
         
@@ -870,7 +872,7 @@ class EnhancedForecastingEngine extends EventEmitter {
             return forecast;
             
         } catch (error) {
-            console.error('❌ Failed to enhance forecast:', error);
+            logError('❌ Failed to enhance forecast:', error);
             return forecast; // Return original forecast if enhancement fails
         }
     }
@@ -1249,7 +1251,7 @@ class EnhancedForecastingEngine extends EventEmitter {
             this.emit('metrics_updated', this.metrics);
             
         } catch (error) {
-            console.error('❌ Failed to update metrics:', error);
+            logError('❌ Failed to update metrics:', error);
         }
     }
     
@@ -1294,13 +1296,13 @@ class EnhancedForecastingEngine extends EventEmitter {
             try {
                 await this.performModelRetraining();
             } catch (error) {
-                console.error('❌ Automatic retraining failed:', error);
+                logError('❌ Automatic retraining failed:', error);
             }
         }, this.config.retrainingInterval);
     }
     
     async performModelRetraining() {
-        console.log('🔄 Performing automatic model retraining...');
+        logDebug('🔄 Performing automatic model retraining...');
         
         // In production, this would retrain models with new data
         // For now, we'll just emit an event
@@ -1333,11 +1335,11 @@ class EnhancedForecastingEngine extends EventEmitter {
     }
     
     handleModelRetrained(data) {
-        console.log('🔄 Model retraining completed:', data);
+        logDebug('🔄 Model retraining completed:', data);
     }
     
     handleError(error) {
-        console.error('❌ Enhanced Forecasting Engine error:', error);
+        logError('❌ Enhanced Forecasting Engine error:', error);
     }
 }
 

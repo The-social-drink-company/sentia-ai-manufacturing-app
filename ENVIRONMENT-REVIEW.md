@@ -79,10 +79,10 @@ DATABASE_URL=[Render provides this]
 
 # Clerk Authentication
 CLERK_ENVIRONMENT=production
-CLERK_SECRET_KEY=sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq
-CLERK_WEBHOOK_SECRET=whsec_iTUcbgzS5P6zJlXWQkc4zGHnw8yLGt9j
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
-VITE_CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
+CLERK_SECRET_KEY=sk_live_REDACTED
+CLERK_WEBHOOK_SECRET=whsec_REDACTED
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_REDACTED
+VITE_CLERK_PUBLISHABLE_KEY=pk_live_REDACTED
 VITE_CLERK_DOMAIN=clerk.financeflo.ai
 VITE_CLERK_AFTER_SIGN_IN_URL=/dashboard
 VITE_CLERK_AFTER_SIGN_UP_URL=/dashboard
@@ -164,10 +164,10 @@ DATABASE_URL=[Render provides this]
 
 # Clerk Authentication (MUST ADD ALL)
 CLERK_ENVIRONMENT=production
-CLERK_SECRET_KEY=sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq
-CLERK_WEBHOOK_SECRET=whsec_iTUcbgzS5P6zJlXWQkc4zGHnw8yLGt9j
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
-VITE_CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
+CLERK_SECRET_KEY=sk_live_REDACTED
+CLERK_WEBHOOK_SECRET=whsec_REDACTED
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_REDACTED
+VITE_CLERK_PUBLISHABLE_KEY=pk_live_REDACTED
 VITE_CLERK_DOMAIN=clerk.financeflo.ai
 VITE_CLERK_AFTER_SIGN_IN_URL=/dashboard
 VITE_CLERK_AFTER_SIGN_UP_URL=/dashboard
@@ -252,3 +252,5 @@ DATABASE_SYNC_INTERVAL=0 */6 * * *
 - All API keys and secrets are the same across environments (this is OK for dev/test)
 - Production should have different keys when deployed
 - Clerk is using production keys even in dev/test (this is intentional for real auth)
+
+

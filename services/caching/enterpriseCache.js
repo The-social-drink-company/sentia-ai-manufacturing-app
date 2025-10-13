@@ -1,6 +1,8 @@
 import Redis from 'ioredis';
 import EventEmitter from 'events';
 import crypto from 'crypto';
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+
 
 /**
  * Enterprise Caching System
@@ -102,7 +104,7 @@ export class EnterpriseCacheManager extends EventEmitter {
     } catch (error) {
       this.recordError('total');
       this.emit('cacheError', { key: cacheKey, error: error.message, operation: 'get' });
-      console.error(`Cache get error for key ${cacheKey}:`, error);
+      logError(`Cache get error for key ${cacheKey}:`, error);
       return null;
     }
   }
@@ -139,7 +141,7 @@ export class EnterpriseCacheManager extends EventEmitter {
     } catch (error) {
       this.recordError('total');
       this.emit('cacheError', { key: cacheKey, error: error.message, operation: 'set' });
-      console.error(`Cache set error for key ${cacheKey}:`, error);
+      logError(`Cache set error for key ${cacheKey}:`, error);
       return false;
     }
   }
@@ -168,7 +170,7 @@ export class EnterpriseCacheManager extends EventEmitter {
     } catch (error) {
       this.recordError('total');
       this.emit('cacheError', { key: cacheKey, error: error.message, operation: 'delete' });
-      console.error(`Cache delete error for key ${cacheKey}:`, error);
+      logError(`Cache delete error for key ${cacheKey}:`, error);
       return false;
     }
   }
@@ -192,7 +194,7 @@ export class EnterpriseCacheManager extends EventEmitter {
 
     } catch (error) {
       this.emit('cacheError', { tag, error: error.message, operation: 'invalidateByTag' });
-      console.error(`Tag invalidation error for tag ${tag}:`, error);
+      logError(`Tag invalidation error for tag ${tag}:`, error);
       return 0;
     }
   }
@@ -221,7 +223,7 @@ export class EnterpriseCacheManager extends EventEmitter {
 
     } catch (error) {
       this.emit('cacheError', { pattern, error: error.message, operation: 'invalidateByPattern' });
-      console.error(`Pattern invalidation error for pattern ${pattern}:`, error);
+      logError(`Pattern invalidation error for pattern ${pattern}:`, error);
       return 0;
     }
   }
@@ -506,7 +508,7 @@ export class EnterpriseCacheManager extends EventEmitter {
     try {
       return JSON.parse(value);
     } catch (error) {
-      console.error('Failed to deserialize cache value:', error);
+      logError('Failed to deserialize cache value:', error);
       return null;
     }
   }
@@ -566,7 +568,7 @@ export class EnterpriseCacheManager extends EventEmitter {
   initializeRedisSubscriptions() {
     this.redisSub.subscribe('cache:invalidate:tag', 'cache:invalidate:pattern');
     
-    this.redisSub.on('message', (channel, message) => {
+    this.redisSub.on(_'message', (channel, _message) => {
       try {
         const data = JSON.parse(message);
         
@@ -582,7 +584,7 @@ export class EnterpriseCacheManager extends EventEmitter {
           }
         }
       } catch (error) {
-        console.error('Error processing cache invalidation message:', error);
+        logError('Error processing cache invalidation message:', error);
       }
     });
   }

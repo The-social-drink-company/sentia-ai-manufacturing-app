@@ -1,0 +1,254 @@
+import React, { useState } from 'react'
+import { ChartBarIcon, ArrowTrendingUpIcon, ArrowTrendingDownIcon } from '@heroicons/react/24/solid'
+
+export default function StockMovementForecast({ data, period = 'current', loading = false, error = null }) {
+  const [forecastPeriod, setForecastPeriod] = useState('30')
+
+  const forecastData = Array.isArray(data) ? data : []
+
+  // Aggregate by date for summary view (only if data exists)
+  const dailyTotals = forecastData.length > 0 ? forecastData.reduce((acc, item) => {
+    if (!acc[item.date]) {
+      acc[item.date] = {
+        date: item.date,
+        dateFormatted: item.dateFormatted,
+        totalMovement: 0,
+        avgConfidence: 0,
+        itemCount: 0
+      }
+    }
+    acc[item.date].totalMovement += item.predictedMovement || 0
+    acc[item.date].avgConfidence += item.confidence || 0
+    acc[item.date].itemCount += 1
+    return acc
+  }, {}) : {}
+
+  // Calculate average confidence
+  Object.values(dailyTotals).forEach(day => {
+    day.avgConfidence = day.avgConfidence / day.itemCount
+  })
+
+  const sortedDailyTotals = Object.values(dailyTotals).sort((a, b) =>
+    new Date(a.date) - new Date(b.date)
+  )
+
+  // Calculate trend (only if data exists)
+  const totalMovement = sortedDailyTotals.length > 0 ? sortedDailyTotals.reduce((sum, day) => sum + day.totalMovement, 0) : 0
+  const avgDailyMovement = sortedDailyTotals.length > 0 ? totalMovement / sortedDailyTotals.length : 0
+
+  const firstWeekAvg = sortedDailyTotals.length >= 7 ? sortedDailyTotals.slice(0, 7).reduce((sum, day) => sum + day.totalMovement, 0) / 7 : 0
+  const lastWeekAvg = sortedDailyTotals.length >= 7 ? sortedDailyTotals.slice(-7).reduce((sum, day) => sum + day.totalMovement, 0) / 7 : 0
+  const trend = firstWeekAvg > 0 ? ((lastWeekAvg - firstWeekAvg) / firstWeekAvg) * 100 : 0
+
+  // Get top moving SKUs (only if data exists)
+  const skuTotals = forecastData.length > 0 ? forecastData.reduce((acc, item) => {
+    if (!acc[item.sku]) {
+      acc[item.sku] = { sku: item.sku, totalMovement: 0, pattern: item.pattern }
+    }
+    acc[item.sku].totalMovement += item.predictedMovement || 0
+    return acc
+  }, {}) : {}
+
+  const topSkus = Object.values(skuTotals)
+    .sort((a, b) => b.totalMovement - a.totalMovement)
+    .slice(0, 4)
+
+  const getPatternColor = (pattern) => {
+    switch (pattern) {
+      case 'growing':
+        return 'text-green-600 dark:text-green-400'
+      case 'declining':
+        return 'text-red-600 dark:text-red-400'
+      case 'volatile':
+        return 'text-orange-600 dark:text-orange-400'
+      case 'steady':
+      default:
+        return 'text-blue-600 dark:text-blue-400'
+    }
+  }
+
+  const getPatternIcon = (pattern) => {
+    switch (pattern) {
+      case 'growing':
+        return <ArrowTrendingUpIcon className="h-4 w-4 text-green-600 dark:text-green-400" />
+      case 'declining':
+        return <ArrowTrendingDownIcon className="h-4 w-4 text-red-600 dark:text-red-400" />
+      default:
+        return <ChartBarIcon className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+    }
+  }
+
+  return (
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
+          <ChartBarIcon className="h-6 w-6 text-blue-600 dark:text-blue-400 mr-2" />
+          Stock Movement Forecast
+        </h3>
+
+        {/* Period Selector */}
+        <select
+          value={forecastPeriod}
+          onChange={(e) => setForecastPeriod(e.target.value)}
+          className="px-3 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+        >
+          <option value="7">7 Days</option>
+          <option value="14">14 Days</option>
+          <option value="30">30 Days</option>
+          <option value="60">60 Days</option>
+        </select>
+      </div>
+
+      {loading ? (
+        <div className="flex items-center justify-center p-8">
+          <div className="flex flex-col items-center gap-2">
+            <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+            <p className="text-sm text-muted-foreground">Loading forecast data...</p>
+          </div>
+        </div>
+      ) : error ? (
+        <div className="flex items-center justify-center p-8">
+          <div className="text-center">
+            <p className="text-sm text-destructive mb-2">Failed to load forecast data</p>
+            <p className="text-xs text-muted-foreground">{error}</p>
+          </div>
+        </div>
+      ) : forecastData.length === 0 ? (
+        <div className="flex items-center justify-center p-8">
+          <div className="text-center">
+            <p className="text-sm text-muted-foreground">No forecast data available</p>
+            <p className="text-xs text-muted-foreground">Check API configuration</p>
+          </div>
+        </div>
+      ) : (
+        <>
+          {/* Summary Metrics */}
+      <div className="grid grid-cols-3 gap-4 mb-6">
+        <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3">
+          <p className="text-xs text-blue-600 dark:text-blue-400">Avg Daily Movement</p>
+          <p className="text-lg font-bold text-blue-900 dark:text-blue-100">
+            {Math.round(avgDailyMovement)}
+          </p>
+          <p className="text-xs text-blue-600 dark:text-blue-400">units/day</p>
+        </div>
+
+        <div className={`rounded-lg p-3 ${
+          trend >= 0
+            ? 'bg-green-50 dark:bg-green-900/20'
+            : 'bg-red-50 dark:bg-red-900/20'
+        }`}>
+          <p className={`text-xs ${
+            trend >= 0
+              ? 'text-green-600 dark:text-green-400'
+              : 'text-red-600 dark:text-red-400'
+          }`}>
+            Trend
+          </p>
+          <p className={`text-lg font-bold ${
+            trend >= 0
+              ? 'text-green-900 dark:text-green-100'
+              : 'text-red-900 dark:text-red-100'
+          }`}>
+            {trend >= 0 ? '+' : ''}{trend.toFixed(1)}%
+          </p>
+          <p className={`text-xs ${
+            trend >= 0
+              ? 'text-green-600 dark:text-green-400'
+              : 'text-red-600 dark:text-red-400'
+          }`}>
+            vs first week
+          </p>
+        </div>
+
+        <div className="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-3">
+          <p className="text-xs text-purple-600 dark:text-purple-400">Total Forecast</p>
+          <p className="text-lg font-bold text-purple-900 dark:text-purple-100">
+            {totalMovement.toLocaleString()}
+          </p>
+          <p className="text-xs text-purple-600 dark:text-purple-400">units</p>
+        </div>
+      </div>
+
+      {/* Top SKUs */}
+      <div className="mb-6">
+        <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+          Top Moving SKUs
+        </h4>
+        <div className="space-y-2">
+          {topSkus.map((sku) => (
+            <div key={sku.sku} className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-900 rounded">
+              <div className="flex items-center">
+                {getPatternIcon(sku.pattern)}
+                <span className="ml-2 text-sm font-medium text-gray-900 dark:text-white">
+                  {sku.sku}
+                </span>
+                <span className={`ml-2 text-xs ${getPatternColor(sku.pattern)}`}>
+                  {sku.pattern}
+                </span>
+              </div>
+              <span className="text-sm text-gray-600 dark:text-gray-400">
+                {sku.totalMovement.toLocaleString()} units
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Mini Chart */}
+      <div className="mb-4">
+        <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+          Daily Movement Trend
+        </h4>
+        <div className="relative h-24 bg-gray-50 dark:bg-gray-900 rounded-lg p-2">
+          <div className="flex h-full items-end justify-between">
+            {sortedDailyTotals.slice(0, 14).map((day, index) => {
+              const maxMovement = Math.max(...sortedDailyTotals.map(d => d.totalMovement))
+              const height = (day.totalMovement / maxMovement) * 100
+
+              return (
+                <div key={day.date} className="flex flex-col items-center">
+                  <div
+                    className={`w-2 rounded-t transition-all duration-300 ${
+                      day.avgConfidence > 0.9 ? 'bg-green-500' :
+                      day.avgConfidence > 0.85 ? 'bg-yellow-500' : 'bg-red-500'
+                    }`}
+                    style={{ height: `${height}%` }}
+                    title={`${day.dateFormatted}: ${day.totalMovement} units (${(day.avgConfidence * 100).toFixed(0)}% confidence)`}
+                  />
+                  {index % 2 === 0 && (
+                    <span className="text-xs text-gray-500 dark:text-gray-400 mt-1 transform -rotate-45">
+                      {new Date(day.date).toLocaleDateString('en', { month: 'short', day: 'numeric' })}
+                    </span>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* Confidence Legend */}
+      <div className="flex items-center justify-center space-x-6 text-xs mb-4">
+        <div className="flex items-center">
+          <div className="w-3 h-3 bg-green-500 rounded mr-1"></div>
+          <span className="text-gray-600 dark:text-gray-400">High Confidence (90%+)</span>
+        </div>
+        <div className="flex items-center">
+          <div className="w-3 h-3 bg-yellow-500 rounded mr-1"></div>
+          <span className="text-gray-600 dark:text-gray-400">Medium (85-90%)</span>
+        </div>
+        <div className="flex items-center">
+          <div className="w-3 h-3 bg-red-500 rounded mr-1"></div>
+          <span className="text-gray-600 dark:text-gray-400">Low (&lt;85%)</span>
+        </div>
+      </div>
+
+      {/* Action Button */}
+      <button className="w-full px-3 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+        View Detailed Forecast
+      </button>
+        </>
+      )}
+    </div>
+  )
+}

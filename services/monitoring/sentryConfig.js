@@ -10,12 +10,12 @@ import { CaptureConsole } from '@sentry/integrations';
 /**
  * Initialize Sentry for React application
  */
-export const initSentry = (app) => {
+export const initSentry = (_app) => {
   const environment = process.env.NODE_ENV || 'development';
   const dsn = process.env.VITE_SENTRY_DSN || process.env.SENTRY_DSN;
 
   if (!dsn) {
-    console.warn('Sentry DSN not configured - error tracking disabled');
+    logWarn('Sentry DSN not configured - error tracking disabled');
     return;
   }
 
@@ -27,8 +27,10 @@ export const initSentry = (app) => {
         // Set sampling rates
         tracingOrigins: [
           'localhost',
-          /^https:\/\/.*\.railway\.app/,
-          /^https:\/\/sentia-manufacturing/
+          'railway.app',
+          'sentia-manufacturing-development.onrender.com',
+          'sentia-manufacturing-testing.onrender.com',
+          'sentia-manufacturing-production.onrender.com'
         ],
         // Performance Monitoring
         routingInstrumentation: Sentry.reactRouterV6Instrumentation(
@@ -147,7 +149,7 @@ export const initSentry = (app) => {
   }
 
   // Log initialization
-  console.log(`Sentry initialized for ${environment} environment`);
+  logDebug(`Sentry initialized for ${environment} environment`);
 };
 
 /**
@@ -347,6 +349,8 @@ export const monitorAPI = async (url, options = {}) => {
 import { useLocation, useNavigationType } from 'react-router-dom';
 import { createRoutesFromChildren, matchRoutes } from 'react-router';
 import React from 'react';
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+
 
 export const SentryRoutes = Sentry.withSentryRouting(Routes);
 

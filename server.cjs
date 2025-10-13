@@ -1,13 +1,17 @@
-// BACKUP SERVER FILE - COMMONJS
 const express = require('express');
+const path = require('path');
+
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 10000;
 
-console.log('Server.cjs starting on port:', PORT);
+// Serve static files from the dist directory
+app.use(express.static(path.join(__dirname, 'dist')));
 
-app.get('/health', (req, res) => res.json({ status: 'ok' }));
-app.get('/', (req, res) => res.send('<h1>Sentia Running on Railway</h1>'));
+// Handle React Router - send all requests to index.html
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+});
 
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Listening on port ${PORT}`);
+  console.log(`🚀 Sentia Manufacturing Dashboard running on port ${PORT}`);
 });

@@ -14,8 +14,8 @@ import { fileURLToPath } from 'url';
 import { createHash } from 'crypto';
 // Node 18+ has global fetch
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const _filename = fileURLToPath(import.meta.url);
+const _dirname = path.dirname(__filename);
 const rootDir = path.resolve(__dirname, '..');
 
 class EnterpriseAutonomousDeploymentAgent {
@@ -470,7 +470,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>`;
     await this.performDeploymentCycle();
 
     // Schedule recurring deployments
-    this.intervalId = setInterval(async () => {
+    this.intervalId = setInterval(async _() => {
       if (this.isRunning) {
         await this.performDeploymentCycle();
       }

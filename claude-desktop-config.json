@@ -1,0 +1,18 @@
+{
+  "mcpServers": {
+    "sentia-ai-manufacturing": {
+      "command": "node",
+      "args": [
+        "scripts/start-mcp-server.js"
+      ],
+      "cwd": "C:\\Users\\DanielKenny\\OneDrive - GABA LABS Research Ltd\\Documents\\AI logistics system\\main-repo\\sentia-manufacturing-dashboard",
+      "env": {
+        "NODE_ENV": "development",
+        "MCP_TRANSPORT": "stdio",
+        "LOG_LEVEL": "info",
+        "DATABASE_URL": "your-database-url-here",
+        "JWT_SECRET": "development-secret-key"
+      }
+    }
+  }
+}

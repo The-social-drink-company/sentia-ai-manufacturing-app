@@ -87,14 +87,14 @@ class PredictiveMaintenanceSystem extends EventEmitter {
       await this.mcpServers.initializeDefaultServers();
       
       // Subscribe to IoT sensor updates
-      this.mcpServers.orchestrator.on('resourcesProcessed', (data) => {
+      this.mcpServers.orchestrator.on(_'resourcesProcessed', (data) => {
         if (data.serverId === 'iot-sensors') {
           this.processSensorData(data.data);
         }
       });
 
       // Subscribe to equipment status updates from MES
-      this.mcpServers.orchestrator.on('resourcesProcessed', (data) => {
+      this.mcpServers.orchestrator.on(_'resourcesProcessed', (data) => {
         if (data.serverId === 'mes-system') {
           this.processEquipmentStatus(data.data);
         }
@@ -522,7 +522,7 @@ class PredictiveMaintenanceSystem extends EventEmitter {
     };
 
     // Calculate weighted urgency score
-    const urgencyScore = Object.keys(factors).reduce((sum, factor) => {
+    const urgencyScore = Object.keys(factors).reduce(_(sum, _factor) => {
       return sum + (factors[factor] * weights[factor]);
     }, 0);
 
@@ -755,7 +755,7 @@ class PredictiveMaintenanceSystem extends EventEmitter {
     );
 
     // Sort alerts by severity
-    dashboard.alerts.sort((a, b) => {
+    dashboard.alerts.sort(_(a, b) => {
       const severityOrder = { 'critical': 3, 'high': 2, 'medium': 1, 'low': 0 };
       return severityOrder[b.severity] - severityOrder[a.severity];
     });

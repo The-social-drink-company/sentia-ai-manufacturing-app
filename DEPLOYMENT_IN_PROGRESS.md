@@ -52,8 +52,8 @@ curl -I https://sentia-manufacturing-production.onrender.com/health
 ## If Still 502 After Build:
 
 Add these critical environment variables:
-1. VITE_CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
-2. CLERK_SECRET_KEY=sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq
+1. VITE_CLERK_PUBLISHABLE_KEY=pk_live_REDACTED
+2. CLERK_SECRET_KEY=sk_live_REDACTED
 3. PORT=5000
 4. NODE_ENV=production
 
@@ -62,3 +62,4 @@ Dashboard link: https://dashboard.render.com/web/srv-ctg8hkpu0jms73ab8m00/env
 ---
 
 **The build fix is deployed. Now we wait for the build to complete.**
+

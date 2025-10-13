@@ -21,14 +21,14 @@ class RenderStatusChecker {
   }
 
   async checkHealth(name, url) {
-    return new Promise((resolve) => {
+    return new Promise(_(resolve) => {
       const startTime = Date.now();
       const healthUrl = `${url}/health`;
 
-      https.get(healthUrl, { timeout: 30000 }, (res) => {
+      https.get(healthUrl, { timeout: 30000 }, _(res) => {
         let data = '';
 
-        res.on('data', (chunk) => {
+        res.on('data', _(chunk) => {
           data += chunk;
         });
 
@@ -237,7 +237,7 @@ async function main() {
       console.log('  node render-status-checker.js monitor 5 - Monitor every 5 minutes');
       console.log('  node render-status-checker.js trends   - Show deployment trends');
       console.log('\nDeployments monitored:');
-      Object.entries(DEPLOYMENTS).forEach(([name, url]) => {
+      Object.entries(DEPLOYMENTS).forEach(_([name, url]) => {
         console.log(`  - ${name}: ${url}`);
       });
   }

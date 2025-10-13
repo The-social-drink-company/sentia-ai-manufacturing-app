@@ -7,6 +7,8 @@ import { createClient } from 'redis';
 import NodeCache from 'node-cache';
 import crypto from 'crypto';
 import { EventEmitter } from 'events';
+import { logDebug, logInfo, logWarn, logError } from '../src/utils/logger';
+
 
 class CacheManager extends EventEmitter {
   constructor() {
@@ -65,7 +67,7 @@ class CacheManager extends EventEmitter {
       if (process.env.REDIS_URL) {
         await this.initializeRedis();
       } else {
-        console.log('Cache: Using memory-only mode (Redis not configured)');
+        logDebug('Cache: Using memory-only mode (Redis not configured)');
       }
 
       // Start cache warming if configured
@@ -76,9 +78,9 @@ class CacheManager extends EventEmitter {
       this.initialized = true;
       this.emit('initialized');
 
-      console.log('Cache manager initialized successfully');
+      logDebug('Cache manager initialized successfully');
     } catch (error) {
-      console.error('Failed to initialize cache manager:', error);
+      logError('Failed to initialize cache manager:', error);
       // Continue with memory-only mode
       this.initialized = true;
     }
@@ -89,7 +91,7 @@ class CacheManager extends EventEmitter {
    */
   async initializeRedis() {
     this.redisClient = createClient({
-      url: process.env.REDIS_URL,
+      url: _process.env.REDIS_URL,
       socket: {
         reconnectStrategy: (retries) => {
           if (retries > 10) {
@@ -101,19 +103,19 @@ class CacheManager extends EventEmitter {
     });
 
     // Redis event handlers
-    this.redisClient.on('error', (err) => {
-      console.error('Redis error:', err);
+    this.redisClient.on(_'error', _(err) => {
+      logError('Redis error:', err);
       this.stats.errors++;
       this.emit('redis-error', err);
     });
 
-    this.redisClient.on('connect', () => {
-      console.log('Redis connected');
+    this.redisClient.on(_'connect', () => {
+      logDebug('Redis connected');
       this.emit('redis-connected');
     });
 
-    this.redisClient.on('ready', () => {
-      console.log('Redis ready');
+    this.redisClient.on(_'ready', () => {
+      logDebug('Redis ready');
       this.emit('redis-ready');
     });
 
@@ -124,15 +126,15 @@ class CacheManager extends EventEmitter {
    * Setup memory cache events
    */
   setupMemoryCacheEvents() {
-    this.memoryCache.on('set', (key) => {
+    this.memoryCache.on(_'set', (key) => {
       this.emit('cache-set', { layer: 'memory', key });
     });
 
-    this.memoryCache.on('del', (key) => {
+    this.memoryCache.on(_'del', (key) => {
       this.emit('cache-delete', { layer: 'memory', key });
     });
 
-    this.memoryCache.on('expired', (key) => {
+    this.memoryCache.on(_'expired', (key) => {
       this.emit('cache-expired', { layer: 'memory', key });
     });
   }
@@ -184,7 +186,7 @@ class CacheManager extends EventEmitter {
 
       return null;
     } catch (error) {
-      console.error(`Cache get error for key ${key}:`, error);
+      logError(`Cache get error for key ${key}:`, error);
       this.stats.errors++;
 
       // Execute loader as fallback
@@ -219,7 +221,7 @@ class CacheManager extends EventEmitter {
 
       return true;
     } catch (error) {
-      console.error(`Cache set error for key ${key}:`, error);
+      logError(`Cache set error for key ${key}:`, error);
       this.stats.errors++;
       return false;
     }
@@ -243,7 +245,7 @@ class CacheManager extends EventEmitter {
 
       return true;
     } catch (error) {
-      console.error(`Cache delete error for key ${key}:`, error);
+      logError(`Cache delete error for key ${key}:`, error);
       this.stats.errors++;
       return false;
     }
@@ -275,7 +277,7 @@ class CacheManager extends EventEmitter {
 
       return matchingKeys.length;
     } catch (error) {
-      console.error(`Cache pattern delete error for ${pattern}:`, error);
+      logError(`Cache pattern delete error for ${pattern}:`, error);
       this.stats.errors++;
       return 0;
     }
@@ -295,11 +297,11 @@ class CacheManager extends EventEmitter {
       }
 
       this.emit('cache-flush');
-      console.log('Cache flushed successfully');
+      logDebug('Cache flushed successfully');
 
       return true;
     } catch (error) {
-      console.error('Cache flush error:', error);
+      logError('Cache flush error:', error);
       this.stats.errors++;
       return false;
     }
@@ -341,7 +343,7 @@ class CacheManager extends EventEmitter {
    * Cache warming
    */
   async warmCache() {
-    console.log('Warming cache...');
+    logDebug('Warming cache...');
 
     const warmupTasks = [
       // Add your cache warming tasks here
@@ -352,7 +354,7 @@ class CacheManager extends EventEmitter {
 
     await Promise.allSettled(warmupTasks);
 
-    console.log('Cache warming completed');
+    logDebug('Cache warming completed');
     this.emit('cache-warmed');
   }
 
@@ -365,7 +367,7 @@ class CacheManager extends EventEmitter {
         await this.set(`product:${product.id}`, product, { ttl: 3600 });
       }
     } catch (error) {
-      console.error('Failed to warm product cache:', error);
+      logError('Failed to warm product cache:', error);
     }
   }
 
@@ -376,7 +378,7 @@ class CacheManager extends EventEmitter {
       const metrics = await this.fetchDashboardMetrics();
       await this.set('dashboard:metrics', metrics, { ttl: 300 });
     } catch (error) {
-      console.error('Failed to warm dashboard cache:', error);
+      logError('Failed to warm dashboard cache:', error);
     }
   }
 
@@ -387,7 +389,7 @@ class CacheManager extends EventEmitter {
       const forecasts = await this.fetchRecentForecasts();
       await this.set('forecast:recent', forecasts, { ttl: 1800 });
     } catch (error) {
-      console.error('Failed to warm forecast cache:', error);
+      logError('Failed to warm forecast cache:', error);
     }
   }
 
@@ -445,7 +447,7 @@ class CacheManager extends EventEmitter {
     const defaultTTL = options.ttl || 60;
     const keyGenerator = options.keyGenerator || ((req) => `api:${req.method}:${req.url}`);
 
-    return async (req, res, next) => {
+    return async (req, res, _next) => {
       // Skip caching for non-GET requests by default
       if (options.methods && !options.methods.includes(req.method)) {
         return next();
@@ -467,7 +469,7 @@ class CacheManager extends EventEmitter {
 
           // Set cached headers
           if (cachedResponse.headers) {
-            Object.entries(cachedResponse.headers).forEach(([name, value]) => {
+            Object.entries(cachedResponse.headers).forEach(_([name, value]) => {
               res.set(name, value);
             });
           }
@@ -497,7 +499,7 @@ class CacheManager extends EventEmitter {
 
         next();
       } catch (error) {
-        console.error('Cache middleware error:', error);
+        logError('Cache middleware error:', error);
         next();
       }
     };
@@ -534,7 +536,7 @@ class CacheManager extends EventEmitter {
 
       return true;
     } catch (error) {
-      console.error(`Cache touch error for key ${key}:`, error);
+      logError(`Cache touch error for key ${key}:`, error);
       return false;
     }
   }
@@ -591,7 +593,7 @@ class CacheManager extends EventEmitter {
     if (missingKeys.length > 0 && this.redisClient?.isReady) {
       const redisResults = await this.redisClient.mGet(missingKeys);
 
-      missingKeys.forEach((key, index) => {
+      missingKeys.forEach((key, _index) => {
         if (redisResults[index]) {
           results[key] = JSON.parse(redisResults[index]);
         }

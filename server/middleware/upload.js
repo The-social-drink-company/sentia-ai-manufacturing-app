@@ -1,11 +1,13 @@
-import multer from 'multer';
-import path from 'path';
 import fs from 'fs';
+import path from 'path';
+
+import multer from 'multer';
+
 import { logInfo, logError } from '../../services/observability/structuredLogger.js';
 
 // File upload configuration
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
+  destination (req, file, cb) {
     const uploadDir = 'uploads';
     if (!fs.existsSync(uploadDir)) {
       fs.mkdirSync(uploadDir, { recursive: true });
@@ -13,8 +15,8 @@ const storage = multer.diskStorage({
     }
     cb(null, uploadDir);
   },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+  filename (req, file, cb) {
+    const uniqueSuffix = `${Date.now()  }-${  Math.round(Math.random() * 1E9)}`;
     const filename = `${uniqueSuffix}-${file.originalname}`;
     logInfo('File upload started', { filename, originalname: file.originalname });
     cb(null, filename);
@@ -22,7 +24,7 @@ const storage = multer.diskStorage({
 });
 
 // File filter for allowed file types
-const fileFilter = (req, file, cb) => {
+const fileFilter = (_req, file, cb) => {
   const allowedTypes = ['.csv', '.xlsx', '.xls'];
   const fileExt = path.extname(file.originalname).toLowerCase();
   
@@ -40,8 +42,8 @@ const fileFilter = (req, file, cb) => {
 
 // Create multer upload instance
 export const upload = multer({ 
-  storage: storage,
-  fileFilter: fileFilter,
+  storage,
+  fileFilter,
   limits: {
     fileSize: 10 * 1024 * 1024, // 10MB limit
     files: 5 // Maximum 5 files per request
@@ -49,7 +51,7 @@ export const upload = multer({
 });
 
 // Error handling middleware for multer
-export const handleUploadError = (err, req, res, next) => {
+export const handleUploadError = (err, _req, res, next) => {
   if (err instanceof multer.MulterError) {
     if (err.code === 'LIMIT_FILE_SIZE') {
       logError('File size limit exceeded', { limit: '10MB' });

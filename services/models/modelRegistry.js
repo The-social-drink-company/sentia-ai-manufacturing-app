@@ -164,7 +164,7 @@ export class ModelRegistry {
   async applyBaselineChange(type, artifactId, data, snapshot = null) {
     try {
       // Start transaction
-      const result = await prisma.$transaction(async (tx) => {
+      const result = await prisma.$transaction(async _(tx) => {
         // Get artifact
         const artifact = await tx.modelArtifacts.findUnique({
           where: { id: artifactId }

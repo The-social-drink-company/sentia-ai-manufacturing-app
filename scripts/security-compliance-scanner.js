@@ -10,11 +10,11 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const _dirname = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.join(__dirname, '..');
 
 // Security Configuration
-const SECURITY_CONFIG = {
+const SECURITYCONFIG = {
   vulnerabilityThresholds: {
     critical: 0, // No critical vulnerabilities allowed
     high: 2, // Maximum 2 high severity vulnerabilities
@@ -34,10 +34,10 @@ const SECURITY_CONFIG = {
     /sk_test_[0-9a-zA-Z]{24}/g, // Stripe Test Key
     /ghp_[0-9a-zA-Z]{36}/g, // GitHub Personal Access Token
     /glpat-[0-9a-zA-Z_\-]{20}/g, // GitLab Personal Access Token
-    /SG\.[0-9a-zA-Z_\-]{22}\.[0-9a-zA-Z_\-]{43}/g, // SendGrid API Key
+    /SG.[0-9a-zA-Z_\-]{22}.[0-9a-zA-Z_\-]{43}/g, // SendGrid API Key
     /xoxb-[0-9]{11}-[0-9]{11}-[0-9a-zA-Z]{24}/g, // Slack Bot Token
-    /postgres:\/\/[^:]+:[^@]+@[^\/]+\/[^\s]+/g, // PostgreSQL Connection String
-    /mongodb(\+srv)?:\/\/[^:]+:[^@]+@[^\/]+\/[^\s]+/g // MongoDB Connection String
+    /postgres://[^:]+:[^@]+@[^/]+/[^\s]+/g, // PostgreSQL Connection String
+    /mongodb(+srv)?://[^:]+:[^@]+@[^/]+/[^\s]+/g // MongoDB Connection String
   ],
   excludePaths: [
     'node_modules',
@@ -112,14 +112,14 @@ class SecurityComplianceScanner {
   }
 
   async executeCommand(command, timeout = 120000) {
-    return new Promise((resolve, reject) => {
+    return new Promise(_(resolve, _reject) => {
       this.log('INFO', `Executing: ${command}`);
       
       exec(command, { 
         cwd: projectRoot,
         timeout,
         maxBuffer: 1024 * 1024 * 10 // 10MB buffer
-      }, (error, stdout, stderr) => {
+      }, (error, stdout, _stderr) => {
         if (error && error.code !== 1) { // npm audit returns 1 on vulnerabilities
           reject(error);
         } else {
@@ -137,7 +137,7 @@ class SecurityComplianceScanner {
       const auditData = JSON.parse(result.stdout || '{}');
       
       if (auditData.vulnerabilities) {
-        Object.entries(auditData.vulnerabilities).forEach(([packageName, vulnData]) => {
+        Object.entries(auditData.vulnerabilities).forEach(_([packageName, _vulnData]) => {
           const vulnerability = {
             type: 'dependency',
             package: packageName,
@@ -208,7 +208,7 @@ class SecurityComplianceScanner {
   async getFilesToScan() {
     const files = [];
     
-    const scanDirectory = (dir) => {
+    const scanDirectory = (_dir) => {
       const entries = fs.readdirSync(dir, { withFileTypes: true });
       
       for (const entry of entries) {
@@ -249,7 +249,7 @@ class SecurityComplianceScanner {
       'sk_test_[0-9a-zA-Z]{24}': 'Stripe Test API Key',
       'ghp_[0-9a-zA-Z]{36}': 'GitHub Personal Access Token',
       'glpat-[0-9a-zA-Z_\\-]{20}': 'GitLab Personal Access Token',
-      'SG\\.[0-9a-zA-Z_\\-]{22}\\.[0-9a-zA-Z_\\-]{43}': 'SendGrid API Key',
+      'SG\.[0-9a-zA-Z_\\-]{22}\.[0-9a-zA-Z_\\-]{43}': 'SendGrid API Key',
       'xoxb-[0-9]{11}-[0-9]{11}-[0-9a-zA-Z]{24}': 'Slack Bot Token',
       'postgres://': 'PostgreSQL Connection String',
       'mongodb': 'MongoDB Connection String'

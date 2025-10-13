@@ -1,162 +1,106 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useEffect, useState } from 'react'
+import { Progress } from '@/components/ui/progress'
 
 const LOADING_STAGES = [
-  { id: 1, name: 'Core Systems', description: 'Initializing enterprise core...', duration: 800 },
-  { id: 2, name: 'Authentication', description: 'Securing access controls...', duration: 1200 },
-  { id: 3, name: 'Database Connection', description: 'Connecting to PostgreSQL...', duration: 1000 },
-  { id: 4, name: 'API Gateway', description: 'Establishing API connections...', duration: 900 },
-  { id: 5, name: 'AI Engine', description: 'Loading MCP AI orchestration...', duration: 1500 },
-  { id: 6, name: 'Dashboard Components', description: 'Building enterprise UI...', duration: 1100 },
-  { id: 7, name: 'Real-time Systems', description: 'Activating WebSocket streams...', duration: 800 },
-  { id: 8, name: 'Data Synchronization', description: 'Syncing with external systems...', duration: 1300 },
-  { id: 9, name: 'Analytics Engine', description: 'Preparing intelligence layer...', duration: 1000 },
-  { id: 10, name: 'Final Optimization', description: 'Optimizing performance...', duration: 600 }
-];
+  { id: 1, message: 'Initializing Authentication...', duration: 800 },
+  { id: 2, message: 'Loading User Permissions...', duration: 600 },
+  { id: 3, message: 'Connecting to Database...', duration: 900 },
+  { id: 4, message: 'Syncing Manufacturing Data...', duration: 1200 },
+  { id: 5, message: 'Loading Financial Metrics...', duration: 800 },
+  { id: 6, message: 'Preparing Analytics Engine...', duration: 1000 },
+  { id: 7, message: 'Initializing Dashboard Widgets...', duration: 700 },
+  { id: 8, message: 'Loading Real-time Feeds...', duration: 900 },
+  { id: 9, message: 'Optimizing Performance...', duration: 600 },
+  { id: 10, message: 'Finalizing Dashboard...', duration: 500 }
+]
 
 const MultiStageLoader = ({ onComplete }) => {
-  const [currentStage, setCurrentStage] = useState(0);
-  const [progress, setProgress] = useState(0);
-  const [stageProgress, setStageProgress] = useState(0);
+  const [currentStage, setCurrentStage] = useState(0)
+  const [progress, setProgress] = useState(0)
 
   useEffect(() => {
     if (currentStage >= LOADING_STAGES.length) {
-      setTimeout(() => {
-        onComplete();
-      }, 500);
-      return;
+      onComplete?.()
+      return
     }
 
-    const stage = LOADING_STAGES[currentStage];
-    const interval = setInterval(() => {
-      setStageProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          setCurrentStage(currentStage + 1);
-          setProgress(((currentStage + 1) / LOADING_STAGES.length) * 100);
-          return 0;
-        }
-        return prev + (100 / (stage.duration / 50));
-      });
-    }, 50);
+    const stage = LOADING_STAGES[currentStage]
+    const timer = setTimeout(() => {
+      setCurrentStage((prev) => prev + 1)
+      setProgress(((currentStage + 1) / LOADING_STAGES.length) * 100)
+    }, stage.duration)
 
-    return () => clearInterval(interval);
-  }, [currentStage, onComplete]);
+    return () => clearTimeout(timer)
+  }, [currentStage, onComplete])
 
-  const currentStageData = LOADING_STAGES[currentStage] || LOADING_STAGES[LOADING_STAGES.length - 1];
+  const currentMessage = currentStage < LOADING_STAGES.length
+    ? LOADING_STAGES[currentStage].message
+    : 'Dashboard Ready!'
 
   return (
-    <div className="fixed inset-0 bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 flex items-center justify-center z-50">
-      <div className="max-w-2xl w-full px-8">
-        {/* Logo and Title */}
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-700 rounded-2xl mb-4 shadow-2xl">
-            <span className="text-white font-bold text-3xl">S</span>
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
+      <div className="w-full max-w-md space-y-8 px-6 text-center">
+        {/* Logo */}
+        <div className="flex items-center justify-center space-x-3">
+          <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-400 p-3">
+            <div className="h-full w-full rounded bg-white/30" />
           </div>
-          <h1 className="text-4xl font-bold text-white mb-2">
-            Sentia Manufacturing
-          </h1>
-          <p className="text-blue-200 text-lg">Enterprise Intelligence Platform</p>
+          <span className="text-2xl font-bold text-white">Sentia</span>
         </div>
 
-        {/* Loading Stages */}
-        <div className="bg-gray-800/50 backdrop-blur rounded-2xl p-8 shadow-2xl">
-          {/* Stage Info */}
-          <div className="mb-6">
-            <div className="flex justify-between items-center mb-2">
-              <h2 className="text-xl font-semibold text-white">
-                Stage {Math.min(currentStage + 1, LOADING_STAGES.length)} of {LOADING_STAGES.length}
-              </h2>
-              <span className="text-blue-400 font-mono text-sm">
-                {Math.round(progress)}%
-              </span>
+        {/* Loading Animation */}
+        <div className="flex justify-center">
+          <div className="relative">
+            <div className="h-16 w-16 animate-spin rounded-full border-4 border-blue-200/20 border-t-blue-400" />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="h-8 w-8 rounded-full bg-gradient-to-br from-blue-400 to-cyan-300 opacity-60" />
             </div>
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={currentStage}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.3 }}
-              >
-                <h3 className="text-lg font-medium text-blue-300 mb-1">
-                  {currentStageData.name}
-                </h3>
-                <p className="text-gray-400 text-sm">
-                  {currentStageData.description}
-                </p>
-              </motion.div>
-            </AnimatePresence>
+          </div>
+        </div>
+
+        {/* Stage Info */}
+        <div className="space-y-4">
+          <div className="text-lg font-medium text-white">
+            {currentMessage}
           </div>
 
-          {/* Stage Progress Bar */}
-          <div className="mb-4">
-            <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
-              <motion.div
-                className="h-full bg-gradient-to-r from-blue-500 to-blue-400"
-                animate={{ width: `${stageProgress}%` }}
-                transition={{ duration: 0.1 }}
-              />
+          {/* Progress Bar */}
+          <div className="space-y-2">
+            <Progress
+              value={progress}
+              className="h-2 bg-slate-700"
+            />
+            <div className="flex justify-between text-xs text-slate-400">
+              <span>Stage {Math.min(currentStage + 1, LOADING_STAGES.length)} of {LOADING_STAGES.length}</span>
+              <span>{Math.round(progress)}%</span>
             </div>
           </div>
 
-          {/* Overall Progress Bar */}
-          <div className="mb-6">
-            <div className="h-3 bg-gray-700 rounded-full overflow-hidden">
-              <motion.div
-                className="h-full bg-gradient-to-r from-green-500 to-green-400"
-                animate={{ width: `${progress}%` }}
-                transition={{ duration: 0.3 }}
-              />
-            </div>
-          </div>
-
-          {/* Stage Grid */}
-          <div className="grid grid-cols-5 gap-3">
+          {/* Stage Indicators */}
+          <div className="grid grid-cols-5 gap-2">
             {LOADING_STAGES.map((stage, index) => (
               <div
                 key={stage.id}
-                className={`
-                  flex flex-col items-center justify-center p-3 rounded-lg transition-all duration-300
-                  ${index < currentStage ? 'bg-green-900/50 border border-green-500' : ''}
-                  ${index === currentStage ? 'bg-blue-900/50 border border-blue-400 animate-pulse' : ''}
-                  ${index > currentStage ? 'bg-gray-800/50 border border-gray-600' : ''}
-                `}
-              >
-                <div className={`
-                  w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm
-                  ${index < currentStage ? 'bg-green-500 text-white' : ''}
-                  ${index === currentStage ? 'bg-blue-500 text-white' : ''}
-                  ${index > currentStage ? 'bg-gray-600 text-gray-400' : ''}
-                `}>
-                  {index < currentStage ? '✓' : stage.id}
-                </div>
-                <span className={`
-                  text-xs mt-1 text-center
-                  ${index <= currentStage ? 'text-gray-300' : 'text-gray-500'}
-                `}>
-                  {stage.name.split(' ')[0]}
-                </span>
-              </div>
+                className={`h-2 rounded-full transition-colors duration-300 ${
+                  index < currentStage
+                    ? 'bg-gradient-to-r from-blue-400 to-cyan-300'
+                    : index === currentStage
+                    ? 'bg-blue-400 animate-pulse'
+                    : 'bg-slate-600'
+                }`}
+              />
             ))}
           </div>
         </div>
 
-        {/* Performance Metrics */}
-        <div className="mt-6 flex justify-center space-x-6 text-sm">
-          <div className="text-gray-400">
-            <span className="text-green-400 font-mono">●</span> Systems Online
-          </div>
-          <div className="text-gray-400">
-            <span className="text-blue-400 font-mono">●</span> Loading
-          </div>
-          <div className="text-gray-400">
-            <span className="text-gray-600 font-mono">●</span> Pending
-          </div>
+        {/* Additional Info */}
+        <div className="text-xs text-slate-400 space-y-1">
+          <p>Manufacturing Intelligence Platform</p>
+          <p>Preparing your enterprise dashboard...</p>
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default MultiStageLoader;
+export default MultiStageLoader

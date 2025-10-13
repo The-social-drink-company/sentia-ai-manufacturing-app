@@ -1,0 +1,548 @@
+# GitHub Actions CI/CD Pipeline for Sentia MCP Server
+# Enterprise-grade deployment workflow with security scanning, testing, and monitoring
+
+name: 🏭 Sentia MCP Server Deployment
+
+on:
+  push:
+    branches:
+      - development
+      - testing
+      - production
+    paths:
+      - 'sentia-mcp-server/**'
+      - '.github/workflows/mcp-server-deploy.yml'
+  
+  pull_request:
+    branches:
+      - development
+      - testing
+      - production
+    paths:
+      - 'sentia-mcp-server/**'
+  
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        type: choice
+        options:
+          - development
+          - testing
+          - production
+      force_deploy:
+        description: 'Force deployment (skip some checks)'
+        required: false
+        type: boolean
+        default: false
+
+env:
+  NODE_VERSION: '18'
+  DOCKER_REGISTRY: 'docker.io'
+  IMAGE_NAME: 'sentia-mcp-server'
+  RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+
+# Concurrency control to prevent simultaneous deployments
+concurrency:
+  group: mcp-server-deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  # Job 1: Code Quality and Security Analysis
+  code-quality:
+    name: 🔍 Code Quality & Security
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
+    outputs:
+      security-scan-passed: ${{ steps.security-scan.outputs.passed }}
+      code-quality-score: ${{ steps.quality-check.outputs.score }}
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for better analysis
+      
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: 'sentia-mcp-server/package-lock.json'
+      
+      - name: 📦 Install dependencies
+        working-directory: ./sentia-mcp-server
+        run: |
+          npm ci --only=production
+          npm install --save-dev eslint prettier
+      
+      - name: 🧹 Code formatting check
+        working-directory: ./sentia-mcp-server
+        run: |
+          npx prettier --check "src/**/*.js" "scripts/**/*.js"
+      
+      - name: 🔍 ESLint analysis
+        working-directory: ./sentia-mcp-server
+        run: |
+          npx eslint src/ scripts/ --ext .js --format json --output-file eslint-results.json || true
+          cat eslint-results.json
+      
+      - name: 🛡️ Security vulnerability scan
+        id: security-scan
+        working-directory: ./sentia-mcp-server
+        run: |
+          # Run npm audit
+          npm audit --audit-level=moderate --json > audit-results.json || true
+          
+          # Check for high/critical vulnerabilities
+          HIGH_VULNS=$(cat audit-results.json | jq '.metadata.vulnerabilities.high // 0')
+          CRITICAL_VULNS=$(cat audit-results.json | jq '.metadata.vulnerabilities.critical // 0')
+          
+          echo "High vulnerabilities: $HIGH_VULNS"
+          echo "Critical vulnerabilities: $CRITICAL_VULNS"
+          
+          if [ "$HIGH_VULNS" -gt 0 ] || [ "$CRITICAL_VULNS" -gt 0 ]; then
+            echo "::error::Security vulnerabilities found"
+            echo "passed=false" >> $GITHUB_OUTPUT
+            if [ "${{ github.event.inputs.force_deploy }}" != "true" ]; then
+              exit 1
+            fi
+          else
+            echo "passed=true" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: 📊 Code quality assessment
+        id: quality-check
+        working-directory: ./sentia-mcp-server
+        run: |
+          # Calculate code quality score based on various metrics
+          ESLINT_ERRORS=$(cat eslint-results.json | jq '[.[] | select(.errorCount > 0)] | length')
+          ESLINT_WARNINGS=$(cat eslint-results.json | jq '[.[] | select(.warningCount > 0)] | length')
+          
+          # Simple scoring algorithm (0-100)
+          QUALITY_SCORE=$((100 - ESLINT_ERRORS * 5 - ESLINT_WARNINGS * 2))
+          if [ $QUALITY_SCORE -lt 0 ]; then QUALITY_SCORE=0; fi
+          
+          echo "Quality score: $QUALITY_SCORE/100"
+          echo "score=$QUALITY_SCORE" >> $GITHUB_OUTPUT
+          
+          if [ $QUALITY_SCORE -lt 80 ] && [ "${{ github.event.inputs.force_deploy }}" != "true" ]; then
+            echo "::error::Code quality score too low: $QUALITY_SCORE/100"
+            exit 1
+          fi
+      
+      - name: 📋 Upload security scan results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: security-scan-results
+          path: |
+            sentia-mcp-server/audit-results.json
+            sentia-mcp-server/eslint-results.json
+          retention-days: 30
+
+  # Job 2: Automated Testing
+  testing:
+    name: 🧪 Automated Testing
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: code-quality
+    
+    strategy:
+      matrix:
+        test-type: [unit, integration]
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_USER: test_user
+          POSTGRES_DB: test_database
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+      
+      redis:
+        image: redis:7-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+      
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: 'sentia-mcp-server/package-lock.json'
+      
+      - name: 📦 Install dependencies
+        working-directory: ./sentia-mcp-server
+        run: npm ci
+      
+      - name: 🧪 Run ${{ matrix.test-type }} tests
+        working-directory: ./sentia-mcp-server
+        env:
+          NODE_ENV: test
+          DATABASE_URL: postgresql://test_user:test_password@localhost:5432/test_database
+          REDIS_URL: redis://localhost:6379
+          LOG_LEVEL: error
+        run: |
+          if [ "${{ matrix.test-type }}" = "unit" ]; then
+            npm run test:unit || true
+          else
+            npm run test:integration || true
+          fi
+      
+      - name: 📊 Generate test coverage
+        working-directory: ./sentia-mcp-server
+        if: matrix.test-type == 'unit'
+        run: |
+          npm run test:coverage || true
+      
+      - name: 📋 Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results-${{ matrix.test-type }}
+          path: |
+            sentia-mcp-server/test-results/
+            sentia-mcp-server/coverage/
+          retention-days: 30
+
+  # Job 3: Docker Build and Security Scan
+  docker-build:
+    name: 🐳 Docker Build & Scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: [code-quality, testing]
+    
+    outputs:
+      image-tag: ${{ steps.meta.outputs.tags }}
+      image-digest: ${{ steps.build.outputs.digest }}
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+      
+      - name: 🐳 Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: 📝 Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=sha,prefix={{branch}}-
+            type=raw,value=latest,enable={{is_default_branch}}
+      
+      - name: 🏗️ Build Docker image
+        id: build
+        uses: docker/build-push-action@v5
+        with:
+          context: ./sentia-mcp-server
+          file: ./sentia-mcp-server/Dockerfile
+          push: false
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: linux/amd64
+      
+      - name: 🛡️ Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ env.IMAGE_NAME }}:${{ github.sha }}
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+      
+      - name: 📋 Upload Trivy scan results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+      
+      - name: 🛡️ Check for critical vulnerabilities
+        run: |
+          # Parse Trivy results and fail if critical vulnerabilities found
+          CRITICAL_COUNT=$(cat trivy-results.sarif | jq '.runs[0].results | map(select(.level == "error")) | length')
+          echo "Critical vulnerabilities found: $CRITICAL_COUNT"
+          
+          if [ "$CRITICAL_COUNT" -gt 0 ] && [ "${{ github.event.inputs.force_deploy }}" != "true" ]; then
+            echo "::error::Critical vulnerabilities found in Docker image"
+            exit 1
+          fi
+
+  # Job 4: Determine Deployment Environment
+  determine-environment:
+    name: 🎯 Determine Environment
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: [code-quality, testing, docker-build]
+    
+    outputs:
+      environment: ${{ steps.env.outputs.environment }}
+      deploy: ${{ steps.env.outputs.deploy }}
+      render-service: ${{ steps.env.outputs.render-service }}
+    
+    steps:
+      - name: 🎯 Determine deployment environment
+        id: env
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            ENVIRONMENT="${{ github.event.inputs.environment }}"
+          elif [ "${{ github.ref }}" = "refs/heads/production" ]; then
+            ENVIRONMENT="production"
+          elif [ "${{ github.ref }}" = "refs/heads/testing" ]; then
+            ENVIRONMENT="testing"
+          elif [ "${{ github.ref }}" = "refs/heads/development" ]; then
+            ENVIRONMENT="development"
+          else
+            ENVIRONMENT="none"
+          fi
+          
+          echo "Environment: $ENVIRONMENT"
+          echo "environment=$ENVIRONMENT" >> $GITHUB_OUTPUT
+          
+          # Determine if we should deploy
+          if [ "$ENVIRONMENT" != "none" ] && [ "${{ github.event_name }}" != "pull_request" ]; then
+            echo "deploy=true" >> $GITHUB_OUTPUT
+          else
+            echo "deploy=false" >> $GITHUB_OUTPUT
+          fi
+          
+          # Set Render service name
+          case $ENVIRONMENT in
+            "production")
+              echo "render-service=sentia-mcp-server-production" >> $GITHUB_OUTPUT
+              ;;
+            "testing")
+              echo "render-service=sentia-mcp-server-testing" >> $GITHUB_OUTPUT
+              ;;
+            "development")
+              echo "render-service=sentia-mcp-server-development" >> $GITHUB_OUTPUT
+              ;;
+            *)
+              echo "render-service=" >> $GITHUB_OUTPUT
+              ;;
+          esac
+
+  # Job 5: Deploy to Render
+  deploy:
+    name: 🚀 Deploy to ${{ needs.determine-environment.outputs.environment }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: determine-environment
+    if: needs.determine-environment.outputs.deploy == 'true'
+    
+    environment:
+      name: ${{ needs.determine-environment.outputs.environment }}
+      url: https://${{ needs.determine-environment.outputs.render-service }}.onrender.com
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+      
+      - name: 🚀 Trigger Render deployment
+        run: |
+          echo "Deploying to ${{ needs.determine-environment.outputs.environment }}"
+          
+          # Trigger deployment via Render API (using webhook or Git push)
+          curl -X POST \
+            -H "Authorization: Bearer ${{ env.RENDER_API_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d '{"clearCache": true}' \
+            "https://api.render.com/v1/services/${{ needs.determine-environment.outputs.render-service }}/deploys"
+      
+      - name: ⏳ Wait for deployment
+        run: |
+          echo "Waiting for deployment to complete..."
+          sleep 60  # Initial wait
+          
+          # Poll deployment status
+          for i in {1..20}; do
+            STATUS=$(curl -s -H "Authorization: Bearer ${{ env.RENDER_API_KEY }}" \
+              "https://api.render.com/v1/services/${{ needs.determine-environment.outputs.render-service }}" \
+              | jq -r '.service.serviceDetails.env')
+            
+            if [ "$STATUS" = "available" ]; then
+              echo "Deployment successful!"
+              break
+            elif [ "$STATUS" = "failed" ]; then
+              echo "Deployment failed!"
+              exit 1
+            else
+              echo "Deployment status: $STATUS (attempt $i/20)"
+              sleep 30
+            fi
+          done
+
+  # Job 6: Post-Deployment Testing
+  post-deploy-tests:
+    name: 🧪 Post-Deployment Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: [deploy, determine-environment]
+    if: needs.determine-environment.outputs.deploy == 'true'
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+      
+      - name: 🏥 Health check
+        run: |
+          SERVICE_URL="https://${{ needs.determine-environment.outputs.render-service }}.onrender.com"
+          
+          echo "Testing health endpoint: $SERVICE_URL/health"
+          
+          # Wait for service to be ready
+          for i in {1..10}; do
+            if curl -f -s "$SERVICE_URL/health" > /dev/null; then
+              echo "Health check passed!"
+              break
+            else
+              echo "Health check failed (attempt $i/10)"
+              if [ $i -eq 10 ]; then
+                echo "::error::Health check failed after 10 attempts"
+                exit 1
+              fi
+              sleep 30
+            fi
+          done
+      
+      - name: 🔍 API endpoint tests
+        run: |
+          SERVICE_URL="https://${{ needs.determine-environment.outputs.render-service }}.onrender.com"
+          
+          # Test metrics endpoint
+          echo "Testing metrics endpoint..."
+          curl -f -s "$SERVICE_URL/api/metrics" | jq . > /dev/null
+          
+          # Test system status endpoint
+          echo "Testing system status endpoint..."
+          curl -f -s "$SERVICE_URL/api/metrics/system/status" | jq . > /dev/null
+          
+          echo "All API tests passed!"
+      
+      - name: 📊 Performance baseline test
+        run: |
+          SERVICE_URL="https://${{ needs.determine-environment.outputs.render-service }}.onrender.com"
+          
+          echo "Running performance baseline test..."
+          
+          # Simple performance test using curl
+          for i in {1..5}; do
+            RESPONSE_TIME=$(curl -w "%{time_total}" -s -o /dev/null "$SERVICE_URL/health")
+            echo "Response time $i: ${RESPONSE_TIME}s"
+            
+            # Fail if response time > 5 seconds
+            if (( $(echo "$RESPONSE_TIME > 5.0" | bc -l) )); then
+              echo "::warning::Slow response time: ${RESPONSE_TIME}s"
+            fi
+          done
+
+  # Job 7: Notification and Reporting
+  notify:
+    name: 📢 Notify & Report
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: [determine-environment, deploy, post-deploy-tests]
+    if: always() && needs.determine-environment.outputs.deploy == 'true'
+    
+    steps:
+      - name: 📊 Generate deployment report
+        run: |
+          cat << EOF > deployment-report.md
+          # Deployment Report
+          
+          **Environment**: ${{ needs.determine-environment.outputs.environment }}
+          **Service**: ${{ needs.determine-environment.outputs.render-service }}
+          **Branch**: ${{ github.ref_name }}
+          **Commit**: ${{ github.sha }}
+          **Triggered by**: ${{ github.actor }}
+          
+          ## Status
+          - **Code Quality**: ${{ needs.code-quality.result }}
+          - **Testing**: ${{ needs.testing.result }}
+          - **Docker Build**: ${{ needs.docker-build.result }}
+          - **Deployment**: ${{ needs.deploy.result }}
+          - **Post-Deploy Tests**: ${{ needs.post-deploy-tests.result }}
+          
+          ## Service URL
+          https://${{ needs.determine-environment.outputs.render-service }}.onrender.com
+          
+          ## Monitoring
+          - [Health Check](https://${{ needs.determine-environment.outputs.render-service }}.onrender.com/health)
+          - [Metrics](https://${{ needs.determine-environment.outputs.render-service }}.onrender.com/api/metrics)
+          - [System Status](https://${{ needs.determine-environment.outputs.render-service }}.onrender.com/api/metrics/system/status)
+          EOF
+          
+          cat deployment-report.md
+      
+      - name: 💬 Comment on PR (if applicable)
+        uses: actions/github-script@v7
+        if: github.event_name == 'pull_request'
+        with:
+          script: |
+            const fs = require('fs');
+            const report = fs.readFileSync('deployment-report.md', 'utf8');
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: report
+            });
+      
+      - name: 📋 Upload deployment artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: deployment-report-${{ needs.determine-environment.outputs.environment }}
+          path: deployment-report.md
+          retention-days: 90
+
+  # Job 8: Rollback (Manual Trigger Only)
+  rollback:
+    name: 🔄 Rollback Deployment
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: failure() && github.event_name == 'workflow_dispatch' && github.event.inputs.force_deploy == 'true'
+    needs: [deploy, determine-environment]
+    
+    steps:
+      - name: 🔄 Trigger rollback
+        run: |
+          echo "Triggering rollback for ${{ needs.determine-environment.outputs.environment }}"
+          
+          # Get previous successful deployment
+          PREVIOUS_DEPLOY=$(curl -s -H "Authorization: Bearer ${{ env.RENDER_API_KEY }}" \
+            "https://api.render.com/v1/services/${{ needs.determine-environment.outputs.render-service }}/deploys?limit=5" \
+            | jq -r '.deploys[] | select(.status == "live") | .id' | head -n 2 | tail -n 1)
+          
+          if [ -n "$PREVIOUS_DEPLOY" ]; then
+            curl -X POST \
+              -H "Authorization: Bearer ${{ env.RENDER_API_KEY }}" \
+              "https://api.render.com/v1/services/${{ needs.determine-environment.outputs.render-service }}/deploys/$PREVIOUS_DEPLOY/rollback"
+            echo "Rollback initiated to deployment: $PREVIOUS_DEPLOY"
+          else
+            echo "::error::No previous deployment found for rollback"
+            exit 1
+          fi

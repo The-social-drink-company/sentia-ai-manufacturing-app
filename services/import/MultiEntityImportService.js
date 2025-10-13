@@ -192,12 +192,12 @@ class MultiEntityImportService {
       switch (expectedFormat) {
         case 'DD/MM/YYYY':
           return {
-            isValid: /^\d{2}\/\d{2}\/\d{4}$/.test(dateStr),
+            isValid: /^\d{2}/\d{2}/\d{4}$/.test(dateStr),
             parsedDate: this.parseDate(dateStr, 'DD/MM/YYYY')
           };
         case 'MM/DD/YYYY':
           return {
-            isValid: /^\d{2}\/\d{2}\/\d{4}$/.test(dateStr),
+            isValid: /^\d{2}/\d{2}/\d{4}$/.test(dateStr),
             parsedDate: this.parseDate(dateStr, 'MM/DD/YYYY')
           };
         case 'YYYY-MM-DD':
@@ -217,7 +217,7 @@ class MultiEntityImportService {
    * Parse date according to format
    */
   parseDate(dateStr, format) {
-    const parts = dateStr.split(/[\/\-]/);
+    const parts = dateStr.split(/[/\-]/);
     
     switch (format) {
       case 'DD/MM/YYYY':

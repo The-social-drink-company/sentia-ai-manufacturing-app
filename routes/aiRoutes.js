@@ -7,7 +7,7 @@ const router = express.Router();
 const clerk = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY });
 
 // Middleware to check authentication
-const authMiddleware = async (req, res, next) => {
+const authMiddleware = async (req, res, _next) => {
   try {
     const sessionToken = req.headers.authorization?.replace('Bearer ', '');
     if (!sessionToken) {
@@ -30,7 +30,7 @@ const authMiddleware = async (req, res, next) => {
  * Initialize AI Systems
  * POST /api/ai/initialize
  */
-router.post('/initialize', authMiddleware, async (req, res) => {
+router.post(_'/initialize', authMiddleware, async _(req, res) => {
   try {
     const result = await sentiaAIOrchestrator.initialize();
     res.json(result);
@@ -47,7 +47,7 @@ router.post('/initialize', authMiddleware, async (req, res) => {
  * Get System Status
  * GET /api/ai/status
  */
-router.get('/status', authMiddleware, async (req, res) => {
+router.get(_'/status', authMiddleware, async _(req, res) => {
   try {
     const status = sentiaAIOrchestrator.getSystemStatus();
     res.json(status);
@@ -61,7 +61,7 @@ router.get('/status', authMiddleware, async (req, res) => {
  * Get System Health
  * GET /api/ai/health
  */
-router.get('/health', authMiddleware, async (req, res) => {
+router.get(_'/health', authMiddleware, async _(req, res) => {
   try {
     const health = sentiaAIOrchestrator.getSystemHealth();
     res.json(health);
@@ -75,7 +75,7 @@ router.get('/health', authMiddleware, async (req, res) => {
  * Execute Unified Query
  * POST /api/ai/query
  */
-router.post('/query', authMiddleware, async (req, res) => {
+router.post(_'/query', authMiddleware, async _(req, res) => {
   try {
     const { query, options } = req.body;
     
@@ -95,7 +95,7 @@ router.post('/query', authMiddleware, async (req, res) => {
  * Start Production Batch
  * POST /api/ai/production/start
  */
-router.post('/production/start', authMiddleware, async (req, res) => {
+router.post(_'/production/start', authMiddleware, async _(req, res) => {
   try {
     const { productType, quantity, options } = req.body;
     
@@ -121,7 +121,7 @@ router.post('/production/start', authMiddleware, async (req, res) => {
  * Generate Forecast
  * POST /api/ai/forecast
  */
-router.post('/forecast', authMiddleware, async (req, res) => {
+router.post(_'/forecast', authMiddleware, async _(req, res) => {
   try {
     const { productSKU, options } = req.body;
     
@@ -141,7 +141,7 @@ router.post('/forecast', authMiddleware, async (req, res) => {
  * Get Unified Dashboard
  * GET /api/ai/dashboard/:type
  */
-router.get('/dashboard/:type', authMiddleware, async (req, res) => {
+router.get(_'/dashboard/:type', authMiddleware, async _(req, res) => {
   try {
     const { type } = req.params;
     const dashboard = await sentiaAIOrchestrator.getUnifiedDashboard(type);
@@ -156,7 +156,7 @@ router.get('/dashboard/:type', authMiddleware, async (req, res) => {
  * Perform Quality Inspection
  * POST /api/ai/quality/inspect
  */
-router.post('/quality/inspect', authMiddleware, async (req, res) => {
+router.post(_'/quality/inspect', authMiddleware, async _(req, res) => {
   try {
     const { imageData, inspectionType, productInfo } = req.body;
     
@@ -182,7 +182,7 @@ router.post('/quality/inspect', authMiddleware, async (req, res) => {
  * Get Analytics Dashboard Data
  * GET /api/ai/analytics/:dashboardId
  */
-router.get('/analytics/:dashboardId', authMiddleware, async (req, res) => {
+router.get(_'/analytics/:dashboardId', authMiddleware, async _(req, res) => {
   try {
     const { dashboardId } = req.params;
     
@@ -204,7 +204,7 @@ router.get('/analytics/:dashboardId', authMiddleware, async (req, res) => {
  * Get Digital Twin 3D Scene
  * GET /api/ai/digital-twin/scene
  */
-router.get('/digital-twin/scene', authMiddleware, async (req, res) => {
+router.get(_'/digital-twin/scene', authMiddleware, async _(req, res) => {
   try {
     if (!sentiaAIOrchestrator.systems.digitalTwin) {
       return res.status(503).json({ 
@@ -226,7 +226,7 @@ router.get('/digital-twin/scene', authMiddleware, async (req, res) => {
  * Get Supply Chain Dashboard
  * GET /api/ai/supply-chain/dashboard
  */
-router.get('/supply-chain/dashboard', authMiddleware, async (req, res) => {
+router.get(_'/supply-chain/dashboard', authMiddleware, async _(req, res) => {
   try {
     if (!sentiaAIOrchestrator.systems.supplyChain) {
       return res.status(503).json({ 
@@ -246,7 +246,7 @@ router.get('/supply-chain/dashboard', authMiddleware, async (req, res) => {
  * Get Maintenance Dashboard
  * GET /api/ai/maintenance/dashboard
  */
-router.get('/maintenance/dashboard', authMiddleware, async (req, res) => {
+router.get(_'/maintenance/dashboard', authMiddleware, async _(req, res) => {
   try {
     if (!sentiaAIOrchestrator.systems.maintenance) {
       return res.status(503).json({ 
@@ -266,7 +266,7 @@ router.get('/maintenance/dashboard', authMiddleware, async (req, res) => {
  * Get Quality Dashboard
  * GET /api/ai/quality/dashboard
  */
-router.get('/quality/dashboard', authMiddleware, async (req, res) => {
+router.get(_'/quality/dashboard', authMiddleware, async _(req, res) => {
   try {
     if (!sentiaAIOrchestrator.systems.quality) {
       return res.status(503).json({ 
@@ -286,7 +286,7 @@ router.get('/quality/dashboard', authMiddleware, async (req, res) => {
  * Conversational AI Chat
  * POST /api/ai/chat
  */
-router.post('/chat', authMiddleware, async (req, res) => {
+router.post(_'/chat', authMiddleware, async _(req, res) => {
   try {
     const { message, sessionId } = req.body;
     
@@ -318,7 +318,7 @@ router.post('/chat', authMiddleware, async (req, res) => {
  * Generate Executive Report
  * GET /api/ai/reports/executive
  */
-router.get('/reports/executive', authMiddleware, async (req, res) => {
+router.get(_'/reports/executive', authMiddleware, async _(req, res) => {
   try {
     if (!sentiaAIOrchestrator.systems.analytics) {
       return res.status(503).json({ 
@@ -338,7 +338,7 @@ router.get('/reports/executive', authMiddleware, async (req, res) => {
  * Get Manufacturing Execution Dashboard
  * GET /api/ai/execution/dashboard
  */
-router.get('/execution/dashboard', authMiddleware, async (req, res) => {
+router.get(_'/execution/dashboard', authMiddleware, async _(req, res) => {
   try {
     if (!sentiaAIOrchestrator.systems.execution) {
       return res.status(503).json({ 
@@ -358,7 +358,7 @@ router.get('/execution/dashboard', authMiddleware, async (req, res) => {
  * Get Botanical Procurement Recommendations
  * POST /api/ai/procurement/recommendations
  */
-router.post('/procurement/recommendations', authMiddleware, async (req, res) => {
+router.post(_'/procurement/recommendations', authMiddleware, async _(req, res) => {
   try {
     const { botanical, timeHorizon } = req.body;
     
@@ -386,7 +386,7 @@ router.post('/procurement/recommendations', authMiddleware, async (req, res) => 
  * Get 24/7 Agent Monitoring Status
  * GET /api/ai/monitoring/status
  */
-router.get('/monitoring/status', authMiddleware, async (req, res) => {
+router.get(_'/monitoring/status', authMiddleware, async _(req, res) => {
   try {
     const monitoringStatus = sentiaAIOrchestrator.getAgentMonitoringStatus();
     res.json(monitoringStatus);
@@ -400,7 +400,7 @@ router.get('/monitoring/status', authMiddleware, async (req, res) => {
  * Force Agent Health Check
  * POST /api/ai/monitoring/health-check
  */
-router.post('/monitoring/health-check', authMiddleware, async (req, res) => {
+router.post(_'/monitoring/health-check', authMiddleware, async _(req, res) => {
   try {
     const healthResults = await sentiaAIOrchestrator.checkAgentHealth();
     res.json({
@@ -418,7 +418,7 @@ router.post('/monitoring/health-check', authMiddleware, async (req, res) => {
  * Restart Specific Agent
  * POST /api/ai/monitoring/restart/:agentId
  */
-router.post('/monitoring/restart/:agentId', authMiddleware, async (req, res) => {
+router.post(_'/monitoring/restart/:agentId', authMiddleware, async _(req, res) => {
   try {
     const { agentId } = req.params;
     const result = await sentiaAIOrchestrator.restartAgent(agentId);
@@ -444,7 +444,7 @@ router.post('/monitoring/restart/:agentId', authMiddleware, async (req, res) => 
  * Shutdown AI Systems
  * POST /api/ai/shutdown
  */
-router.post('/shutdown', authMiddleware, async (req, res) => {
+router.post(_'/shutdown', authMiddleware, async _(req, res) => {
   try {
     // Only allow admin users to shutdown
     const userRole = req.auth.sessionClaims?.metadata?.role;

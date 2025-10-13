@@ -1,428 +1,187 @@
 /**
- * MCP Server Client Integration
- * Connects to Railway-hosted MCP Server for AI orchestration
- * Service ID: 99691282-de66-45b2-98cf-317083dd11ba
+ * MCP Client Service
+ * Provides interface to communicate with the MCP Server
  */
 
-import axios from 'axios';
-import WebSocket from 'ws';
-import EventEmitter from 'events';
-
-class MCPServerClient extends EventEmitter {
+class MCPClient {
   constructor() {
-    super();
-    this.baseURL = process.env.MCP_SERVER_URL || 'https://web-production-99691282.up.railway.app';
-    this.serviceId = process.env.MCP_SERVER_SERVICE_ID || '99691282-de66-45b2-98cf-317083dd11ba';
-    this.apiEndpoint = `${this.baseURL}/mcp`;
-    this.healthEndpoint = `${this.baseURL}/health`;
-    this.wsEndpoint = this.baseURL.replace('https:', 'wss:') + '/ws';
-
-    this.jwtSecret = process.env.MCP_JWT_SECRET;
-    this.ws = null;
-    this.isConnected = false;
-    this.reconnectInterval = 5000;
-    this.maxReconnectAttempts = 10;
-    this.reconnectAttempts = 0;
-
-    // Initialize axios instance with defaults
-    this.client = axios.create({
-      baseURL: this.baseURL,
-      timeout: 30000,
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Service-ID': this.serviceId,
-        'Authorization': `Bearer ${this.jwtSecret}`
-      }
-    });
-
-    // Initialize connection
-    this.initialize();
+    this.baseURL = process.env.VITE_MCP_SERVER_URL || 'https://sentia-mcp-production.onrender.com';
+    this.apiKey = process.env.MCP_API_KEY || null;
+    this.timeout = 30000; // 30 seconds
   }
 
-  async initialize() {
-    try {
-      // Check MCP Server health
-      const healthCheck = await this.checkHealth();
-      if (healthCheck.status === 'healthy') {
-        console.log('MCP Server connection established:', this.baseURL);
-
-        // Initialize WebSocket for real-time updates
-        if (process.env.MCP_ENABLE_WEBSOCKET === 'true') {
-          this.initializeWebSocket();
-        }
-      }
-    } catch (error) {
-      console.error('Failed to initialize MCP Server connection:', error.message);
-      this.scheduleReconnect();
-    }
-  }
-
-  initializeWebSocket() {
-    try {
-      this.ws = new WebSocket(this.wsEndpoint, {
-        headers: {
-          'Authorization': `Bearer ${this.jwtSecret}`,
-          'X-Service-ID': this.serviceId
-        }
-      });
-
-      this.ws.on('open', () => {
-        console.log('WebSocket connection established with MCP Server');
-        this.isConnected = true;
-        this.reconnectAttempts = 0;
-        this.emit('connected');
-      });
-
-      this.ws.on('message', (data) => {
-        try {
-          const message = JSON.parse(data);
-          this.handleWebSocketMessage(message);
-        } catch (error) {
-          console.error('Error parsing WebSocket message:', error);
-        }
-      });
-
-      this.ws.on('close', () => {
-        console.log('WebSocket connection closed');
-        this.isConnected = false;
-        this.emit('disconnected');
-        this.scheduleReconnect();
-      });
-
-      this.ws.on('error', (error) => {
-        console.error('WebSocket error:', error);
-        this.emit('error', error);
-      });
-    } catch (error) {
-      console.error('Failed to initialize WebSocket:', error);
-      this.scheduleReconnect();
-    }
-  }
-
-  handleWebSocketMessage(message) {
-    const { type, data } = message;
-
-    switch (type) {
-      case 'ai-response':
-        this.emit('ai-response', data);
-        break;
-      case 'manufacturing-alert':
-        this.emit('manufacturing-alert', data);
-        break;
-      case 'api-update':
-        this.emit('api-update', data);
-        break;
-      case 'system-status':
-        this.emit('system-status', data);
-        break;
-      default:
-        this.emit('message', message);
-    }
-  }
-
-  scheduleReconnect() {
-    if (this.reconnectAttempts < this.maxReconnectAttempts) {
-      this.reconnectAttempts++;
-      console.log(`Scheduling reconnect attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts}`);
-
-      setTimeout(() => {
-        this.initialize();
-      }, this.reconnectInterval * this.reconnectAttempts);
-    } else {
-      console.error('Max reconnection attempts reached. MCP Server unavailable.');
-      this.emit('max-reconnect-exceeded');
-    }
-  }
-
-  // ====================
-  // Health & Status
-  // ====================
-
+  /**
+   * Check MCP server health
+   */
   async checkHealth() {
     try {
-      const response = await this.client.get('/health');
-      return response.data;
-    } catch (error) {
-      throw new Error(`Health check failed: ${error.message}`);
-    }
-  }
-
-  async getSystemStatus() {
-    try {
-      const response = await this.client.get('/mcp/status');
-      return response.data;
-    } catch (error) {
-      throw new Error(`Failed to get system status: ${error.message}`);
-    }
-  }
-
-  // ====================
-  // AI Manufacturing Tools
-  // ====================
-
-  async processManufacturingRequest(request) {
-    try {
-      const response = await this.client.post('/mcp/tools/ai-manufacturing-request', {
-        request,
-        timestamp: new Date().toISOString(),
-        environment: process.env.NODE_ENV
+      const response = await fetch(`${this.baseURL}/health`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(this.apiKey && { 'Authorization': `Bearer ${this.apiKey}` })
+        },
+        signal: AbortSignal.timeout(this.timeout)
       });
-      return response.data;
+
+      if (!response.ok) {
+        throw new Error(`Health check failed: ${response.status} ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      return {
+        status: 'healthy',
+        data
+      };
     } catch (error) {
-      throw new Error(`Manufacturing request failed: ${error.message}`);
+      console.error('MCP health check failed:', error);
+      return {
+        status: 'unhealthy',
+        error: error.message
+      };
     }
   }
 
-  async optimizeInventory(parameters) {
+  /**
+   * Call unified API through MCP server
+   * @param {string} service - Service name (xero, shopify, amazon, etc.)
+   * @param {string} method - HTTP method
+   * @param {string} endpoint - API endpoint
+   * @param {object} params - Request parameters
+   */
+  async callUnifiedAPI(service, method, endpoint, params = null) {
     try {
-      const response = await this.client.post('/mcp/tools/optimize-inventory', {
-        ...parameters,
-        database: process.env.NEON_BRANCH
-      });
-      return response.data;
-    } catch (error) {
-      throw new Error(`Inventory optimization failed: ${error.message}`);
-    }
-  }
-
-  async forecastDemand(parameters) {
-    try {
-      const response = await this.client.post('/mcp/tools/forecast-demand', {
-        ...parameters,
-        database: process.env.NEON_BRANCH
-      });
-      return response.data;
-    } catch (error) {
-      throw new Error(`Demand forecasting failed: ${error.message}`);
-    }
-  }
-
-  async analyzeQuality(data) {
-    try {
-      const response = await this.client.post('/mcp/tools/analyze-quality', {
-        data,
-        timestamp: new Date().toISOString()
-      });
-      return response.data;
-    } catch (error) {
-      throw new Error(`Quality analysis failed: ${error.message}`);
-    }
-  }
-
-  // ====================
-  // API Integrations
-  // ====================
-
-  async callUnifiedAPI(service, method, endpoint, data = null) {
-    try {
-      const response = await this.client.post('/mcp/tools/unified-api-call', {
+      const url = `${this.baseURL}/api/tools/unified-api-call`;
+      
+      const requestBody = {
         service,
         method,
         endpoint,
-        data,
-        environment: process.env.NODE_ENV
+        ...(params && { params })
+      };
+
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(this.apiKey && { 'Authorization': `Bearer ${this.apiKey}` })
+        },
+        body: JSON.stringify(requestBody),
+        signal: AbortSignal.timeout(this.timeout)
       });
-      return response.data;
-    } catch (error) {
-      throw new Error(`Unified API call failed: ${error.message}`);
-    }
-  }
 
-  async syncXeroData() {
-    try {
-      const response = await this.client.post('/mcp/integrations/xero/sync', {
-        database: process.env.NEON_BRANCH
-      });
-      return response.data;
-    } catch (error) {
-      throw new Error(`Xero sync failed: ${error.message}`);
-    }
-  }
+      if (!response.ok) {
+        throw new Error(`API call failed: ${response.status} ${response.statusText}`);
+      }
 
-  async syncShopifyData() {
-    try {
-      const response = await this.client.post('/mcp/integrations/shopify/sync', {
-        database: process.env.NEON_BRANCH
-      });
-      return response.data;
-    } catch (error) {
-      throw new Error(`Shopify sync failed: ${error.message}`);
-    }
-  }
-
-  async syncAmazonData() {
-    try {
-      const response = await this.client.post('/mcp/integrations/amazon/sync', {
-        database: process.env.NEON_BRANCH
-      });
-      return response.data;
-    } catch (error) {
-      throw new Error(`Amazon sync failed: ${error.message}`);
-    }
-  }
-
-  // ====================
-  // Database Operations
-  // ====================
-
-  async queryDatabase(query, branch = null) {
-    try {
-      const response = await this.client.post('/mcp/database/query', {
-        query,
-        branch: branch || process.env.NEON_BRANCH,
-        projectId: process.env.NEON_PROJECT_ID
-      });
-      return response.data;
-    } catch (error) {
-      throw new Error(`Database query failed: ${error.message}`);
-    }
-  }
-
-  async syncDatabaseBranches() {
-    try {
-      const response = await this.client.post('/mcp/database/sync-branches', {
-        branches: ['development', 'testing', 'production'],
-        projectId: process.env.NEON_PROJECT_ID
-      });
-      return response.data;
-    } catch (error) {
-      throw new Error(`Branch sync failed: ${error.message}`);
-    }
-  }
-
-  // ====================
-  // Vector Database
-  // ====================
-
-  async searchVectorDatabase(query, category = null) {
-    try {
-      const response = await this.client.post('/mcp/vector/search', {
-        query,
-        category,
-        limit: 10
-      });
-      return response.data;
-    } catch (error) {
-      throw new Error(`Vector search failed: ${error.message}`);
-    }
-  }
-
-  async storeInVectorDatabase(data, category) {
-    try {
-      const response = await this.client.post('/mcp/vector/store', {
-        data,
-        category,
-        timestamp: new Date().toISOString()
-      });
-      return response.data;
-    } catch (error) {
-      throw new Error(`Vector storage failed: ${error.message}`);
-    }
-  }
-
-  // ====================
-  // Decision Engine
-  // ====================
-
-  async executeDecisionRule(rule, context) {
-    try {
-      const response = await this.client.post('/mcp/decision/execute', {
-        rule,
-        context,
-        environment: process.env.NODE_ENV
-      });
-      return response.data;
-    } catch (error) {
-      throw new Error(`Decision execution failed: ${error.message}`);
-    }
-  }
-
-  async getRecommendations(type, parameters) {
-    try {
-      const response = await this.client.post('/mcp/decision/recommend', {
-        type,
-        parameters,
-        database: process.env.NEON_BRANCH
-      });
-      return response.data;
-    } catch (error) {
-      throw new Error(`Recommendation failed: ${error.message}`);
-    }
-  }
-
-  // ====================
-  // Monitoring & Metrics
-  // ====================
-
-  async getMetrics() {
-    try {
-      const response = await this.client.get('/mcp/metrics');
-      return response.data;
-    } catch (error) {
-      throw new Error(`Failed to get metrics: ${error.message}`);
-    }
-  }
-
-  async logEvent(event, data) {
-    try {
-      const response = await this.client.post('/mcp/events', {
-        event,
-        data,
-        timestamp: new Date().toISOString(),
-        environment: process.env.NODE_ENV,
-        serviceId: this.serviceId
-      });
-      return response.data;
-    } catch (error) {
-      console.error('Failed to log event:', error);
-    }
-  }
-
-  // ====================
-  // Utility Methods
-  // ====================
-
-  isHealthy() {
-    return this.isConnected;
-  }
-
-  disconnect() {
-    if (this.ws) {
-      this.ws.close();
-      this.ws = null;
-    }
-    this.isConnected = false;
-  }
-
-  async testConnection() {
-    try {
-      const health = await this.checkHealth();
-      const status = await this.getSystemStatus();
+      const data = await response.json();
+      
+      if (!data.success) {
+        throw new Error(data.error || 'API call returned failure status');
+      }
 
       return {
-        healthy: health.status === 'healthy',
-        mcpServer: this.baseURL,
-        serviceId: this.serviceId,
-        ...health,
-        ...status
+        success: true,
+        data: data.result
       };
     } catch (error) {
+      console.error(`MCP API call failed (${service} ${method} ${endpoint}):`, error);
       return {
-        healthy: false,
+        success: false,
         error: error.message
+      };
+    }
+  }
+
+  /**
+   * Execute MCP tool directly
+   * @param {string} toolName - Name of the tool to execute
+   * @param {object} args - Tool arguments
+   */
+  async executeTool(toolName, args = {}) {
+    try {
+      const url = `${this.baseURL}/api/tools/${toolName}`;
+      
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(this.apiKey && { 'Authorization': `Bearer ${this.apiKey}` })
+        },
+        body: JSON.stringify(args),
+        signal: AbortSignal.timeout(this.timeout)
+      });
+
+      if (!response.ok) {
+        throw new Error(`Tool execution failed: ${response.status} ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      
+      if (!data.success) {
+        throw new Error(data.error || 'Tool execution returned failure status');
+      }
+
+      return {
+        success: true,
+        data: data.result
+      };
+    } catch (error) {
+      console.error(`MCP tool execution failed (${toolName}):`, error);
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  }
+
+  /**
+   * Get available tools from MCP server
+   */
+  async getAvailableTools() {
+    try {
+      const response = await fetch(`${this.baseURL}/api/tools`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(this.apiKey && { 'Authorization': `Bearer ${this.apiKey}` })
+        },
+        signal: AbortSignal.timeout(this.timeout)
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to get tools: ${response.status} ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      return {
+        success: true,
+        tools: data.tools || [],
+        categories: data.categories || []
+      };
+    } catch (error) {
+      console.error('Failed to get available tools:', error);
+      return {
+        success: false,
+        error: error.message,
+        tools: [],
+        categories: []
       };
     }
   }
 }
 
-// Singleton instance
-let mcpClient = null;
+// Create singleton instance
+let mcpClientInstance = null;
 
-export const getMCPClient = () => {
-  if (!mcpClient) {
-    mcpClient = new MCPServerClient();
+/**
+ * Get MCP Client singleton instance
+ */
+export function getMCPClient() {
+  if (!mcpClientInstance) {
+    mcpClientInstance = new MCPClient();
   }
-  return mcpClient;
-};
+  return mcpClientInstance;
+}
 
-export default MCPServerClient;
+export default MCPClient;

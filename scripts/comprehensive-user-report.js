@@ -102,14 +102,14 @@ async function generateComprehensiveUserReport() {
       console.log(`Found ${dbUsers.length} user(s) in database:\n`);
       
       // Group users by role for better organization
-      const usersByRole = dbUsers.reduce((acc, user) => {
+      const usersByRole = dbUsers.reduce(_(acc, user) => {
         const role = user.role || 'unknown';
         if (!acc[role]) acc[role] = [];
         acc[role].push(user);
         return acc;
       }, {});
 
-      Object.entries(usersByRole).forEach(([role, users]) => {
+      Object.entries(usersByRole).forEach(_([role, _users]) => {
         console.log(`${role.toUpperCase()} USERS (${users.length}):`);
         console.log('----------------------------');
         
@@ -169,7 +169,7 @@ async function generateComprehensiveUserReport() {
     console.log(`  Approved Users: ${dbStats.approved}`);
     console.log(`  Users Who Logged In: ${dbStats.loggedIn}`);
     console.log(`  User Distribution by Role:`);
-    Object.entries(dbStats.byRole).forEach(([role, count]) => {
+    Object.entries(dbStats.byRole).forEach(_([role, _count]) => {
       console.log(`    ${role}: ${count} users`);
     });
 

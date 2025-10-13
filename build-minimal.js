@@ -1,69 +1,56 @@
-/**
- * Minimal Build Script for Ultra-Low Memory Environments
- * Builds only the absolute essential components
+﻿/**
+ * Minimal Build Script for Enterprise Entry Point
+ * Uses the canonical App-enterprise.jsx entry to keep builds consistent.
  */
 
-import { execSync } from 'child_process';
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import { execSync } from 'child_process'
+import fs from 'fs'
+import path from 'path'
+import { fileURLToPath } from 'url'
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
-const DEPLOYMENT_STAGE = process.env.DEPLOYMENT_STAGE || '1';
+const MAX_MEMORY = process.env.NODE_OPTIONS?.includes('max-old-space-size')
+  ? process.env.NODE_OPTIONS.match(/max-old-space-size=(\d+)/)[1]
+  : '4096'
 
-console.log('=== MINIMAL BUILD SCRIPT ===');
-console.log(`Building Stage ${DEPLOYMENT_STAGE} for optimized memory usage`);
+console.log('=== MINIMAL BUILD (Canonical) ===')
+console.log('Memory Limit:', `${MAX_MEMORY}MB`)
 
-// Determine which App file to use based on stage
-const stageApps = {
-  '1': './App-stage1.jsx',
-  '2': './App-stage2.jsx',
-  '3': './App-stage3.jsx',
-  '4': './App-comprehensive.jsx'
-};
+const mainJsxPath = path.join(__dirname, 'src', 'main.jsx')
+const canonicalImport = "import App from \"./App-enterprise.jsx\""
+const importPattern = /import App from ['\"].+?['\"]/
 
-const appFile = stageApps[DEPLOYMENT_STAGE] || stageApps['1'];
+let mainContent = fs.readFileSync(mainJsxPath, 'utf8')
 
-// Update main.jsx to use the appropriate stage App
-const mainJsxPath = path.join(__dirname, 'src', 'main.jsx');
-let mainContent = fs.readFileSync(mainJsxPath, 'utf8');
+if (!mainContent.includes(canonicalImport)) {
+  const nextContent = mainContent.replace(importPattern, canonicalImport)
+  if (nextContent !== mainContent) {
+    fs.writeFileSync(mainJsxPath, nextContent)
+    console.log('Updated main.jsx to use App-enterprise.jsx')
+  } else {
+    console.warn('Unable to confirm App import statement; please verify main.jsx manually.')
+  }
+} else {
+  console.log('Main entry already points at App-enterprise.jsx')
+}
 
-// Replace any App import with the selected stage
-mainContent = mainContent.replace(
-  /import App from ['"]\.\/App.*?['"]/,
-  `import App from '${appFile}'`
-);
-
-fs.writeFileSync(mainJsxPath, mainContent);
-console.log(`Updated main.jsx to use ${appFile}`);
-
-// Run build with optimized settings
 try {
-  console.log('Starting minimal Vite build...');
-
-  // Set environment for minimal build
-  process.env.VITE_MINIMAL_BUILD = 'true';
-
-  execSync('npm run build', {
+  console.log('Starting minimal Vite build...')
+  execSync('pnpm run build', {
     stdio: 'inherit',
     env: {
       ...process.env,
-      NODE_OPTIONS: `--max-old-space-size=${process.env.NODE_OPTIONS?.includes('max-old-space-size')
-        ? process.env.NODE_OPTIONS.match(/max-old-space-size=(\d+)/)[1]
-        : '4096'}`
+      NODE_OPTIONS: `--max-old-space-size=${MAX_MEMORY}`
     }
-  });
+  })
+  console.log('Minimal build completed successfully!')
 
-  console.log('Minimal build completed successfully!');
-
-  // Create build marker
-  const markerPath = path.join(__dirname, 'dist', '.build-minimal');
-  fs.writeFileSync(markerPath, new Date().toISOString());
-  console.log('Build marked as minimal');
-
+  const markerPath = path.join(__dirname, 'dist', '.build-minimal')
+  fs.writeFileSync(markerPath, new Date().toISOString())
+  console.log('Build marked as minimal')
 } catch (error) {
-  console.error('Build failed:', error.message);
-  process.exit(1);
+  console.error('Build failed:', error.message)
+  process.exit(1)
 }

@@ -11,6 +11,8 @@ import { promisify } from 'util';
 import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { logDebug, logInfo, logWarn, logError } from '../src/utils/logger';
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -59,7 +61,7 @@ class AutonomousOrchestrator {
   }
 
   async initialize() {
-    console.log('🚀 Initializing 24/7 Autonomous Agent Orchestrator...');
+    logDebug('🚀 Initializing 24/7 Autonomous Agent Orchestrator...');
     
     // Verify Git configuration
     await this.verifyGitConfig();
@@ -73,7 +75,7 @@ class AutonomousOrchestrator {
     // Start health monitoring
     this.startHealthMonitoring();
     
-    console.log('✅ Orchestrator initialized successfully');
+    logDebug('✅ Orchestrator initialized successfully');
   }
 
   async verifyGitConfig() {
@@ -91,9 +93,9 @@ class AutonomousOrchestrator {
     if (CONFIG.RAILWAY_DEPLOYMENT) {
       try {
         const { stdout } = await execAsync('railway --version');
-        console.log(`📦 Railway CLI detected: ${stdout.trim()}`);
+        logDebug(`📦 Railway CLI detected: ${stdout.trim()}`);
       } catch (error) {
-        console.warn('⚠️ Railway CLI not found. Deployment features limited.');
+        logWarn('⚠️ Railway CLI not found. Deployment features limited.');
       }
     }
   }
@@ -112,7 +114,7 @@ class AutonomousOrchestrator {
         await fs.access(agentPath);
         agentStatus.get(agentFile).loaded = true;
       } catch (error) {
-        console.warn(`⚠️ Agent not found: ${agentFile}`);
+        logWarn(`⚠️ Agent not found: ${agentFile}`);
       }
     }
   }
@@ -133,19 +135,19 @@ class AutonomousOrchestrator {
       timestamp: new Date().toISOString()
     };
     
-    console.log('📊 Health Report:', JSON.stringify(health, null, 2));
+    logDebug('📊 Health Report:', JSON.stringify(health, null, 2));
   }
 
   async start() {
     this.isRunning = true;
-    console.log('🎯 Starting continuous autonomous operation...');
+    logDebug('🎯 Starting continuous autonomous operation...');
     
     while (this.isRunning) {
       try {
         await this.runCycle();
         await this.sleep(CONFIG.CYCLE_INTERVAL);
       } catch (error) {
-        console.error('❌ Cycle error:', error.message);
+        logError('❌ Cycle error:', error.message);
         await this.handleCycleError(error);
       }
     }
@@ -153,10 +155,10 @@ class AutonomousOrchestrator {
 
   async runCycle() {
     this.currentCycle++;
-    console.log(`\n🔄 Starting Cycle #${this.currentCycle} - ${new Date().toISOString()}`);
+    logDebug(`\n🔄 Starting Cycle #${this.currentCycle} - ${new Date().toISOString()}`);
     
     for (const branch of CONFIG.BRANCHES) {
-      console.log(`\n📌 Processing branch: ${branch}`);
+      logDebug(`\n📌 Processing branch: ${branch}`);
       
       try {
         // Switch to branch
@@ -185,7 +187,7 @@ class AutonomousOrchestrator {
         await this.triggerDeployment(branch);
         
       } catch (error) {
-        console.error(`❌ Error processing branch ${branch}:`, error.message);
+        logError(`❌ Error processing branch ${branch}:`, error.message);
       }
     }
     
@@ -196,7 +198,7 @@ class AutonomousOrchestrator {
   async switchBranch(branch) {
     try {
       await execAsync(`git checkout ${branch}`);
-      console.log(`✅ Switched to branch: ${branch}`);
+      logDebug(`✅ Switched to branch: ${branch}`);
     } catch (error) {
       // Try to create branch if it doesn't exist
       try {
@@ -212,10 +214,10 @@ class AutonomousOrchestrator {
     try {
       const { stdout } = await execAsync(`git pull origin ${branch}`);
       if (!stdout.includes('Already up to date')) {
-        console.log(`📥 Pulled latest changes for ${branch}`);
+        logDebug(`📥 Pulled latest changes for ${branch}`);
       }
     } catch (error) {
-      console.warn(`⚠️ Could not pull latest for ${branch}: ${error.message}`);
+      logWarn(`⚠️ Could not pull latest for ${branch}: ${error.message}`);
     }
   }
 
@@ -238,7 +240,7 @@ class AutonomousOrchestrator {
 
   async runAgent(agentFile, branch) {
     const agentName = path.basename(agentFile, '.js');
-    console.log(`🤖 Running ${agentName} on ${branch}...`);
+    logDebug(`🤖 Running ${agentName} on ${branch}...`);
     
     this.activeAgents.add(agentName);
     const status = agentStatus.get(agentFile);
@@ -250,7 +252,7 @@ class AutonomousOrchestrator {
       if (result.fixApplied) {
         status.fixes++;
         agentMetrics.successfulFixes++;
-        console.log(`✅ ${agentName} applied fix: ${result.description}`);
+        logDebug(`✅ ${agentName} applied fix: ${result.description}`);
         return {
           agent: agentName,
           description: result.description,
@@ -265,7 +267,7 @@ class AutonomousOrchestrator {
     } catch (error) {
       status.errors++;
       agentMetrics.failedAttempts++;
-      console.error(`❌ ${agentName} error: ${error.message}`);
+      logError(`❌ ${agentName} error: ${error.message}`);
       return null;
     } finally {
       this.activeAgents.delete(agentName);
@@ -319,7 +321,7 @@ class AutonomousOrchestrator {
       // Check if there are changes to commit
       const { stdout } = await execAsync('git status --porcelain');
       if (!stdout.trim()) {
-        console.log('📝 No changes to commit');
+        logDebug('📝 No changes to commit');
         return;
       }
       
@@ -328,16 +330,16 @@ class AutonomousOrchestrator {
       
       // Commit changes
       await execAsync(`git commit -m "${commitMessage}"`);
-      console.log(`✅ Committed ${fixes.length} fixes`);
+      logDebug(`✅ Committed ${fixes.length} fixes`);
       
       // Push to remote
       await execAsync(`git push origin ${branch}`);
-      console.log(`📤 Pushed to ${branch}`);
+      logDebug(`📤 Pushed to ${branch}`);
       
       agentMetrics.successfulFixes += fixes.length;
       
     } catch (error) {
-      console.error(`❌ Commit/push error: ${error.message}`);
+      logError(`❌ Commit/push error: ${error.message}`);
     }
   }
 
@@ -359,13 +361,13 @@ class AutonomousOrchestrator {
         `gh pr create --base ${targetBranch} --head ${branch} --title "${prTitle}" --body "${prBody}"`
       );
       
-      console.log(`✅ Created PR: ${stdout.trim()}`);
+      logDebug(`✅ Created PR: ${stdout.trim()}`);
       agentMetrics.prsCreated++;
       
     } catch (error) {
       // PR might already exist
       if (!error.message.includes('already exists')) {
-        console.error(`❌ PR creation error: ${error.message}`);
+        logError(`❌ PR creation error: ${error.message}`);
       }
     }
   }
@@ -410,13 +412,13 @@ ${[...new Set(fixes.flatMap(f => f.files || []))].map(f => `- ${f}`).join('\\n')
           
           if (confidence >= CONFIG.AUTO_MERGE_CONFIDENCE_THRESHOLD) {
             await execAsync(`gh pr merge ${pr.number} --auto --merge`);
-            console.log(`✅ Auto-merged PR #${pr.number}`);
+            logDebug(`✅ Auto-merged PR #${pr.number}`);
             agentMetrics.autoMerges++;
           }
         }
       }
     } catch (error) {
-      console.error(`❌ Auto-merge check error: ${error.message}`);
+      logError(`❌ Auto-merge check error: ${error.message}`);
     }
   }
 
@@ -432,11 +434,11 @@ ${[...new Set(fixes.flatMap(f => f.files || []))].map(f => `- ${f}`).join('\\n')
     try {
       if (branch === 'production' || branch === 'test') {
         const { stdout } = await execAsync(`railway up --service ${branch}`);
-        console.log(`🚀 Triggered Railway deployment for ${branch}`);
+        logDebug(`🚀 Triggered Railway deployment for ${branch}`);
         agentMetrics.deploymentsTriggered++;
       }
     } catch (error) {
-      console.warn(`⚠️ Deployment trigger failed: ${error.message}`);
+      logWarn(`⚠️ Deployment trigger failed: ${error.message}`);
     }
   }
 
@@ -460,12 +462,12 @@ ${[...new Set(fixes.flatMap(f => f.files || []))].map(f => `- ${f}`).join('\\n')
     // Git maintenance
     if (this.currentCycle % 10 === 0) {
       await execAsync('git gc --auto');
-      console.log('🧹 Performed git garbage collection');
+      logDebug('🧹 Performed git garbage collection');
     }
   }
 
   async handleCycleError(error) {
-    console.error('🔧 Attempting self-recovery...');
+    logError('🔧 Attempting self-recovery...');
     
     try {
       // Reset to clean state
@@ -476,9 +478,9 @@ ${[...new Set(fixes.flatMap(f => f.files || []))].map(f => `- ${f}`).join('\\n')
       await execAsync('git checkout development');
       await execAsync('git pull origin development');
       
-      console.log('✅ Self-recovery successful');
+      logDebug('✅ Self-recovery successful');
     } catch (recoveryError) {
-      console.error('❌ Self-recovery failed:', recoveryError.message);
+      logError('❌ Self-recovery failed:', recoveryError.message);
       // Continue anyway - the system must keep running
     }
     
@@ -491,23 +493,23 @@ ${[...new Set(fixes.flatMap(f => f.files || []))].map(f => `- ${f}`).join('\\n')
   }
 
   async stop() {
-    console.log('🛑 Stopping orchestrator...');
+    logDebug('🛑 Stopping orchestrator...');
     this.isRunning = false;
     
     // Wait for active agents to complete
     while (this.activeAgents.size > 0) {
-      console.log(`⏳ Waiting for ${this.activeAgents.size} agents to complete...`);
+      logDebug(`⏳ Waiting for ${this.activeAgents.size} agents to complete...`);
       await this.sleep(5000);
     }
     
-    console.log('✅ Orchestrator stopped');
+    logDebug('✅ Orchestrator stopped');
     this.reportHealth();
   }
 }
 
 // Signal handlers for graceful shutdown
 process.on('SIGINT', async () => {
-  console.log('\n📛 Received SIGINT, shutting down gracefully...');
+  logDebug('\n📛 Received SIGINT, shutting down gracefully...');
   if (orchestrator) {
     await orchestrator.stop();
   }
@@ -515,7 +517,7 @@ process.on('SIGINT', async () => {
 });
 
 process.on('SIGTERM', async () => {
-  console.log('\n📛 Received SIGTERM, shutting down gracefully...');
+  logDebug('\n📛 Received SIGTERM, shutting down gracefully...');
   if (orchestrator) {
     await orchestrator.stop();
   }
@@ -544,6 +546,6 @@ async function main() {
 
 // Start the system
 main().catch(error => {
-  console.error('💥 Fatal error:', error);
+  logError('💥 Fatal error:', error);
   process.exit(1);
 });

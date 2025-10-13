@@ -8,11 +8,8 @@ import { logError, logInfo } from '../../services/observability/structuredLogger
 
 // Initialize Clerk middleware with comprehensive configuration
 const clerkAuth = clerkMiddleware({
-  // Configure publishable key with fallbacks
-  publishableKey: process.env.VITE_CLERK_PUBLISHABLE_KEY || 
-                  process.env.CLERK_PUBLISHABLE_KEY || 
-                  process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ||
-                  'pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ',
+  // Configure publishable key - NO FALLBACKS FOR SECURITY
+  publishableKey: process.env.VITE_CLERK_PUBLISHABLE_KEY,
   
   // Configure secret key
   secretKey: process.env.CLERK_SECRET_KEY,

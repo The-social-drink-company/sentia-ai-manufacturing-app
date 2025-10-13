@@ -403,7 +403,7 @@ export class ComplianceService {
 
 // Express middleware for compliance
 export const complianceMiddleware = (complianceService) => {
-  return (req, res, next) => {
+  return (req, res, _next) => {
     // Attach compliance service to request
     req.compliance = complianceService;
     
@@ -429,7 +429,7 @@ export const complianceMiddleware = (complianceService) => {
 
 // PII redaction middleware
 export const piiRedactionMiddleware = (complianceService) => {
-  return (req, res, next) => {
+  return (req, res, _next) => {
     // Override res.json to apply PII redaction
     const originalJson = res.json;
     

@@ -28,6 +28,8 @@ import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import speakeasy from 'speakeasy';
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+
 
 class EnterpriseSecurityFramework extends EventEmitter {
     constructor(config = {}) {
@@ -151,10 +153,10 @@ class EnterpriseSecurityFramework extends EventEmitter {
                 timestamp: new Date().toISOString()
             });
             
-            console.log('🔒 Enterprise Security Framework initialized successfully');
+            logDebug('🔒 Enterprise Security Framework initialized successfully');
             
         } catch (error) {
-            console.error('❌ Failed to initialize security framework:', error);
+            logError('❌ Failed to initialize security framework:', error);
             this.emit('security_initialization_error', error);
             throw error;
         }
@@ -423,7 +425,7 @@ class EnterpriseSecurityFramework extends EventEmitter {
             return verified;
             
         } catch (error) {
-            console.error('❌ MFA validation failed:', error);
+            logError('❌ MFA validation failed:', error);
             return false;
         }
     }
@@ -567,7 +569,7 @@ class EnterpriseSecurityFramework extends EventEmitter {
             return false;
             
         } catch (error) {
-            console.error('❌ Permission check failed:', error);
+            logError('❌ Permission check failed:', error);
             return false;
         }
     }
@@ -649,7 +651,7 @@ class EnterpriseSecurityFramework extends EventEmitter {
             return Math.min(threatScore, 100); // Cap at 100
             
         } catch (error) {
-            console.error('❌ Threat analysis failed:', error);
+            logError('❌ Threat analysis failed:', error);
             return 50; // Return moderate threat score on error
         }
     }
@@ -847,10 +849,10 @@ class EnterpriseSecurityFramework extends EventEmitter {
     cleanupRateLimiters() {
         const now = Date.now();
         
-        this.rateLimiters.forEach((rateLimiter, type) => {
+        this.rateLimiters.forEach(_(rateLimiter, type) => {
             const windowStart = now - rateLimiter.config.window;
             
-            rateLimiter.requests.forEach((requests, identifier) => {
+            rateLimiter.requests.forEach((requests, _identifier) => {
                 const validRequests = requests.filter(time => time > windowStart);
                 
                 if (validRequests.length === 0) {
@@ -940,7 +942,7 @@ class EnterpriseSecurityFramework extends EventEmitter {
     cleanupSuspiciousActivities() {
         const cutoff = Date.now() - 3600000; // 1 hour ago
         
-        this.suspiciousActivities.forEach((attempts, key) => {
+        this.suspiciousActivities.forEach(_(attempts, key) => {
             const recentAttempts = attempts.filter(attempt => attempt.timestamp > cutoff);
             
             if (recentAttempts.length === 0) {
@@ -1133,7 +1135,7 @@ class EnterpriseSecurityFramework extends EventEmitter {
             };
             
         } catch (error) {
-            console.error('❌ Data encryption failed:', error);
+            logError('❌ Data encryption failed:', error);
             return data; // Return unencrypted data on error
         }
     }
@@ -1154,7 +1156,7 @@ class EnterpriseSecurityFramework extends EventEmitter {
             return JSON.parse(decrypted);
             
         } catch (error) {
-            console.error('❌ Data decryption failed:', error);
+            logError('❌ Data decryption failed:', error);
             return null;
         }
     }
@@ -1169,7 +1171,7 @@ class EnterpriseSecurityFramework extends EventEmitter {
     }
     
     rotateEncryptionKeys() {
-        console.log('🔄 Rotating encryption keys...');
+        logDebug('🔄 Rotating encryption keys...');
         
         this.encryptionKeys.previous = this.encryptionKeys.current;
         this.encryptionKeys.current = crypto.randomBytes(32);
@@ -1210,7 +1212,7 @@ class EnterpriseSecurityFramework extends EventEmitter {
             const threats = [];
             
             // Check for suspicious activities
-            this.suspiciousActivities.forEach((attempts, ip) => {
+            this.suspiciousActivities.forEach(_(attempts, ip) => {
                 const recentAttempts = attempts.filter(attempt => 
                     Date.now() - attempt.timestamp < 300000 // Last 5 minutes
                 );
@@ -1226,7 +1228,7 @@ class EnterpriseSecurityFramework extends EventEmitter {
             });
             
             // Check active sessions for anomalies
-            this.activeSessions.forEach((session, sessionId) => {
+            this.activeSessions.forEach(_(session, sessionId) => {
                 const sessionAge = Date.now() - session.createdAt.getTime();
                 if (sessionAge > this.config.auth.sessionTimeout * 2) {
                     threats.push({
@@ -1245,11 +1247,11 @@ class EnterpriseSecurityFramework extends EventEmitter {
             });
             
             if (threats.length > 0) {
-                console.log(`🚨 Security scan detected ${threats.length} threats`);
+                logDebug(`🚨 Security scan detected ${threats.length} threats`);
             }
             
         } catch (error) {
-            console.error('❌ Security scan failed:', error);
+            logError('❌ Security scan failed:', error);
         }
     }
     
@@ -1272,7 +1274,7 @@ class EnterpriseSecurityFramework extends EventEmitter {
             this.threatIntelligence.set(threat.ip, threat);
         });
         
-        console.log('🔄 Threat intelligence updated');
+        logDebug('🔄 Threat intelligence updated');
     }
     
     startComplianceMonitoring() {
@@ -1315,13 +1317,13 @@ class EnterpriseSecurityFramework extends EventEmitter {
             });
             
             if (violations.length === 0) {
-                console.log('✅ Compliance check passed');
+                logDebug('✅ Compliance check passed');
             } else {
-                console.log(`⚠️ Compliance check found ${violations.length} violations`);
+                logDebug(`⚠️ Compliance check found ${violations.length} violations`);
             }
             
         } catch (error) {
-            console.error('❌ Compliance check failed:', error);
+            logError('❌ Compliance check failed:', error);
         }
     }
     
@@ -1375,7 +1377,7 @@ class EnterpriseSecurityFramework extends EventEmitter {
         // Placeholder for ML model initialization
         return {
             predict: (features) => Math.random() * 100,
-            update: (features, label) => {}
+            update: (_features, _label) => {}
         };
     }
     
@@ -1383,7 +1385,7 @@ class EnterpriseSecurityFramework extends EventEmitter {
         // Placeholder for ML model initialization
         return {
             predict: (features) => Math.random() * 100,
-            update: (features, label) => {}
+            update: (_features, _label) => {}
         };
     }
     
@@ -1391,7 +1393,7 @@ class EnterpriseSecurityFramework extends EventEmitter {
         // Placeholder for ML model initialization
         return {
             predict: (features) => Math.random() * 100,
-            update: (features, label) => {}
+            update: (_features, _label) => {}
         };
     }
     
@@ -1446,7 +1448,7 @@ class EnterpriseSecurityFramework extends EventEmitter {
             this.emit('metrics_updated', this.metrics);
             
         } catch (error) {
-            console.error('❌ Failed to update security metrics:', error);
+            logError('❌ Failed to update security metrics:', error);
         }
     }
     
@@ -1510,7 +1512,7 @@ class EnterpriseSecurityFramework extends EventEmitter {
     }
     
     handleThreatDetected(data) {
-        console.log('🚨 Threat detected:', data);
+        logDebug('🚨 Threat detected:', data);
         
         // Auto-block high-severity threats
         if (data.severity === 'critical' && this.config.threatDetection.automaticBlocking) {
@@ -1523,24 +1525,24 @@ class EnterpriseSecurityFramework extends EventEmitter {
     }
     
     handleSecurityViolation(data) {
-        console.log('⚠️ Security violation:', data);
+        logDebug('⚠️ Security violation:', data);
         this.logAuditEvent('security_violation', data);
     }
     
     handleAuditEvent(data) {
         // Process audit events for real-time analysis
         if (data.severity === 'critical') {
-            console.log('🚨 Critical audit event:', data);
+            logDebug('🚨 Critical audit event:', data);
         }
     }
     
     handleComplianceAlert(data) {
-        console.log('📋 Compliance alert:', data);
+        logDebug('📋 Compliance alert:', data);
         this.updateMetrics('compliance_violation');
     }
     
     handleSecurityError(error) {
-        console.error('❌ Security framework error:', error);
+        logError('❌ Security framework error:', error);
         this.logAuditEvent('security_error', {
             error: error.message,
             stack: error.stack,

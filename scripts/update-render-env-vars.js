@@ -9,16 +9,16 @@
 import { execSync } from 'child_process';
 import fs from 'fs';
 
-const RENDER_SERVICES = {
+const RENDERSERVICES = {
   development: 'sentia-manufacturing-development',
   testing: 'sentia-manufacturing-testing',
   production: 'sentia-manufacturing-production'
 };
 
-const ENV_VARS = {
+const ENVVARS = {
   // Clerk Configuration
-  VITE_CLERK_PUBLISHABLE_KEY: 'pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ',
-  CLERK_SECRET_KEY: 'sk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ',
+  VITE_CLERK_PUBLISHABLE_KEY: 'pk_live_REDACTED',
+  CLERK_SECRET_KEY: 'sk_live_REDACTED',
   
   // API Configuration
   VITE_MCP_SERVER_URL: 'https://mcp-server-tkyu.onrender.com',
@@ -161,3 +161,5 @@ function verifyDeployments() {
 }
 
 export { RENDER_SERVICES, ENV_VARS };
+
+

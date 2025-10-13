@@ -1,37 +1,23 @@
-/**
- * API Service
- * Central API client for all backend interactions
- */
+// API Service for Real Data Integration
+// Connects to local API endpoints
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 
-class ApiService {
+class APIService {
   constructor() {
-    this.baseURL = API_BASE_URL;
-    this.token = null;
+    this.apiBaseUrl = API_BASE_URL;
   }
 
-  setAuthToken(token) {
-    this.token = token;
-  }
-
-  async request(endpoint, options = {}) {
-    const url = `${this.baseURL}${endpoint}`;
-
-    const config = {
-      ...options,
-      headers: {
-        'Content-Type': 'application/json',
-        ...options.headers,
-      },
-    };
-
-    if (this.token) {
-      config.headers['Authorization'] = `Bearer ${this.token}`;
-    }
-
+  // Helper method for API calls
+  async fetchWithAuth(url, options = {}) {
     try {
-      const response = await fetch(url, config);
+      const response = await fetch(url, {
+        ...options,
+        headers: {
+          'Content-Type': 'application/json',
+          ...options.headers,
+        },
+      });
 
       if (!response.ok) {
         throw new Error(`API Error: ${response.status} ${response.statusText}`);
@@ -39,202 +25,112 @@ class ApiService {
 
       return await response.json();
     } catch (error) {
-      console.error(`API Request Failed: ${endpoint}`, error);
+      console.error('API Call Failed:', error);
       throw error;
     }
   }
 
-  // Health & Status
-  async getHealth() {
-    return this.request('/health');
-  }
-
-  // Personnel
-  async getPersonnel() {
-    return this.request('/personnel');
-  }
-
-  async getPersonnelById(id) {
-    return this.request(`/personnel/${id}`);
-  }
-
-  // Production
-  async getProductionLines() {
-    return this.request('/production/lines');
-  }
-
-  async getProductionMetrics(params = {}) {
-    const queryString = new URLSearchParams(params).toString();
-    return this.request(`/production/metrics${queryString ? `?${queryString}` : ''}`);
-  }
-
-  async getProductionSchedule() {
-    return this.request('/production/schedule');
-  }
-
-  async getBatchProduction(batchId) {
-    return this.request(`/production/batch/${batchId}`);
-  }
-
-  // Inventory
-  async getInventoryLevels() {
-    return this.request('/inventory/levels');
-  }
-
-  async getInventoryMovements() {
-    return this.request('/inventory/movements');
-  }
-
-  async getStockTakes() {
-    return this.request('/inventory/stock-takes');
-  }
-
-  async createInventoryMovement(data) {
-    return this.request('/inventory/movements', {
+  // AI Service Methods
+  async getAIInsights(query) {
+    return this.fetchWithAuth(`${this.apiBaseUrl}/ai/analyze`, {
       method: 'POST',
-      body: JSON.stringify(data),
+      body: JSON.stringify({ query }),
     });
   }
 
-  // Quality
-  async getQualityInspections() {
-    return this.request('/quality/inspections');
-  }
-
-  async getQualityDefects() {
-    return this.request('/quality/defects');
-  }
-
-  async getQualityMetrics(params = {}) {
-    const queryString = new URLSearchParams(params).toString();
-    return this.request(`/quality/metrics${queryString ? `?${queryString}` : ''}`);
-  }
-
-  async createQualityInspection(data) {
-    return this.request('/quality/inspections', {
+  async getDemandForecast(params) {
+    return this.fetchWithAuth(`${this.apiBaseUrl}/forecasting/demand`, {
       method: 'POST',
-      body: JSON.stringify(data),
+      body: JSON.stringify(params),
     });
   }
 
-  // Financial
+  async getInventoryOptimization() {
+    return this.fetchWithAuth(`${this.apiBaseUrl}/inventory/optimization`);
+  }
+
+  // Financial Data Methods
   async getWorkingCapital() {
-    return this.request('/financial/working-capital');
+    return this.fetchWithAuth(`${this.apiBaseUrl}/working-capital`);
   }
 
-  async getCashFlow(params = {}) {
-    const queryString = new URLSearchParams(params).toString();
-    return this.request(`/financial/cash-flow${queryString ? `?${queryString}` : ''}`);
+  async getCashFlow() {
+    return this.fetchWithAuth(`${this.apiBaseUrl}/working-capital/xero/cashflow`);
   }
 
   async getFinancialMetrics() {
-    return this.request('/financial/metrics');
+    return this.fetchWithAuth(`${this.apiBaseUrl}/working-capital/metrics`);
   }
 
-  async getAccounts() {
-    return this.request('/financial/accounts');
+  // Production Data Methods
+  async getProductionMetrics() {
+    return this.fetchWithAuth(`${this.apiBaseUrl}/production/metrics`);
   }
 
-  // Maintenance
-  async getMaintenanceSchedule() {
-    return this.request('/maintenance/schedule');
+  async getInventoryData() {
+    return this.fetchWithAuth(`${this.apiBaseUrl}/inventory/current`);
   }
 
-  async createMaintenanceTask(data) {
-    return this.request('/maintenance/schedule', {
+  async getQualityMetrics() {
+    return this.fetchWithAuth(`${this.apiBaseUrl}/quality/metrics`);
+  }
+
+  // Dashboard Data
+  async getDashboardSummary() {
+    return this.fetchWithAuth(`${this.apiBaseUrl}/dashboard/summary`);
+  }
+
+  // External API Integrations
+  async getXeroData() {
+    return this.fetchWithAuth(`${this.apiBaseUrl}/integrations/xero/data`);
+  }
+
+  async getShopifyData() {
+    return this.fetchWithAuth(`${this.apiBaseUrl}/integrations/shopify/data`);
+  }
+
+  async getAmazonData() {
+    return this.fetchWithAuth(`${this.apiBaseUrl}/integrations/amazon/data`);
+  }
+
+  // What-If Analysis
+  async runWhatIfScenario(scenario) {
+    return this.fetchWithAuth(`${this.apiBaseUrl}/what-if/scenario`, {
       method: 'POST',
-      body: JSON.stringify(data),
+      body: JSON.stringify(scenario),
     });
   }
 
-  // Supply Chain
-  async getPurchaseOrders() {
-    return this.request('/supply-chain/purchase-orders');
-  }
+  // Real-time SSE connection for live data
+  connectToLiveData(onMessage, onError) {
+    const eventSource = new EventSource(`${this.apiBaseUrl}/events`);
 
-  async createPurchaseOrder(data) {
-    return this.request('/supply-chain/purchase-orders', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    });
-  }
+    eventSource.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        onMessage(data);
+      } catch (error) {
+        console.error('SSE Parse Error:', error);
+      }
+    };
 
-  // AI/Analytics
-  async getAIPredictions(type) {
-    return this.request(`/ai/predictions/${type}`);
-  }
+    eventSource.onerror = (error) => {
+      console.error('SSE Connection Error:', error);
+      if (onError) onError(error);
+    };
 
-  async getDemandForecast(params = {}) {
-    const queryString = new URLSearchParams(params).toString();
-    return this.request(`/ai/demand-forecast${queryString ? `?${queryString}` : ''}`);
-  }
-
-  // Dashboard
-  async getDashboardData() {
-    return this.request('/dashboard/data');
-  }
-
-  async saveDashboardLayout(layout) {
-    return this.request('/dashboard/layout', {
-      method: 'POST',
-      body: JSON.stringify({ layout }),
-    });
-  }
-
-  async getDashboardLayout() {
-    return this.request('/dashboard/layout');
-  }
-
-  // Import/Export
-  async importData(type, data) {
-    return this.request(`/import/${type}`, {
-      method: 'POST',
-      body: JSON.stringify(data),
-    });
-  }
-
-  async exportData(type, format = 'json') {
-    return this.request(`/export/${type}?format=${format}`);
-  }
-
-  // Admin
-  async getUsers() {
-    return this.request('/admin/users');
-  }
-
-  async updateUserRole(userId, role) {
-    return this.request(`/admin/users/${userId}/role`, {
-      method: 'PUT',
-      body: JSON.stringify({ role }),
-    });
-  }
-
-  async getSystemConfig() {
-    return this.request('/admin/system/config');
-  }
-
-  async updateSystemConfig(config) {
-    return this.request('/admin/system/config', {
-      method: 'PUT',
-      body: JSON.stringify(config),
-    });
+    return eventSource;
   }
 }
 
 // Create singleton instance
-const apiService = new ApiService();
+const apiService = new APIService();
 
 export default apiService;
+export { APIService };
 
-// Named exports for common operations
-export const {
-  getHealth,
-  getPersonnel,
-  getProductionLines,
-  getProductionMetrics,
-  getInventoryLevels,
-  getQualityInspections,
-  getWorkingCapital,
-  getCashFlow,
-  getDashboardData,
-} = apiService;
+
+
+
+
+

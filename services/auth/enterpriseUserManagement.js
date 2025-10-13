@@ -3,6 +3,8 @@ import jwt from 'jsonwebtoken';
 import speakeasy from 'speakeasy';
 import QRCode from 'qrcode';
 import EventEmitter from 'events';
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+
 
 /**
  * Enterprise User Management & RBAC System
@@ -89,7 +91,7 @@ export class EnterpriseUserManagement extends EventEmitter {
     // Start audit log cleanup
     this.startAuditCleanup();
     
-    console.log('👥 Enterprise User Management System initialized');
+    logDebug('👥 Enterprise User Management System initialized');
   }
 
   /**
@@ -170,7 +172,7 @@ export class EnterpriseUserManagement extends EventEmitter {
       return { userId, user: this.sanitizeUser(user) };
 
     } catch (error) {
-      console.error('User creation failed:', error);
+      logError('User creation failed:', error);
       this.emit('userCreationError', { userData, error: error.message });
       throw error;
     }
@@ -257,7 +259,7 @@ export class EnterpriseUserManagement extends EventEmitter {
       };
 
     } catch (error) {
-      console.error('Authentication failed:', error);
+      logError('Authentication failed:', error);
       this.emit('authenticationError', { email, error: error.message });
       throw error;
     }
@@ -315,7 +317,7 @@ export class EnterpriseUserManagement extends EventEmitter {
       };
 
     } catch (error) {
-      console.error('MFA setup failed:', error);
+      logError('MFA setup failed:', error);
       this.emit('mfaSetupError', { userId, error: error.message });
       throw error;
     }
@@ -362,7 +364,7 @@ export class EnterpriseUserManagement extends EventEmitter {
       return { success: true, message: 'MFA enabled successfully' };
 
     } catch (error) {
-      console.error('MFA verification failed:', error);
+      logError('MFA verification failed:', error);
       this.emit('mfaVerificationError', { userId, error: error.message });
       throw error;
     }
@@ -413,7 +415,7 @@ export class EnterpriseUserManagement extends EventEmitter {
       return { roleId, role };
 
     } catch (error) {
-      console.error('Role creation failed:', error);
+      logError('Role creation failed:', error);
       this.emit('roleCreationError', { roleData, error: error.message });
       throw error;
     }
@@ -457,7 +459,7 @@ export class EnterpriseUserManagement extends EventEmitter {
       return { success: true, previousRole, newRole: roleId };
 
     } catch (error) {
-      console.error('Role assignment failed:', error);
+      logError('Role assignment failed:', error);
       this.emit('roleAssignmentError', { userId, roleId, error: error.message });
       throw error;
     }
@@ -505,7 +507,7 @@ export class EnterpriseUserManagement extends EventEmitter {
       return hasPermission;
 
     } catch (error) {
-      console.error('Permission check failed:', error);
+      logError('Permission check failed:', error);
       return false;
     }
   }
@@ -565,7 +567,7 @@ export class EnterpriseUserManagement extends EventEmitter {
       return permissionArray;
 
     } catch (error) {
-      console.error('Failed to get user permissions:', error);
+      logError('Failed to get user permissions:', error);
       return [];
     }
   }
@@ -796,7 +798,7 @@ export class EnterpriseUserManagement extends EventEmitter {
   generateRoleId() { return `role_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`; }
   generateSessionId() { return `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`; }
   findUserByEmail(email) { return Array.from(this.users.values()).find(u => u.email === email.toLowerCase()); }
-  isValidEmail(email) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email); }
+  isValidEmail(email) { return /^[^\s@]+@[^\s@]+.[^\s@]+$/.test(email); }
   isPasswordComplex(password) { return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/.test(password); }
   sanitizeUser(user) { const { password, mfa, ...sanitized } = user; return { ...sanitized, mfa: { enabled: mfa.enabled } }; }
   sanitizeSession(session) { const { ...sanitized } = session; return sanitized; }

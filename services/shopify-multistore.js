@@ -1,5 +1,8 @@
-import { shopifyApi } from '@shopify/shopify-api';
+import '@shopify/shopify-api/adapters/node';
+import { shopifyApi, ApiVersion } from '@shopify/shopify-api';
 import redisCacheService from './redis-cache.js';
+import { logDebug, logInfo, logWarn, logError } from './logger.js';
+
 
 class ShopifyMultiStoreService {
   constructor() {
@@ -7,25 +10,17 @@ class ShopifyMultiStoreService {
     this.isConnected = false;
     this.syncInterval = null;
     this.syncFrequency = 15 * 60 * 1000; // 15 minutes
+    this.shopify = null;
     
     this.storeConfigs = [
       {
-        id: 'uk_store',
-        name: 'Sentia UK Store',
+        id: 'uk_eu_store',
+        name: 'Sentia UK/EU Store',
         shopDomain: process.env.SHOPIFY_UK_SHOP_DOMAIN,
         accessToken: process.env.SHOPIFY_UK_ACCESS_TOKEN,
         apiVersion: '2024-01',
-        region: 'uk',
+        region: 'uk_eu',
         currency: 'GBP'
-      },
-      {
-        id: 'eu_store', 
-        name: 'Sentia EU Store',
-        shopDomain: process.env.SHOPIFY_EU_SHOP_DOMAIN,
-        accessToken: process.env.SHOPIFY_EU_ACCESS_TOKEN,
-        apiVersion: '2024-01',
-        region: 'eu',
-        currency: 'EUR'
       },
       {
         id: 'us_store',
@@ -41,22 +36,37 @@ class ShopifyMultiStoreService {
 
   async connect() {
     try {
-      console.log('SHOPIFY: Initializing multi-store connections...');
+      logDebug('SHOPIFY: Initializing multi-store connections...');
+      
+      // Initialize Shopify API if not already done
+      if (!this.shopify) {
+        this.shopify = shopifyApi({
+          apiKey: 'not-needed-for-private-apps',
+          apiSecretKey: 'not-needed-for-private-apps',
+          scopes: ['read_orders', 'read_products', 'read_customers'],
+          hostName: 'localhost', // Not used for direct API calls
+          apiVersion: ApiVersion.January24
+        });
+      }
       
       for (const config of this.storeConfigs) {
         if (!config.shopDomain || !config.accessToken) {
-          console.warn(`SHOPIFY: Missing credentials for ${config.name}, skipping`);
+          logWarn(`SHOPIFY: Missing credentials for ${config.name}, skipping`);
           continue;
         }
 
         try {
-          const client = new shopifyApi.clients.Rest({
-            session: {
-              shop: config.shopDomain,
-              accessToken: config.accessToken
-            },
-            apiVersion: config.apiVersion
-          });
+          // Create a session for this store
+          const session = {
+            id: `${config.id}-session`,
+            shop: config.shopDomain,
+            state: 'active',
+            isOnline: false,
+            accessToken: config.accessToken,
+            scope: 'read_orders,read_products,read_customers'
+          };
+
+          const client = new this.shopify.clients.Rest({ session });
 
           const shopResponse = await client.get({
             path: 'shop'
@@ -66,18 +76,20 @@ class ShopifyMultiStoreService {
             this.stores.set(config.id, {
               ...config,
               client,
+              session,
               shopInfo: shopResponse.body.shop,
               lastSync: null,
               isActive: true
             });
             
-            console.log(`SHOPIFY: Connected to ${config.name} (${config.shopDomain})`);
+            logInfo(`SHOPIFY: Connected to ${config.name} (${config.shopDomain})`);
           }
         } catch (storeError) {
-          console.error(`SHOPIFY: Failed to connect to ${config.name}:`, storeError.message);
+          logError(`SHOPIFY: Failed to connect to ${config.name}:`, storeError.message);
           this.stores.set(config.id, {
             ...config,
             client: null,
+            session: null,
             shopInfo: null,
             lastSync: null,
             isActive: false,
@@ -89,15 +101,15 @@ class ShopifyMultiStoreService {
       this.isConnected = this.stores.size > 0;
       
       if (this.isConnected) {
-        console.log(`SHOPIFY: Successfully connected to ${this.stores.size} stores`);
+        logDebug(`SHOPIFY: Successfully connected to ${this.stores.size} stores`);
         await this.startSyncScheduler();
       } else {
-        console.error('SHOPIFY: No stores connected successfully');
+        logError('SHOPIFY: No stores connected successfully');
       }
 
       return this.isConnected;
     } catch (error) {
-      console.error('SHOPIFY: Connection initialization failed:', error);
+      logError('SHOPIFY: Connection initialization failed:', error);
       return false;
     }
   }
@@ -107,7 +119,7 @@ class ShopifyMultiStoreService {
       clearInterval(this.syncInterval);
     }
 
-    console.log(`SHOPIFY: Starting sync scheduler (every ${this.syncFrequency / 1000 / 60} minutes)`);
+    logDebug(`SHOPIFY: Starting sync scheduler (every ${this.syncFrequency / 1000 / 60} minutes)`);
     
     // Initial sync
     await this.syncAllStores();
@@ -117,7 +129,7 @@ class ShopifyMultiStoreService {
       try {
         await this.syncAllStores();
       } catch (error) {
-        console.error('SHOPIFY: Scheduled sync failed:', error);
+        logError('SHOPIFY: Scheduled sync failed:', error);
       }
     }, this.syncFrequency);
   }
@@ -128,12 +140,12 @@ class ShopifyMultiStoreService {
       return;
     }
 
-    console.log('SHOPIFY: Starting multi-store sync...');
+    logDebug('SHOPIFY: Starting multi-store sync...');
     const syncResults = [];
 
     for (const [storeId, store] of this.stores.entries()) {
       if (!store.isActive || !store.client) {
-        console.warn(`SHOPIFY: Skipping inactive store ${store.name}`);
+        logWarn(`SHOPIFY: Skipping inactive store ${store.name}`);
         continue;
       }
 
@@ -147,10 +159,10 @@ class ShopifyMultiStoreService {
         });
 
         store.lastSync = new Date().toISOString();
-        console.log(`SHOPIFY: Synced ${store.name} successfully`);
+        logDebug(`SHOPIFY: Synced ${store.name} successfully`);
 
       } catch (error) {
-        console.error(`SHOPIFY: Sync failed for ${store.name}:`, error);
+        logError(`SHOPIFY: Sync failed for ${store.name}:`, error);
         syncResults.push({
           storeId,
           success: false,
@@ -164,7 +176,7 @@ class ShopifyMultiStoreService {
     const consolidatedData = this.consolidateStoreData(syncResults);
     await redisCacheService.set('shopify:consolidated_data', consolidatedData, 1800); // 30 min cache
 
-    console.log(`SHOPIFY: Sync completed. ${syncResults.filter(r => r.success).length}/${syncResults.length} stores synced successfully`);
+    logDebug(`SHOPIFY: Sync completed. ${syncResults.filter(r => r.success).length}/${syncResults.length} stores synced successfully`);
     return consolidatedData;
   }
 
@@ -255,7 +267,7 @@ class ShopifyMultiStoreService {
       return storeData;
 
     } catch (error) {
-      console.error(`SHOPIFY: Error syncing ${store.name}:`, error);
+      logError(`SHOPIFY: Error syncing ${store.name}:`, error);
       throw error;
     }
   }
@@ -311,11 +323,11 @@ class ShopifyMultiStoreService {
       }
 
       // If no cache, trigger sync
-      console.log('SHOPIFY: No cached data, triggering sync...');
+      logDebug('SHOPIFY: No cached data, triggering sync...');
       return await this.syncAllStores();
       
     } catch (error) {
-      console.error('SHOPIFY: Error getting consolidated data:', error);
+      logError('SHOPIFY: Error getting consolidated data:', error);
       return {
         error: error.message,
         stores: [],
@@ -345,8 +357,140 @@ class ShopifyMultiStoreService {
       throw new Error(`Store ${storeId} not found`);
       
     } catch (error) {
-      console.error(`SHOPIFY: Error getting store data for ${storeId}:`, error);
+      logError(`SHOPIFY: Error getting store data for ${storeId}:`, error);
       return { error: error.message };
+    }
+  }
+
+  async getProductPerformance(params = {}) {
+    try {
+      logInfo('SHOPIFY: Getting product performance data', params);
+      
+      if (!this.isConnected) {
+        throw new Error('Shopify multistore service not connected. Call connect() first.');
+      }
+
+      const { startDate, endDate, limit = 50 } = params;
+      const performanceData = {
+        products: [],
+        totalRevenue: 0,
+        totalOrders: 0,
+        averageOrderValue: 0,
+        dateRange: {
+          start: startDate || new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString(),
+          end: endDate || new Date().toISOString()
+        },
+        lastUpdated: new Date().toISOString(),
+        storeErrors: []
+      };
+
+      for (const [storeId, store] of this.stores.entries()) {
+        if (!store.isActive || !store.client) {
+          logWarn(`SHOPIFY: Skipping inactive store ${store.name} for performance data`);
+          performanceData.storeErrors.push({
+            storeId,
+            storeName: store.name,
+            error: 'Store not active or client not available'
+          });
+          continue;
+        }
+
+        try {
+          // Get orders with line items for the specified period
+          const ordersResponse = await store.client.get({
+            path: 'orders',
+            query: {
+              status: 'any',
+              financial_status: 'paid',
+              created_at_min: performanceData.dateRange.start,
+              created_at_max: performanceData.dateRange.end,
+              limit: 250,
+              fields: 'id,line_items,total_price,currency,created_at'
+            }
+          });
+
+          if (!ordersResponse.body || !ordersResponse.body.orders) {
+            throw new Error(`Invalid orders response from ${store.name}`);
+          }
+
+          const orders = ordersResponse.body.orders;
+          const productSales = new Map();
+
+          // Process each order to calculate product performance
+          orders.forEach(order => {
+            const orderValue = parseFloat(order.total_price || 0);
+            performanceData.totalRevenue += orderValue;
+            performanceData.totalOrders += 1;
+
+            if (order.line_items && Array.isArray(order.line_items)) {
+              order.line_items.forEach(item => {
+                const productId = item.product_id?.toString();
+                if (!productId) return;
+
+                const quantity = parseInt(item.quantity || 0);
+                const price = parseFloat(item.price || 0);
+                const revenue = quantity * price;
+
+                if (productSales.has(productId)) {
+                  const existing = productSales.get(productId);
+                  existing.unitsSold += quantity;
+                  existing.revenue += revenue;
+                } else {
+                  productSales.set(productId, {
+                    id: productId,
+                    title: item.title || item.name || 'Unknown Product',
+                    sku: item.sku || null,
+                    unitsSold: quantity,
+                    revenue: revenue,
+                    currency: order.currency || store.currency,
+                    storeId: store.id,
+                    storeName: store.name
+                  });
+                }
+              });
+            }
+          });
+
+          // Add products from this store to the overall results
+          for (const product of productSales.values()) {
+            performanceData.products.push(product);
+          }
+
+          logInfo(`SHOPIFY: Retrieved performance data for ${store.name}: ${orders.length} orders, ${productSales.size} products`);
+
+        } catch (storeError) {
+          logError(`SHOPIFY: Failed to get performance data from ${store.name}:`, storeError);
+          performanceData.storeErrors.push({
+            storeId,
+            storeName: store.name,
+            error: storeError.message,
+            details: storeError.response?.data || null
+          });
+        }
+      }
+
+      // Sort products by revenue and apply limit
+      performanceData.products.sort((a, b) => b.revenue - a.revenue);
+      if (limit) {
+        performanceData.products = performanceData.products.slice(0, limit);
+      }
+
+      // Calculate final metrics
+      performanceData.averageOrderValue = performanceData.totalOrders > 0 
+        ? performanceData.totalRevenue / performanceData.totalOrders 
+        : 0;
+
+      // Check if we have any data
+      if (performanceData.products.length === 0 && performanceData.storeErrors.length > 0) {
+        throw new Error(`No product performance data available. Store errors: ${performanceData.storeErrors.map(e => `${e.storeName}: ${e.error}`).join('; ')}`);
+      }
+
+      logInfo(`SHOPIFY: Product performance retrieved successfully: ${performanceData.products.length} products, £${performanceData.totalRevenue.toFixed(2)} revenue`);
+      return performanceData;
+
+    } catch (error) {
+      logError('SHOPIFY: Error getting product performance:', error);
+      throw new Error(`Failed to retrieve product performance data: ${error.message}`);
     }
   }
 
@@ -397,6 +541,102 @@ class ShopifyMultiStoreService {
     };
   }
 
+  async getRegionalPerformance() {
+    try {
+      const regionalData = [];
+      
+      for (const [storeId, store] of this.stores) {
+        if (!store.isActive || !store.client) {
+          continue;
+        }
+
+        try {
+          // Get orders from last 30 days for this store
+          const thirtyDaysAgo = new Date();
+          thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+          
+          const ordersResponse = await store.client.get({
+            path: 'orders',
+            query: {
+              status: 'any',
+              created_at_min: thirtyDaysAgo.toISOString(),
+              limit: 250,
+              financial_status: 'paid'
+            }
+          });
+
+          if (ordersResponse.body && ordersResponse.body.orders) {
+            const orders = ordersResponse.body.orders;
+            const revenue = orders.reduce((sum, order) => sum + parseFloat(order.total_price || 0), 0);
+            
+            regionalData.push({
+              name: store.name,
+              region: store.region,
+              revenue: revenue,
+              orders: orders.length,
+              currency: store.currency,
+              growth: 0, // Would need historical data for growth calculation
+              market_share: 0, // Would need total market data
+              source: 'shopify'
+            });
+          }
+        } catch (storeError) {
+          logError(`Failed to get regional data from ${store.name}:`, storeError);
+        }
+      }
+
+      return regionalData;
+    } catch (error) {
+      logError('Error getting regional performance:', error);
+      throw error;
+    }
+  }
+
+  async getAllOrders(params = {}) {
+    try {
+      const allOrders = [];
+      
+      for (const [storeId, store] of this.stores) {
+        if (!store.isActive || !store.client) {
+          continue;
+        }
+
+        try {
+          const ordersResponse = await store.client.get({
+            path: 'orders',
+            query: {
+              status: 'any',
+              limit: params.limit || 250,
+              created_at_min: params.created_at_min || '',
+              financial_status: 'paid',
+              ...params
+            }
+          });
+
+          if (ordersResponse.body && ordersResponse.body.orders) {
+            const orders = ordersResponse.body.orders.map(order => ({
+              ...order,
+              store_region: store.region,
+              store_currency: store.currency
+            }));
+            allOrders.push(...orders);
+          }
+        } catch (storeError) {
+          logError(`Failed to get orders from ${store.name}:`, storeError);
+        }
+      }
+
+      return allOrders;
+    } catch (error) {
+      logError('Error getting all orders:', error);
+      throw error;
+    }
+  }
+
+  getActiveStoreCount() {
+    return Array.from(this.stores.values()).filter(store => store.isActive).length;
+  }
+
   getConnectionStatus() {
     const storeStatuses = Array.from(this.stores.values()).map(store => ({
       id: store.id,
@@ -426,9 +666,9 @@ class ShopifyMultiStoreService {
       this.stores.clear();
       this.isConnected = false;
       
-      console.log('SHOPIFY: Disconnected from all stores');
+      logDebug('SHOPIFY: Disconnected from all stores');
     } catch (error) {
-      console.error('SHOPIFY: Disconnect error:', error);
+      logError('SHOPIFY: Disconnect error:', error);
     }
   }
 }

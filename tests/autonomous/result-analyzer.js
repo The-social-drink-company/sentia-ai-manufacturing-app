@@ -309,7 +309,7 @@ class TestResultAnalyzer {
     }
 
     // Generate specific instructions based on pattern
-    knownPattern.fixes.forEach((fix, index) => {
+    knownPattern.fixes.forEach((fix, _index) => {
       const instruction = {
         type: 'code_fix',
         pattern: pattern,
@@ -505,7 +505,7 @@ class TestResultAnalyzer {
     patterns.sort((a, b) => b[1] - a[1]);
     
     // Identify trending patterns
-    patterns.forEach(([pattern, count]) => {
+    patterns.forEach(_([pattern, _count]) => {
       const trend = this.getPatternTrend(pattern);
       const impact = this.calculateImpact(pattern, count, analysis.totalTests);
       
@@ -601,7 +601,7 @@ class TestResultAnalyzer {
       .sort((a, b) => b[1] - a[1])
       .slice(0, 3);
     
-    topPatterns.forEach(([pattern, count]) => {
+    topPatterns.forEach(_([pattern, _count]) => {
       const knownPattern = this.knowledgeBase.patterns[pattern];
       if (knownPattern) {
         recommendations.push({
@@ -667,14 +667,14 @@ class TestResultAnalyzer {
   // Historical data tracking
   getRecentPatternOccurrences(pattern) {
     const recentAnalyses = this.historicalData.slice(-5); // Last 5 analyses
-    return recentAnalyses.reduce((sum, analysis) => {
+    return recentAnalyses.reduce(_(sum, analysis) => {
       return sum + (analysis.failurePatterns.get(pattern) || 0);
     }, 0);
   }
 
   getPastPatternOccurrences(pattern) {
     const pastAnalyses = this.historicalData.slice(-15, -5); // 5-15 analyses ago
-    return pastAnalyses.reduce((sum, analysis) => {
+    return pastAnalyses.reduce(_(sum, analysis) => {
       return sum + (analysis.failurePatterns.get(pattern) || 0);
     }, 0);
   }

@@ -16,7 +16,7 @@ const HOST = 'localhost';
 
 // Test 1: Health check endpoint without authentication
 function testHealthEndpoint() {
-  return new Promise((resolve, reject) => {
+  return new Promise(_(resolve, _reject) => {
     console.log('\n✅ TEST 1: Health check endpoint (no auth required)');
     console.log(`   Testing: http://${HOST}:${PORT}/health`);
 
@@ -30,11 +30,11 @@ function testHealthEndpoint() {
     const req = http.request(options, (res) => {
       let data = '';
 
-      res.on('data', (chunk) => {
+      res.on('data', _(chunk) => {
         data += chunk;
       });
 
-      res.on('end', () => {
+      res.on('end', _() => {
         if (res.statusCode === 200) {
           try {
             const json = JSON.parse(data);
@@ -59,7 +59,7 @@ function testHealthEndpoint() {
       });
     });
 
-    req.on('error', (error) => {
+    req.on('error', _(error) => {
       console.log(`   ❌ FAIL: ${error.message}`);
       resolve(false);
     });
@@ -70,7 +70,7 @@ function testHealthEndpoint() {
 
 // Test 2: API endpoint (may require authentication)
 function testAPIEndpoint() {
-  return new Promise((resolve, reject) => {
+  return new Promise(_(resolve, _reject) => {
     console.log('\n✅ TEST 2: API status endpoint');
     console.log(`   Testing: http://${HOST}:${PORT}/api/status`);
 
@@ -84,11 +84,11 @@ function testAPIEndpoint() {
     const req = http.request(options, (res) => {
       let data = '';
 
-      res.on('data', (chunk) => {
+      res.on('data', _(chunk) => {
         data += chunk;
       });
 
-      res.on('end', () => {
+      res.on('end', _() => {
         if (res.statusCode === 200 || res.statusCode === 401) {
           console.log(`   ✅ Status Code: ${res.statusCode}`);
           if (res.statusCode === 401) {
@@ -104,7 +104,7 @@ function testAPIEndpoint() {
       });
     });
 
-    req.on('error', (error) => {
+    req.on('error', _(error) => {
       console.log(`   ❌ FAIL: ${error.message}`);
       resolve(false);
     });
@@ -144,7 +144,7 @@ function testEnvironmentVariables() {
 
 // Test 4: CORS configuration
 function testCORSConfiguration() {
-  return new Promise((resolve, reject) => {
+  return new Promise(_(resolve, _reject) => {
     console.log('\n✅ TEST 4: CORS configuration');
     console.log(`   Testing: OPTIONS request to http://${HOST}:${PORT}/api/status`);
 
@@ -177,7 +177,7 @@ function testCORSConfiguration() {
       }
     });
 
-    req.on('error', (error) => {
+    req.on('error', _(error) => {
       console.log(`   ❌ FAIL: ${error.message}`);
       resolve(false);
     });

@@ -1,5 +1,7 @@
 import EventEmitter from 'events';
 import redisCacheService from './redis-cache.js';
+import { logDebug, logInfo, logWarn, logError } from '../src/utils/logger';
+
 
 class EnterpriseMonitoringService extends EventEmitter {
   constructor() {
@@ -74,7 +76,7 @@ class EnterpriseMonitoringService extends EventEmitter {
     // Start monitoring loops
     this.startMonitoring();
     
-    console.log('Enterprise Monitoring: Service initialized');
+    logDebug('Enterprise Monitoring: Service initialized');
   }
 
   setupDefaultAlerts() {
@@ -175,31 +177,31 @@ class EnterpriseMonitoringService extends EventEmitter {
     this.isMonitoring = true;
     
     // High-frequency monitoring (every 30 seconds)
-    this.systemMonitoringInterval = setInterval(() => {
+    this.systemMonitoringInterval = setInterval(_() => {
       this.collectSystemMetrics();
       this.collectApplicationMetrics();
     }, 30000);
 
     // Medium-frequency monitoring (every 2 minutes)
-    this.businessMonitoringInterval = setInterval(() => {
+    this.businessMonitoringInterval = setInterval(_() => {
       this.collectBusinessMetrics();
       this.checkAlerts();
     }, 120000);
 
     // Low-frequency monitoring (every 10 minutes)
-    this.analyticsInterval = setInterval(() => {
+    this.analyticsInterval = setInterval(_() => {
       this.performAnomalyDetection();
       this.generateInsights();
       this.updateBaselines();
     }, 600000);
 
     // Reporting (every hour)
-    this.reportingInterval = setInterval(() => {
+    this.reportingInterval = setInterval(_() => {
       this.generateHourlyReport();
       this.cleanupOldMetrics();
     }, 3600000);
 
-    console.log('Enterprise Monitoring: All monitoring loops started');
+    logDebug('Enterprise Monitoring: All monitoring loops started');
   }
 
   async collectSystemMetrics() {
@@ -236,7 +238,7 @@ class EnterpriseMonitoringService extends EventEmitter {
       });
 
     } catch (error) {
-      console.error('Enterprise Monitoring: Failed to collect system metrics:', error);
+      logError('Enterprise Monitoring: Failed to collect system metrics:', error);
     }
   }
 
@@ -277,7 +279,7 @@ class EnterpriseMonitoringService extends EventEmitter {
       });
 
     } catch (error) {
-      console.error('Enterprise Monitoring: Failed to collect application metrics:', error);
+      logError('Enterprise Monitoring: Failed to collect application metrics:', error);
     }
   }
 
@@ -303,7 +305,7 @@ class EnterpriseMonitoringService extends EventEmitter {
       });
 
     } catch (error) {
-      console.error('Enterprise Monitoring: Failed to collect business metrics:', error);
+      logError('Enterprise Monitoring: Failed to collect business metrics:', error);
     }
   }
 
@@ -559,7 +561,7 @@ class EnterpriseMonitoringService extends EventEmitter {
           await this.resolveAlert(ruleName, rule);
         }
       } catch (error) {
-        console.error(`Enterprise Monitoring: Alert check failed for ${ruleName}:`, error);
+        logError(`Enterprise Monitoring: Alert check failed for ${ruleName}:`, error);
       }
     }
   }
@@ -604,7 +606,7 @@ class EnterpriseMonitoringService extends EventEmitter {
     // Emit alert event
     this.emit('alert:triggered', alert);
 
-    console.warn(`🚨 ALERT: ${alert.description} - Current value: ${value}, Threshold: ${rule.threshold}`);
+    logWarn(`🚨 ALERT: ${alert.description} - Current value: ${value}, Threshold: ${rule.threshold}`);
 
     // Send notifications based on severity
     if (rule.severity === 'critical') {
@@ -625,7 +627,7 @@ class EnterpriseMonitoringService extends EventEmitter {
     }
 
     rule.triggered = false;
-    console.log(`✅ ALERT RESOLVED: ${rule.description}`);
+    logDebug(`✅ ALERT RESOLVED: ${rule.description}`);
   }
 
   // Anomaly detection
@@ -638,7 +640,7 @@ class EnterpriseMonitoringService extends EventEmitter {
           await this.handleAnomalies(detectorName, anomalies);
         }
       } catch (error) {
-        console.error(`Enterprise Monitoring: Anomaly detection failed for ${detectorName}:`, error);
+        logError(`Enterprise Monitoring: Anomaly detection failed for ${detectorName}:`, error);
       }
     }
   }
@@ -688,7 +690,7 @@ class EnterpriseMonitoringService extends EventEmitter {
       this.alerts.set(alert.id, alert);
       this.emit('anomaly:detected', alert);
 
-      console.warn(`🔍 ANOMALY DETECTED in ${detectorName}:`, anomaly);
+      logWarn(`🔍 ANOMALY DETECTED in ${detectorName}:`, anomaly);
     }
   }
 
@@ -786,13 +788,13 @@ class EnterpriseMonitoringService extends EventEmitter {
       const key = `monitoring:${category}:${Date.now()}`;
       await redisCacheService.set(key, metrics, 3600); // 1 hour retention
     } catch (error) {
-      console.warn('Enterprise Monitoring: Failed to store metrics in cache:', error);
+      logWarn('Enterprise Monitoring: Failed to store metrics in cache:', error);
     }
   }
 
   async sendCriticalAlert(alert) {
     // Placeholder for critical alert notification system
-    console.error(`🚨 CRITICAL ALERT: ${alert.description}`);
+    logError(`🚨 CRITICAL ALERT: ${alert.description}`);
     
     // Would integrate with:
     // - PagerDuty
@@ -814,7 +816,7 @@ class EnterpriseMonitoringService extends EventEmitter {
     };
 
     this.reports.set(`hourly_${Date.now()}`, report);
-    console.log('Enterprise Monitoring: Hourly report generated');
+    logDebug('Enterprise Monitoring: Hourly report generated');
   }
 
   getBusinessMetricsSummary() {
@@ -967,7 +969,7 @@ class EnterpriseMonitoringService extends EventEmitter {
     if (this.analyticsInterval) clearInterval(this.analyticsInterval);
     if (this.reportingInterval) clearInterval(this.reportingInterval);
     
-    console.log('Enterprise Monitoring: Service shut down');
+    logDebug('Enterprise Monitoring: Service shut down');
   }
 }
 

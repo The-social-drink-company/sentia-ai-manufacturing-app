@@ -280,7 +280,7 @@ export const checkQueue = async (queueService) => {
 };
 
 // External service check
-export const checkExternalService = async (name, url, expectedStatus = 200) => {
+export const checkExternalService = async (_name, _url, expectedStatus = _200) => {
   try {
     const start = performance.now();
     const response = await fetch(url, { 

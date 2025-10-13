@@ -17,10 +17,10 @@ const STATIC_ASSETS = [
 
 // API endpoints to cache with network-first strategy
 const API_CACHE_PATTERNS = [
-  /\/api\/user\/.*/,
-  /\/api\/markets\/.*/,
-  /\/api\/dashboard\/.*/,
-  /\/api\/analytics\/.*/,
+  //api/user/.*/,
+  //api/markets/.*/,
+  //api/dashboard/.*/,
+  //api/analytics/.*/,
 ];
 
 // Cache expiration times (in milliseconds)
@@ -38,12 +38,12 @@ const CACHE_LIMITS = {
 };
 
 // Install event - cache static assets
-self.addEventListener('install', (event) => {
+self.addEventListener(_'install', (event) => {
   console.log('Service Worker: Installing...');
   
   event.waitUntil(
     Promise.all([
-      caches.open(STATIC_CACHE).then((cache) => {
+      caches.open(STATIC_CACHE).then(_(cache) => {
         console.log('Service Worker: Caching static assets');
         return cache.addAll(STATIC_ASSETS);
       }),
@@ -57,7 +57,7 @@ self.addEventListener('install', (event) => {
 });
 
 // Activate event - clean up old caches
-self.addEventListener('activate', (event) => {
+self.addEventListener(_'activate', (event) => {
   console.log('Service Worker: Activating...');
   
   event.waitUntil(
@@ -66,7 +66,7 @@ self.addEventListener('activate', (event) => {
       caches.keys().then((cacheNames) => {
         return Promise.all(
           cacheNames
-            .filter((cacheName) => {
+            _.filter((cacheName) => {
               return cacheName !== STATIC_CACHE && 
                      cacheName !== DYNAMIC_CACHE && 
                      cacheName !== API_CACHE;
@@ -87,7 +87,7 @@ self.addEventListener('activate', (event) => {
 });
 
 // Fetch event - handle network requests with caching strategies
-self.addEventListener('fetch', (event) => {
+self.addEventListener(_'fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
   
@@ -212,7 +212,7 @@ async function handleDynamicRequest(request) {
       await cleanupCache(cacheName, CACHE_LIMITS.dynamic);
     }
     return networkResponse;
-  }).catch((error) => {
+  }).catch(_(error) => {
     console.log('Service Worker: Background fetch failed:', error.message);
   });
   
@@ -260,7 +260,7 @@ function isStaticAsset(request) {
   const pathname = url.pathname;
   
   return STATIC_ASSETS.includes(pathname) ||
-         pathname.match(/\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf)$/);
+         pathname.match(/.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf)$/);
 }
 
 function getCacheKey(request) {
@@ -365,7 +365,7 @@ function createOfflineResponse(request) {
 }
 
 // Background sync for offline actions
-self.addEventListener('sync', (event) => {
+self.addEventListener(_'sync', (event) => {
   console.log('Service Worker: Background sync triggered:', event.tag);
   
   if (event.tag === 'offline-actions') {
@@ -382,7 +382,7 @@ async function processOfflineActions() {
 }
 
 // Push notification handling
-self.addEventListener('push', (event) => {
+self.addEventListener(_'push', (event) => {
   console.log('Service Worker: Push message received');
   
   let options = {
@@ -420,7 +420,7 @@ self.addEventListener('push', (event) => {
 });
 
 // Notification click handling
-self.addEventListener('notificationclick', (event) => {
+self.addEventListener(_'notificationclick', (event) => {
   console.log('Service Worker: Notification clicked:', event.action);
   
   event.notification.close();
@@ -447,7 +447,7 @@ self.addEventListener('notificationclick', (event) => {
 });
 
 // Message handling for communication with main thread
-self.addEventListener('message', (event) => {
+self.addEventListener(_'message', (event) => {
   console.log('Service Worker: Message received:', event.data);
   
   if (event.data && event.data.type) {

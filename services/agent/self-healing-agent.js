@@ -13,6 +13,8 @@ import EventEmitter from 'events';
 // Import our custom modules
 import TestDataFactory from '../../tests/autonomous/test-data-factory.js';
 import TestResultAnalyzer from '../../tests/autonomous/result-analyzer.js';
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+
 
 const execAsync = promisify(exec);
 
@@ -54,7 +56,7 @@ class SelfHealingAgent extends EventEmitter {
   }
 
   async initialize() {
-    console.log('🤖 INITIALIZING SELF-HEALING AUTONOMOUS AGENT');
+    logDebug('🤖 INITIALIZING SELF-HEALING AUTONOMOUS AGENT');
     
     // Create necessary directories
     this.ensureDirectories();
@@ -106,7 +108,7 @@ class SelfHealingAgent extends EventEmitter {
   setupSignalHandlers() {
     process.on('SIGINT', () => this.gracefulShutdown());
     process.on('SIGTERM', () => this.gracefulShutdown());
-    process.on('uncaughtException', (error) => {
+    process.on(_'uncaughtException', _(error) => {
       this.log(`Uncaught exception: ${error.message}`, 'error');
       this.gracefulShutdown();
     });
@@ -255,7 +257,7 @@ class SelfHealingAgent extends EventEmitter {
   }
 
   async runCommand(command, options = {}) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve, _reject) => {
       const startTime = Date.now();
       const timeout = options.timeout || 120000; // 2 minute default timeout
       
@@ -263,7 +265,7 @@ class SelfHealingAgent extends EventEmitter {
         cwd: process.cwd(),
         timeout,
         maxBuffer: 1024 * 1024 * 10 // 10MB buffer
-      }, (error, stdout, stderr) => {
+      }, (error, stdout, _stderr) => {
         const duration = Date.now() - startTime;
         
         if (error) {
@@ -536,8 +538,8 @@ class SelfHealingAgent extends EventEmitter {
       if (!content.includes('Error handling middleware')) {
         const errorHandler = `
 // Error handling middleware
-app.use((error, req, res, next) => {
-  console.error('Server error:', error);
+app.use(_(error, req, res, _next) => {
+  logError('Server error:', error);
   res.status(500).json({ 
     error: 'Internal server error',
     message: process.env.NODE_ENV === 'development' ? error.message : 'Something went wrong'
@@ -574,7 +576,7 @@ app.use((error, req, res, next) => {
       if (!content.includes('Catch all for SPA')) {
         const catchAll = `
 // Catch all for SPA (must be last)
-app.get('*', (req, res) => {
+app.get(_'*', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });`;
         
@@ -608,7 +610,7 @@ app.get('*', (req, res) => {
       
       // Update CORS configuration
       content = content.replace(
-        /cors\(\{[\s\S]*?\}\)/,
+        /cors(\{[\s\S]*?\})/,
         `cors({
   origin: ['http://localhost:3000', 'http://localhost:5000', 'https://web-production-1f10.up.railway.app'],
   credentials: true,
@@ -838,15 +840,15 @@ Co-Authored-By: Claude <noreply@anthropic.com>`;
   }
 
   async gracefulShutdown() {
-    console.log('\n🛑 Received shutdown signal - performing graceful shutdown...');
+    logDebug('\n🛑 Received shutdown signal - performing graceful shutdown...');
     
     if (this.state.currentFixes.size > 0) {
-      console.log('⏳ Waiting for current fixes to complete...');
+      logDebug('⏳ Waiting for current fixes to complete...');
       await this.waitForCurrentFixes();
     }
     
     await this.saveState();
-    console.log('✅ Shutdown complete');
+    logDebug('✅ Shutdown complete');
     process.exit(0);
   }
 
@@ -887,7 +889,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>`;
     };
 
     const color = colors[level] || colors.info;
-    console.log(`${color}[${timestamp}] [${level.toUpperCase()}] ${message}${colors.reset}`);
+    logDebug(`${color}[${timestamp}] [${level.toUpperCase()}] ${message}${colors.reset}`);
 
     this.emit('log', logEntry);
   }

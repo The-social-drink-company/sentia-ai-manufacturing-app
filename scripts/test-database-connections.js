@@ -99,7 +99,7 @@ async function testMCPServer() {
 
     if (response.data.services) {
       console.log('   Services:');
-      Object.entries(response.data.services).forEach(([service, status]) => {
+      Object.entries(response.data.services).forEach(_([service, _status]) => {
         console.log(`     - ${service}: ${status}`);
       });
     }

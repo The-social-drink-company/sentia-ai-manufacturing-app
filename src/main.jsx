@@ -1,87 +1,42 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
+import App from './App-simple-environment.jsx'
 
-// Simplified initialization
-console.log('Initializing Sentia Manufacturing Dashboard...');
-
-// Simple fallback App component
-const FallbackApp = () => {
-  console.log('[FallbackApp] Rendering...');
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
-      <div className="max-w-md w-full text-center">
-        <div className="bg-white shadow-xl rounded-lg p-8">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">
-            Sentia Manufacturing Dashboard
-          </h1>
-          <p className="text-gray-600 mb-6">
-            System Loading...
-          </p>
-          <a
-            href="/dashboard"
-            className="block w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            Continue to Dashboard
-          </a>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const initializeApp = async () => {
-  const rootElement = document.getElementById('root');
-  if (!rootElement) {
-    console.error('Root element not found');
-    document.body.innerHTML = '<div style="padding: 2rem; text-align: center; color: red;">Error: Root element not found</div>';
-    return;
-  }
-
-  console.log('Root element found, mounting React app...');
-
-  try {
-    console.log('[main.jsx] Creating React root...');
-    const root = createRoot(rootElement);
-    
-    // Try to load the full app
-    try {
-      console.log('[main.jsx] Loading App.jsx without authentication...');
-      const { default: App } = await import('./App.jsx');
-
-      console.log('[main.jsx] App loaded successfully, rendering...');
-      root.render(
-        <StrictMode>
-          <App />
-        </StrictMode>
-      );
-      console.log('[main.jsx] React app mounted successfully - No authentication required');
-    } catch (appError) {
-      console.error('[main.jsx] Failed to load App-multistage:', appError);
-      console.log('[main.jsx] Falling back to simple app...');
-      
-      root.render(
-        <StrictMode>
-          <FallbackApp />
-        </StrictMode>
-      );
-      console.log('[main.jsx] Fallback app mounted successfully');
-    }
-  } catch (error) {
-    console.error('[main.jsx] Critical error mounting React app:', error);
-    rootElement.innerHTML = '<div style="padding: 2rem; text-align: center; color: red;">Critical Error: ' + error.message + '</div>';
-  }
-};
-
-// Handle Service Worker errors
+// Global error handler
 window.addEventListener('error', (event) => {
-  console.error('[main.jsx] Global error:', event.error);
-});
+  console.error('[Global Error]', event.error)
+  showErrorFallback('JavaScript Error', event.error.message)
+})
 
 window.addEventListener('unhandledrejection', (event) => {
-  console.error('[main.jsx] Unhandled promise rejection:', event.reason);
-  // Don't prevent the default behavior, just log it
-});
+  console.error('[Unhandled Promise Rejection]', event.reason)
+  showErrorFallback('Promise Rejection', event.reason)
+})
 
-// Initialize app
-initializeApp();
+function showErrorFallback(title, message) {
+  const root = document.getElementById('root')
+  if (root && !root.innerHTML.includes('Configuration Error')) {
+    root.innerHTML = `
+      <div style="display: flex; min-height: 100vh; align-items: center; justify-content: center; background: #0f172a; color: #e2e8f0; font-family: system-ui;">
+        <div style="text-align: center; max-width: 600px; padding: 2rem;">
+          <h1 style="color: #ef4444; margin-bottom: 1rem;">${title}</h1>
+          <p style="margin-bottom: 1rem;">${message}</p>
+          <p style="font-size: 0.875rem; color: #94a3b8;">Check browser console for details.</p>
+          <button onclick="window.location.reload()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: #3b82f6; color: white; border: none; border-radius: 0.5rem; cursor: pointer;">Reload Page</button>
+        </div>
+      </div>
+    `
+  }
+}
+
+const rootElement = document.getElementById('root')
+if (!rootElement) {
+  throw new Error('Root element not found')
+}
+
+createRoot(rootElement).render(
+  <StrictMode>
+    <App />
+  </StrictMode>
+)

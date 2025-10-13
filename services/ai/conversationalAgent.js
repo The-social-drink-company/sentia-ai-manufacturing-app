@@ -188,7 +188,7 @@ class ConversationalManufacturingAgent extends EventEmitter {
     this.entityPatterns = {
       equipment: /(?:pump|motor|conveyor|compressor|machine|equipment)\s*[A-Z0-9_-]*/gi,
       sku: /SKU[\s\-_]?[A-Z0-9-]+/gi,
-      date: /(?:today|yesterday|tomorrow|\d{1,2}\/\d{1,2}\/\d{4}|\d{4}-\d{2}-\d{2})/gi,
+      date: /(?:today|yesterday|tomorrow|\d{1,2}/\d{1,2}/\d{4}|\d{4}-\d{2}-\d{2})/gi,
       timeframe: /(?:last|next|past)\s+(?:\d+\s+)?(?:day|week|month|year)s?/gi,
       metric: /(?:temperature|pressure|flow|vibration|speed|efficiency|oee|downtime)/gi,
       location: /(?:line|area|zone|facility|plant)\s*[A-Z0-9_-]*/gi
@@ -730,16 +730,16 @@ Provide a conversational, helpful response focusing on manufacturing operations,
    */
   setupEventHandlers() {
     // Handle maintenance alerts
-    this.predictiveMaintenance.on('anomalyDetected', (anomaly) => {
+    this.predictiveMaintenance.on(_'anomalyDetected', _(anomaly) => {
       this.broadcastAlert('anomaly', anomaly);
     });
 
-    this.predictiveMaintenance.on('maintenanceRequired', (data) => {
+    this.predictiveMaintenance.on(_'maintenanceRequired', _(data) => {
       this.broadcastAlert('maintenance_required', data);
     });
 
     // Handle MCP data updates
-    this.mcpServers.orchestrator.on('dataUpdated', (data) => {
+    this.mcpServers.orchestrator.on(_'dataUpdated', _(data) => {
       this.emit('dataUpdated', data);
     });
   }
@@ -833,7 +833,7 @@ Provide a conversational, helpful response focusing on manufacturing operations,
     const dates = [];
     const datePatterns = [
       /\b\d{4}-\d{2}-\d{2}\b/g,
-      /\b\d{1,2}\/\d{1,2}\/\d{4}\b/g,
+      /\b\d{1,2}/\d{1,2}/\d{4}\b/g,
       /\b(?:today|tomorrow|yesterday)\b/gi
     ];
 
@@ -846,7 +846,7 @@ Provide a conversational, helpful response focusing on manufacturing operations,
   }
 
   extractNumbers(input) {
-    const numberPattern = /\b\d+(?:\.\d+)?\b/g;
+    const numberPattern = /\b\d+(?:.\d+)?\b/g;
     return [...input.matchAll(numberPattern)].map(m => parseFloat(m[0]));
   }
 

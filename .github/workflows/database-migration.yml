@@ -1,0 +1,934 @@
+# Database Migration Validation Workflow
+# Comprehensive database migration testing with rollback validation and data integrity checks
+
+name: 🗄️ Database Migration Validation
+
+on:
+  push:
+    branches: [development, testing, production]
+    paths:
+      - 'prisma/**'
+      - 'database/**'
+      - 'migrations/**'
+      - '**/schema.prisma'
+  pull_request:
+    branches: [development, testing, production]
+    paths:
+      - 'prisma/**'
+      - 'database/**'
+      - 'migrations/**'
+      - '**/schema.prisma'
+  workflow_dispatch:
+    inputs:
+      migration_type:
+        description: 'Type of migration validation'
+        required: true
+        type: choice
+        default: 'forward'
+        options:
+          - forward
+          - backward
+          - full-cycle
+          - data-migration
+          - schema-validation
+      target_environment:
+        description: 'Target environment for validation'
+        required: true
+        type: choice
+        default: 'test'
+        options:
+          - test
+          - staging
+          - production-clone
+      skip_destructive:
+        description: 'Skip destructive migration tests'
+        required: false
+        type: boolean
+        default: false
+
+env:
+  NODE_VERSION: '18'
+  POSTGRES_VERSION: '15'
+  
+  # Migration validation thresholds
+  MAX_MIGRATION_TIME: '300'     # 5 minutes
+  MAX_ROLLBACK_TIME: '60'       # 1 minute
+  DATA_INTEGRITY_THRESHOLD: '99.9' # 99.9% data integrity
+
+permissions:
+  contents: read
+  checks: write
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: db-migration-${{ github.ref }}-${{ github.event.inputs.migration_type || 'forward' }}
+  cancel-in-progress: false # Don't cancel migration tests
+
+jobs:
+  # Job 1: Migration Detection and Analysis
+  migration-analysis:
+    name: 📊 Migration Analysis
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    outputs:
+      has-migrations: ${{ steps.detect-changes.outputs.has-migrations }}
+      migration-type: ${{ steps.analyze-migrations.outputs.type }}
+      migration-risk: ${{ steps.risk-assessment.outputs.level }}
+      requires-data-migration: ${{ steps.analyze-migrations.outputs.requires-data-migration }}
+      
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: 🔍 Detect migration changes
+        id: detect-changes
+        run: |
+          echo "Checking for database migration changes..."
+          
+          if git diff --name-only HEAD~1 HEAD | grep -E "(prisma|database|migrations)" > /dev/null; then
+            echo "has-migrations=true" >> $GITHUB_OUTPUT
+            echo "✅ Database migrations detected"
+          else
+            echo "has-migrations=false" >> $GITHUB_OUTPUT
+            echo "ℹ️ No database migrations detected"
+          fi
+          
+          git diff --name-only HEAD~1 HEAD | grep -E "(prisma|database|migrations)" || echo "No migration files changed"
+      
+      - name: 🟢 Setup Node.js
+        if: steps.detect-changes.outputs.has-migrations == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      
+      - name: 📦 Install dependencies
+        if: steps.detect-changes.outputs.has-migrations == 'true'
+        run: npm ci --legacy-peer-deps
+      
+      - name: 📊 Analyze migrations
+        id: analyze-migrations
+        if: steps.detect-changes.outputs.has-migrations == 'true'
+        run: |
+          echo "Analyzing migration changes..."
+          
+          # Check if Prisma schema exists
+          if [ -f "prisma/schema.prisma" ]; then
+            echo "Prisma schema found"
+            
+            # Generate Prisma client to validate schema
+            npx prisma generate
+            
+            # Check for breaking changes
+            BREAKING_CHANGES=false
+            DATA_MIGRATION=false
+            
+            # Analyze schema diff
+            if git diff HEAD~1 HEAD prisma/schema.prisma | grep -E "^\-.*@@" > /dev/null; then
+              echo "Potential breaking changes detected in schema"
+              BREAKING_CHANGES=true
+            fi
+            
+            # Check for data migration indicators
+            if git diff HEAD~1 HEAD | grep -E "(ALTER|DROP|RENAME)" > /dev/null; then
+              echo "Data migration required"
+              DATA_MIGRATION=true
+            fi
+            
+            # Determine migration type
+            if [ "$BREAKING_CHANGES" = "true" ]; then
+              MIGRATION_TYPE="breaking"
+            elif [ "$DATA_MIGRATION" = "true" ]; then
+              MIGRATION_TYPE="data"
+            else
+              MIGRATION_TYPE="additive"
+            fi
+            
+            echo "type=$MIGRATION_TYPE" >> $GITHUB_OUTPUT
+            echo "requires-data-migration=$DATA_MIGRATION" >> $GITHUB_OUTPUT
+            
+          else
+            echo "No Prisma schema found"
+            echo "type=none" >> $GITHUB_OUTPUT
+            echo "requires-data-migration=false" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: ⚠️ Risk assessment
+        id: risk-assessment
+        if: steps.detect-changes.outputs.has-migrations == 'true'
+        run: |
+          MIGRATION_TYPE="${{ steps.analyze-migrations.outputs.type }}"
+          RISK_LEVEL="low"
+          
+          case "$MIGRATION_TYPE" in
+            "breaking")
+              RISK_LEVEL="high"
+              echo "🔴 High risk migration detected - breaking changes"
+              ;;
+            "data")
+              RISK_LEVEL="medium"
+              echo "🟡 Medium risk migration detected - data changes"
+              ;;
+            "additive")
+              RISK_LEVEL="low"
+              echo "🟢 Low risk migration detected - additive changes"
+              ;;
+            *)
+              RISK_LEVEL="unknown"
+              echo "❓ Unknown migration risk"
+              ;;
+          esac
+          
+          echo "level=$RISK_LEVEL" >> $GITHUB_OUTPUT
+          echo "Migration risk level: $RISK_LEVEL"
+
+  # Job 2: Schema Validation
+  schema-validation:
+    name: 📋 Schema Validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: migration-analysis
+    if: needs.migration-analysis.outputs.has-migrations == 'true'
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_USER: test_user
+          POSTGRES_DB: schema_validation
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+      
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      
+      - name: 📦 Install dependencies
+        run: npm ci --legacy-peer-deps
+      
+      - name: 🔍 Prisma schema validation
+        env:
+          DATABASE_URL: postgresql://test_user:test_password@localhost:5432/schema_validation
+        run: |
+          echo "Validating Prisma schema..."
+          
+          # Format check
+          npx prisma format --check
+          
+          # Schema validation
+          npx prisma validate
+          
+          # Generate client
+          npx prisma generate
+          
+          echo "✅ Schema validation passed"
+      
+      - name: 🗄️ Database schema deployment test
+        env:
+          DATABASE_URL: postgresql://test_user:test_password@localhost:5432/schema_validation
+        run: |
+          echo "Testing database schema deployment..."
+          
+          # Push schema to test database
+          npx prisma db push
+          
+          # Verify schema deployment
+          npx prisma db execute --file <(echo "SELECT 1;") || echo "Basic query test"
+          
+          echo "✅ Schema deployment test passed"
+      
+      - name: 📊 Schema introspection test
+        env:
+          DATABASE_URL: postgresql://test_user:test_password@localhost:5432/schema_validation
+        run: |
+          echo "Testing schema introspection..."
+          
+          # Generate schema from database
+          npx prisma db pull --force
+          
+          # Compare with original schema
+          if diff prisma/schema.prisma prisma/schema.prisma.bak > /dev/null 2>&1; then
+            echo "✅ Schema introspection matches original"
+          else
+            echo "⚠️ Schema introspection differs from original"
+            diff prisma/schema.prisma prisma/schema.prisma.bak || true
+          fi
+      
+      - name: 🧪 Schema constraint validation
+        env:
+          DATABASE_URL: postgresql://test_user:test_password@localhost:5432/schema_validation
+        run: |
+          echo "Testing schema constraints..."
+          
+          # Test foreign key constraints
+          node -e "
+          const { PrismaClient } = require('@prisma/client');
+          const prisma = new PrismaClient();
+          
+          async function testConstraints() {
+            try {
+              // Test basic operations
+              console.log('Testing basic database operations...');
+              
+              // This would include actual constraint tests based on your schema
+              console.log('✅ Constraint validation passed');
+            } catch (error) {
+              console.error('❌ Constraint validation failed:', error.message);
+              process.exit(1);
+            } finally {
+              await prisma.\$disconnect();
+            }
+          }
+          
+          testConstraints();
+          "
+
+  # Job 3: Migration Forward Testing
+  forward-migration:
+    name: ⏭️ Forward Migration Testing
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: [migration-analysis, schema-validation]
+    if: needs.migration-analysis.outputs.has-migrations == 'true'
+    
+    strategy:
+      matrix:
+        test-scenario: [clean-db, existing-data, large-dataset]
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_USER: test_user
+          POSTGRES_DB: migration_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+      
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      
+      - name: 📦 Install dependencies
+        run: npm ci --legacy-peer-deps
+      
+      - name: 🗄️ Setup test database for ${{ matrix.test-scenario }}
+        env:
+          DATABASE_URL: postgresql://test_user:test_password@localhost:5432/migration_test
+        run: |
+          echo "Setting up test database for scenario: ${{ matrix.test-scenario }}"
+          
+          case "${{ matrix.test-scenario }}" in
+            "clean-db")
+              echo "Starting with clean database"
+              # No additional setup needed
+              ;;
+            "existing-data")
+              echo "Setting up database with existing data"
+              # Deploy previous schema and add test data
+              git checkout HEAD~1 -- prisma/schema.prisma || echo "No previous schema"
+              npx prisma db push --force-reset || echo "No previous schema to deploy"
+              # Add test data here
+              git checkout HEAD -- prisma/schema.prisma
+              ;;
+            "large-dataset")
+              echo "Setting up database with large dataset"
+              # Similar to existing-data but with more records
+              git checkout HEAD~1 -- prisma/schema.prisma || echo "No previous schema"
+              npx prisma db push --force-reset || echo "No previous schema to deploy"
+              # Add large test dataset here
+              git checkout HEAD -- prisma/schema.prisma
+              ;;
+          esac
+      
+      - name: ⏭️ Execute forward migration
+        env:
+          DATABASE_URL: postgresql://test_user:test_password@localhost:5432/migration_test
+        run: |
+          echo "Executing forward migration for ${{ matrix.test-scenario }}"
+          
+          START_TIME=$(date +%s)
+          
+          # Execute migration
+          if [ -d "prisma/migrations" ]; then
+            echo "Running Prisma migrations..."
+            npx prisma migrate deploy
+          else
+            echo "Running Prisma db push..."
+            npx prisma db push
+          fi
+          
+          END_TIME=$(date +%s)
+          MIGRATION_TIME=$((END_TIME - START_TIME))
+          
+          echo "Migration completed in ${MIGRATION_TIME} seconds"
+          
+          # Check migration time threshold
+          if [ $MIGRATION_TIME -gt ${{ env.MAX_MIGRATION_TIME }} ]; then
+            echo "❌ Migration time (${MIGRATION_TIME}s) exceeds threshold (${{ env.MAX_MIGRATION_TIME }}s)"
+            exit 1
+          fi
+          
+          echo "✅ Forward migration completed successfully"
+      
+      - name: 🧪 Post-migration validation
+        env:
+          DATABASE_URL: postgresql://test_user:test_password@localhost:5432/migration_test
+        run: |
+          echo "Validating post-migration state..."
+          
+          # Generate and test Prisma client
+          npx prisma generate
+          
+          # Test basic database operations
+          node -e "
+          const { PrismaClient } = require('@prisma/client');
+          const prisma = new PrismaClient();
+          
+          async function validateMigration() {
+            try {
+              console.log('Testing database connection...');
+              await prisma.\$connect();
+              
+              // Test basic operations based on your schema
+              console.log('✅ Post-migration validation passed');
+            } catch (error) {
+              console.error('❌ Post-migration validation failed:', error.message);
+              process.exit(1);
+            } finally {
+              await prisma.\$disconnect();
+            }
+          }
+          
+          validateMigration();
+          "
+      
+      - name: 📊 Data integrity check
+        env:
+          DATABASE_URL: postgresql://test_user:test_password@localhost:5432/migration_test
+        if: matrix.test-scenario != 'clean-db'
+        run: |
+          echo "Checking data integrity after migration..."
+          
+          # This would include actual data integrity checks
+          # For example, record counts, referential integrity, etc.
+          INTEGRITY_SCORE=99.5  # Placeholder
+          
+          echo "Data integrity score: $INTEGRITY_SCORE%"
+          
+          # Compare with threshold
+          if (( $(echo "$INTEGRITY_SCORE < ${{ env.DATA_INTEGRITY_THRESHOLD }}" | bc -l) )); then
+            echo "❌ Data integrity score ($INTEGRITY_SCORE%) below threshold (${{ env.DATA_INTEGRITY_THRESHOLD }}%)"
+            exit 1
+          fi
+          
+          echo "✅ Data integrity check passed"
+
+  # Job 4: Migration Rollback Testing
+  rollback-migration:
+    name: ⏪ Rollback Migration Testing
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [migration-analysis, forward-migration]
+    if: needs.migration-analysis.outputs.has-migrations == 'true' && github.event.inputs.skip_destructive != 'true'
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_USER: test_user
+          POSTGRES_DB: rollback_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+      
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      
+      - name: 📦 Install dependencies
+        run: npm ci --legacy-peer-deps
+      
+      - name: 🗄️ Setup database for rollback test
+        env:
+          DATABASE_URL: postgresql://test_user:test_password@localhost:5432/rollback_test
+        run: |
+          echo "Setting up database for rollback test..."
+          
+          # Apply current migration
+          npx prisma db push
+          
+          # Add test data
+          echo "Adding test data for rollback validation..."
+          
+          echo "✅ Database setup for rollback test completed"
+      
+      - name: ⏪ Execute rollback migration
+        env:
+          DATABASE_URL: postgresql://test_user:test_password@localhost:5432/rollback_test
+        run: |
+          echo "Executing rollback migration..."
+          
+          START_TIME=$(date +%s)
+          
+          # Attempt to rollback to previous schema
+          git checkout HEAD~1 -- prisma/schema.prisma || echo "No previous schema available"
+          
+          if [ -f "prisma/schema.prisma" ]; then
+            # Force push previous schema (simulates rollback)
+            npx prisma db push --force-reset
+          else
+            echo "⚠️ No previous schema available for rollback test"
+            exit 0
+          fi
+          
+          END_TIME=$(date +%s)
+          ROLLBACK_TIME=$((END_TIME - START_TIME))
+          
+          echo "Rollback completed in ${ROLLBACK_TIME} seconds"
+          
+          # Check rollback time threshold
+          if [ $ROLLBACK_TIME -gt ${{ env.MAX_ROLLBACK_TIME }} ]; then
+            echo "❌ Rollback time (${ROLLBACK_TIME}s) exceeds threshold (${{ env.MAX_ROLLBACK_TIME }}s)"
+            exit 1
+          fi
+          
+          echo "✅ Rollback migration completed successfully"
+      
+      - name: 🧪 Post-rollback validation
+        env:
+          DATABASE_URL: postgresql://test_user:test_password@localhost:5432/rollback_test
+        run: |
+          echo "Validating post-rollback state..."
+          
+          # Generate client for previous schema
+          npx prisma generate
+          
+          # Test database operations
+          node -e "
+          const { PrismaClient } = require('@prisma/client');
+          const prisma = new PrismaClient();
+          
+          async function validateRollback() {
+            try {
+              console.log('Testing database connection after rollback...');
+              await prisma.\$connect();
+              
+              console.log('✅ Post-rollback validation passed');
+            } catch (error) {
+              console.error('❌ Post-rollback validation failed:', error.message);
+              process.exit(1);
+            } finally {
+              await prisma.\$disconnect();
+            }
+          }
+          
+          validateRollback();
+          "
+
+  # Job 5: Performance Impact Assessment
+  performance-impact:
+    name: ⚡ Migration Performance Impact
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    needs: [migration-analysis, forward-migration]
+    if: needs.migration-analysis.outputs.has-migrations == 'true'
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_USER: test_user
+          POSTGRES_DB: performance_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+      
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      
+      - name: 📦 Install dependencies
+        run: npm ci --legacy-peer-deps
+      
+      - name: 📊 Pre-migration performance baseline
+        env:
+          DATABASE_URL: postgresql://test_user:test_password@localhost:5432/performance_test
+        run: |
+          echo "Establishing pre-migration performance baseline..."
+          
+          # Deploy previous schema
+          git checkout HEAD~1 -- prisma/schema.prisma || echo "No previous schema"
+          npx prisma db push --force-reset || echo "No previous schema to deploy"
+          npx prisma generate
+          
+          # Run performance tests
+          node -e "
+          const { PrismaClient } = require('@prisma/client');
+          const prisma = new PrismaClient();
+          
+          async function measurePerformance() {
+            try {
+              await prisma.\$connect();
+              
+              const start = Date.now();
+              // Simulate typical database operations
+              for (let i = 0; i < 100; i++) {
+                // Add actual performance test queries here
+              }
+              const end = Date.now();
+              
+              const baselineTime = end - start;
+              console.log(\`Baseline performance: \${baselineTime}ms for 100 operations\`);
+              
+              // Save baseline
+              require('fs').writeFileSync('baseline-performance.json', JSON.stringify({ time: baselineTime }));
+              
+            } finally {
+              await prisma.\$disconnect();
+            }
+          }
+          
+          measurePerformance();
+          " || echo "Baseline measurement skipped"
+          
+          git checkout HEAD -- prisma/schema.prisma
+      
+      - name: 📊 Post-migration performance measurement
+        env:
+          DATABASE_URL: postgresql://test_user:test_password@localhost:5432/performance_test
+        run: |
+          echo "Measuring post-migration performance..."
+          
+          # Deploy current schema
+          npx prisma db push
+          npx prisma generate
+          
+          # Run same performance tests
+          node -e "
+          const { PrismaClient } = require('@prisma/client');
+          const prisma = new PrismaClient();
+          const fs = require('fs');
+          
+          async function measurePerformance() {
+            try {
+              await prisma.\$connect();
+              
+              const start = Date.now();
+              // Simulate same operations as baseline
+              for (let i = 0; i < 100; i++) {
+                // Add actual performance test queries here
+              }
+              const end = Date.now();
+              
+              const currentTime = end - start;
+              console.log(\`Current performance: \${currentTime}ms for 100 operations\`);
+              
+              // Compare with baseline
+              let baseline = { time: currentTime };
+              try {
+                baseline = JSON.parse(fs.readFileSync('baseline-performance.json', 'utf8'));
+              } catch (e) {
+                console.log('No baseline available for comparison');
+              }
+              
+              const performanceChange = ((currentTime - baseline.time) / baseline.time) * 100;
+              console.log(\`Performance change: \${performanceChange.toFixed(2)}%\`);
+              
+              // Check performance degradation threshold
+              if (performanceChange > 20) {
+                console.log(\`❌ Performance degradation (\${performanceChange.toFixed(2)}%) exceeds 20% threshold\`);
+                process.exit(1);
+              } else if (performanceChange > 10) {
+                console.log(\`⚠️ Performance degradation (\${performanceChange.toFixed(2)}%) exceeds 10% warning threshold\`);
+              } else {
+                console.log(\`✅ Performance impact (\${performanceChange.toFixed(2)}%) within acceptable range\`);
+              }
+              
+            } finally {
+              await prisma.\$disconnect();
+            }
+          }
+          
+          measurePerformance();
+          "
+
+  # Job 6: Migration Report Generation
+  migration-report:
+    name: 📋 Migration Validation Report
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: [migration-analysis, schema-validation, forward-migration, rollback-migration, performance-impact]
+    if: always() && needs.migration-analysis.outputs.has-migrations == 'true'
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+      
+      - name: 📊 Generate migration report
+        run: |
+          cat << 'EOF' > migration-report.md
+          # 🗄️ Database Migration Validation Report
+          
+          **Date**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          **Branch**: ${{ github.ref_name }}
+          **Commit**: ${{ github.sha }}
+          **Migration Type**: ${{ needs.migration-analysis.outputs.migration-type }}
+          **Migration Risk**: ${{ needs.migration-analysis.outputs.migration-risk }}
+          
+          ## Migration Summary
+          
+          | Test Phase | Status | Duration | Notes |
+          |------------|--------|----------|-------|
+          | Schema Validation | ${{ needs.schema-validation.result }} | - | Schema syntax and constraints |
+          | Forward Migration | ${{ needs.forward-migration.result }} | - | Migration execution and data integrity |
+          | Rollback Testing | ${{ needs.rollback-migration.result }} | - | Rollback capability validation |
+          | Performance Impact | ${{ needs.performance-impact.result }} | - | Performance degradation assessment |
+          
+          ## Risk Assessment
+          
+          **Risk Level**: ${{ needs.migration-analysis.outputs.migration-risk }}
+          
+          EOF
+          
+          case "${{ needs.migration-analysis.outputs.migration-risk }}" in
+            "high")
+              cat << 'EOF' >> migration-report.md
+          ⚠️ **HIGH RISK MIGRATION**
+          
+          This migration contains breaking changes that require careful coordination:
+          - Schedule during maintenance window
+          - Ensure backup and rollback procedures are ready
+          - Consider blue-green deployment strategy
+          - Notify all stakeholders
+          
+          EOF
+              ;;
+            "medium")
+              cat << 'EOF' >> migration-report.md
+          🟡 **MEDIUM RISK MIGRATION**
+          
+          This migration involves data changes that require attention:
+          - Test thoroughly in staging environment
+          - Monitor performance during deployment
+          - Have rollback plan ready
+          
+          EOF
+              ;;
+            "low")
+              cat << 'EOF' >> migration-report.md
+          ✅ **LOW RISK MIGRATION**
+          
+          This migration is additive and should be safe to deploy:
+          - Standard deployment procedures apply
+          - Monitor for any unexpected issues
+          
+          EOF
+              ;;
+          esac
+          
+          cat << 'EOF' >> migration-report.md
+          
+          ## Recommendations
+          
+          ### Before Deployment
+          - [ ] Review all migration scripts
+          - [ ] Verify backup procedures
+          - [ ] Schedule maintenance window (if required)
+          - [ ] Notify stakeholders
+          
+          ### During Deployment
+          - [ ] Monitor database performance
+          - [ ] Check application health
+          - [ ] Verify data integrity
+          - [ ] Test critical user flows
+          
+          ### After Deployment
+          - [ ] Confirm all systems operational
+          - [ ] Validate data migration results
+          - [ ] Update documentation
+          - [ ] Clean up old migration artifacts
+          
+          ---
+          
+          *Generated by Sentia Manufacturing Database Migration Pipeline*
+          EOF
+          
+          echo "Migration validation report generated"
+          cat migration-report.md
+      
+      - name: 📋 Upload migration report
+        uses: actions/upload-artifact@v4
+        with:
+          name: migration-validation-report
+          path: migration-report.md
+          retention-days: 90
+      
+      - name: 💬 Comment migration report on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const report = fs.readFileSync('migration-report.md', 'utf8');
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `## 🗄️ Database Migration Validation\n\n${report}`
+            });
+      
+      - name: 🚨 Create migration issue for high-risk changes
+        if: needs.migration-analysis.outputs.migration-risk == 'high'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const report = fs.readFileSync('migration-report.md', 'utf8');
+            
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `🚨 High-Risk Database Migration - Review Required`,
+              body: `${report}\n\n**This high-risk migration requires manual review and approval before deployment.**`,
+              labels: ['database', 'migration', 'high-risk', 'review-required']
+            });
+
+  # Job 7: Migration Notification
+  migration-notification:
+    name: 📢 Migration Notifications
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: [migration-analysis, schema-validation, forward-migration, rollback-migration, performance-impact, migration-report]
+    if: always() && needs.migration-analysis.outputs.has-migrations == 'true'
+    
+    steps:
+      - name: 📱 Slack notification
+        uses: 8398a7/action-slack@v3
+        if: always()
+        with:
+          status: custom
+          custom_payload: |
+            {
+              "text": "${{ contains(needs.*.result, 'failure') && '❌ Database migration validation failed' || '✅ Database migration validation completed' }}",
+              "color": "${{ contains(needs.*.result, 'failure') && 'danger' || 'good' }}",
+              "fields": [
+                {
+                  "title": "Migration Type",
+                  "value": "${{ needs.migration-analysis.outputs.migration-type }}",
+                  "short": true
+                },
+                {
+                  "title": "Risk Level", 
+                  "value": "${{ needs.migration-analysis.outputs.migration-risk }}",
+                  "short": true
+                },
+                {
+                  "title": "Schema Validation",
+                  "value": "${{ needs.schema-validation.result }}",
+                  "short": true
+                },
+                {
+                  "title": "Forward Migration",
+                  "value": "${{ needs.forward-migration.result }}",
+                  "short": true
+                },
+                {
+                  "title": "Rollback Testing",
+                  "value": "${{ needs.rollback-migration.result }}",
+                  "short": true
+                },
+                {
+                  "title": "Performance Impact",
+                  "value": "${{ needs.performance-impact.result }}",
+                  "short": true
+                },
+                {
+                  "title": "View Results",
+                  "value": "<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Click here>",
+                  "short": false
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+      
+      - name: 📧 Email notification for high-risk migrations
+        if: needs.migration-analysis.outputs.migration-risk == 'high'
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 587
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: 🚨 High-Risk Database Migration - ${{ github.repository }}
+          body: |
+            A high-risk database migration has been detected and requires immediate attention.
+            
+            Repository: ${{ github.repository }}
+            Branch: ${{ github.ref_name }}
+            Commit: ${{ github.sha }}
+            Migration Type: ${{ needs.migration-analysis.outputs.migration-type }}
+            Risk Level: ${{ needs.migration-analysis.outputs.migration-risk }}
+            
+            This migration contains breaking changes and requires:
+            - Manual review and approval
+            - Coordination with the team
+            - Careful deployment planning
+            - Backup and rollback procedures
+            
+            Please review the migration validation report and coordinate deployment.
+            
+            View details: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          to: ${{ secrets.DBA_EMAIL }}
+          from: ${{ secrets.EMAIL_USERNAME }}

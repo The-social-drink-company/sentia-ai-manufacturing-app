@@ -5,7 +5,7 @@ import express from 'express';
 const router = express.Router();
 
 // Simplified admin middleware for Railway deployment compatibility
-const adminMiddleware = async (req, res, next) => {
+const adminMiddleware = async (req, res, _next) => {
   try {
     // For Railway deployment, use simplified authentication check
     // In production, this would integrate with Clerk properly
@@ -33,7 +33,7 @@ const adminMiddleware = async (req, res, next) => {
  * Get All Users
  * GET /api/admin/users
  */
-router.get('/users', adminMiddleware, async (req, res) => {
+router.get(_'/users', adminMiddleware, async _(req, res) => {
   try {
     const { limit = 50, offset = 0 } = req.query;
     
@@ -186,7 +186,7 @@ router.get('/users', adminMiddleware, async (req, res) => {
  * Get User by ID
  * GET /api/admin/users/:userId
  */
-router.get('/users/:userId', adminMiddleware, async (req, res) => {
+router.get(_'/users/:userId', adminMiddleware, async _(req, res) => {
   try {
     const { userId } = req.params;
     
@@ -214,7 +214,7 @@ router.get('/users/:userId', adminMiddleware, async (req, res) => {
  * Approve User
  * POST /api/admin/users/:userId/approve
  */
-router.post('/users/:userId/approve', adminMiddleware, async (req, res) => {
+router.post(_'/users/:userId/approve', adminMiddleware, async _(req, res) => {
   try {
     const { userId } = req.params;
     
@@ -242,7 +242,7 @@ router.post('/users/:userId/approve', adminMiddleware, async (req, res) => {
  * Revoke User Access
  * POST /api/admin/users/:userId/revoke
  */
-router.post('/users/:userId/revoke', adminMiddleware, async (req, res) => {
+router.post(_'/users/:userId/revoke', adminMiddleware, async _(req, res) => {
   try {
     const { userId } = req.params;
     
@@ -270,7 +270,7 @@ router.post('/users/:userId/revoke', adminMiddleware, async (req, res) => {
  * Update User Role
  * POST /api/admin/users/:userId/role
  */
-router.post('/users/:userId/role', adminMiddleware, async (req, res) => {
+router.post(_'/users/:userId/role', adminMiddleware, async _(req, res) => {
   try {
     const { userId } = req.params;
     const { role } = req.body;
@@ -305,7 +305,7 @@ router.post('/users/:userId/role', adminMiddleware, async (req, res) => {
  * Delete User
  * DELETE /api/admin/users/:userId
  */
-router.delete('/users/:userId', adminMiddleware, async (req, res) => {
+router.delete(_'/users/:userId', adminMiddleware, async _(req, res) => {
   try {
     const { userId } = req.params;
     
@@ -329,7 +329,7 @@ router.delete('/users/:userId', adminMiddleware, async (req, res) => {
  * Send User Invitation
  * POST /api/admin/invite
  */
-router.post('/invite', adminMiddleware, async (req, res) => {
+router.post(_'/invite', adminMiddleware, async _(req, res) => {
   try {
     const { email, role = 'user' } = req.body;
     
@@ -374,7 +374,7 @@ router.post('/invite', adminMiddleware, async (req, res) => {
  * Get All Invitations
  * GET /api/admin/invitations
  */
-router.get('/invitations', adminMiddleware, async (req, res) => {
+router.get(_'/invitations', adminMiddleware, async _(req, res) => {
   try {
     // Demo invitations for Railway deployment
     const invitations = [
@@ -403,7 +403,7 @@ router.get('/invitations', adminMiddleware, async (req, res) => {
  * Delete Invitation
  * DELETE /api/admin/invitations/:invitationId
  */
-router.delete('/invitations/:invitationId', adminMiddleware, async (req, res) => {
+router.delete(_'/invitations/:invitationId', adminMiddleware, async _(req, res) => {
   try {
     const { invitationId } = req.params;
     
@@ -427,7 +427,7 @@ router.delete('/invitations/:invitationId', adminMiddleware, async (req, res) =>
  * Get Admin Stats
  * GET /api/admin/stats
  */
-router.get('/stats', adminMiddleware, async (req, res) => {
+router.get(_'/stats', adminMiddleware, async _(req, res) => {
   try {
     // Demo stats for Railway deployment
     const stats = {

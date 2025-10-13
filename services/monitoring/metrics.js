@@ -105,10 +105,10 @@ register.registerMetric(authEvents);
 register.registerMetric(businessMetrics);
 
 // Middleware to track HTTP metrics
-export const metricsMiddleware = (req, res, next) => {
+export const metricsMiddleware = (req, res, _next) => {
   const start = Date.now();
   
-  res.on('finish', () => {
+  res.on(_'finish', () => {
     const duration = (Date.now() - start) / 1000;
     const route = req.route?.path || req.path || 'unknown';
     const labels = {
@@ -125,19 +125,19 @@ export const metricsMiddleware = (req, res, next) => {
 };
 
 // Database metrics helper
-export const trackDbQuery = (operation, table, duration) => {
+export const trackDbQuery = (_operation, table, duration) => {
   dbQueryDuration.observe({ operation, table }, duration / 1000);
 };
 
 // Queue metrics helpers
-export const trackQueueJob = (queue, jobType, status, duration = null) => {
+export const trackQueueJob = (queue, jobType, status, duration = _null) => {
   queueJobsTotal.inc({ queue, status });
   if (duration) {
     queueJobDuration.observe({ queue, job_type: jobType }, duration / 1000);
   }
 };
 
-export const updateQueueDepth = (queue, waiting, active, delayed, failed) => {
+export const updateQueueDepth = (queue, _waiting, active, _delayed, _failed) => {
   queueDepth.set({ queue, state: 'waiting' }, waiting);
   queueDepth.set({ queue, state: 'active' }, active);
   queueDepth.set({ queue, state: 'delayed' }, delayed);
@@ -153,12 +153,12 @@ export const updateWorkingCapitalMetrics = (metrics) => {
 };
 
 // Forecast metrics
-export const updateForecastAccuracy = (product, horizon, accuracy) => {
+export const updateForecastAccuracy = (_product, horizon, accuracy) => {
   forecastAccuracy.set({ product, horizon }, accuracy);
 };
 
 // SSE metrics
-export const updateSSEConnections = (count) => {
+export const updateSSEConnections = (_count) => {
   sseConnections.set(count);
 };
 

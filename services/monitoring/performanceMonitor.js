@@ -1,6 +1,8 @@
 import EventEmitter from 'events';
 import os from 'os';
 import process from 'process';
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+
 
 /**
  * Enterprise Performance Monitoring System
@@ -120,7 +122,7 @@ export class EnterprisePerformanceMonitor extends EventEmitter {
       this.cleanupOldMetrics();
     }, 60000); // Every minute
 
-    console.log('🔍 Performance monitoring started');
+    logDebug('🔍 Performance monitoring started');
   }
 
   /**
@@ -149,7 +151,7 @@ export class EnterprisePerformanceMonitor extends EventEmitter {
 
       this.emit('systemMetrics', systemMetrics);
     } catch (error) {
-      console.error('Error collecting system metrics:', error);
+      logError('Error collecting system metrics:', error);
     }
   }
 
@@ -181,7 +183,7 @@ export class EnterprisePerformanceMonitor extends EventEmitter {
 
       this.emit('applicationMetrics', applicationMetrics);
     } catch (error) {
-      console.error('Error collecting application metrics:', error);
+      logError('Error collecting application metrics:', error);
     }
   }
 
@@ -202,7 +204,7 @@ export class EnterprisePerformanceMonitor extends EventEmitter {
       this.addMetric('business', businessMetrics);
       this.emit('businessMetrics', businessMetrics);
     } catch (error) {
-      console.error('Error collecting business metrics:', error);
+      logError('Error collecting business metrics:', error);
     }
   }
 
@@ -296,11 +298,11 @@ export class EnterprisePerformanceMonitor extends EventEmitter {
       return { avg: 0, p50: 0, p95: 0, p99: 0, min: 0, max: 0 };
     }
 
-    const sorted = [...times].sort((a, b) => a - b);
+    const sorted = [...times].sort((a, _b) => a - b);
     const len = sorted.length;
 
     return {
-      avg: times.reduce((a, b) => a + b, 0) / len,
+      avg: times.reduce((a, _b) => a + b, 0) / len,
       p50: sorted[Math.floor(len * 0.5)],
       p95: sorted[Math.floor(len * 0.95)],
       p99: sorted[Math.floor(len * 0.99)],
@@ -592,7 +594,7 @@ export class EnterprisePerformanceMonitor extends EventEmitter {
       this.sendAlertToChannel(alert, channel);
     });
     
-    console.warn(`🚨 ALERT: ${alert.message}`);
+    logWarn(`🚨 ALERT: ${alert.message}`);
   }
 
   /**
@@ -601,7 +603,7 @@ export class EnterprisePerformanceMonitor extends EventEmitter {
   sendAlertToChannel(alert, channel) {
     switch (channel) {
       case 'console':
-        console.error(`[${alert.severity.toUpperCase()}] ${alert.message}`);
+        logError(`[${alert.severity.toUpperCase()}] ${alert.message}`);
         break;
       case 'slack':
         // Integrate with Slack API
@@ -612,7 +614,7 @@ export class EnterprisePerformanceMonitor extends EventEmitter {
         this.sendEmailAlert(alert);
         break;
       default:
-        console.log(`Unknown alert channel: ${channel}`);
+        logDebug(`Unknown alert channel: ${channel}`);
     }
   }
 
@@ -622,9 +624,9 @@ export class EnterprisePerformanceMonitor extends EventEmitter {
   async sendSlackAlert(alert) {
     try {
       // This would integrate with your Slack service
-      console.log(`Slack alert: ${alert.message}`);
+      logDebug(`Slack alert: ${alert.message}`);
     } catch (error) {
-      console.error('Failed to send Slack alert:', error);
+      logError('Failed to send Slack alert:', error);
     }
   }
 
@@ -634,9 +636,9 @@ export class EnterprisePerformanceMonitor extends EventEmitter {
   async sendEmailAlert(alert) {
     try {
       // This would integrate with your email service
-      console.log(`Email alert: ${alert.message}`);
+      logDebug(`Email alert: ${alert.message}`);
     } catch (error) {
-      console.error('Failed to send email alert:', error);
+      logError('Failed to send email alert:', error);
     }
   }
 
@@ -895,9 +897,9 @@ export class EnterprisePerformanceMonitor extends EventEmitter {
     // Simplified CSV conversion - in production, use a proper CSV library
     const lines = ['timestamp,type,metric,value'];
     
-    Object.entries(data.metrics).forEach(([type, metrics]) => {
+    Object.entries(data.metrics).forEach(_([type, _metrics]) => {
       metrics.forEach(metric => {
-        Object.entries(metric).forEach(([key, value]) => {
+        Object.entries(metric).forEach(_([key, _value]) => {
           if (key !== 'timestamp' && typeof value === 'number') {
             lines.push(`${metric.timestamp},${type},${key},${value}`);
           }
@@ -913,7 +915,7 @@ export class EnterprisePerformanceMonitor extends EventEmitter {
    */
   stop() {
     // Clear all intervals (in production, you'd track interval IDs)
-    console.log('🛑 Performance monitoring stopped');
+    logDebug('🛑 Performance monitoring stopped');
     this.emit('monitoringStopped');
   }
 }
@@ -971,7 +973,7 @@ export default EnterprisePerformanceMonitor;
    * Apply specific optimization
    */
   applyOptimization(optimization) {
-    console.log(`🔧 Applying optimization: ${optimization.action} - ${optimization.reason}`);
+    logDebug(`🔧 Applying optimization: ${optimization.action} - ${optimization.reason}`);
     
     switch (optimization.action) {
       case 'scale_up':

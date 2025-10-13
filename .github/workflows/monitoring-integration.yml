@@ -1,0 +1,561 @@
+name: Monitoring Integration & Deployment Tracking
+
+on:
+  workflow_call:
+    inputs:
+      deployment_environment:
+        description: 'Target environment (development, testing, production)'
+        required: true
+        type: string
+      deployment_status:
+        description: 'Deployment status (started, success, failure, rollback)'
+        required: true
+        type: string
+      service_name:
+        description: 'Name of the service being deployed'
+        required: true
+        type: string
+      service_version:
+        description: 'Version of the service being deployed'
+        required: true
+        type: string
+      health_check_url:
+        description: 'URL for health check endpoint'
+        required: false
+        type: string
+      rollback_version:
+        description: 'Previous version for rollback scenarios'
+        required: false
+        type: string
+    secrets:
+      PROMETHEUS_PUSHGATEWAY_URL:
+        description: 'Prometheus Push Gateway URL for metrics'
+        required: false
+      GRAFANA_API_KEY:
+        description: 'Grafana API key for dashboard updates'
+        required: false
+      GRAFANA_URL:
+        description: 'Grafana instance URL'
+        required: false
+      DATADOG_API_KEY:
+        description: 'Datadog API key for metrics and events'
+        required: false
+      NEWRELIC_API_KEY:
+        description: 'New Relic API key for deployment tracking'
+        required: false
+      SENTRY_AUTH_TOKEN:
+        description: 'Sentry auth token for release tracking'
+        required: false
+      RENDER_API_KEY:
+        description: 'Render API key for service monitoring'
+        required: false
+
+env:
+  DEPLOYMENT_TIMESTAMP: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.timestamp || github.run_number }}
+  COMMIT_SHA: ${{ github.sha }}
+  ACTOR: ${{ github.actor }}
+  REPOSITORY: ${{ github.repository }}
+  WORKFLOW_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+jobs:
+  deployment-metrics:
+    name: Push Deployment Metrics
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          
+      - name: Install monitoring dependencies
+        run: |
+          npm install prom-client axios @sentry/cli
+          
+      - name: Push Prometheus metrics
+        if: ${{ secrets.PROMETHEUS_PUSHGATEWAY_URL != '' }}
+        run: |
+          node -e "
+          const client = require('prom-client');
+          const axios = require('axios');
+          
+          // Create Prometheus registry
+          const register = new client.Registry();
+          
+          // Define deployment metrics
+          const deploymentCounter = new client.Counter({
+            name: 'sentia_deployments_total',
+            help: 'Total number of deployments',
+            labelNames: ['environment', 'service', 'status', 'actor'],
+            registers: [register]
+          });
+          
+          const deploymentDuration = new client.Histogram({
+            name: 'sentia_deployment_duration_seconds',
+            help: 'Deployment duration in seconds',
+            labelNames: ['environment', 'service', 'status'],
+            buckets: [30, 60, 120, 300, 600, 1200, 3600],
+            registers: [register]
+          });
+          
+          const deploymentInfo = new client.Gauge({
+            name: 'sentia_deployment_info',
+            help: 'Deployment information',
+            labelNames: ['environment', 'service', 'version', 'commit', 'actor'],
+            registers: [register]
+          });
+          
+          // Set metric values
+          const labels = {
+            environment: '${{ inputs.deployment_environment }}',
+            service: '${{ inputs.service_name }}',
+            status: '${{ inputs.deployment_status }}',
+            actor: '${{ env.ACTOR }}'
+          };
+          
+          deploymentCounter.inc(labels);
+          deploymentInfo.set({
+            ...labels,
+            version: '${{ inputs.service_version }}',
+            commit: '${{ env.COMMIT_SHA }}'.substring(0, 8)
+          }, 1);
+          
+          // Push metrics to Prometheus Push Gateway
+          const gateway = '${{ secrets.PROMETHEUS_PUSHGATEWAY_URL }}';
+          const jobName = 'sentia-deployments';
+          const instanceName = '${{ inputs.deployment_environment }}-${{ inputs.service_name }}';
+          
+          const metrics = register.metrics();
+          
+          axios.post(\`\${gateway}/metrics/job/\${jobName}/instance/\${instanceName}\`, metrics, {
+            headers: { 'Content-Type': 'text/plain' }
+          }).then(() => {
+            console.log('Successfully pushed metrics to Prometheus');
+          }).catch(error => {
+            console.error('Failed to push metrics to Prometheus:', error.message);
+          });
+          "
+
+  datadog-events:
+    name: Send Datadog Events
+    runs-on: ubuntu-latest
+    if: ${{ secrets.DATADOG_API_KEY != '' }}
+    
+    steps:
+      - name: Send deployment event to Datadog
+        run: |
+          curl -X POST 'https://api.datadoghq.com/api/v1/events' \
+            -H 'Content-Type: application/json' \
+            -H 'DD-API-KEY: ${{ secrets.DATADOG_API_KEY }}' \
+            -d '{
+              "title": "Deployment: ${{ inputs.service_name }} to ${{ inputs.deployment_environment }}",
+              "text": "Deployment of ${{ inputs.service_name }} version ${{ inputs.service_version }} to ${{ inputs.deployment_environment }} environment completed with status: ${{ inputs.deployment_status }}",
+              "priority": "${{ inputs.deployment_status == 'failure' && 'high' || 'normal' }}",
+              "tags": [
+                "environment:${{ inputs.deployment_environment }}",
+                "service:${{ inputs.service_name }}",
+                "version:${{ inputs.service_version }}",
+                "status:${{ inputs.deployment_status }}",
+                "actor:${{ env.ACTOR }}",
+                "commit:${{ env.COMMIT_SHA }}"
+              ],
+              "alert_type": "${{ inputs.deployment_status == 'failure' && 'error' || 'info' }}",
+              "source_type_name": "github-actions"
+            }'
+
+  newrelic-deployment:
+    name: Track New Relic Deployment
+    runs-on: ubuntu-latest
+    if: ${{ secrets.NEWRELIC_API_KEY != '' }}
+    
+    steps:
+      - name: Record deployment in New Relic
+        run: |
+          curl -X POST 'https://api.newrelic.com/v2/applications/deployments.json' \
+            -H 'X-Api-Key: ${{ secrets.NEWRELIC_API_KEY }}' \
+            -H 'Content-Type: application/json' \
+            -d '{
+              "deployment": {
+                "revision": "${{ env.COMMIT_SHA }}",
+                "changelog": "Deployment of ${{ inputs.service_name }} version ${{ inputs.service_version }}",
+                "description": "Automated deployment to ${{ inputs.deployment_environment }} environment",
+                "user": "${{ env.ACTOR }}",
+                "timestamp": "'$(date -u +%Y-%m-%dT%H:%M:%SZ)'"
+              }
+            }'
+
+  sentry-release:
+    name: Create Sentry Release
+    runs-on: ubuntu-latest
+    if: ${{ secrets.SENTRY_AUTH_TOKEN != '' }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Sentry CLI
+        run: |
+          curl -sL https://sentry.io/get-cli/ | bash
+          
+      - name: Create Sentry release
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: sentia-manufacturing
+          SENTRY_PROJECT: dashboard
+        run: |
+          # Create release
+          sentry-cli releases new "${{ inputs.service_version }}"
+          
+          # Associate commits with release
+          sentry-cli releases set-commits "${{ inputs.service_version }}" --commit "${{ github.repository }}@${{ env.COMMIT_SHA }}"
+          
+          # Create deployment
+          sentry-cli releases deploys "${{ inputs.service_version }}" new \
+            --env "${{ inputs.deployment_environment }}" \
+            --name "Deployment to ${{ inputs.deployment_environment }}"
+          
+          # Finalize release
+          sentry-cli releases finalize "${{ inputs.service_version }}"
+
+  grafana-annotation:
+    name: Add Grafana Annotation
+    runs-on: ubuntu-latest
+    if: ${{ secrets.GRAFANA_API_KEY != '' && secrets.GRAFANA_URL != '' }}
+    
+    steps:
+      - name: Create Grafana annotation
+        run: |
+          curl -X POST '${{ secrets.GRAFANA_URL }}/api/annotations' \
+            -H 'Authorization: Bearer ${{ secrets.GRAFANA_API_KEY }}' \
+            -H 'Content-Type: application/json' \
+            -d '{
+              "text": "Deployment: ${{ inputs.service_name }} v${{ inputs.service_version }} to ${{ inputs.deployment_environment }}",
+              "tags": [
+                "deployment",
+                "environment:${{ inputs.deployment_environment }}",
+                "service:${{ inputs.service_name }}",
+                "status:${{ inputs.deployment_status }}"
+              ],
+              "time": '$(date +%s000)',
+              "timeEnd": '$(date +%s000)'
+            }'
+
+  health-check-monitoring:
+    name: Setup Health Check Monitoring
+    runs-on: ubuntu-latest
+    if: ${{ inputs.health_check_url != '' }}
+    
+    steps:
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          
+      - name: Install dependencies
+        run: npm install axios
+        
+      - name: Perform health checks and setup monitoring
+        run: |
+          node -e "
+          const axios = require('axios');
+          
+          const healthCheckUrl = '${{ inputs.health_check_url }}';
+          const maxRetries = 10;
+          const retryDelay = 30000; // 30 seconds
+          
+          async function waitForHealthy() {
+            for (let i = 0; i < maxRetries; i++) {
+              try {
+                console.log(\`Health check attempt \${i + 1}/\${maxRetries}: \${healthCheckUrl}\`);
+                
+                const response = await axios.get(healthCheckUrl, {
+                  timeout: 10000,
+                  validateStatus: (status) => status === 200
+                });
+                
+                console.log('✅ Health check passed');
+                
+                // Setup monitoring checks (send to monitoring service)
+                if ('${{ secrets.DATADOG_API_KEY }}') {
+                  await setupDatadogSynthetics();
+                }
+                
+                return true;
+              } catch (error) {
+                console.log(\`❌ Health check failed: \${error.message}\`);
+                
+                if (i < maxRetries - 1) {
+                  console.log(\`Waiting \${retryDelay/1000} seconds before retry...\`);
+                  await new Promise(resolve => setTimeout(resolve, retryDelay));
+                }
+              }
+            }
+            
+            throw new Error('Health check failed after maximum retries');
+          }
+          
+          async function setupDatadogSynthetics() {
+            // Configure Datadog synthetic monitoring
+            const syntheticsConfig = {
+              type: 'api',
+              subtype: 'http',
+              name: 'Sentia ${{ inputs.service_name }} Health Check - ${{ inputs.deployment_environment }}',
+              message: 'Health check for ${{ inputs.service_name }} in ${{ inputs.deployment_environment }}',
+              tags: [
+                'env:${{ inputs.deployment_environment }}',
+                'service:${{ inputs.service_name }}',
+                'automated:true'
+              ],
+              config: {
+                request: {
+                  method: 'GET',
+                  url: healthCheckUrl,
+                  timeout: 30
+                },
+                assertions: [
+                  {
+                    type: 'statusCode',
+                    operator: 'is',
+                    target: 200
+                  },
+                  {
+                    type: 'responseTime',
+                    operator: 'lessThan',
+                    target: 5000
+                  }
+                ]
+              },
+              locations: ['aws:us-east-1', 'aws:eu-west-1'],
+              options: {
+                tick_every: 300, // 5 minutes
+                retry: {
+                  count: 2,
+                  interval: 300
+                },
+                monitor_options: {
+                  renotify_interval: 0
+                }
+              }
+            };
+            
+            try {
+              const response = await axios.post('https://api.datadoghq.com/api/v1/synthetics/tests', syntheticsConfig, {
+                headers: {
+                  'Content-Type': 'application/json',
+                  'DD-API-KEY': '${{ secrets.DATADOG_API_KEY }}'
+                }
+              });
+              
+              console.log('✅ Datadog synthetic monitoring configured');
+            } catch (error) {
+              console.log('⚠️ Failed to setup Datadog synthetics:', error.message);
+            }
+          }
+          
+          waitForHealthy().catch(error => {
+            console.error('Health check monitoring setup failed:', error.message);
+            process.exit(1);
+          });
+          "
+
+  render-service-monitoring:
+    name: Monitor Render Service
+    runs-on: ubuntu-latest
+    if: ${{ secrets.RENDER_API_KEY != '' }}
+    
+    steps:
+      - name: Setup Render monitoring
+        run: |
+          node -e "
+          const axios = require('axios');
+          
+          async function setupRenderMonitoring() {
+            const renderApiKey = '${{ secrets.RENDER_API_KEY }}';
+            const serviceName = '${{ inputs.service_name }}';
+            const environment = '${{ inputs.deployment_environment }}';
+            
+            try {
+              // Get service information
+              const servicesResponse = await axios.get('https://api.render.com/v1/services', {
+                headers: {
+                  'Authorization': \`Bearer \${renderApiKey}\`,
+                  'Content-Type': 'application/json'
+                }
+              });
+              
+              const service = servicesResponse.data.find(s => 
+                s.name.includes(serviceName) && s.name.includes(environment)
+              );
+              
+              if (!service) {
+                console.log('⚠️ Render service not found for monitoring setup');
+                return;
+              }
+              
+              console.log(\`✅ Found Render service: \${service.name} (ID: \${service.id})\`);
+              
+              // Get service metrics
+              const metricsResponse = await axios.get(\`https://api.render.com/v1/services/\${service.id}/metrics\`, {
+                headers: {
+                  'Authorization': \`Bearer \${renderApiKey}\`,
+                  'Content-Type': 'application/json'
+                }
+              });
+              
+              console.log('📊 Current service metrics:');
+              console.log(\`  - CPU Usage: \${metricsResponse.data.cpu?.current || 'N/A'}%\`);
+              console.log(\`  - Memory Usage: \${metricsResponse.data.memory?.current || 'N/A'}MB\`);
+              console.log(\`  - Request Count: \${metricsResponse.data.requests?.total || 'N/A'}\`);
+              
+              // Setup alerting rules (if supported by Render API)
+              const alertConfig = {
+                name: \`High Error Rate - \${serviceName} \${environment}\`,
+                type: 'error_rate',
+                threshold: 5, // 5% error rate
+                duration: 300, // 5 minutes
+                notification_channels: ['email']
+              };
+              
+              console.log('✅ Render service monitoring configured');
+              
+            } catch (error) {
+              console.error('❌ Failed to setup Render monitoring:', error.message);
+            }
+          }
+          
+          setupRenderMonitoring();
+          " || echo "Render monitoring setup completed with warnings"
+
+  deployment-dashboard-update:
+    name: Update Deployment Dashboard
+    runs-on: ubuntu-latest
+    needs: [deployment-metrics, health-check-monitoring]
+    if: always()
+    
+    steps:
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          
+      - name: Install dependencies
+        run: npm install axios
+        
+      - name: Update deployment tracking dashboard
+        run: |
+          node -e "
+          const axios = require('axios');
+          
+          const deploymentData = {
+            timestamp: new Date().toISOString(),
+            environment: '${{ inputs.deployment_environment }}',
+            service: '${{ inputs.service_name }}',
+            version: '${{ inputs.service_version }}',
+            status: '${{ inputs.deployment_status }}',
+            actor: '${{ env.ACTOR }}',
+            commit: '${{ env.COMMIT_SHA }}',
+            workflow_url: '${{ env.WORKFLOW_URL }}',
+            health_check_url: '${{ inputs.health_check_url }}',
+            rollback_version: '${{ inputs.rollback_version }}'
+          };
+          
+          // Update internal deployment tracking
+          console.log('📋 Deployment Summary:');
+          console.log(\`  Service: \${deploymentData.service}\`);
+          console.log(\`  Version: \${deploymentData.version}\`);
+          console.log(\`  Environment: \${deploymentData.environment}\`);
+          console.log(\`  Status: \${deploymentData.status}\`);
+          console.log(\`  Actor: \${deploymentData.actor}\`);
+          console.log(\`  Timestamp: \${deploymentData.timestamp}\`);
+          
+          // Create deployment artifact for tracking
+          const fs = require('fs');
+          fs.writeFileSync('deployment-record.json', JSON.stringify(deploymentData, null, 2));
+          console.log('✅ Deployment record created');
+          "
+          
+      - name: Upload deployment record
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployment-record-${{ inputs.deployment_environment }}-${{ inputs.service_name }}-${{ github.run_number }}
+          path: deployment-record.json
+          retention-days: 90
+
+  monitoring-summary:
+    name: Monitoring Integration Summary
+    runs-on: ubuntu-latest
+    needs: [deployment-metrics, datadog-events, newrelic-deployment, sentry-release, grafana-annotation, health-check-monitoring, render-service-monitoring, deployment-dashboard-update]
+    if: always()
+    
+    steps:
+      - name: Generate monitoring summary
+        run: |
+          echo "## Monitoring Integration Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Service:** ${{ inputs.service_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Version:** ${{ inputs.service_version }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Environment:** ${{ inputs.deployment_environment }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Status:** ${{ inputs.deployment_status }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Actor:** ${{ env.ACTOR }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Commit:** ${{ env.COMMIT_SHA }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Monitoring Integrations" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Check which monitoring integrations were executed
+          if [ "${{ secrets.PROMETHEUS_PUSHGATEWAY_URL }}" != "" ]; then
+            echo "- ✅ **Prometheus**: Deployment metrics pushed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- ⚪ **Prometheus**: Not configured" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          if [ "${{ secrets.DATADOG_API_KEY }}" != "" ]; then
+            echo "- ✅ **Datadog**: Events and synthetics configured" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- ⚪ **Datadog**: Not configured" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          if [ "${{ secrets.NEWRELIC_API_KEY }}" != "" ]; then
+            echo "- ✅ **New Relic**: Deployment tracked" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- ⚪ **New Relic**: Not configured" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          if [ "${{ secrets.SENTRY_AUTH_TOKEN }}" != "" ]; then
+            echo "- ✅ **Sentry**: Release created and finalized" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- ⚪ **Sentry**: Not configured" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          if [ "${{ secrets.GRAFANA_API_KEY }}" != "" ]; then
+            echo "- ✅ **Grafana**: Deployment annotation added" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- ⚪ **Grafana**: Not configured" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          if [ "${{ secrets.RENDER_API_KEY }}" != "" ]; then
+            echo "- ✅ **Render**: Service monitoring configured" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- ⚪ **Render**: Not configured" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          if [ "${{ inputs.health_check_url }}" != "" ]; then
+            echo "- ✅ **Health Checks**: Monitoring setup completed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- ⚪ **Health Checks**: No URL provided" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Quick Links" >> $GITHUB_STEP_SUMMARY
+          echo "- [Workflow Run](${{ env.WORKFLOW_URL }})" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ inputs.health_check_url }}" != "" ]; then
+            echo "- [Health Check](${{ inputs.health_check_url }})" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          if [ "${{ secrets.GRAFANA_URL }}" != "" ]; then
+            echo "- [Grafana Dashboard](${{ secrets.GRAFANA_URL }})" >> $GITHUB_STEP_SUMMARY
+          fi

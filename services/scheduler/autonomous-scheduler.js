@@ -18,6 +18,8 @@ import TestDataFactory from '../../tests/autonomous/test-data-factory.js';
 import TestResultAnalyzer from '../../tests/autonomous/result-analyzer.js';
 import CodeCorrectionEngine from '../agent/code-corrector.js';
 import DeploymentOrchestrator from '../agent/deploy-orchestrator.js';
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+
 
 class AutonomousScheduler extends EventEmitter {
   constructor(config = {}) {
@@ -91,7 +93,7 @@ class AutonomousScheduler extends EventEmitter {
   }
 
   initializeComponents() {
-    console.log('🔧 Initializing autonomous components...');
+    logDebug('🔧 Initializing autonomous components...');
 
     try {
       // Only initialize testing components in development/test environments
@@ -107,9 +109,9 @@ class AutonomousScheduler extends EventEmitter {
         // Setup event listeners
         this.setupEventListeners();
 
-        console.log('✅ All autonomous components initialized');
+        logDebug('✅ All autonomous components initialized');
       } else {
-        console.log('ℹ️ Autonomous testing components disabled in production');
+        logDebug('ℹ️ Autonomous testing components disabled in production');
         // Initialize empty stubs to prevent undefined errors
         this.selfHealingAgent = null;
         this.testDataFactory = null;
@@ -118,7 +120,7 @@ class AutonomousScheduler extends EventEmitter {
         this.deployOrchestrator = null;
       }
     } catch (error) {
-      console.error('❌ Failed to initialize components:', error.message);
+      logError('❌ Failed to initialize components:', error.message);
       throw error;
     }
   }
@@ -130,35 +132,35 @@ class AutonomousScheduler extends EventEmitter {
     }
 
     // Self-healing agent events
-    this.selfHealingAgent.on('cycleCompleted', (analysis) => {
+    this.selfHealingAgent.on(_'cycleCompleted', _(analysis) => {
       this.handleCycleCompleted(analysis);
     });
 
-    this.selfHealingAgent.on('emergencyStop', () => {
+    this.selfHealingAgent.on(_'emergencyStop', _() => {
       this.handleEmergencyStop();
     });
 
     // Deployment orchestrator events
-    this.deployOrchestrator.on('deploymentCompleted', (deployment) => {
+    this.deployOrchestrator.on(_'deploymentCompleted', (deployment) => {
       this.metrics.deploymentTimes.push(deployment.duration);
     });
 
-    this.deployOrchestrator.on('deploymentFailed', (deployment) => {
-      console.error(`🚨 Deployment ${deployment.id} failed`);
+    this.deployOrchestrator.on(_'deploymentFailed', (deployment) => {
+      logError(`🚨 Deployment ${deployment.id} failed`);
       this.handleDeploymentFailure(deployment);
     });
 
     // Process events
     process.on('SIGINT', () => this.gracefulShutdown());
     process.on('SIGTERM', () => this.gracefulShutdown());
-    process.on('uncaughtException', (error) => {
-      console.error('🚨 Uncaught exception in scheduler:', error);
+    process.on(_'uncaughtException', _(error) => {
+      logError('🚨 Uncaught exception in scheduler:', error);
       this.handleCriticalError(error);
     });
   }
 
   async initialize() {
-    console.log('🤖 INITIALIZING AUTONOMOUS SCHEDULER');
+    logDebug('🤖 INITIALIZING AUTONOMOUS SCHEDULER');
     
     // Create directories
     this.ensureDirectories();
@@ -172,7 +174,7 @@ class AutonomousScheduler extends EventEmitter {
     // Initialize cron job
     this.initializeCronJob();
     
-    console.log('✅ Autonomous Scheduler initialized successfully');
+    logDebug('✅ Autonomous Scheduler initialized successfully');
     this.emit('initialized');
   }
 
@@ -199,10 +201,10 @@ class AutonomousScheduler extends EventEmitter {
         const savedState = JSON.parse(fs.readFileSync(stateFile, 'utf8'));
         this.state = { ...this.state, ...savedState.state };
         this.metrics = { ...this.metrics, ...savedState.metrics };
-        console.log('📚 Scheduler state loaded from disk');
+        logDebug('📚 Scheduler state loaded from disk');
       }
     } catch (error) {
-      console.warn(`Failed to load scheduler state: ${error.message}`);
+      logWarn(`Failed to load scheduler state: ${error.message}`);
     }
   }
 
@@ -210,19 +212,19 @@ class AutonomousScheduler extends EventEmitter {
     const resources = await this.checkSystemResources();
     
     if (resources.memoryUsagePercent > this.config.resourceLimits.maxMemoryUsage) {
-      console.warn(`⚠️ High memory usage: ${resources.memoryUsagePercent}%`);
+      logWarn(`⚠️ High memory usage: ${resources.memoryUsagePercent}%`);
     }
     
     if (resources.diskUsagePercent > this.config.resourceLimits.maxDiskUsage) {
       throw new Error(`Insufficient disk space: ${resources.diskUsagePercent}% used`);
     }
     
-    console.log('✅ System resources validated');
+    logDebug('✅ System resources validated');
   }
 
   initializeCronJob() {
     if (!this.config.enableScheduling) {
-      console.log('⏸️ Scheduling disabled by configuration');
+      logDebug('⏸️ Scheduling disabled by configuration');
       return;
     }
 
@@ -234,18 +236,18 @@ class AutonomousScheduler extends EventEmitter {
       'America/New_York' // timezone
     );
 
-    console.log(`⏰ Cron job initialized: ${this.config.testInterval}`);
+    logDebug(`⏰ Cron job initialized: ${this.config.testInterval}`);
     this.updateNextRunTime();
   }
 
   // Main orchestration methods
   async start() {
     if (this.state.isRunning) {
-      console.log('⚠️ Scheduler is already running');
+      logDebug('⚠️ Scheduler is already running');
       return;
     }
 
-    console.log('🚀 STARTING AUTONOMOUS SCHEDULER');
+    logDebug('🚀 STARTING AUTONOMOUS SCHEDULER');
     
     this.state.isRunning = true;
     
@@ -255,7 +257,7 @@ class AutonomousScheduler extends EventEmitter {
     // Start cron job if enabled
     if (this.cronJob) {
       this.cronJob.start();
-      console.log(`⏰ Scheduled testing every ${this.config.testInterval}`);
+      logDebug(`⏰ Scheduled testing every ${this.config.testInterval}`);
     }
     
     // Run immediate test cycle
@@ -264,11 +266,11 @@ class AutonomousScheduler extends EventEmitter {
     }
     
     this.emit('started');
-    console.log('✅ Autonomous Scheduler started successfully');
+    logDebug('✅ Autonomous Scheduler started successfully');
   }
 
   async stop() {
-    console.log('🛑 Stopping Autonomous Scheduler...');
+    logDebug('🛑 Stopping Autonomous Scheduler...');
     
     this.state.isRunning = false;
     
@@ -282,13 +284,13 @@ class AutonomousScheduler extends EventEmitter {
     
     // Wait for current run to complete
     if (this.state.currentRun) {
-      console.log('⏳ Waiting for current run to complete...');
+      logDebug('⏳ Waiting for current run to complete...');
       await this.waitForCurrentRun();
     }
     
     await this.saveState();
     this.emit('stopped');
-    console.log('✅ Autonomous Scheduler stopped');
+    logDebug('✅ Autonomous Scheduler stopped');
   }
 
   async executeCycle() {
@@ -300,7 +302,7 @@ class AutonomousScheduler extends EventEmitter {
     const runId = this.generateRunId();
     const startTime = Date.now();
     
-    console.log(`🔄 Starting autonomous cycle: ${runId}`);
+    logDebug(`🔄 Starting autonomous cycle: ${runId}`);
     
     const run = {
       id: runId,
@@ -316,41 +318,41 @@ class AutonomousScheduler extends EventEmitter {
     
     try {
       // Phase 1: Pre-flight checks
-      await this.executePhase(run, 'preflight', async () => {
+      await this.executePhase(run, _'preflight', async _() => {
         await this.preflightChecks(run);
       });
 
       // Phase 2: Generate test data
-      await this.executePhase(run, 'test-data', async () => {
+      await this.executePhase(run, _'test-data', async _() => {
         await this.generateTestData(run);
       });
 
       // Phase 3: Execute comprehensive tests
-      await this.executePhase(run, 'testing', async () => {
+      await this.executePhase(run, _'testing', async _() => {
         await this.executeTests(run);
       });
 
       // Phase 4: Analyze results
-      await this.executePhase(run, 'analysis', async () => {
+      await this.executePhase(run, _'analysis', async _() => {
         await this.analyzeResults(run);
       });
 
       // Phase 5: Apply fixes (if needed)
       if (run.analysis && run.analysis.failedTests > 0) {
-        await this.executePhase(run, 'fixing', async () => {
+        await this.executePhase(run, _'fixing', async _() => {
           await this.applyFixes(run);
         });
       }
 
       // Phase 6: Deploy changes (if fixes applied)
       if (run.fixes && run.fixes.applied && run.fixes.applied.length > 0) {
-        await this.executePhase(run, 'deployment', async () => {
+        await this.executePhase(run, _'deployment', async _() => {
           await this.deployChanges(run);
         });
       }
 
       // Phase 7: Validation
-      await this.executePhase(run, 'validation', async () => {
+      await this.executePhase(run, _'validation', async _() => {
         await this.validateChanges(run);
       });
 
@@ -362,11 +364,11 @@ class AutonomousScheduler extends EventEmitter {
       this.state.consecutiveFailures = 0;
       this.state.backoffTime = 0; // Reset backoff
       
-      console.log(`✅ Autonomous cycle ${runId} completed successfully in ${run.duration}ms`);
+      logDebug(`✅ Autonomous cycle ${runId} completed successfully in ${run.duration}ms`);
       this.emit('cycleCompleted', run);
 
     } catch (error) {
-      console.error(`❌ Autonomous cycle ${runId} failed:`, error.message);
+      logError(`❌ Autonomous cycle ${runId} failed:`, error.message);
       
       run.status = 'failed';
       run.endTime = new Date().toISOString();
@@ -398,7 +400,7 @@ class AutonomousScheduler extends EventEmitter {
 
     run.phases.push(phase);
     
-    console.log(`🔄 Executing phase: ${phaseName}`);
+    logDebug(`🔄 Executing phase: ${phaseName}`);
     
     try {
       const phaseStartTime = Date.now();
@@ -408,13 +410,13 @@ class AutonomousScheduler extends EventEmitter {
       phase.duration = Date.now() - phaseStartTime;
       phase.status = 'completed';
       
-      console.log(`✅ Phase ${phaseName} completed in ${phase.duration}ms`);
+      logDebug(`✅ Phase ${phaseName} completed in ${phase.duration}ms`);
     } catch (error) {
       phase.endTime = new Date().toISOString();
       phase.status = 'failed';
       phase.error = error.message;
       
-      console.error(`❌ Phase ${phaseName} failed:`, error.message);
+      logError(`❌ Phase ${phaseName} failed:`, error.message);
       throw error;
     }
   }
@@ -422,20 +424,20 @@ class AutonomousScheduler extends EventEmitter {
   shouldExecuteCycle() {
     // Check if already running
     if (this.state.currentRun) {
-      console.log('⏸️ Skipping cycle - another run is in progress');
+      logDebug('⏸️ Skipping cycle - another run is in progress');
       return false;
     }
 
     // Check backoff time
     if (this.state.backoffTime > 0 && Date.now() < this.state.backoffTime) {
       const remainingTime = Math.ceil((this.state.backoffTime - Date.now()) / 1000 / 60);
-      console.log(`⏸️ Skipping cycle - in backoff period (${remainingTime}min remaining)`);
+      logDebug(`⏸️ Skipping cycle - in backoff period (${remainingTime}min remaining)`);
       return false;
     }
 
     // Check consecutive failures
     if (this.state.consecutiveFailures >= this.config.failureHandling.emergencyStopThreshold) {
-      console.error('🚨 Too many consecutive failures - emergency stop triggered');
+      logError('🚨 Too many consecutive failures - emergency stop triggered');
       this.handleEmergencyStop();
       return false;
     }
@@ -443,7 +445,7 @@ class AutonomousScheduler extends EventEmitter {
     // Check system resources
     const resources = this.checkSystemResourcesSync();
     if (resources.memoryUsagePercent > 90) {
-      console.warn('⚠️ Skipping cycle - high memory usage');
+      logWarn('⚠️ Skipping cycle - high memory usage');
       return false;
     }
 
@@ -451,7 +453,7 @@ class AutonomousScheduler extends EventEmitter {
   }
 
   async preflightChecks(run) {
-    console.log('🔍 Running preflight checks...');
+    logDebug('🔍 Running preflight checks...');
     
     const checks = [];
     
@@ -502,15 +504,15 @@ class AutonomousScheduler extends EventEmitter {
     
     const failedChecks = checks.filter(c => !c.passed);
     if (failedChecks.length > 0) {
-      console.warn(`⚠️ ${failedChecks.length} preflight checks failed`);
+      logWarn(`⚠️ ${failedChecks.length} preflight checks failed`);
       // Continue anyway for non-critical failures
     } else {
-      console.log('✅ All preflight checks passed');
+      logDebug('✅ All preflight checks passed');
     }
   }
 
   async generateTestData(run) {
-    console.log('📊 Generating comprehensive test data...');
+    logDebug('📊 Generating comprehensive test data...');
     
     const scenario = this.testDataFactory.generateCompleteTestScenario('autonomous_run');
     const summary = this.testDataFactory.saveTestDataToFiles(scenario);
@@ -522,11 +524,11 @@ class AutonomousScheduler extends EventEmitter {
       generatedAt: scenario.generatedAt
     };
     
-    console.log(`✅ Test data generated: ${summary.dataSize}`);
+    logDebug(`✅ Test data generated: ${summary.dataSize}`);
   }
 
   async executeTests(run) {
-    console.log('🧪 Executing comprehensive test suite...');
+    logDebug('🧪 Executing comprehensive test suite...');
     
     // Import and run the master test suite
     const { execAsync } = await import('util');
@@ -543,7 +545,7 @@ class AutonomousScheduler extends EventEmitter {
     
     for (const testCmd of testCommands) {
       try {
-        console.log(`🔬 Running ${testCmd.name}...`);
+        logDebug(`🔬 Running ${testCmd.name}...`);
         const startTime = Date.now();
         
         const result = await execPromise(testCmd.command, { 
@@ -562,7 +564,7 @@ class AutonomousScheduler extends EventEmitter {
           stderr: result.stderr
         });
         
-        console.log(`✅ ${testCmd.name} passed in ${duration}ms`);
+        logDebug(`✅ ${testCmd.name} passed in ${duration}ms`);
         
       } catch (error) {
         const duration = Date.now() - (testCmd.startTime || Date.now());
@@ -577,18 +579,18 @@ class AutonomousScheduler extends EventEmitter {
           stderr: error.stderr || ''
         });
         
-        console.error(`❌ ${testCmd.name} failed:`, error.message);
+        logError(`❌ ${testCmd.name} failed:`, error.message);
       }
     }
 
     run.testResults = testResults;
     
     const passedTests = testResults.filter(t => t.status === 'passed').length;
-    console.log(`🎯 Tests completed: ${passedTests}/${testResults.length} passed`);
+    logDebug(`🎯 Tests completed: ${passedTests}/${testResults.length} passed`);
   }
 
   async analyzeResults(run) {
-    console.log('📊 Analyzing test results...');
+    logDebug('📊 Analyzing test results...');
     
     // Convert test results to format expected by analyzer
     const analysisInput = run.testResults.map(test => ({
@@ -609,20 +611,20 @@ class AutonomousScheduler extends EventEmitter {
     run.analysis = analysis;
     run.actionableReport = actionableReport;
     
-    console.log(`📈 Analysis complete: ${analysis.passedTests}/${analysis.totalTests} passed, Risk: ${analysis.riskAssessment.level}`);
+    logDebug(`📈 Analysis complete: ${analysis.passedTests}/${analysis.totalTests} passed, Risk: ${analysis.riskAssessment.level}`);
   }
 
   async applyFixes(run) {
-    console.log('🔧 Applying autonomous fixes...');
+    logDebug('🔧 Applying autonomous fixes...');
     
     const fixes = await this.codeCorrector.applyCorrections(run.analysis);
     run.fixes = fixes;
     
-    console.log(`✅ Applied ${fixes.applied.length} fixes, ${fixes.failed.length} failed`);
+    logDebug(`✅ Applied ${fixes.applied.length} fixes, ${fixes.failed.length} failed`);
   }
 
   async deployChanges(run) {
-    console.log('🚀 Deploying changes...');
+    logDebug('🚀 Deploying changes...');
     
     const deployment = await this.deployOrchestrator.orchestrateDeployment(
       run.fixes,
@@ -635,11 +637,11 @@ class AutonomousScheduler extends EventEmitter {
     
     run.deployment = deployment;
     
-    console.log(`✅ Deployment ${deployment.id} completed`);
+    logDebug(`✅ Deployment ${deployment.id} completed`);
   }
 
   async validateChanges(run) {
-    console.log('🔍 Validating changes...');
+    logDebug('🔍 Validating changes...');
     
     // Run a quick validation test
     const { execAsync } = await import('util');
@@ -655,14 +657,14 @@ class AutonomousScheduler extends EventEmitter {
         message: 'All validation checks passed'
       };
       
-      console.log('✅ Validation passed');
+      logDebug('✅ Validation passed');
     } catch (error) {
       run.validation = {
         status: 'failed',
         error: error.message
       };
       
-      console.error('❌ Validation failed:', error.message);
+      logError('❌ Validation failed:', error.message);
       
       // Don't throw - we've already deployed, just log the issue
     }
@@ -670,11 +672,11 @@ class AutonomousScheduler extends EventEmitter {
 
   // Event handlers
   handleCycleCompleted(analysis) {
-    console.log(`🎯 Cycle completed with ${analysis.passedTests}/${analysis.totalTests} tests passed`);
+    logDebug(`🎯 Cycle completed with ${analysis.passedTests}/${analysis.totalTests} tests passed`);
   }
 
   handleCycleFailure(run, error) {
-    console.error(`🚨 Cycle ${run.id} failed after ${this.state.consecutiveFailures} consecutive failures`);
+    logError(`🚨 Cycle ${run.id} failed after ${this.state.consecutiveFailures} consecutive failures`);
     
     // Calculate backoff time
     if (this.state.consecutiveFailures >= this.config.failureHandling.maxConsecutiveFailures) {
@@ -686,7 +688,7 @@ class AutonomousScheduler extends EventEmitter {
       this.state.backoffTime = Date.now() + (10 * 60 * 1000 * backoffMultiplier);
       
       const backoffMinutes = Math.ceil((this.state.backoffTime - Date.now()) / 1000 / 60);
-      console.log(`⏸️ Entering backoff period: ${backoffMinutes} minutes`);
+      logDebug(`⏸️ Entering backoff period: ${backoffMinutes} minutes`);
     }
     
     // Send alert if configured
@@ -700,7 +702,7 @@ class AutonomousScheduler extends EventEmitter {
   }
 
   handleEmergencyStop() {
-    console.error('🚨 EMERGENCY STOP TRIGGERED');
+    logError('🚨 EMERGENCY STOP TRIGGERED');
     
     this.state.isRunning = false;
     
@@ -720,7 +722,7 @@ class AutonomousScheduler extends EventEmitter {
   }
 
   handleDeploymentFailure(deployment) {
-    console.error(`🚨 Deployment failure: ${deployment.id}`);
+    logError(`🚨 Deployment failure: ${deployment.id}`);
     
     if (this.config.monitoring.alertWebhook) {
       this.sendAlert('DEPLOYMENT_FAILURE', deployment);
@@ -728,7 +730,7 @@ class AutonomousScheduler extends EventEmitter {
   }
 
   handleCriticalError(error) {
-    console.error('🚨 CRITICAL ERROR:', error);
+    logError('🚨 CRITICAL ERROR:', error);
     
     if (this.config.monitoring.alertWebhook) {
       this.sendAlert('CRITICAL_ERROR', {
@@ -832,7 +834,7 @@ class AutonomousScheduler extends EventEmitter {
       this.emit('metricTracked', { metric, value, timestamp: new Date() });
 
     } catch (error) {
-      console.error(`Failed to track performance metric ${metric}:`, error.message);
+      logError(`Failed to track performance metric ${metric}:`, error.message);
     }
   }
 
@@ -841,7 +843,7 @@ class AutonomousScheduler extends EventEmitter {
       const runFile = path.join(process.cwd(), 'tests', 'autonomous', 'runs', `${run.id}.json`);
       fs.writeFileSync(runFile, JSON.stringify(run, null, 2));
     } catch (error) {
-      console.error('Failed to save run record:', error.message);
+      logError('Failed to save run record:', error.message);
     }
   }
 
@@ -857,7 +859,7 @@ class AutonomousScheduler extends EventEmitter {
       const stateFile = path.join(process.cwd(), 'logs', 'scheduler', 'scheduler-state.json');
       fs.writeFileSync(stateFile, JSON.stringify(stateData, null, 2));
     } catch (error) {
-      console.error('Failed to save scheduler state:', error.message);
+      logError('Failed to save scheduler state:', error.message);
     }
   }
 
@@ -874,7 +876,7 @@ class AutonomousScheduler extends EventEmitter {
           this.state.nextRun = new Date(Date.now() + 600000).toISOString(); // Default to 10 minutes
         }
       } catch (error) {
-        console.log('Error getting next run time:', error.message);
+        logDebug('Error getting next run time:', error.message);
         this.state.nextRun = new Date(Date.now() + 600000).toISOString(); // Default to 10 minutes
       }
     }
@@ -916,12 +918,12 @@ class AutonomousScheduler extends EventEmitter {
         timeout: 10000
       });
     } catch (error) {
-      console.error('Failed to send alert:', error.message);
+      logError('Failed to send alert:', error.message);
     }
   }
 
   async gracefulShutdown() {
-    console.log('\n🛑 Received shutdown signal - performing graceful shutdown...');
+    logDebug('\n🛑 Received shutdown signal - performing graceful shutdown...');
     await this.stop();
     process.exit(0);
   }
@@ -983,7 +985,7 @@ class AutonomousScheduler extends EventEmitter {
       throw new Error('Another run is already in progress');
     }
     
-    console.log('🔄 Triggering manual test cycle...');
+    logDebug('🔄 Triggering manual test cycle...');
     return this.executeCycle();
   }
 
@@ -991,14 +993,14 @@ class AutonomousScheduler extends EventEmitter {
     if (this.cronJob) {
       this.cronJob.stop();
     }
-    console.log('⏸️ Scheduler paused');
+    logDebug('⏸️ Scheduler paused');
   }
 
   resumeScheduler() {
     if (this.cronJob) {
       this.cronJob.start();
     }
-    console.log('▶️ Scheduler resumed');
+    logDebug('▶️ Scheduler resumed');
   }
 
   updateSchedule(cronExpression) {
@@ -1011,7 +1013,7 @@ class AutonomousScheduler extends EventEmitter {
     }
     
     this.updateNextRunTime();
-    console.log(`⏰ Schedule updated: ${cronExpression}`);
+    logDebug(`⏰ Schedule updated: ${cronExpression}`);
   }
 }
 

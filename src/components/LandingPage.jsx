@@ -1,291 +1,195 @@
-import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { SignInButton, SignUpButton } from '@clerk/clerk-react'
-import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { 
-  TrendingUp, 
-  Calculator, 
-  BarChart3, 
-  PieChart, 
-  Target, 
-  Zap,
-  Shield,
-  Users,
-  Globe,
-  ArrowRight,
-  CheckCircle,
-  DollarSign,
-  Clock,
-  TrendingDown
-} from 'lucide-react'
+import {
+  ChartBarIcon,
+  CubeIcon,
+  BanknotesIcon,
+  PresentationChartLineIcon,
+  TruckIcon,
+  BeakerIcon,
+  ArrowRightIcon
+} from '@heroicons/react/24/outline'
+
+const FEATURES = [
+  {
+    icon: BanknotesIcon,
+    title: 'Working Capital Intelligence',
+    description: 'Real-time liquidity management with AI-powered cash flow forecasting and optimization.'
+  },
+  {
+    icon: PresentationChartLineIcon,
+    title: 'Demand Forecasting & Analytics',
+    description: 'Advanced predictive models for demand planning, inventory optimization, and production scheduling.'
+  },
+  {
+    icon: ChartBarIcon,
+    title: 'Executive Dashboard',
+    description: 'Comprehensive KPI monitoring with drill-down capabilities and executive-ready reporting.'
+  },
+  {
+    icon: CubeIcon,
+    title: 'Inventory Management',
+    description: 'Smart inventory tracking with automated reorder points and supplier performance metrics.'
+  },
+  {
+    icon: TruckIcon,
+    title: 'Production Tracking',
+    description: 'Real-time production monitoring with efficiency metrics and bottleneck identification.'
+  },
+  {
+    icon: BeakerIcon,
+    title: 'Quality Control',
+    description: 'Integrated quality management with defect tracking and continuous improvement analytics.'
+  }
+]
+
+const STATS = [
+  { label: 'Monthly Revenue', value: '$2.54M', change: '+12.3%', positive: true },
+  { label: 'Production Efficiency', value: '94.2%', change: '+2.1%', positive: true },
+  { label: 'Working Capital Ratio', value: '2.76', change: '+0.15', positive: true },
+  { label: 'Order Fulfillment', value: '98.5%', change: '+1.2%', positive: true }
+]
 
 const LandingPage = () => {
   const navigate = useNavigate()
-  const [hoveredFeature, setHoveredFeature] = useState(null)
 
-  const features = [
-    {
-      icon: Calculator,
-      title: "Working Capital Calculator",
-      description: "Advanced cash flow analysis with 30-180 day projections",
-      color: "text-blue-500",
-      bgColor: "bg-blue-500/10"
-    },
-    {
-      icon: TrendingUp,
-      title: "Growth Scenario Modeling",
-      description: "Model different growth rates and funding requirements",
-      color: "text-green-500",
-      bgColor: "bg-green-500/10"
-    },
-    {
-      icon: BarChart3,
-      title: "Industry Benchmarking",
-      description: "Compare performance against industry standards",
-      color: "text-purple-500",
-      bgColor: "bg-purple-500/10"
-    },
-    {
-      icon: PieChart,
-      title: "AI-Powered Insights",
-      description: "Machine learning analytics for predictive forecasting",
-      color: "text-orange-500",
-      bgColor: "bg-orange-500/10"
-    },
-    {
-      icon: Target,
-      title: "Cash Flow Optimization",
-      description: "Identify opportunities to unlock working capital",
-      color: "text-red-500",
-      bgColor: "bg-red-500/10"
-    },
-    {
-      icon: Zap,
-      title: "Real-Time Processing",
-      description: "Live data integration with instant calculations",
-      color: "text-yellow-500",
-      bgColor: "bg-yellow-500/10"
-    }
-  ]
-
-  const stats = [
-    { label: "Average Cash Unlock", value: "£83K", subtext: "in 90 days", icon: DollarSign },
-    { label: "Improvement Potential", value: "£334K", subtext: "12-month projection", icon: TrendingUp },
-    { label: "Processing Time", value: "<2s", subtext: "real-time analysis", icon: Clock },
-    { label: "Efficiency Gain", value: "46", subtext: "days reduction", icon: TrendingDown }
-  ]
+  const handleGetStarted = () => {
+    navigate('/app/sign-in')
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
-      {/* Navigation Header */}
-      <nav className="relative z-50 px-6 py-4">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <motion.div 
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="flex items-center space-x-3"
-          >
-            <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-xl">S</span>
+      {/* Header */}
+      <header className="relative z-10 px-6 py-4">
+        <nav className="mx-auto flex max-w-7xl items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-400 p-2">
+              <div className="h-full w-full rounded bg-white/20" />
             </div>
-            <div>
-              <h1 className="text-white font-bold text-xl">Sentia Manufacturing</h1>
-              <p className="text-blue-200 text-sm">Enterprise Dashboard</p>
-            </div>
-          </motion.div>
-          
-          <motion.div 
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="flex items-center space-x-4"
-          >
-            <SignInButton mode="modal">
-              <Button variant="ghost" className="text-white hover:bg-white/10">
-                Sign In
-              </Button>
-            </SignInButton>
-            <SignUpButton mode="modal">
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-                Get Started
-              </Button>
-            </SignUpButton>
-          </motion.div>
-        </div>
-      </nav>
+            <span className="text-xl font-bold text-white">Sentia Manufacturing</span>
+          </div>
+          <div className="flex items-center space-x-4">
+            <Button
+              variant="ghost"
+              className="text-white hover:bg-white/10"
+              onClick={handleGetStarted}
+            >
+              Sign In
+            </Button>
+            <Button
+              className="bg-gradient-to-r from-blue-500 to-cyan-400"
+              onClick={() => navigate('/app/dashboard')}
+            >
+              Go to Dashboard
+            </Button>
+          </div>
+        </nav>
+      </header>
 
       {/* Hero Section */}
-      <section className="relative px-6 py-20">
-        <div className="max-w-7xl mx-auto text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            <Badge className="mb-6 bg-blue-600/20 text-blue-200 border-blue-600/30">
-              Working Capital & Cash Flow Experts
+      <main className="relative">
+        <div className="mx-auto max-w-7xl px-6 py-16 sm:py-24">
+          <div className="text-center">
+            <Badge variant="secondary" className="mb-6 bg-blue-500/20 text-blue-200 border-blue-400/30">
+              Enterprise Manufacturing Intelligence
             </Badge>
-            
-            <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
-              Unlock Your
-              <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                {" "}Working Capital
-              </span>
+            <h1 className="text-5xl font-bold tracking-tight text-white sm:text-6xl lg:text-7xl">
+              Manufacturing
+              <span className="bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent"> Intelligence</span>
             </h1>
-            
-            <p className="text-xl text-blue-100 mb-8 max-w-3xl mx-auto leading-relaxed">
-              Enterprise-grade financial intelligence platform that answers three critical questions: 
-              How much cash do you need? When do you need funding? How much to fund growth?
+            <p className="mx-auto mt-6 max-w-2xl text-lg text-slate-300">
+              Transform your manufacturing operations with AI-powered analytics, real-time monitoring,
+              and intelligent forecasting. Make data-driven decisions that optimize efficiency and profitability.
             </p>
-            
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <SignUpButton mode="modal">
-                <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg">
-                  Start Free Analysis
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-              </SignUpButton>
-              
-              <Button 
-                size="lg" 
-                variant="outline" 
-                className="border-blue-400 text-blue-200 hover:bg-blue-600/10 px-8 py-4 text-lg"
-                onClick={() => document.getElementById('demo').scrollIntoView({ behavior: 'smooth' })}
+            <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:justify-center">
+              <Button
+                size="lg"
+                className="bg-gradient-to-r from-blue-500 to-cyan-400 text-white shadow-xl hover:shadow-blue-500/25"
+                onClick={handleGetStarted}
               >
-                Watch Demo
+                Get Started
+                <ArrowRightIcon className="ml-2 h-4 w-4" />
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                className="border-white/20 text-white hover:bg-white/10"
+                onClick={() => navigate('/app/dashboard')}
+              >
+                View Live Demo
               </Button>
             </div>
-          </motion.div>
+          </div>
         </div>
-      </section>
 
-      {/* Stats Section */}
-      <section className="px-6 py-16">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {stats.map((stat, index) => (
-              <motion.div
-                key={stat.label}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <Card className="bg-white/5 border-white/10 backdrop-blur-sm">
-                  <CardContent className="p-6 text-center">
-                    <stat.icon className="h-8 w-8 text-blue-400 mx-auto mb-3" />
-                    <div className="text-3xl font-bold text-white mb-1">{stat.value}</div>
-                    <div className="text-blue-200 text-sm">{stat.subtext}</div>
-                    <div className="text-blue-300 text-xs mt-1">{stat.label}</div>
-                  </CardContent>
-                </Card>
-              </motion.div>
+        {/* Stats Section */}
+        <div className="mx-auto max-w-7xl px-6 py-12">
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {STATS.map((stat) => (
+              <div key={stat.label} className="rounded-xl bg-white/5 p-6 backdrop-blur-sm border border-white/10">
+                <div className="text-sm font-medium text-slate-400">{stat.label}</div>
+                <div className="mt-2 text-3xl font-bold text-white">{stat.value}</div>
+                <div className={`mt-1 text-sm ${stat.positive ? 'text-green-400' : 'text-red-400'}`}>
+                  {stat.change} vs last month
+                </div>
+              </div>
             ))}
           </div>
         </div>
-      </section>
 
-      {/* Features Section */}
-      <section className="px-6 py-20">
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-4xl font-bold text-white mb-4">
-              Enterprise-Grade Financial Intelligence
+        {/* Features Section */}
+        <div className="mx-auto max-w-7xl px-6 py-16">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-white sm:text-4xl">
+              Comprehensive Manufacturing Suite
             </h2>
-            <p className="text-xl text-blue-200 max-w-3xl mx-auto">
-              Comprehensive suite of tools designed for CFOs, Finance Directors, and Business Analysts 
-              who demand accurate, actionable insights for strategic decision making.
+            <p className="mt-4 text-lg text-slate-300">
+              Everything you need to optimize your manufacturing operations
             </p>
-          </motion.div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {features.map((feature, index) => (
-              <motion.div
-                key={feature.title}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                onHoverStart={() => setHoveredFeature(index)}
-                onHoverEnd={() => setHoveredFeature(null)}
-              >
-                <Card className="bg-white/5 border-white/10 backdrop-blur-sm hover:bg-white/10 transition-all duration-300 h-full">
-                  <CardHeader>
-                    <div className={`w-12 h-12 rounded-lg ${feature.bgColor} flex items-center justify-center mb-4`}>
-                      <feature.icon className={`h-6 w-6 ${feature.color}`} />
-                    </div>
-                    <CardTitle className="text-white text-xl">{feature.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <CardDescription className="text-blue-200 text-base leading-relaxed">
-                      {feature.description}
-                    </CardDescription>
-                  </CardContent>
-                </Card>
-              </motion.div>
+          </div>
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {FEATURES.map((feature) => (
+              <div key={feature.title} className="rounded-xl bg-white/5 p-8 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-colors">
+                <div className="flex items-center space-x-3 mb-4">
+                  <div className="rounded-lg bg-gradient-to-br from-blue-500 to-cyan-400 p-2">
+                    <feature.icon className="h-6 w-6 text-white" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-white">{feature.title}</h3>
+                </div>
+                <p className="text-slate-300">{feature.description}</p>
+              </div>
             ))}
           </div>
         </div>
-      </section>
 
-      {/* CTA Section */}
-      <section className="px-6 py-20">
-        <div className="max-w-4xl mx-auto text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            <Card className="bg-gradient-to-r from-blue-600/20 to-purple-600/20 border-blue-500/30 backdrop-blur-sm">
-              <CardContent className="p-12">
-                <h2 className="text-3xl font-bold text-white mb-4">
-                  Ready to Optimize Your Working Capital?
-                </h2>
-                <p className="text-blue-200 text-lg mb-8 max-w-2xl mx-auto">
-                  Join enterprise leaders who trust Sentia Manufacturing Dashboard 
-                  for critical financial decision making and cash flow optimization.
-                </p>
-                
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <SignUpButton mode="modal">
-                    <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4">
-                      Access Enterprise Dashboard
-                      <ArrowRight className="ml-2 h-5 w-5" />
-                    </Button>
-                  </SignUpButton>
-                </div>
-                
-                <div className="flex items-center justify-center mt-6 space-x-6 text-sm text-blue-300">
-                  <div className="flex items-center">
-                    <CheckCircle className="h-4 w-4 mr-2" />
-                    Enterprise Security
-                  </div>
-                  <div className="flex items-center">
-                    <Shield className="h-4 w-4 mr-2" />
-                    SOC 2 Compliant
-                  </div>
-                  <div className="flex items-center">
-                    <Users className="h-4 w-4 mr-2" />
-                    24/7 Support
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
+        {/* CTA Section */}
+        <div className="mx-auto max-w-7xl px-6 py-16">
+          <div className="rounded-2xl bg-gradient-to-r from-blue-600 to-cyan-500 p-8 text-center">
+            <h2 className="text-3xl font-bold text-white">Ready to Transform Your Manufacturing?</h2>
+            <p className="mt-4 text-lg text-blue-100">
+              Join leading manufacturers who trust Sentia for their operations intelligence
+            </p>
+            <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:justify-center">
+              <Button
+                size="lg"
+                className="bg-white text-blue-600 hover:bg-slate-100"
+                onClick={handleGetStarted}
+              >
+                Start Free Trial
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                className="border-white/30 text-white hover:bg-white/10"
+                onClick={() => navigate('/app/dashboard')}
+              >
+                Explore Dashboard
+              </Button>
+            </div>
+          </div>
         </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="px-6 py-8 border-t border-white/10">
-        <div className="max-w-7xl mx-auto text-center">
-          <p className="text-blue-300">
-            © 2025 Sentia Manufacturing Dashboard. Enterprise Working Capital Intelligence Platform.
-          </p>
-        </div>
-      </footer>
+      </main>
     </div>
   )
 }

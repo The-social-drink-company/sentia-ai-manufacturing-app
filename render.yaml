@@ -1,22 +1,21 @@
-# Render configuration with PR Previews enabled
-# PR Previews: Always create PR previews. Skip a PR by adding the label render-preview-skip or [skip preview] in its title.
-
-previewsEnabled: true
-previewsExpireAfterDays: 3
+databases:
+  - name: sentia-manufacturing-db
+    databaseName: sentia_manufacturing
+    user: sentia_user
+    plan: free
 
 services:
-  # Development Environment - Comprehensive Enterprise Application with MCP & Database
+  # Development Environment
   - type: web
     name: sentia-manufacturing-development
     env: node
     plan: starter
     region: oregon
     branch: development
-    buildCommand: "NODE_OPTIONS='--max-old-space-size=1024' npm ci --omit=dev && NODE_OPTIONS='--max-old-space-size=3072' npm install -D vite @vitejs/plugin-react && DEPLOYMENT_STAGE=2 NODE_OPTIONS='--max-old-space-size=4096' node build-minimal.js && npx prisma generate"
-    startCommand: "node server-enterprise-complete.js"
+    buildCommand: "corepack enable && pnpm install --no-frozen-lockfile && pnpm prisma generate && pnpm run build"
+    startCommand: "node server.js"
     healthCheckPath: /health
     autoDeploy: true
-    pullRequestPreviewsEnabled: true
     envVars:
       - key: NODE_ENV
         value: development
@@ -25,31 +24,23 @@ services:
       - key: PORT
         value: 10000
       - key: DATABASE_URL
-        fromDatabase:
-          name: sentia-db-development
+        value: postgresql://sentia_dev:twIkfNHlhXfoOpHuWsZ45lzeLnjFNVQA@dpg-d3bbggggjchc73fdf1sg-a.oregon-postgres.render.com/sentia_manufacturing_dev_hl6w?sslmode=require
+      # fromDatabase:
+          name: sentia-manufacturing-db
           property: connectionString
-      - key: DEV_DATABASE_URL
-        fromDatabase:
-          name: sentia-db-development
-          property: connectionString
-      - key: MCP_SERVER_URL
-        value: http://localhost:3001
-      - key: IS_PULL_REQUEST
-        generateValue: true
-      - key: STAGED_DEPLOYMENT
-        value: true
-      - key: DEPLOYMENT_STAGE
-        value: 2
+      # Clerk Authentication Variables - SET VIA RENDER DASHBOARD
+      # SECURITY: Keys removed from config - use Render environment variables
+      # Required: VITE_CLERK_PUBLISHABLE_KEY, CLERK_SECRET_KEY, CLERK_WEBHOOK_SECRET
 
-  # Testing Environment with Database
+  # Testing Environment
   - type: web
     name: sentia-manufacturing-testing
     env: node
     plan: starter
     region: oregon
-    branch: test
-    buildCommand: "NODE_OPTIONS='--max-old-space-size=4096' npm ci --include=dev && DEPLOYMENT_STAGE=1 NODE_OPTIONS='--max-old-space-size=4096' node build-staged.js && npx prisma generate"
-    startCommand: "node server-enterprise-complete.js"
+    branch: testing
+    buildCommand: "corepack enable && pnpm install --no-frozen-lockfile && pnpm prisma migrate deploy && pnpm prisma generate && pnpm run build"
+    startCommand: "node server.js"
     healthCheckPath: /health
     autoDeploy: true
     envVars:
@@ -60,25 +51,23 @@ services:
       - key: PORT
         value: 10000
       - key: DATABASE_URL
-        fromDatabase:
-          name: sentia-db-testing
+        value: postgresql://sentia_test:Y5C66K5Thr2gIa2inIsfDlfw0RtyPtK4@dpg-d3bbkkmr433s738jbg6g-a.oregon-postgres.render.com/sentia_manufacturing_test_4fky?sslmode=require
+      # fromDatabase:
+          name: sentia-manufacturing-db
           property: connectionString
-      - key: TEST_DATABASE_URL
-        fromDatabase:
-          name: sentia-db-testing
-          property: connectionString
-      - key: MCP_SERVER_URL
-        value: http://localhost:3001
+      # Clerk Authentication Variables - SET VIA RENDER DASHBOARD
+      # SECURITY: Keys removed from config - use Render environment variables
+      # Required: VITE_CLERK_PUBLISHABLE_KEY, CLERK_SECRET_KEY, CLERK_WEBHOOK_SECRET
 
-  # Production Environment with Database
+  # Production Environment
   - type: web
     name: sentia-manufacturing-production
     env: node
     plan: starter
     region: oregon
     branch: production
-    buildCommand: "NODE_OPTIONS='--max-old-space-size=4096' npm ci --omit=dev && DEPLOYMENT_STAGE=1 NODE_OPTIONS='--max-old-space-size=4096' node build-staged.js && npx prisma generate"
-    startCommand: "node server-enterprise-complete.js"
+    buildCommand: "corepack enable && pnpm install --no-frozen-lockfile && pnpm prisma migrate deploy && pnpm prisma generate && pnpm run build"
+    startCommand: "node server.js"
     healthCheckPath: /health
     autoDeploy: true
     envVars:
@@ -89,12 +78,12 @@ services:
       - key: PORT
         value: 10000
       - key: DATABASE_URL
-        fromDatabase:
-          name: sentia-db-production
+        value: postgresql://sentia_prod:2o0PtIRQYR27VpwElifkaqI88jsX2Fb7@dpg-d3bbik3e5dus73ce3da0-a.oregon-postgres.render.com/sentia_manufacturing_prod_7lgf?sslmode=require
+      # fromDatabase:
+          name: sentia-manufacturing-db
           property: connectionString
-      - key: PROD_DATABASE_URL
-        fromDatabase:
-          name: sentia-db-production
-          property: connectionString
-      - key: MCP_SERVER_URL
-        value: http://localhost:3001
+      - key: LOG_LEVEL
+        value: error
+      # Clerk Authentication Variables - SET VIA RENDER DASHBOARD
+      # SECURITY: Keys removed from config - use Render environment variables
+      # Required: VITE_CLERK_PUBLISHABLE_KEY, CLERK_SECRET_KEY, CLERK_WEBHOOK_SECRET

@@ -76,17 +76,21 @@ As a manufacturing operations manager, I need a comprehensive dashboard that pro
 - **AI Integration**: MCP server with multi-LLM orchestration
 
 ### Known Issues Resolved
-- **Railway Environment Variables**: Proper loading via railway.json configuration
+- **Package Manager Migration**: Fully migrated from npm to pnpm
+- **Heroicon v2 Compatibility**: All icons updated to ArrowTrendingUpIcon/ArrowTrendingDownIcon
+- **Structured Logging**: Replaced console.log with enterprise logging system
+- **Render Environment Variables**: Proper loading via render.yaml configuration
 - **Port Conflicts**: Resolved EADDRINUSE errors with process management
-- **Security Vulnerabilities**: Addressed 8 vulnerabilities including critical xlsx issues
+- **Security Vulnerabilities**: Addressed vulnerabilities with pnpm audit
 - **Build Performance**: Optimized to 9-11 seconds with code splitting
 
 ### Architecture Decisions
-- **Frontend**: React 18 + Vite 4 + Tailwind CSS with memoization
+- **Frontend**: React 18 + Vite 7 + Tailwind CSS with memoization
 - **Backend**: Node.js + Express with structured logging
 - **Database**: PostgreSQL with pgvector for AI embeddings
 - **Authentication**: Clerk with production domain configuration
-- **Deployment**: Railway with auto-deploy for all branches
+- **Deployment**: Render with auto-deploy for all branches
+- **Package Manager**: pnpm with frozen lockfile for CI/CD
 
 ---
 

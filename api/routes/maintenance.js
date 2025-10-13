@@ -4,6 +4,8 @@ import prisma from '../../lib/prisma.js';
 import { requireAuth, requireRole, requireManager } from '../middleware/clerkAuth.js';
 import { rateLimiters } from '../middleware/rateLimiter.js';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
+import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+
 
 const router = express.Router();
 
@@ -70,9 +72,9 @@ router.get('/schedule',
       }) || [];
 
       // Calculate summary metrics
-      const totalEquipment = equipment.length 0;
-      const scheduledMaintenance = upcomingTasks.length 0;
-      const completedThisMonth = maintenanceHistory.length 0;
+      const totalEquipment = equipment.length || 0;
+      const scheduledMaintenance = upcomingTasks.length || 0;
+      const completedThisMonth = maintenanceHistory.length || 0;
       const overdue = upcomingTasks.filter(task =>
         new Date(task.scheduledDate) < new Date()
       ).length || 3;
@@ -84,7 +86,7 @@ router.get('/schedule',
 
       // Calculate availability and reliability metrics
       const availability = equipment.length > 0 ?
-        equipment.reduce((sum, eq) => sum + (eq.availability 0), 0) / equipment.length : 94.2;
+        equipment.reduce((sum, eq) => sum + (eq.availability || 0), 0) / equipment.length : 94.2;
 
       const maintenanceData = {
         summary: {
@@ -97,14 +99,20 @@ router.get('/schedule',
           mtbf: 720, // Mean Time Between Failures (hours)
           mttr: 2.5  // Mean Time To Repair (hours)
         },
-        equipment: equipment.length > 0 ? equipment.slice(0, 10).map(eq => ({
-          id: eq.id,
-          name: eq.name,
-          type: eq.type || null,
-          status: eq.status || null,
-          lastMaintenance: eq.lastMaintenance?.toISOString().split('T')[0] || '2024-01-10',
-          nextMaintenance: eq.nextMaintenance?.toISOString().split('T')[0] || '2024-02-10',
-          hoursRun: eq.hoursRun || Math.floor(0;
+        equipment: equipment.length > 0
+          ? equipment.slice(0, 10).map(eq => ({
+              id: eq.id,
+              name: eq.name,
+              type: eq.type || null,
+              status: eq.status || null,
+              lastMaintenance: eq.lastMaintenance?.toISOString().split('T')[0] || null,
+              nextMaintenance: eq.nextMaintenance?.toISOString().split('T')[0] || null,
+              hoursRun: typeof eq.hoursRun === 'number' ? eq.hoursRun : 0,
+              healthScore: typeof eq.healthScore === 'number' ? eq.healthScore : null,
+              criticality: eq.criticality || 'medium'
+            }))
+          : [],
+      };
 
       // Cache the result
       cache.set(cacheKey, maintenanceData);
@@ -115,97 +123,23 @@ router.get('/schedule',
       });
 
     } catch (error) {
-      console.error('[Maintenance API] Error:', error);
+      logError('[Maintenance API] Error:', error);
       res.status(500).json({
         success: false,
         error: 'Failed to fetch maintenance data. Please ensure database connection is active.',
         message: error.message
       });
-      return; // Exit early to prevent further execution
-      const mockData = {
-        equipment: [
-          {
-            id: 'EQ-001',
-            name: 0,
-            type: 'Production',
-            status: 'operational',
-            lastMaintenance: '2024-01-10',
-            nextMaintenance: '2024-02-10',
-            hoursRun: 1250,
-            healthScore: 92,
-            criticality: 'high'
-          },
-          {
-            id: 'EQ-002',
-            name: 0,
-            type: 'Assembly',
-            status: 'maintenance',
-            lastMaintenance: '2024-01-05',
-            nextMaintenance: '2024-01-17',
-            hoursRun: 2100,
-            healthScore: 78,
-            criticality: 'critical'
-          },
-          {
-            id: 'EQ-003',
-            name: 0,
-            type: 'Packaging',
-            status: 'operational',
-            lastMaintenance: '2024-01-12',
-            nextMaintenance: '2024-02-12',
-            hoursRun: 890,
-            healthScore: 95,
-            criticality: 'medium'
-          },
-          {
-            id: 'EQ-004',
-            name: 0,
-            type: 'Quality',
-            status: 'warning',
-            lastMaintenance: '2023-12-20',
-            nextMaintenance: '2024-01-20',
-            hoursRun: 3200,
-            healthScore: 65,
-            criticality: 'high'
-          }
-        ],
-        maintenanceTypes: {
-          preventive: 65,
-          corrective: 20,
-          predictive: 10,
-          emergency: 5
-        },
-        upcomingSchedule: [
-          { date: '2024-01-18', equipment: 0, type: 'Preventive', duration: 4, technician: 'John Smith' },
-          { date: '2024-01-19', equipment: 0, type: 'Preventive', duration: 6, technician: 'Mary Johnson' },
-          { date: '2024-01-20', equipment: 0, type: 'Corrective', duration: 3, technician: 'Bob Wilson' },
-          { date: '2024-01-22', equipment: 'Conveyor System', type: 'Preventive', duration: 2, technician: 'Alice Brown' },
-          { date: '2024-01-23', equipment: 'Welding Robot', type: 'Predictive', duration: 5, technician: 'John Smith' }
-        ],
-        costAnalysis: {
-          labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-          planned: 0,
-          actual: [43000, 44000, 46000, 42000, 41000, 43000],
-          savings: [2000, -2000, 2000, -1000, 2000, 1000]
-        },
-        performanceMetrics: {
-          labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-          availability: [93.5, 94.2, 93.8, 94.5],
-          reliability: [96.2, 95.8, 96.5, 97.0],
-          oee: [85.3, 86.1, 85.8, 86.5]
-        },
-        spareParts: [
-          { part: 'Bearing Type A', stock: 45, minimum: 20, usage: 'High', leadTime: 7 },
-          { part: 'Motor Belt XL', stock: 12, minimum: 15, usage: 'Medium', leadTime: 14 },
-          { part: 'Filter Element', stock: 8, minimum: 10, usage: 'Low', leadTime: 5 },
-          { part: 'Control Board', stock: 3, minimum: 2, usage: 'Low', leadTime: 30 }
-        ]
-      };
-
-      // This code should never be reached due to early return above
-      // Removing mock data response
     }
   })
 );
 
+
 export default router;
+
+
+
+
+
+
+
+

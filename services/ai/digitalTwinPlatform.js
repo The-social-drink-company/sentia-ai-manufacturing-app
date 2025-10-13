@@ -600,7 +600,7 @@ class SentiaDigitalTwinPlatform extends EventEmitter {
     this.visualizationEngine.meshes.set('bottling_facility', bottlingMesh);
 
     // Create warehouse models
-    Object.entries(this.productionFacilities.warehouses).forEach(([region, warehouse]) => {
+    Object.entries(this.productionFacilities.warehouses).forEach(_([region, warehouse]) => {
       const warehouseMesh = new THREE.Mesh(geometry, materials.warehouse);
       const twin = this.digitalTwins.get(`warehouse_${region}`);
       if (twin) {

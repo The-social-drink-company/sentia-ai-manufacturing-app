@@ -36,10 +36,10 @@ class GracefulShutdown {
     this.server = server;
     
     // Track connections
-    server.on('connection', (connection) => {
+    server.on(_'connection', _(connection) => {
       this.connections.add(connection);
       
-      connection.on('close', () => {
+      connection.on(_'close', () => {
         this.connections.delete(connection);
       });
     });
@@ -49,12 +49,12 @@ class GracefulShutdown {
     process.on('SIGINT', () => this.shutdown('SIGINT'));
     
     // Handle uncaught errors
-    process.on('uncaughtException', (error) => {
+    process.on(_'uncaughtException', _(error) => {
       logError('Uncaught exception', error);
       this.shutdown('UNCAUGHT_EXCEPTION');
     });
     
-    process.on('unhandledRejection', (reason, promise) => {
+    process.on(_'unhandledRejection', _(reason, _promise) => {
       logError('Unhandled rejection', new Error(String(reason)), {
         promise: String(promise)
       });
@@ -144,10 +144,10 @@ class PerformanceMonitor {
   }
   
   measureMiddleware(name) {
-    return (req, res, next) => {
+    return (req, res, _next) => {
       const start = performance.now();
       
-      res.on('finish', () => {
+      res.on(_'finish', () => {
         const duration = performance.now() - start;
         this.recordMetric(name, duration);
       });
@@ -176,12 +176,12 @@ class PerformanceMonitor {
       return null;
     }
     
-    const sorted = [...values].sort((a, b) => a - b);
+    const sorted = [...values].sort((a, _b) => a - b);
     return {
       count: values.length,
       min: sorted[0],
       max: sorted[sorted.length - 1],
-      avg: values.reduce((a, b) => a + b, 0) / values.length,
+      avg: values.reduce((a, _b) => a + b, 0) / values.length,
       p50: sorted[Math.floor(sorted.length * 0.5)],
       p95: sorted[Math.floor(sorted.length * 0.95)],
       p99: sorted[Math.floor(sorted.length * 0.99)]
@@ -201,7 +201,7 @@ class PerformanceMonitor {
 }
 
 // Initialize enhanced server setup
-export const setupEnhancedServer = async (app, { pool, redisUrl, queueService, prisma }) => {
+export const setupEnhancedServer = async (app, { _pool, _redisUrl, _queueService, prisma }) => {
   const gracefulShutdown = new GracefulShutdown();
   const performanceMonitor = new PerformanceMonitor();
   
@@ -233,7 +233,7 @@ export const setupEnhancedServer = async (app, { pool, redisUrl, queueService, p
   app.use(performanceMonitor.measureMiddleware('total_request'));
   
   // Enhanced health endpoint
-  app.get('/health', async (req, res) => {
+  app.get(_'/health', async _(req, res) => {
     try {
       const health = await performHealthCheck();
       const statusCode = health.status === 'healthy' ? 200 : 
@@ -250,7 +250,7 @@ export const setupEnhancedServer = async (app, { pool, redisUrl, queueService, p
   });
   
   // Enhanced readiness endpoint
-  app.get('/ready', async (req, res) => {
+  app.get(_'/ready', async _(req, res) => {
     try {
       const readiness = await performReadinessCheck();
       const statusCode = readiness.ready ? 200 : 503;
@@ -269,17 +269,17 @@ export const setupEnhancedServer = async (app, { pool, redisUrl, queueService, p
   app.post('/api/client-metrics', trackClientLatency);
   
   // Performance stats endpoint
-  app.get('/api/performance', (req, res) => {
+  app.get(_'/api/performance', _(req, res) => {
     res.json(performanceMonitor.getAllStats());
   });
   
   // SLO dashboard endpoint
-  app.get('/api/slo-dashboard', (req, res) => {
+  app.get(_'/api/slo-dashboard', _(req, res) => {
     res.json(sloTracker.getSLODashboard());
   });
   
   // Maintenance mode middleware
-  app.use((req, res, next) => {
+  app.use(_(req, res, _next) => {
     if (process.env.MAINTENANCE_MODE === 'true') {
       const allowedIPs = process.env.MAINTENANCE_ALLOWED_IPS?.split(',') || [];
       const clientIP = req.ip || req.connection.remoteAddress;
@@ -341,7 +341,7 @@ export class CircuitBreaker {
   async callWithTimeout(fn, timeout) {
     return Promise.race([
       fn(),
-      new Promise((_, reject) => 
+      new Promise((_, _reject) => 
         setTimeout(() => reject(new Error('Circuit breaker timeout')), timeout)
       )
     ]);
@@ -435,7 +435,7 @@ export class CacheManager {
   
   // Cache middleware
   middleware(keyFn, ttl = this.defaultTTL) {
-    return async (req, res, next) => {
+    return async (req, res, _next) => {
       if (!this.enabled) {
         return next();
       }
@@ -452,7 +452,7 @@ export class CacheManager {
       
       // Capture response
       const originalSend = res.json;
-      res.json = (data) => {
+      res.json = (_data) => {
         res.json = originalSend;
         
         // Cache successful responses

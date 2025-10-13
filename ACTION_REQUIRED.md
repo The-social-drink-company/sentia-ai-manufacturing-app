@@ -13,8 +13,8 @@ https://dashboard.render.com/web/srv-ctg8hkpu0jms73ab8m00/env
 
 ### 2. Add These 4 Variables First:
 ```
-VITE_CLERK_PUBLISHABLE_KEY = pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ
-CLERK_SECRET_KEY = sk_live_mzgSFm1q9VrzngMMaCTNNwPEqBmr75vVxiND1DO7wq
+VITE_CLERK_PUBLISHABLE_KEY = pk_live_REDACTED
+CLERK_SECRET_KEY = sk_live_REDACTED
 PORT = 5000
 NODE_ENV = production
 ```

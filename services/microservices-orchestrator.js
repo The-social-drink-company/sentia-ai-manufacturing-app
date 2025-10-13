@@ -1,5 +1,7 @@
 import EventEmitter from 'events';
 import redisCacheService from './redis-cache.js';
+import { logDebug, logInfo, logWarn, logError } from '../src/utils/logger';
+
 
 class MicroservicesOrchestrator extends EventEmitter {
   constructor() {
@@ -68,7 +70,7 @@ class MicroservicesOrchestrator extends EventEmitter {
     // Setup load balancer
     this.setupLoadBalancer(name, serviceConfig);
     
-    console.log(`Microservices: Registered service ${name} v${serviceConfig.version}`);
+    logDebug(`Microservices: Registered service ${name} v${serviceConfig.version}`);
     this.emit('service:registered', { name, config: serviceConfig });
     
     return serviceConfig;
@@ -105,12 +107,12 @@ class MicroservicesOrchestrator extends EventEmitter {
     this.serviceInstances.set(serviceName, instances);
     
     // Simulate instance startup
-    setTimeout(() => {
+    setTimeout(_() => {
       instances.forEach(instance => {
         instance.status = 'running';
         instance.health = 'healthy';
       });
-      console.log(`Microservices: ${serviceName} instances initialized`);
+      logDebug(`Microservices: ${serviceName} instances initialized`);
     }, 2000);
   }
 
@@ -122,7 +124,7 @@ class MicroservicesOrchestrator extends EventEmitter {
       stickySession: config.loadBalancer.stickySession,
       sessionMap: new Map(),
       
-      getNextInstance: (sessionId = null) => {
+      getNextInstance: (sessionId = _null) => {
         const instances = this.getHealthyInstances(serviceName);
         
         if (instances.length === 0) {
@@ -157,12 +159,12 @@ class MicroservicesOrchestrator extends EventEmitter {
             break;
             
           case 'least-response-time':
-            selectedInstance = instances.reduce((fastest, current) => {
+            selectedInstance = instances.reduce(_(fastest, current) => {
               const avgResponseTime = current.responseTime.length > 0 
-                ? current.responseTime.reduce((sum, time) => sum + time, 0) / current.responseTime.length
+                ? current.responseTime.reduce((sum, _time) => sum + time, 0) / current.responseTime.length
                 : 0;
               const fastestAvg = fastest.responseTime.length > 0
-                ? fastest.responseTime.reduce((sum, time) => sum + time, 0) / fastest.responseTime.length
+                ? fastest.responseTime.reduce((sum, _time) => sum + time, 0) / fastest.responseTime.length
                 : 0;
               return avgResponseTime < fastestAvg ? current : fastest;
             });
@@ -237,7 +239,7 @@ class MicroservicesOrchestrator extends EventEmitter {
       return response;
       
     } catch (error) {
-      console.error(`Request routing failed for ${serviceName}:`, error.message);
+      logError(`Request routing failed for ${serviceName}:`, error.message);
       
       // Record failure metrics
       const service = this.services.get(serviceName);
@@ -273,7 +275,7 @@ class MicroservicesOrchestrator extends EventEmitter {
         
         if (attempt < retryConfig.attempts) {
           const backoffDelay = retryConfig.backoff * Math.pow(2, attempt - 1);
-          console.log(`Retry attempt ${attempt + 1} for ${instance.id} in ${backoffDelay}ms`);
+          logDebug(`Retry attempt ${attempt + 1} for ${instance.id} in ${backoffDelay}ms`);
           await this.sleep(backoffDelay);
         }
       }
@@ -312,7 +314,7 @@ class MicroservicesOrchestrator extends EventEmitter {
 
   // Health monitoring
   startHealthMonitoring() {
-    setInterval(async () => {
+    setInterval(async _() => {
       await this.performHealthChecks();
       await this.updateMetrics();
       await this.checkAutoScaling();
@@ -329,14 +331,14 @@ class MicroservicesOrchestrator extends EventEmitter {
           instance.lastHealthCheck = new Date().toISOString();
           
           if (!isHealthy && instance.status === 'running') {
-            console.warn(`Health check failed for ${instance.id}`);
+            logWarn(`Health check failed for ${instance.id}`);
             this.emit('instance:unhealthy', { instance, serviceName });
           }
           
         } catch (error) {
           instance.health = 'unhealthy';
           instance.lastHealthCheck = new Date().toISOString();
-          console.error(`Health check error for ${instance.id}:`, error.message);
+          logError(`Health check error for ${instance.id}:`, error.message);
         }
       }
     }
@@ -379,7 +381,7 @@ class MicroservicesOrchestrator extends EventEmitter {
   calculateAverageResponseTime(instances) {
     const allResponseTimes = instances.flatMap(i => i.responseTime);
     return allResponseTimes.length > 0
-      ? allResponseTimes.reduce((sum, time) => sum + time, 0) / allResponseTimes.length
+      ? allResponseTimes.reduce((sum, _time) => sum + time, 0) / allResponseTimes.length
       : 0;
   }
 
@@ -433,19 +435,19 @@ class MicroservicesOrchestrator extends EventEmitter {
       instances.push(newInstance);
       
       // Simulate startup time
-      setTimeout(() => {
+      setTimeout(_() => {
         newInstance.status = 'running';
         newInstance.health = 'healthy';
       }, 5000);
       
-      console.log(`Microservices: Scaled up ${serviceName} (${instances.length} instances)`);
+      logDebug(`Microservices: Scaled up ${serviceName} (${instances.length} instances)`);
       this.emit('service:scaled', { serviceName, direction: 'up', instances: instances.length });
       
     } else if (direction === 'down' && instances.length > serviceConfig.scaling.min) {
       const instanceToRemove = instances.pop();
       instanceToRemove.status = 'terminating';
       
-      console.log(`Microservices: Scaled down ${serviceName} (${instances.length} instances)`);
+      logDebug(`Microservices: Scaled down ${serviceName} (${instances.length} instances)`);
       this.emit('service:scaled', { serviceName, direction: 'down', instances: instances.length });
     }
   }
@@ -476,7 +478,7 @@ class MicroservicesOrchestrator extends EventEmitter {
     
     if (cb.failures >= cb.failureThreshold && cb.state === 'closed') {
       cb.state = 'open';
-      console.warn(`Circuit breaker opened for service ${service.name}`);
+      logWarn(`Circuit breaker opened for service ${service.name}`);
       this.emit('circuit-breaker:opened', { service: service.name });
     }
   }
@@ -487,7 +489,7 @@ class MicroservicesOrchestrator extends EventEmitter {
     if (cb.state === 'half-open') {
       cb.state = 'closed';
       cb.failures = 0;
-      console.log(`Circuit breaker closed for service ${service.name}`);
+      logDebug(`Circuit breaker closed for service ${service.name}`);
       this.emit('circuit-breaker:closed', { service: service.name });
     } else if (cb.state === 'closed') {
       cb.failures = Math.max(0, cb.failures - 1);
@@ -567,7 +569,7 @@ class MicroservicesOrchestrator extends EventEmitter {
         ? (this.metrics.errorCount / this.metrics.totalRequests * 100).toFixed(2)
         : 0,
       averageResponseTime: this.metrics.responseTime.length > 0
-        ? (this.metrics.responseTime.reduce((sum, time) => sum + time, 0) / this.metrics.responseTime.length).toFixed(2)
+        ? (this.metrics.responseTime.reduce((sum, _time) => sum + time, 0) / this.metrics.responseTime.length).toFixed(2)
         : 0,
       services,
       timestamp: new Date().toISOString()
@@ -575,24 +577,24 @@ class MicroservicesOrchestrator extends EventEmitter {
   }
 
   setupEventHandlers() {
-    this.on('service:registered', (event) => {
-      console.log(`Event: Service ${event.name} registered`);
+    this.on(_'service:registered', _(event) => {
+      logDebug(`Event: Service ${event.name} registered`);
     });
 
-    this.on('instance:unhealthy', (event) => {
-      console.warn(`Event: Instance ${event.instance.id} is unhealthy`);
+    this.on(_'instance:unhealthy', _(event) => {
+      logWarn(`Event: Instance ${event.instance.id} is unhealthy`);
     });
 
-    this.on('service:scaled', (event) => {
-      console.log(`Event: Service ${event.serviceName} scaled ${event.direction} to ${event.instances} instances`);
+    this.on(_'service:scaled', _(event) => {
+      logDebug(`Event: Service ${event.serviceName} scaled ${event.direction} to ${event.instances} instances`);
     });
 
-    this.on('circuit-breaker:opened', (event) => {
-      console.warn(`Event: Circuit breaker opened for ${event.service}`);
+    this.on(_'circuit-breaker:opened', _(event) => {
+      logWarn(`Event: Circuit breaker opened for ${event.service}`);
     });
 
-    this.on('circuit-breaker:closed', (event) => {
-      console.log(`Event: Circuit breaker closed for ${event.service}`);
+    this.on(_'circuit-breaker:closed', _(event) => {
+      logDebug(`Event: Circuit breaker closed for ${event.service}`);
     });
   }
 

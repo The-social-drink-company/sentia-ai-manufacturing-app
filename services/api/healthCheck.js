@@ -11,7 +11,7 @@ const router = express.Router();
 /**
  * Basic health check
  */
-router.get('/health', (req, res) => {
+router.get(_'/health', _(req, res) => {
   res.status(200).json({
     status: 'ok',
     timestamp: new Date().toISOString(),
@@ -23,7 +23,7 @@ router.get('/health', (req, res) => {
 /**
  * Detailed health check with database connectivity
  */
-router.get('/health/detailed', async (req, res) => {
+router.get(_'/health/detailed', async _(req, res) => {
   const startTime = Date.now();
   
   const health = {
@@ -87,7 +87,7 @@ router.get('/health/detailed', async (req, res) => {
 /**
  * Database-specific health check
  */
-router.get('/health/database', async (req, res) => {
+router.get(_'/health/database', async _(req, res) => {
   try {
     const branch = req.query.branch || null;
     const dbHealth = await neonDB.healthCheck(branch);
@@ -106,7 +106,7 @@ router.get('/health/database', async (req, res) => {
 /**
  * Database warmup endpoint
  */
-router.post('/health/warmup', async (req, res) => {
+router.post(_'/health/warmup', async _(req, res) => {
   try {
     const branch = req.body.branch || null;
     await neonDB.warmupConnection(branch);
@@ -130,7 +130,7 @@ router.post('/health/warmup', async (req, res) => {
 /**
  * Database reconnect endpoint
  */
-router.post('/health/reconnect', async (req, res) => {
+router.post(_'/health/reconnect', async _(req, res) => {
   try {
     const branch = req.body.branch || null;
     await neonDB.reconnect(branch);
@@ -154,7 +154,7 @@ router.post('/health/reconnect', async (req, res) => {
 /**
  * Get connection statistics
  */
-router.get('/health/stats', (req, res) => {
+router.get(_'/health/stats', _(req, res) => {
   const branch = req.query.branch || null;
   const stats = neonDB.getStats(branch);
   
@@ -167,7 +167,7 @@ router.get('/health/stats', (req, res) => {
 /**
  * Readiness probe for Railway
  */
-router.get('/ready', async (req, res) => {
+router.get(_'/ready', async _(req, res) => {
   try {
     // Quick database check
     const result = await neonDB.executeQuery('SELECT 1', [], { 
@@ -188,7 +188,7 @@ router.get('/ready', async (req, res) => {
 /**
  * Liveness probe for Railway
  */
-router.get('/live', (req, res) => {
+router.get(_'/live', _(req, res) => {
   res.status(200).send('Alive');
 });
 

@@ -1,0 +1,129 @@
+{
+  "name": "sentia-mcp-server",
+  "version": "3.0.0",
+  "description": "Sentia Manufacturing MCP Server - Standalone Model Context Protocol server for manufacturing intelligence",
+  "type": "module",
+  "main": "src/server.js",
+  "bin": {
+    "sentia-mcp": "./scripts/start-mcp-server.js"
+  },
+  "scripts": {
+    "start": "node scripts/start-mcp-server.js",
+    "dev": "nodemon scripts/start-mcp-server.js",
+    "debug": "node --inspect scripts/start-mcp-server.js --log-level debug",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:unit": "vitest run --config vitest.unit.config.js",
+    "test:integration": "vitest run --config vitest.integration.config.js",
+    "test:security": "vitest run --config vitest.security.config.js",
+    "test:performance": "k6 run tests/performance/*.js",
+    "test:coverage": "vitest run --coverage",
+    "test:e2e": "vitest run tests/e2e",
+    "test:contract": "node tests/contract/api-contract-tests.js",
+    "test:load": "k6 run tests/load/load-test.js",
+    "test:all": "npm run test:unit && npm run test:integration && npm run test:e2e && npm run test:security",
+    "coverage": "node scripts/run-coverage.js",
+    "coverage:unit": "vitest run tests/unit --coverage --config vitest.coverage.config.js",
+    "coverage:integration": "vitest run tests/integration --coverage --config vitest.coverage.config.js",
+    "coverage:e2e": "vitest run tests/e2e --coverage --config vitest.coverage.config.js",
+    "coverage:security": "vitest run tests/security --coverage --config vitest.coverage.config.js",
+    "coverage:performance": "vitest run tests/performance --coverage --config vitest.coverage.config.js",
+    "coverage:report": "vitest run --coverage --config vitest.coverage.config.js",
+    "quality-gates": "node scripts/run-coverage.js --quality-gates",
+    "health": "curl -f http://localhost:3001/health || exit 1",
+    "health:advanced": "node scripts/health-check-advanced.js",
+    "lint": "eslint src scripts --ext .js",
+    "lint:fix": "eslint src scripts --ext .js --fix",
+    "lint:check": "eslint src scripts --ext .js --max-warnings 0",
+    "format": "prettier --write \"src/**/*.js\" \"scripts/**/*.js\" \"tests/**/*.js\"",
+    "format:check": "prettier --check \"src/**/*.js\" \"scripts/**/*.js\" \"tests/**/*.js\"",
+    "security:scan": "npm audit --audit-level=moderate && retire",
+    "security:deps": "snyk test",
+    "build:docker": "docker build -t sentia-mcp-server:latest .",
+    "build:docker:security": "docker build -t sentia-mcp-server:latest . && trivy image sentia-mcp-server:latest"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.24.3",
+    "@modelcontextprotocol/sdk": "^1.19.1",
+    "@shopify/shopify-api": "^12.0.0",
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "amazon-sp-api": "^1.1.7",
+    "aws-sdk": "^2.1691.0",
+    "axios": "^1.12.2",
+    "compression": "^1.8.1",
+    "cors": "^2.8.5",
+    "crypto-js": "^4.2.0",
+    "dotenv": "^16.0.0",
+    "express": "^4.21.1",
+    "express-rate-limit": "^7.4.1",
+    "helmet": "^8.1.0",
+    "ioredis": "^5.3.2",
+    "jsonwebtoken": "^9.0.2",
+    "node-cache": "^5.1.2",
+    "nodemailer": "^6.9.7",
+    "openai": "^4.104.0",
+    "pg": "^8.11.3",
+    "prom-client": "^15.1.0",
+    "uuid": "^11.0.4",
+    "winston": "^3.11.0",
+    "winston-daily-rotate-file": "^4.7.1",
+    "ws": "^8.14.2",
+    "xero-node": "^13.1.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.42.0",
+    "@vitest/coverage-v8": "^1.6.0",
+    "@vitest/ui": "^1.6.0",
+    "eslint": "^9.26.0",
+    "jsdom": "^24.0.0",
+    "nodemon": "^3.1.7",
+    "prettier": "^3.2.5",
+    "retire": "^5.0.0",
+    "snyk": "^1.1291.0",
+    "supertest": "^6.3.4",
+    "vite-tsconfig-paths": "^4.3.2",
+    "vitest": "^1.6.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "manufacturing",
+    "ai",
+    "claude",
+    "anthropic",
+    "openai",
+    "gpt",
+    "business-intelligence",
+    "automation"
+  ],
+  "author": "Sentia Manufacturing Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/The-social-drink-company/sentia-ai-manufacturing-app.git",
+    "directory": "sentia-mcp-server"
+  },
+  "homepage": "https://github.com/The-social-drink-company/sentia-ai-manufacturing-app/tree/main/sentia-mcp-server#readme",
+  "pnpm": {
+    "overrides": {
+      "esbuild": ">=0.25.0",
+      "csvtojson": "^2.0.10"
+    }
+  },
+  "securityNotes": {
+    "knownVulnerabilities": [
+      {
+        "package": "csvtojson",
+        "severity": "moderate",
+        "description": "Prototype pollution vulnerability in csvtojson via amazon-sp-api",
+        "status": "accepted-risk",
+        "reason": "No patch available, dependency required for Amazon SP-API integration",
+        "mitigation": "Sandboxed usage within MCP server, input validation implemented"
+      }
+    ]
+  }
+}

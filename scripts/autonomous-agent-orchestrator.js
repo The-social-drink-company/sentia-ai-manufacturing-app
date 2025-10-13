@@ -5,7 +5,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const _dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // All 7 Autonomous Agents Configuration
 const AGENTS = [
@@ -79,7 +79,7 @@ class AutonomousAgentOrchestrator {
     try {
       await this.log('INFO', `Starting agent: ${name}`);
       
-      const agentPath = path.join(__dirname, script);
+      const agentPath = path.join(_dirname, script);
       
       // Check if script exists
       try {
@@ -99,12 +99,12 @@ class AutonomousAgentOrchestrator {
         }
       });
       
-      agentProcess.on('error', (error) => {
+      agentProcess.on('error', _(error) => {
         this.log('ERROR', `Agent failed: ${error.message}`, name);
         this.restartAgent(agentConfig);
       });
       
-      agentProcess.on('exit', (code) => {
+      agentProcess.on('exit', _(code) => {
         this.log('WARN', `Agent exited with code ${code}`, name);
         this.restartAgent(agentConfig);
       });
@@ -210,7 +210,7 @@ class ${agentName.replace(/\s+/g, '')} {
 const agent = new ${agentName.replace(/\s+/g, '')}();
 agent.start().catch(console.error);
 
-process.on('SIGINT', () => {
+process.on('SIGINT', _() => {
   agent.stop();
   process.exit(0);
 });`;
@@ -223,7 +223,7 @@ process.on('SIGINT', () => {
     
     await this.log('INFO', `Restarting agent in 10 seconds...`, name);
     
-    setTimeout(() => {
+    setTimeout(_() => {
       this.startAgent(agentConfig);
     }, 10000);
   }
@@ -252,7 +252,7 @@ process.on('SIGINT', () => {
     }
     
     // Monitor agent health
-    setInterval(async () => {
+    setInterval(async _() => {
       await this.checkAgentHealth();
     }, 60000); // Check every minute
     
@@ -283,12 +283,12 @@ const orchestrator = new AutonomousAgentOrchestrator();
 orchestrator.start().catch(console.error);
 
 // Handle graceful shutdown
-process.on('SIGINT', () => {
+process.on('SIGINT', _() => {
   orchestrator.stop();
   setTimeout(() => process.exit(0), 2000);
 });
 
-process.on('SIGTERM', () => {
+process.on('SIGTERM', _() => {
   orchestrator.stop();
   setTimeout(() => process.exit(0), 2000);
 });

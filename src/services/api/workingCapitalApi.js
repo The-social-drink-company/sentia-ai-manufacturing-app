@@ -30,7 +30,8 @@ class WorkingCapitalApi {
   }
 
   async getWorkingCapitalSummary(params) {
-    return api.get('/financial/working-capital-summary', params)
+    // Use the working capital endpoint that exists and returns integration status
+    return api.get('/financial/working-capital', params)
   }
 }
 

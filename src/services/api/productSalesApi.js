@@ -7,7 +7,7 @@ export const productSalesApi = {
     const response = await apiClient.get('/api/sales/product-performance', { 
       params: { period } 
     })
-    return response.data
+    return response // API returns object directly, no .data wrapper
   },
 
   // Get product sales summary metrics
@@ -15,7 +15,7 @@ export const productSalesApi = {
     const response = await apiClient.get('/api/sales/product-summary', { 
       params: { period } 
     })
-    return response.data
+    return response // API returns object directly, no .data wrapper
   },
 
   // Get top performing products
@@ -23,7 +23,7 @@ export const productSalesApi = {
     const response = await apiClient.get('/api/sales/top-products', { 
       params: { limit } 
     })
-    return response.data
+    return response // API returns object directly, no .data wrapper
   }
 }
 

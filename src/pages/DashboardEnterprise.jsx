@@ -44,8 +44,11 @@ const DashboardEnterprise = () => {
         setPLError(null)
         
         const response = await plAnalysisApi.getPLAnalysis()
-        if (response.success) {
+        if (response && response.success && response.data) {
           setPLData(response.data)
+        } else if (response && response.requiresXeroConnection) {
+          setRequiresXeroConnection(true)
+          setPLData([])
         } else {
           throw new Error('Failed to fetch P&L data')
         }
@@ -71,19 +74,26 @@ const DashboardEnterprise = () => {
         const response = await plAnalysisApi.getKPISummary()
         
         // Check if Xero connection is required
-        if (response.requiresXeroConnection) {
+        if (response && response.requiresXeroConnection) {
           setRequiresXeroConnection(true)
           setPerformanceKpis([])
           return
         }
         
-        if (response.success && response.data) {
+        // Handle direct response object (no .data wrapper)
+        if (response && response.success && response.data) {
           const kpiData = response.data
           setPerformanceKpis([
-            { label: 'Annual revenue', value: kpiData.annualRevenue.value, helper: kpiData.annualRevenue.helper },
-            { label: 'Units sold', value: kpiData.unitsSold.value, helper: kpiData.unitsSold.helper },
-            { label: 'Gross margin', value: kpiData.grossMargin.value, helper: kpiData.grossMargin.helper }
+            { label: 'Annual revenue', value: kpiData.annualRevenue?.value || 'N/A', helper: kpiData.annualRevenue?.helper || '' },
+            { label: 'Units sold', value: kpiData.unitsSold?.value || 'N/A', helper: kpiData.unitsSold?.helper || '' },
+            { label: 'Gross margin', value: kpiData.grossMargin?.value || 'N/A', helper: kpiData.grossMargin?.helper || '' }
           ])
+        } else if (response && !response.success) {
+          // API returned error response, might need Xero connection
+          if (response.requiresXeroConnection) {
+            setRequiresXeroConnection(true)
+          }
+          setPerformanceKpis([])
         } else {
           throw new Error('Failed to fetch KPI data')
         }
@@ -107,8 +117,11 @@ const DashboardEnterprise = () => {
         setSalesError(null)
         
         const response = await productSalesApi.getProductSalesData()
-        if (response.success) {
+        if (response && response.success && response.data) {
           setProductSalesData(response.data)
+        } else if (response && response.requiresXeroConnection) {
+          setRequiresXeroConnection(true)
+          setProductSalesData([])
         } else {
           throw new Error('Failed to fetch product sales data')
         }
@@ -158,14 +171,14 @@ const DashboardEnterprise = () => {
         
         const response = await workingCapitalApi.getWorkingCapitalSummary()
         
-        // Check if Xero connection is required
-        if (response.requiresXeroConnection) {
+        // Check if integration is required (working capital needs multiple systems)
+        if (response && (response.requiresXeroConnection || response.error === 'Financial system integration required')) {
           setRequiresXeroConnection(true)
           setCapitalKpis([])
           return
         }
         
-        if (response.success && response.data) {
+        if (response && response.success && response.data) {
           // Transform working capital data into KPI format
           const data = response.data
           setCapitalKpis([
@@ -175,7 +188,9 @@ const DashboardEnterprise = () => {
             { label: 'FX sensitivity', value: data.fxSensitivity || '$0', helper: '±1% USD/EUR/JPY' }
           ])
         } else {
-          throw new Error('Failed to fetch capital KPIs')
+          // Show integration required message for working capital
+          setRequiresXeroConnection(true)
+          setCapitalKpis([])
         }
       } catch (error) {
         console.error('Error fetching capital KPIs:', error)

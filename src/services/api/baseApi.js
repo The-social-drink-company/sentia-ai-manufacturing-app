@@ -42,6 +42,7 @@ class BaseApi {
 
   async request(endpoint, options = {}) {
     const url = `${this.baseURL}${endpoint}`
+    console.log(`[BaseApi] Making request to: ${url}`)
     const config = {
       ...options,
       headers: {

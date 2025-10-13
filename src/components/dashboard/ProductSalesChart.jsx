@@ -11,6 +11,9 @@ import {
 } from 'recharts'
 
 const ProductSalesChart = ({ data }) => {
+  // Ensure data is an array to prevent map errors
+  const chartData = Array.isArray(data) ? data : []
+  
   // Product-specific colors
   const getProductColor = (productName) => {
     switch (productName) {
@@ -49,7 +52,7 @@ const ProductSalesChart = ({ data }) => {
   return (
     <ResponsiveContainer width="100%" height="100%">
       <BarChart
-        data={data}
+        data={chartData}
         margin={{
           top: 20,
           right: 30,
@@ -75,7 +78,7 @@ const ProductSalesChart = ({ data }) => {
           dataKey="revenue" 
           radius={[6, 6, 0, 0]}
         >
-          {data.map((entry, index) => (
+          {chartData.map((entry, index) => (
             <Cell key={`cell-${index}`} fill={getProductColor(entry.product)} />
           ))}
         </Bar>

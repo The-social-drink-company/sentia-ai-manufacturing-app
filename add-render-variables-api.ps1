@@ -112,7 +112,6 @@ $allVariables = @{
     
     # Sync Configuration
     "AUTO_SYNC_ENABLED" = "true"
-    "XERO_SYNC_INTERVAL" = "*/30 * * * *"
     "SHOPIFY_SYNC_INTERVAL" = "*/15 * * * *"
     "AMAZON_SYNC_INTERVAL" = "*/60 * * * *"
     "DATABASE_SYNC_INTERVAL" = "0 */6 * * *"

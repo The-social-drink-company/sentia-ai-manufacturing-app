@@ -8,6 +8,7 @@ import ProgressiveDashboardLoader from '@/components/dashboard/ProgressiveDashbo
 import ClerkSignInEnvironmentAware from '@/pages/ClerkSignInEnvironmentAware'
 import FinancialReportsErrorBoundary from '@/components/debug/FinancialReportsErrorBoundary'
 import MinimalFinancialReportsTest from '@/components/debug/MinimalFinancialReportsTest'
+import { XeroProvider } from '@/contexts/XeroContext'
 
 const Dashboard = lazy(() => import('@/pages/DashboardEnterprise'))
 const WorkingCapital = lazy(() => import('@/components/WorkingCapital/RealWorkingCapital'))
@@ -296,9 +297,10 @@ const ProtectedRoute = ({ children }) => {
 const App = () => (
   <AuthenticationProvider>
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <RouterDebugger />
-        <Routes>
+      <XeroProvider>
+        <BrowserRouter>
+          <RouterDebugger />
+          <Routes>
           {/* Public Routes */}
           <Route path="/" element={<LandingPage />} />
           <Route path="/landing" element={<LandingPage />} />
@@ -427,7 +429,8 @@ const App = () => (
             />
           } />
         </Routes>
-      </BrowserRouter>
+        </BrowserRouter>
+      </XeroProvider>
     </QueryClientProvider>
   </AuthenticationProvider>
 )

@@ -610,47 +610,74 @@ app.post('/api/xero/disconnect', async (req, res) => {
   }
 });
 
-// Dashboard Summary endpoint - BULLETPROOF JSON ONLY
+// Dashboard Summary endpoint - REQUIRES XERO CONNECTION
 app.get('/api/dashboard/summary', async (req, res) => {
   try {
+    // Check Xero connection status
+    let xeroService = null;
+    let xeroConnected = false;
+    
+    try {
+      const xeroModule = await import('./services/xeroService.js');
+      xeroService = xeroModule.default;
+      xeroService.ensureInitialized();
+      xeroConnected = xeroService.isConnected;
+    } catch (error) {
+      logger.warn('Xero service not available:', error.message);
+    }
+    
+    if (!xeroConnected) {
+      // No fallback data - require Xero connection
+      return res.json({
+        success: false,
+        requiresXeroConnection: true,
+        message: 'Real-time financial data requires Xero connection',
+        authUrl: '/api/xero/auth',
+        timestamp: new Date().toISOString()
+      });
+    }
+    
+    // Get real data from Xero
+    const [profitLoss, cashFlow] = await Promise.allSettled([
+      xeroService.getProfitAndLoss({ periods: 12 }),
+      xeroService.getCashFlow({ periods: 12 })
+    ]);
+    
     const dashboardData = {
       revenue: {
-        monthly: 2543000,
-        quarterly: 7850000,
-        yearly: 32400000,
-        growth: 12.3
+        monthly: profitLoss.status === 'fulfilled' ? profitLoss.value.monthlyRevenue || 0 : 0,
+        quarterly: profitLoss.status === 'fulfilled' ? profitLoss.value.quarterlyRevenue || 0 : 0,
+        yearly: profitLoss.status === 'fulfilled' ? profitLoss.value.totalRevenue || 0 : 0,
+        growth: profitLoss.status === 'fulfilled' ? profitLoss.value.revenueGrowth || 0 : 0
       },
       workingCapital: {
-        current: 1945000,
-        ratio: 2.76,
-        cashFlow: 850000,
-        daysReceivable: 45
-      },
-      production: {
-        efficiency: 94.2,
-        unitsProduced: 12543,
-        defectRate: 0.8,
-        oeeScore: 87.5
-      },
-      inventory: {
-        value: 1234000,
-        turnover: 4.2,
-        skuCount: 342,
-        lowStock: 8
+        current: cashFlow.status === 'fulfilled' ? cashFlow.value.currentRatio || 0 : 0,
+        ratio: cashFlow.status === 'fulfilled' ? cashFlow.value.workingCapitalRatio || 0 : 0,
+        cashFlow: cashFlow.status === 'fulfilled' ? cashFlow.value.operatingCashFlow || 0 : 0,
+        daysReceivable: cashFlow.status === 'fulfilled' ? cashFlow.value.daysReceivable || 0 : 0
       },
       financial: {
-        grossMargin: 42.3,
-        netMargin: 18.7,
-        ebitda: 485000,
-        roi: 23.4
+        grossMargin: profitLoss.status === 'fulfilled' ? profitLoss.value.grossMargin || 0 : 0,
+        netMargin: profitLoss.status === 'fulfilled' ? profitLoss.value.netMargin || 0 : 0,
+        ebitda: profitLoss.status === 'fulfilled' ? profitLoss.value.ebitda || 0 : 0,
+        roi: profitLoss.status === 'fulfilled' ? profitLoss.value.roi || 0 : 0
       },
       timestamp: new Date().toISOString(),
-      dataSource: 'enterprise-complete-api'
+      dataSource: 'xero-live-data',
+      xeroConnected: true
     };
-    res.json(dashboardData);
+    
+    res.json({
+      success: true,
+      data: dashboardData
+    });
   } catch (error) {
     logger.error('Dashboard summary API error', error);
-    res.status(500).json({ error: 'Failed to fetch dashboard summary' });
+    res.status(500).json({ 
+      success: false,
+      error: 'Failed to fetch dashboard data from Xero',
+      message: error.message 
+    });
   }
 });
 
@@ -1158,52 +1185,15 @@ app.get('/api/financial/kpi-summary', async (req, res) => {
         }
       }
 
-      // Query database for historical trends
-      if (prisma) {
-        try {
-          // Get historical data for growth calculations
-          const thirtyDaysAgo = new Date();
-          thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      // No database fallback - Xero connection required for real financial data
 
-          const recentOrders = await prisma.order.aggregate({
-            _sum: { totalAmount: true },
-            where: {
-              createdAt: { gte: thirtyDaysAgo }
-            }
-          });
-
-          const previousOrders = await prisma.order.aggregate({
-            _sum: { totalAmount: true },
-            where: {
-              createdAt: { 
-                gte: new Date(thirtyDaysAgo.getTime() - 30 * 24 * 60 * 60 * 1000),
-                lt: thirtyDaysAgo
-              }
-            }
-          });
-
-          if (recentOrders._sum.totalAmount) {
-            kpiData.financial.revenue.current = recentOrders._sum.totalAmount;
-            kpiData.financial.revenue.previous = previousOrders._sum.totalAmount || 0;
-            
-            if (kpiData.financial.revenue.previous > 0) {
-              kpiData.financial.revenue.growth = 
-                ((kpiData.financial.revenue.current - kpiData.financial.revenue.previous) / 
-                 kpiData.financial.revenue.previous) * 100;
-            }
-          }
-        } catch (dbError) {
-          logger.warn('Database query failed for KPIs:', dbError.message);
-          kpiData.sources.database = false;
-        }
-      }
-
-      // Return appropriate response based on data availability
-      if (!kpiData.sources.xero && !kpiData.sources.shopify && !kpiData.sources.database) {
-        return res.status(503).json({
+      // Require Xero connection - no fallback data
+      if (!kpiData.sources.xero) {
+        return res.json({
           success: false,
-          error: 'Service unavailable',
-          message: 'No data sources available. Please check Xero and Shopify connections.',
+          requiresXeroConnection: true,
+          message: 'Real-time financial KPIs require Xero connection',
+          authUrl: '/api/xero/auth',
           timestamp: new Date().toISOString(),
           sources: kpiData.sources
         });
@@ -1699,12 +1689,13 @@ app.get('/api/financial/kpi-summary', async (req, res) => {
         }
       }
 
-      // Return appropriate response based on data availability
-      if (!plData.sources.xero && !plData.sources.shopify && !plData.sources.database) {
-        return res.status(503).json({
+      // Require Xero connection for P&L analysis - no fallback data
+      if (!plData.sources.xero) {
+        return res.json({
           success: false,
-          error: 'Service unavailable',
-          message: 'No data sources available for P&L analysis. Please check Xero and Shopify connections.',
+          requiresXeroConnection: true,
+          message: 'Real-time P&L analysis requires Xero connection',
+          authUrl: '/api/xero/auth',
           timestamp: new Date().toISOString(),
           sources: plData.sources
         });

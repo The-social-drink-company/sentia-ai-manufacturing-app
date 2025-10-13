@@ -35,6 +35,7 @@ class XeroService {
     this.retryAttempts = 0;
     this.maxRetries = 3;
     this.initialized = false;
+    this.lastSyncTime = null;
     
     // Don't initialize immediately - wait for environment variables to be loaded
     // this.initializeXeroClient();
@@ -640,6 +641,44 @@ class XeroService {
     };
 
     return searchRows(reportData.rows, accountName);
+  }
+
+  // OAuth method alias (for server.js compatibility)
+  async exchangeCodeForTokens(code) {
+    return await this.exchangeCodeForToken(code);
+  }
+
+  // Disconnect method
+  async disconnect() {
+    try {
+      // Clear token set
+      this.tokenSet = null;
+      this.isConnected = false;
+      this.organizationId = null;
+      this.lastSyncTime = null;
+      
+      if (this.xero) {
+        this.xero.setTokenSet(null);
+      }
+
+      // Remove from database
+      try {
+        const prisma = (await import('../lib/prisma.js')).default;
+        await prisma.apiToken.deleteMany({
+          where: { service: 'xero' }
+        });
+        logDebug('✅ Xero token removed from database');
+      } catch (dbError) {
+        logError('⚠️ Could not remove token from database:', dbError.message);
+        // Continue even if database removal fails
+      }
+
+      logDebug('✅ Xero disconnected successfully');
+      return true;
+    } catch (error) {
+      logError('❌ Failed to disconnect Xero:', error.message);
+      throw error;
+    }
   }
 
   // Health check

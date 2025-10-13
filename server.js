@@ -473,6 +473,143 @@ app.get('/api/auth/me', async (req, res) => {
   });
 });
 
+// Xero OAuth endpoints
+app.get('/api/xero/auth', async (req, res) => {
+  logger.info('🔒 Xero OAuth authorization initiated');
+  
+  try {
+    const xeroModule = await import('./services/xeroService.js');
+    const xeroService = xeroModule.default;
+    
+    if (!xeroService) {
+      return res.status(503).json({
+        success: false,
+        error: 'Xero service not available',
+        message: 'Xero integration service is not initialized'
+      });
+    }
+
+    xeroService.ensureInitialized();
+    const authUrl = await xeroService.getAuthUrl();
+    
+    logger.info('✅ Xero auth URL generated, redirecting user');
+    res.redirect(authUrl);
+    
+  } catch (error) {
+    logger.error('❌ Failed to initiate Xero OAuth:', error);
+    res.status(500).json({
+      success: false,
+      error: 'OAuth initialization failed',
+      message: error.message
+    });
+  }
+});
+
+app.get('/api/xero/callback', async (req, res) => {
+  logger.info('🔄 Xero OAuth callback received');
+  
+  const { code, state, error } = req.query;
+  
+  if (error) {
+    logger.error('❌ Xero OAuth error:', error);
+    return res.status(400).json({
+      success: false,
+      error: 'OAuth authorization failed',
+      message: error
+    });
+  }
+
+  if (!code) {
+    logger.error('❌ No authorization code received');
+    return res.status(400).json({
+      success: false,
+      error: 'Missing authorization code',
+      message: 'Authorization code not found in callback'
+    });
+  }
+
+  try {
+    const xeroModule = await import('./services/xeroService.js');
+    const xeroService = xeroModule.default;
+    
+    xeroService.ensureInitialized();
+    const tokenSet = await xeroService.exchangeCodeForTokens(code);
+    
+    if (tokenSet) {
+      logger.info('✅ Xero tokens obtained successfully');
+      
+      // Redirect to dashboard with success message
+      res.redirect('/dashboard?xero_connected=true');
+    } else {
+      throw new Error('Token exchange failed');
+    }
+    
+  } catch (error) {
+    logger.error('❌ Failed to exchange Xero code for tokens:', error);
+    res.redirect('/dashboard?xero_error=true');
+  }
+});
+
+app.get('/api/xero/status', async (req, res) => {
+  logger.info('📊 Xero connection status requested');
+  
+  try {
+    const xeroModule = await import('./services/xeroService.js');
+    const xeroService = xeroModule.default;
+    
+    xeroService.ensureInitialized();
+    
+    const status = {
+      connected: xeroService.isConnected,
+      hasTokens: !!(xeroService.tokenSet && xeroService.tokenSet.access_token),
+      organizationId: xeroService.organizationId,
+      lastSync: xeroService.lastSyncTime || null,
+      tokenExpiry: xeroService.tokenSet && xeroService.tokenSet.expires_at || null
+    };
+    
+    res.json({
+      success: true,
+      status: status,
+      timestamp: new Date().toISOString()
+    });
+    
+  } catch (error) {
+    logger.error('❌ Failed to get Xero status:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Status check failed',
+      message: error.message
+    });
+  }
+});
+
+app.post('/api/xero/disconnect', async (req, res) => {
+  logger.info('🔌 Xero disconnect requested');
+  
+  try {
+    const xeroModule = await import('./services/xeroService.js');
+    const xeroService = xeroModule.default;
+    
+    xeroService.ensureInitialized();
+    await xeroService.disconnect();
+    
+    logger.info('✅ Xero disconnected successfully');
+    res.json({
+      success: true,
+      message: 'Xero integration disconnected successfully',
+      timestamp: new Date().toISOString()
+    });
+    
+  } catch (error) {
+    logger.error('❌ Failed to disconnect from Xero:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Disconnect failed',
+      message: error.message
+    });
+  }
+});
+
 // Dashboard Summary endpoint - BULLETPROOF JSON ONLY
 app.get('/api/dashboard/summary', async (req, res) => {
   try {

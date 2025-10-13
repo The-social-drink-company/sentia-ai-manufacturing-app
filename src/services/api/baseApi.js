@@ -7,7 +7,9 @@
 const getApiBaseUrl = () => {
   // Use VITE_API_BASE_URL if available
   if (import.meta.env.VITE_API_BASE_URL) {
-    return import.meta.env.VITE_API_BASE_URL
+    const envUrl = import.meta.env.VITE_API_BASE_URL
+    // Ensure it ends with /api if it doesn't already
+    return envUrl.endsWith('/api') ? envUrl : `${envUrl}/api`
   }
 
   // Production fallback: use current domain
@@ -60,19 +62,42 @@ class BaseApi {
     let lastError
     for (let i = 0; i < MAX_RETRIES; i++) {
       try {
+        console.log(`[BaseApi] Making request to: ${url}`)
         const response = await fetch(url, config)
 
         if (!response.ok) {
-          const errorData = await response.json().catch(() => ({}))
+          const contentType = response.headers.get('content-type')
+          console.error(`[BaseApi] HTTP ${response.status} error for ${url}`)
+          console.error(`[BaseApi] Content-Type: ${contentType}`)
+          
+          let errorData = {}
+          if (contentType && contentType.includes('application/json')) {
+            try {
+              errorData = await response.json()
+            } catch (parseError) {
+              console.error(`[BaseApi] Failed to parse error JSON: ${parseError.message}`)
+            }
+          } else {
+            const textResponse = await response.text()
+            console.error(`[BaseApi] Non-JSON response: ${textResponse.substring(0, 200)}...`)
+            errorData = { 
+              message: `Expected JSON but got ${contentType}. URL: ${url}`,
+              htmlResponse: textResponse.substring(0, 500)
+            }
+          }
+          
           throw new ApiError(
-            errorData.message || `HTTP ${response.status}`,
+            errorData.message || `HTTP ${response.status} - Expected JSON but got ${contentType}`,
             response.status,
             errorData
           )
         }
 
-        return await response.json()
+        const result = await response.json()
+        console.log(`[BaseApi] Success response from ${url}:`, result)
+        return result
       } catch (error) {
+        console.error(`[BaseApi] Request failed for ${url}:`, error)
         lastError = error
 
         // Don't retry on client errors (4xx)
@@ -82,6 +107,7 @@ class BaseApi {
 
         // Wait before retry
         if (i < MAX_RETRIES - 1) {
+          console.log(`[BaseApi] Retrying request to ${url} in ${RETRY_DELAY * Math.pow(2, i)}ms`)
           await this.sleep(RETRY_DELAY * Math.pow(2, i))
         }
       }

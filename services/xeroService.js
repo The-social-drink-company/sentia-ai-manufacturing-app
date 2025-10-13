@@ -23,8 +23,7 @@ try {
   TokenSet = null;
 }
 
-// Fallback for missing logError function
-const logError = (msg, error) => logError(msg, error);
+// logError is imported from logger utility
 
 class XeroService {
   constructor() {

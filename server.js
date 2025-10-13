@@ -768,6 +768,54 @@ app.post('/api/ai/analyze', async (req, res) => {
   }
 });
 
+// Unleashed API connection test endpoint
+app.get('/api/unleashed/test-connection', async (req, res) => {
+  try {
+    // Import the UnleashedClient
+    const { getUnleashedClient } = await import('./services/unleashed/UnleashedClient.js');
+    const client = getUnleashedClient();
+    
+    // Test basic connection
+    const connectionResult = await client.testConnection();
+    
+    if (connectionResult.success) {
+      // Test a few endpoints to get sample data
+      const [products, warehouses] = await Promise.allSettled([
+        client.getProducts(1, 3),
+        client.getWarehouses()
+      ]);
+      
+      res.json({
+        status: 'connected',
+        message: connectionResult.message,
+        timestamp: new Date().toISOString(),
+        sampleData: {
+          products: products.status === 'fulfilled' ? {
+            count: products.value.items?.length || 0,
+            total: products.value.total || 0
+          } : { error: products.reason?.message },
+          warehouses: warehouses.status === 'fulfilled' ? {
+            count: warehouses.value.items?.length || 0
+          } : { error: warehouses.reason?.message }
+        }
+      });
+    } else {
+      res.status(400).json({
+        status: 'disconnected',
+        message: connectionResult.message,
+        timestamp: new Date().toISOString()
+      });
+    }
+  } catch (error) {
+    logger.error('Unleashed connection test failed', error);
+    res.status(500).json({
+      status: 'error',
+      message: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
 
 // WebSocket for real-time updates
 io.on('connection', (socket) => {

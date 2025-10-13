@@ -4,7 +4,7 @@
  */
 
 import pkg from 'xero-node';
-import { logDebug, logInfo, logWarn, logError } from '../src/utils/logger';
+import { logDebug, logInfo, logWarn, logError } from '../src/utils/logger.js';
 
 // Handle both old and new xero-node package exports with comprehensive error handling
 let XeroClient, XeroApi, TokenSet, XeroClientClass;

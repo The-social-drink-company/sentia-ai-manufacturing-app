@@ -281,11 +281,13 @@ const ProtectedRoute = ({ children }) => {
   return (
     <>
       <SignedIn>
-        <ProgressiveDashboardLoader>
-          <DashboardLayout>
-            {children}
-          </DashboardLayout>
-        </ProgressiveDashboardLoader>
+        <XeroProvider>
+          <ProgressiveDashboardLoader>
+            <DashboardLayout>
+              {children}
+            </DashboardLayout>
+          </ProgressiveDashboardLoader>
+        </XeroProvider>
       </SignedIn>
       <SignedOut>
         <RedirectToSignIn />
@@ -297,10 +299,9 @@ const ProtectedRoute = ({ children }) => {
 const App = () => (
   <AuthenticationProvider>
     <QueryClientProvider client={queryClient}>
-      <XeroProvider>
-        <BrowserRouter>
-          <RouterDebugger />
-          <Routes>
+      <BrowserRouter>
+        <RouterDebugger />
+        <Routes>
           {/* Public Routes */}
           <Route path="/" element={<LandingPage />} />
           <Route path="/landing" element={<LandingPage />} />
@@ -430,7 +431,6 @@ const App = () => (
           } />
         </Routes>
         </BrowserRouter>
-      </XeroProvider>
     </QueryClientProvider>
   </AuthenticationProvider>
 )

@@ -95,6 +95,17 @@ services:
         sync: false  # Must be set manually in Render dashboard
       - key: MCP_JWT_SECRET
         sync: false  # Must be set manually in Render dashboard
+      # Xero Integration (Production MCP Server serves all dashboard environments)
+      - key: XERO_CLIENT_ID
+        value: 06091C3170694972BBA906A335074AB3
+      - key: XERO_CLIENT_SECRET
+        sync: false  # Must be set manually in Render dashboard for security
+      - key: XERO_REDIRECT_URI
+        value: https://sentia-manufacturing-dashboard-production.onrender.com/api/xero/callback
+      - key: XERO_SCOPES
+        value: accounting.transactions,accounting.reports.read,accounting.journals.read,accounting.settings.read,accounting.contacts
+      - key: XERO_SYNC_INTERVAL
+        value: */30 * * * *
       # Production monitoring and observability
       - key: MONITORING_ENABLED
         value: true

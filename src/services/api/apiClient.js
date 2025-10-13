@@ -74,14 +74,20 @@ class APIClient {
 
   /**
    * Determine if endpoint should use MCP server
+   * TODO: Re-enable MCP server routing once integrations are fixed
+   * Currently disabled to use working main server integrations
    */
   shouldUseMCPServer(endpoint) {
-    const mcpEndpoints = [
-      '/api/financial/kpi-summary',
-      '/api/sales/product-performance', 
-      '/api/financial/pl-analysis'
-    ]
-    return mcpEndpoints.some(mcpEndpoint => endpoint.includes(mcpEndpoint))
+    // Temporarily disable MCP routing - all requests go to main server
+    return false
+    
+    // TODO: Restore this logic once MCP server integrations are working:
+    // const mcpEndpoints = [
+    //   '/api/financial/kpi-summary',
+    //   '/api/sales/product-performance', 
+    //   '/api/financial/pl-analysis'
+    // ]
+    // return mcpEndpoints.some(mcpEndpoint => endpoint.includes(mcpEndpoint))
   }
 
   /**

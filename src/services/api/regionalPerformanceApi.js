@@ -3,7 +3,7 @@ import apiClient from './apiClient'
 class RegionalPerformanceApi {
   async getRegionalPerformance() {
     try {
-      const response = await apiClient.get('/regional/performance')
+      const response = await apiClient.get('/api/regional/performance')
       return {
         success: true,
         data: response.data
@@ -16,7 +16,7 @@ class RegionalPerformanceApi {
 
   async getRegionalMetrics(region) {
     try {
-      const response = await apiClient.get(`/regional/performance/${region}`)
+      const response = await apiClient.get(`/api/regional/performance/${region}`)
       return {
         success: true,
         data: response.data

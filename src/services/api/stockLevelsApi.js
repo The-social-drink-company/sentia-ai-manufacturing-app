@@ -7,7 +7,7 @@ class StockLevelsApi {
    * Get current stock levels for GABA products
    */
   async getGABAStockLevels() {
-    const response = await apiClient.get('/inventory/levels', {
+    const response = await apiClient.get('/api/inventory/levels', {
       params: {
         category: 'GABA',
         limit: 10

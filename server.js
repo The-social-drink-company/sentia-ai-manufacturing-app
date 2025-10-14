@@ -341,6 +341,160 @@ app.get('/api/status', (req, res) => {
   });
 });
 
+// Service Integration Status endpoint
+app.get('/api/services/status', async (req, res) => {
+  logger.info('Service integration status requested');
+  
+  const serviceStatus = {
+    timestamp: new Date().toISOString(),
+    overall: 'checking',
+    services: {}
+  };
+
+  try {
+    // Check Xero Service
+    serviceStatus.services.xero = {
+      name: 'Xero Accounting API',
+      status: 'checking',
+      configured: false,
+      connected: false,
+      lastCheck: new Date().toISOString()
+    };
+
+    try {
+      const xeroModule = await import('./services/xeroService.js');
+      const xeroService = xeroModule.default;
+      if (xeroService) {
+        xeroService.ensureInitialized();
+        serviceStatus.services.xero.configured = !!xeroService;
+        serviceStatus.services.xero.connected = xeroService.isConnected || false;
+        serviceStatus.services.xero.status = xeroService.isConnected ? 'connected' : 'configured_not_connected';
+      }
+    } catch (xeroError) {
+      serviceStatus.services.xero.status = 'error';
+      serviceStatus.services.xero.error = xeroError.message;
+    }
+
+    // Check Shopify Service
+    serviceStatus.services.shopify = {
+      name: 'Shopify Multi-Store API',
+      status: 'checking',
+      configured: false,
+      connected: false,
+      lastCheck: new Date().toISOString()
+    };
+
+    try {
+      const shopifyModule = await import('./services/shopify-multistore.js');
+      const shopifyMultiStore = shopifyModule.default;
+      if (shopifyMultiStore) {
+        serviceStatus.services.shopify.configured = true;
+        serviceStatus.services.shopify.storeCount = shopifyMultiStore.storeConfigs?.length || 0;
+        serviceStatus.services.shopify.status = 'configured';
+        
+        // Test connection
+        try {
+          await shopifyMultiStore.connect();
+          serviceStatus.services.shopify.connected = true;
+          serviceStatus.services.shopify.status = 'connected';
+        } catch (connectError) {
+          serviceStatus.services.shopify.status = 'configured_connection_failed';
+          serviceStatus.services.shopify.connectionError = connectError.message;
+        }
+      }
+    } catch (shopifyError) {
+      serviceStatus.services.shopify.status = 'error';
+      serviceStatus.services.shopify.error = shopifyError.message;
+    }
+
+    // Check Amazon Service (Currently Disabled)
+    serviceStatus.services.amazon = {
+      name: 'Amazon SP-API',
+      status: 'disabled',
+      configured: false,
+      connected: false,
+      lastCheck: new Date().toISOString(),
+      note: 'Temporarily disabled due to credential issues'
+    };
+
+    try {
+      const amazonModule = await import('./services/amazonService.js');
+      const amazonService = amazonModule.default;
+      if (amazonService) {
+        const amazonInstance = new amazonService();
+        serviceStatus.services.amazon.configured = amazonInstance.isConfigured();
+        // Amazon service is intentionally disabled
+        serviceStatus.services.amazon.status = 'disabled';
+      }
+    } catch (amazonError) {
+      serviceStatus.services.amazon.status = 'error';
+      serviceStatus.services.amazon.error = amazonError.message;
+    }
+
+    // Check Database
+    serviceStatus.services.database = {
+      name: 'PostgreSQL Database',
+      status: 'checking',
+      configured: !!process.env.DATABASE_URL,
+      connected: !!prisma,
+      lastCheck: new Date().toISOString()
+    };
+
+    if (prisma) {
+      try {
+        await prisma.$queryRaw`SELECT 1 as health_check`;
+        serviceStatus.services.database.status = 'connected';
+        serviceStatus.services.database.connected = true;
+      } catch (dbError) {
+        serviceStatus.services.database.status = 'error';
+        serviceStatus.services.database.connected = false;
+        serviceStatus.services.database.error = dbError.message;
+      }
+    } else {
+      serviceStatus.services.database.status = 'not_initialized';
+    }
+
+    // Determine overall status
+    const serviceStatuses = Object.values(serviceStatus.services).map(s => s.status);
+    const hasErrors = serviceStatuses.some(s => s === 'error');
+    const hasConnected = serviceStatuses.some(s => s === 'connected');
+    const hasConfigured = serviceStatuses.some(s => s.includes('configured'));
+
+    if (hasErrors) {
+      serviceStatus.overall = 'degraded';
+    } else if (hasConnected) {
+      serviceStatus.overall = 'operational';
+    } else if (hasConfigured) {
+      serviceStatus.overall = 'configured';
+    } else {
+      serviceStatus.overall = 'needs_configuration';
+    }
+
+    // Add summary
+    serviceStatus.summary = {
+      totalServices: Object.keys(serviceStatus.services).length,
+      connected: serviceStatuses.filter(s => s === 'connected').length,
+      configured: serviceStatuses.filter(s => s.includes('configured')).length,
+      errors: serviceStatuses.filter(s => s === 'error').length,
+      disabled: serviceStatuses.filter(s => s === 'disabled').length
+    };
+
+    return res.json({
+      success: true,
+      data: serviceStatus
+    });
+
+  } catch (error) {
+    logger.error('Service status check failed:', error);
+    return res.status(500).json({
+      success: false,
+      error: 'Failed to check service status',
+      message: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
 // ==========================================
 // DASHBOARD API ENDPOINTS
 // ==========================================

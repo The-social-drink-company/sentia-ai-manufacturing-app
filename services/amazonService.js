@@ -1,6 +1,9 @@
 /**
  * Amazon SP-API Service
  * Handles Amazon Seller Partner API integration
+ * 
+ * TEMPORARILY DISABLED: Having issues obtaining proper Amazon SP credentials
+ * This service is disabled until credentials are properly configured
  */
 
 import { logInfo, logWarn, logError } from './observability/structuredLogger.js'
@@ -15,9 +18,13 @@ class AmazonService {
 
   /**
    * Check if Amazon SP-API is configured
+   * TEMPORARILY DISABLED - Always return false until credentials resolved
    */
   isConfigured() {
-    return !!(this.accessKey && this.secretKey && this.sellerId && this.refreshToken)
+    // TEMPORARILY DISABLED: Return false until Amazon SP credentials are properly obtained
+    logWarn('Amazon SP-API temporarily disabled due to credential issues')
+    return false
+    // return !!(this.accessKey && this.secretKey && this.sellerId && this.refreshToken)
   }
 
   /**

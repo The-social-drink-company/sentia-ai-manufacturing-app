@@ -65,19 +65,11 @@ class XeroService {
     }
 
     try {
+      // Custom connection configuration - no OAuth flow required
       this.xero = new XeroClientClass({
         clientId: process.env.XERO_CLIENT_ID,
         clientSecret: process.env.XERO_CLIENT_SECRET,
-        redirectUris: [process.env.XERO_REDIRECT_URI || 'http://localhost:3000/xero/callback'],
-        scopes: [
-          'openid',
-          'profile', 
-          'email',
-          'accounting.reports.read',
-          'accounting.journals.read',
-          'accounting.settings.read',
-          'accounting.transactions'
-        ],
+        // Custom connections don't need redirect URIs or scopes
         httpTimeout: 30000
       });
 
@@ -88,80 +80,8 @@ class XeroService {
     }
   }
 
-  async getAuthUrl() {
-    this.ensureInitialized();
-    
-    if (!this.xero) {
-      throw new Error('Xero client not initialized');
-    }
-    
-    return await this.xero.buildConsentUrl();
-  }
-
-  async exchangeCodeForToken(code) {
-    this.ensureInitialized();
-
-    if (!this.xero) {
-      throw new Error('Xero client not initialized');
-    }
-
-    try {
-      const tokenSet = await this.xero.apiCallback(code);
-      this.tokenSet = tokenSet;
-      this.xero.setTokenSet(tokenSet);
-      this.isConnected = true;
-
-      // Store token in database for persistence
-      const prisma = (await import('../lib/prisma.js')).default;
-
-      // Get tenant/organization info
-      const tenants = await this.xero.updateTenants();
-      if (tenants && tenants.length > 0) {
-        this.organizationId = tenants[0].tenantId;
-
-        // Store the token in database
-        try {
-          await prisma.apiToken.upsert({
-            where: { service: 'xero' },
-            update: {
-              accessToken: tokenSet.access_token,
-              refreshToken: tokenSet.refresh_token,
-              expiresAt: new Date(Date.now() + (tokenSet.expires_in || 1800) * 1000),
-              metadata: {
-                organizationId: this.organizationId,
-                tenantId: tenants[0].tenantId,
-                tenantName: tenants[0].tenantName,
-                scopes: tokenSet.scope
-              }
-            },
-            create: {
-              service: 'xero',
-              accessToken: tokenSet.access_token,
-              refreshToken: tokenSet.refresh_token,
-              expiresAt: new Date(Date.now() + (tokenSet.expires_in || 1800) * 1000),
-              metadata: {
-                organizationId: this.organizationId,
-                tenantId: tenants[0].tenantId,
-                tenantName: tenants[0].tenantName,
-                scopes: tokenSet.scope
-              }
-            }
-          });
-          logDebug('✅ Xero token stored in database');
-        } catch (dbError) {
-          logError('⚠️ Could not store token in database:', dbError.message);
-          // Continue even if database storage fails
-        }
-      }
-
-      logDebug('✅ Xero authenticated successfully');
-      return tokenSet;
-    } catch (error) {
-      logError('❌ Xero token exchange failed:', error.message);
-      this.isConnected = false;
-      throw error;
-    }
-  }
+  // OAuth methods removed - not needed for custom connection
+  // Custom connections authenticate automatically via Client Credentials
 
   async authenticate() {
     if (!this.xero) {
@@ -169,27 +89,75 @@ class XeroService {
     }
 
     try {
-      // In production, this would use OAuth2 flow with stored tokens
-      if (process.env.XERO_ACCESS_TOKEN && process.env.XERO_REFRESH_TOKEN) {
-        this.tokenSet = new TokenSet({
-          access_token: process.env.XERO_ACCESS_TOKEN,
-          refresh_token: process.env.XERO_REFRESH_TOKEN,
-          token_type: 'Bearer',
-          expires_at: Date.now() + 3600000 // 1 hour from now
-        });
-
-        this.xero.setTokenSet(this.tokenSet);
-        this.isConnected = true;
-        logDebug('✅ Xero authenticated successfully');
-        return true;
+      // Custom connection uses Client Credentials OAuth flow
+      // Exchange client_id and client_secret for access token
+      
+      if (!process.env.XERO_CLIENT_ID || !process.env.XERO_CLIENT_SECRET) {
+        logError('❌ XERO_CLIENT_ID or XERO_CLIENT_SECRET not configured');
+        this.isConnected = false;
+        return false;
       }
 
-      // Xero tokens not configured - using fallback data
-      return false;
-    } catch (error) {
-      logError('❌ Xero authentication failed:', error.message);
+      // Exchange credentials for access token using Xero's token endpoint
+      const tokenResponse = await this.getCustomConnectionToken();
+      
+      if (tokenResponse && tokenResponse.access_token) {
+        // Set the access token on the Xero client
+        this.xero.setTokenSet({
+          access_token: tokenResponse.access_token,
+          token_type: 'Bearer',
+          expires_in: tokenResponse.expires_in,
+          scope: tokenResponse.scope
+        });
+
+        // Test the connection by fetching organizations
+        const orgsResponse = await this.xero.accountingApi.getOrganisations();
+        
+        if (orgsResponse.body && orgsResponse.body.organisations && orgsResponse.body.organisations.length > 0) {
+          this.organizationId = orgsResponse.body.organisations[0].organisationID;
+          this.isConnected = true;
+          logDebug('✅ Xero custom connection authenticated successfully');
+          return true;
+        }
+      }
+      
       this.isConnected = false;
       return false;
+    } catch (error) {
+      logError('❌ Xero custom connection authentication failed:', error.message);
+      this.isConnected = false;
+      return false;
+    }
+  }
+
+  async getCustomConnectionToken() {
+    try {
+      const credentials = Buffer.from(`${process.env.XERO_CLIENT_ID}:${process.env.XERO_CLIENT_SECRET}`).toString('base64');
+      
+      const response = await fetch('https://identity.xero.com/connect/token', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Basic ${credentials}`,
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: new URLSearchParams({
+          'grant_type': 'client_credentials',
+          'scope': 'accounting.transactions accounting.reports.read accounting.settings.read'
+        })
+      });
+
+      if (response.ok) {
+        const tokenData = await response.json();
+        logDebug('✅ Custom connection token retrieved successfully');
+        return tokenData;
+      } else {
+        const errorData = await response.text();
+        logError('❌ Failed to get custom connection token:', errorData);
+        return null;
+      }
+    } catch (error) {
+      logError('❌ Error getting custom connection token:', error.message);
+      return null;
     }
   }
 
@@ -201,9 +169,10 @@ class XeroService {
         logError(`❌ Xero API attempt ${attempt} failed:`, error.message);
         
         if (error.response?.status === 401) {
-          const refreshed = await this.refreshToken();
-          if (!refreshed && attempt === this.maxRetries) {
-            throw new Error('Authentication failed - please re-authorize Xero');
+          // For custom connections, re-authenticate directly
+          const authenticated = await this.authenticate();
+          if (!authenticated && attempt === this.maxRetries) {
+            throw new Error('Authentication failed - please check Xero credentials');
           }
         } else if (attempt === this.maxRetries) {
           throw error;
@@ -214,22 +183,7 @@ class XeroService {
     }
   }
 
-  async refreshToken() {
-    if (!this.tokenSet || !this.tokenSet.refresh_token) {
-      return false;
-    }
-
-    try {
-      const newTokenSet = await this.xero.refreshToken();
-      this.tokenSet = newTokenSet;
-      logDebug('✅ Xero token refreshed');
-      return true;
-    } catch (error) {
-      logError('❌ Failed to refresh Xero token:', error.message);
-      this.isConnected = false;
-      return false;
-    }
-  }
+  // Token refresh not needed for custom connection
 
   // Enterprise working capital methods
   async getBalanceSheet(periods = 2) {
@@ -361,38 +315,14 @@ class XeroService {
     };
   }
 
-  /**
-   * Exchange authorization code for access token
-   */
-  async exchangeCodeForToken(code) {
-    try {
-      const tokenSet = await this.xero.apiCallback(code);
-      return tokenSet;
-    } catch (error) {
-      logError('Error exchanging code for token', error);
-      throw new Error('Failed to exchange authorization code for access token');
-    }
-  }
-
-  /**
-   * Refresh access token
-   */
-  async refreshToken(refreshToken) {
-    try {
-      const tokenSet = await this.xero.refreshAccessToken(refreshToken);
-      return tokenSet;
-    } catch (error) {
-      logError('Error refreshing token', error);
-      throw new Error('Failed to refresh access token');
-    }
-  }
+  // OAuth methods removed - not needed for custom connection
 
   /**
    * Get connected organizations
    */
-  async getOrganizations(accessToken) {
+  async getOrganizations() {
     try {
-      this.xero.setTokenSet({ access_token: accessToken });
+      // Custom connection is already authenticated
       const response = await this.xero.accountingApi.getOrganisations();
       return response.body.organisations;
     } catch (error) {
@@ -558,9 +488,9 @@ class XeroService {
   /**
    * Test connection to Xero
    */
-  async testConnection(accessToken) {
+  async testConnection() {
     try {
-      const organizations = await this.getOrganizations(accessToken);
+      const organizations = await this.getOrganizations();
       return {
         success: true,
         organizations: organizations.length,
@@ -642,37 +572,18 @@ class XeroService {
     return searchRows(reportData.rows, accountName);
   }
 
-  // OAuth method alias (for server.js compatibility)
-  async exchangeCodeForTokens(code) {
-    return await this.exchangeCodeForToken(code);
-  }
+  // OAuth methods removed - not needed for custom connection
 
   // Disconnect method
   async disconnect() {
     try {
-      // Clear token set
-      this.tokenSet = null;
+      // Clear connection state
       this.isConnected = false;
       this.organizationId = null;
       this.lastSyncTime = null;
       
-      if (this.xero) {
-        this.xero.setTokenSet(null);
-      }
-
-      // Remove from database
-      try {
-        const prisma = (await import('../lib/prisma.js')).default;
-        await prisma.apiToken.deleteMany({
-          where: { service: 'xero' }
-        });
-        logDebug('✅ Xero token removed from database');
-      } catch (dbError) {
-        logError('⚠️ Could not remove token from database:', dbError.message);
-        // Continue even if database removal fails
-      }
-
-      logDebug('✅ Xero disconnected successfully');
+      // Custom connections don't have tokens to clean up
+      logDebug('✅ Xero custom connection disconnected successfully');
       return true;
     } catch (error) {
       logError('❌ Failed to disconnect Xero:', error.message);

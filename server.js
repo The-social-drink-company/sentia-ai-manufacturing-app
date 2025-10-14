@@ -1029,6 +1029,64 @@ app.get('/api/auth/me', async (req, res) => {
   });
 });
 
+// Xero diagnostic endpoint
+app.get('/api/xero/health', async (req, res) => {
+  logger.info('🔍 Xero health check requested');
+  
+  try {
+    const xeroModule = await import('./services/xeroService.js');
+    const xeroService = xeroModule.default;
+    
+    if (!xeroService) {
+      return res.json({
+        success: false,
+        status: 'service_unavailable',
+        error: 'Xero service not available',
+        credentials: {
+          clientId: !!process.env.XERO_CLIENT_ID,
+          clientSecret: !!process.env.XERO_CLIENT_SECRET,
+          accessToken: !!process.env.XERO_ACCESS_TOKEN,
+          refreshToken: !!process.env.XERO_REFRESH_TOKEN
+        },
+        initialized: false
+      });
+    }
+
+    const healthResult = await xeroService.healthCheck();
+    
+    return res.json({
+      success: true,
+      status: healthResult.status,
+      message: healthResult.message,
+      credentials: {
+        clientId: !!process.env.XERO_CLIENT_ID,
+        clientSecret: !!process.env.XERO_CLIENT_SECRET,
+        accessToken: !!process.env.XERO_ACCESS_TOKEN,
+        refreshToken: !!process.env.XERO_REFRESH_TOKEN
+      },
+      initialized: xeroService.initialized,
+      isConnected: xeroService.isConnected,
+      organizationId: xeroService.organizationId,
+      lastCheck: new Date().toISOString()
+    });
+  } catch (error) {
+    logger.error('❌ Xero health check failed:', error.message);
+    return res.json({
+      success: false,
+      status: 'error',
+      error: error.message,
+      credentials: {
+        clientId: !!process.env.XERO_CLIENT_ID,
+        clientSecret: !!process.env.XERO_CLIENT_SECRET,
+        accessToken: !!process.env.XERO_ACCESS_TOKEN,
+        refreshToken: !!process.env.XERO_REFRESH_TOKEN
+      },
+      initialized: false,
+      lastCheck: new Date().toISOString()
+    });
+  }
+});
+
 // Xero OAuth endpoints
 app.get('/api/xero/auth', async (req, res) => {
   logger.info('🔒 Xero OAuth authorization initiated');

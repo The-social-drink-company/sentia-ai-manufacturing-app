@@ -543,8 +543,23 @@ app.get('/api/financial/working-capital', async (req, res) => {
   
   const errors = [];
   let workingCapitalData = null;
+  let xeroService = null;
+  let xeroInitialized = false;
 
   try {
+    // Initialize Xero service
+    try {
+      const xeroModule = await import('./services/xeroService.js');
+      xeroService = xeroModule.default;
+      if (xeroService) {
+        xeroService.ensureInitialized();
+        xeroInitialized = xeroService.isConnected || false;
+      }
+    } catch (xeroError) {
+      logger.warn('Failed to initialize Xero service:', xeroError.message);
+      xeroInitialized = false;
+    }
+
     // Attempt 1: Try Xero API for real-time financial data
     if (xeroInitialized && xeroService) {
       try {
@@ -689,8 +704,23 @@ app.get('/api/financial/cash-flow', async (req, res) => {
   logger.info('Cash flow data requested');
   
   const errors = [];
+  let xeroService = null;
+  let xeroInitialized = false;
 
   try {
+    // Initialize Xero service
+    try {
+      const xeroModule = await import('./services/xeroService.js');
+      xeroService = xeroModule.default;
+      if (xeroService) {
+        xeroService.ensureInitialized();
+        xeroInitialized = xeroService.isConnected || false;
+      }
+    } catch (xeroError) {
+      logger.warn('Failed to initialize Xero service:', xeroError.message);
+      xeroInitialized = false;
+    }
+
     // Attempt 1: Try Xero API for real-time cash flow data
     if (xeroInitialized && xeroService) {
       try {
@@ -809,8 +839,20 @@ app.get('/api/forecasting/enhanced', async (req, res) => {
   logger.info('Enhanced forecasting data requested');
   
   const errors = [];
+  let shopifyMultiStore = null;
+  let shopifyInitialized = false;
 
   try {
+    // Initialize Shopify service
+    try {
+      const shopifyModule = await import('./services/shopify-multistore.js');
+      shopifyMultiStore = shopifyModule.default;
+      shopifyInitialized = !!shopifyMultiStore;
+    } catch (shopifyError) {
+      logger.warn('Failed to initialize Shopify service:', shopifyError.message);
+      shopifyInitialized = false;
+    }
+
     // Attempt 1: Try AI/ML forecasting service
     if (aiAnalyticsEnabled) {
       try {

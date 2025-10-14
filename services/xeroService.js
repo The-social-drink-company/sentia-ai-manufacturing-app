@@ -271,7 +271,7 @@ class XeroService {
   }
 
   async calculateWorkingCapital() {
-    this.ensureInitialized();
+    await this.ensureInitialized();
     
     // FORCE REAL DATA ONLY - No fallback allowed
     if (!this.isConnected) {
@@ -626,7 +626,7 @@ class XeroService {
 
   // Health check
   async healthCheck() {
-    this.ensureInitialized();
+    await this.ensureInitialized();
     
     try {
       if (!this.xero) {

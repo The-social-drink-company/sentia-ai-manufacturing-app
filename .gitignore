@@ -88,6 +88,7 @@ secrets/
 # Large documentation folders
 context/api-documentation/
 context/claude-code-docs/
+context/API-docs/
 clerk-docs/
 
 # Test folders

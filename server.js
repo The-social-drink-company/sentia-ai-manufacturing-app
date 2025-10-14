@@ -387,76 +387,411 @@ app.get('/api/dashboard/summary', (req, res) => {
 app.get('/api/financial/working-capital', async (req, res) => {
   logger.info('Working capital data requested');
   
+  const errors = [];
+  let workingCapitalData = null;
+
   try {
-    if (!prisma) {
-      return res.status(503).json({
-        success: false,
-        error: 'Database connection unavailable',
-        message: 'Unable to retrieve working capital data - database not connected',
-        timestamp: new Date().toISOString(),
-        userAction: 'Contact system administrator to check database configuration'
+    // Attempt 1: Try Xero API for real-time financial data
+    if (xeroInitialized && xeroService) {
+      try {
+        logger.info('Attempting to fetch working capital data from Xero API');
+        workingCapitalData = await xeroService.getWorkingCapital();
+        if (workingCapitalData && workingCapitalData.success) {
+          logger.info('Successfully retrieved working capital data from Xero');
+          return res.json({
+            success: true,
+            data: workingCapitalData.data,
+            dataSource: 'xero',
+            timestamp: new Date().toISOString()
+          });
+        }
+      } catch (xeroError) {
+        errors.push({
+          source: 'xero',
+          error: xeroError.message,
+          details: xeroError.stack,
+          timestamp: new Date().toISOString()
+        });
+        logger.error('Xero API failed for working capital:', xeroError.message);
+      }
+    } else {
+      errors.push({
+        source: 'xero',
+        error: 'Xero service not initialized',
+        details: `xeroInitialized: ${xeroInitialized}, xeroService: ${!!xeroService}`,
+        timestamp: new Date().toISOString()
       });
+      logger.warn('Xero service not available for working capital data');
     }
 
+    // Attempt 2: Try database for historical working capital data
+    if (prisma) {
+      try {
+        logger.info('Attempting to fetch working capital data from database');
+        
+        // Query accounts receivable
+        const accountsReceivable = await prisma.order.aggregate({
+          _sum: { totalAmount: true },
+          where: {
+            status: 'PENDING_PAYMENT',
+            createdAt: {
+              gte: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000) // Last 90 days
+            }
+          }
+        });
+
+        // Query accounts payable  
+        const accountsPayable = await prisma.expense.aggregate({
+          _sum: { amount: true },
+          where: {
+            status: 'PENDING',
+            date: {
+              gte: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000)
+            }
+          }
+        });
+
+        // Query inventory levels
+        const inventoryValue = await prisma.inventoryItem.aggregate({
+          _sum: { value: true },
+          where: {
+            active: true
+          }
+        });
+
+        if (accountsReceivable._sum.totalAmount || accountsPayable._sum.amount || inventoryValue._sum.value) {
+          logger.info('Successfully retrieved working capital components from database');
+          return res.json({
+            success: true,
+            data: {
+              accountsReceivable: accountsReceivable._sum.totalAmount || 0,
+              accountsPayable: accountsPayable._sum.amount || 0,
+              inventoryValue: inventoryValue._sum.value || 0,
+              workingCapital: (accountsReceivable._sum.totalAmount || 0) + (inventoryValue._sum.value || 0) - (accountsPayable._sum.amount || 0)
+            },
+            dataSource: 'database',
+            timestamp: new Date().toISOString(),
+            note: 'Calculated from database records - may not reflect complete financial picture'
+          });
+        }
+      } catch (dbError) {
+        errors.push({
+          source: 'database',
+          error: dbError.message,
+          details: dbError.stack,
+          timestamp: new Date().toISOString()
+        });
+        logger.error('Database query failed for working capital:', dbError.message);
+      }
+    } else {
+      errors.push({
+        source: 'database',
+        error: 'Database connection not available',
+        details: `prisma: ${!!prisma}`,
+        timestamp: new Date().toISOString()
+      });
+      logger.warn('Database not available for working capital data');
+    }
+
+    // All attempts failed - return detailed error information
+    logger.error('All data sources failed for working capital endpoint');
     return res.status(503).json({
       success: false,
-      error: 'Financial system integration required',
-      message: 'Working capital analysis requires connection to accounting and cash management systems',
+      error: 'Unable to retrieve working capital data from any source',
+      message: 'All configured data sources failed to provide working capital information',
+      errors: errors,
       timestamp: new Date().toISOString(),
-      userAction: 'Configure Xero, banking APIs, and cash management system integrations',
-      requiredIntegrations: ['Xero API', 'Banking APIs', 'Cash management systems']
+      debugInfo: {
+        xeroInitialized: xeroInitialized,
+        xeroServiceAvailable: !!xeroService,
+        databaseAvailable: !!prisma,
+        requestPath: req.path,
+        userAgent: req.get('User-Agent')
+      },
+      suggestions: [
+        'Check Xero API connection and credentials',
+        'Verify database connection and working capital related tables',
+        'Review server logs for detailed error information'
+      ]
     });
 
   } catch (error) {
-    logger.error('Failed to fetch working capital data:', error);
+    logger.error('Unexpected error in working capital endpoint:', error);
     return res.status(500).json({
       success: false,
       error: 'Internal server error',
-      message: 'Unable to process working capital request',
-      timestamp: new Date().toISOString()
+      message: error.message,
+      timestamp: new Date().toISOString(),
+      debugInfo: {
+        stack: error.stack,
+        requestPath: req.path
+      }
     });
   }
 });
 
 // Cash Flow endpoint
-app.get('/api/financial/cash-flow', (req, res) => {
-  res.json({
-    data: [{
-      date: new Date().toISOString(),
-      operatingCashFlow: 850000,
-      investingCashFlow: -120000,
-      financingCashFlow: -45000,
-      netCashFlow: 685000
-    }],
-    latest: {
-      operatingCashFlow: 850000,
-      netCashFlow: 685000
-    },
-    dataSource: 'bulletproof-api'
-  });
+app.get('/api/financial/cash-flow', async (req, res) => {
+  logger.info('Cash flow data requested');
+  
+  const errors = [];
+
+  try {
+    // Attempt 1: Try Xero API for real-time cash flow data
+    if (xeroInitialized && xeroService) {
+      try {
+        logger.info('Attempting to fetch cash flow data from Xero API');
+        const xeroCashFlow = await xeroService.getCashFlow();
+        if (xeroCashFlow && xeroCashFlow.success) {
+          logger.info('Successfully retrieved cash flow data from Xero');
+          return res.json({
+            success: true,
+            data: xeroCashFlow.data,
+            dataSource: 'xero',
+            timestamp: new Date().toISOString()
+          });
+        }
+      } catch (xeroError) {
+        errors.push({
+          source: 'xero',
+          error: xeroError.message,
+          timestamp: new Date().toISOString()
+        });
+        logger.error('Xero API failed for cash flow:', xeroError.message);
+      }
+    } else {
+      errors.push({
+        source: 'xero',
+        error: 'Xero service not initialized',
+        details: `xeroInitialized: ${xeroInitialized}, xeroService: ${!!xeroService}`,
+        timestamp: new Date().toISOString()
+      });
+    }
+
+    // Attempt 2: Try database for calculated cash flow
+    if (prisma) {
+      try {
+        logger.info('Attempting to calculate cash flow from database transactions');
+        
+        const startDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000); // Last 30 days
+        
+        // Calculate operating cash flow from orders and expenses
+        const revenue = await prisma.order.aggregate({
+          _sum: { totalAmount: true },
+          where: {
+            status: 'COMPLETED',
+            createdAt: { gte: startDate }
+          }
+        });
+
+        const expenses = await prisma.expense.aggregate({
+          _sum: { amount: true },
+          where: {
+            date: { gte: startDate }
+          }
+        });
+
+        if (revenue._sum.totalAmount || expenses._sum.amount) {
+          const operatingCashFlow = (revenue._sum.totalAmount || 0) - (expenses._sum.amount || 0);
+          
+          logger.info('Successfully calculated cash flow from database');
+          return res.json({
+            success: true,
+            data: {
+              operatingCashFlow: operatingCashFlow,
+              revenue: revenue._sum.totalAmount || 0,
+              expenses: expenses._sum.amount || 0,
+              period: '30 days'
+            },
+            dataSource: 'database',
+            timestamp: new Date().toISOString(),
+            note: 'Calculated from database transactions - may not include all cash flow components'
+          });
+        }
+      } catch (dbError) {
+        errors.push({
+          source: 'database',
+          error: dbError.message,
+          timestamp: new Date().toISOString()
+        });
+        logger.error('Database query failed for cash flow:', dbError.message);
+      }
+    } else {
+      errors.push({
+        source: 'database',
+        error: 'Database connection not available',
+        timestamp: new Date().toISOString()
+      });
+    }
+
+    // All attempts failed
+    logger.error('All data sources failed for cash flow endpoint');
+    return res.status(503).json({
+      success: false,
+      error: 'Unable to retrieve cash flow data from any source',
+      message: 'All configured data sources failed to provide cash flow information',
+      errors: errors,
+      timestamp: new Date().toISOString(),
+      suggestions: [
+        'Check Xero API connection for real-time cash flow data',
+        'Verify database contains transaction records',
+        'Review server logs for detailed error information'
+      ]
+    });
+
+  } catch (error) {
+    logger.error('Unexpected error in cash flow endpoint:', error);
+    return res.status(500).json({
+      success: false,
+      error: 'Internal server error',
+      message: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
 });
 
 // Enhanced Forecasting endpoint
-app.get('/api/forecasting/enhanced', (req, res) => {
-  res.json({
-    forecast: {
-      horizon: 365,
-      accuracy: 88.5,
-      confidence: 0.92,
-      model: 'ensemble-ai',
-      dataPoints: Array.from({length: 12}, (_, i) => ({
-        month: new Date(Date.now() + i * 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 7),
-        revenue: 2500000 + (Math.random() * 500000),
-        growth: 8.5 + (Math.random() * 5),
-        confidence: 0.85 + (Math.random() * 0.1)
-      }))
-    },
-    aiModels: {
-      gpt4: { status: 'active', accuracy: 87.2 },
-      claude: { status: 'active', accuracy: 89.8 }
-    },
-    timestamp: new Date().toISOString()
-  });
+app.get('/api/forecasting/enhanced', async (req, res) => {
+  logger.info('Enhanced forecasting data requested');
+  
+  const errors = [];
+
+  try {
+    // Attempt 1: Try AI/ML forecasting service
+    if (aiAnalyticsEnabled) {
+      try {
+        logger.info('Attempting to generate forecasting via AI analytics');
+        // This would integrate with AI/ML forecasting service
+        // For now, attempt to calculate trends from historical data
+      } catch (aiError) {
+        errors.push({
+          source: 'ai_analytics',
+          error: aiError.message,
+          timestamp: new Date().toISOString()
+        });
+        logger.error('AI forecasting failed:', aiError.message);
+      }
+    }
+
+    // Attempt 2: Calculate forecasting from historical database data
+    if (prisma) {
+      try {
+        logger.info('Attempting to calculate forecasting from historical data');
+        
+        // Get historical revenue data for trend analysis
+        const historicalData = await prisma.order.groupBy({
+          by: ['createdAt'],
+          _sum: { totalAmount: true },
+          where: {
+            status: 'COMPLETED',
+            createdAt: {
+              gte: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000) // Last year
+            }
+          },
+          orderBy: {
+            createdAt: 'asc'
+          }
+        });
+
+        if (historicalData && historicalData.length > 0) {
+          logger.info('Successfully calculated forecasting from historical data');
+          return res.json({
+            success: true,
+            forecast: {
+              basedOn: 'historical_data',
+              dataPoints: historicalData.length,
+              period: '12 months historical',
+              note: 'Forecast calculated from actual historical revenue data'
+            },
+            data: historicalData.map(record => ({
+              date: record.createdAt,
+              revenue: record._sum.totalAmount || 0
+            })),
+            dataSource: 'database',
+            timestamp: new Date().toISOString()
+          });
+        }
+      } catch (dbError) {
+        errors.push({
+          source: 'database',
+          error: dbError.message,
+          timestamp: new Date().toISOString()
+        });
+        logger.error('Database query failed for forecasting:', dbError.message);
+      }
+    } else {
+      errors.push({
+        source: 'database',
+        error: 'Database connection not available',
+        timestamp: new Date().toISOString()
+      });
+    }
+
+    // Attempt 3: Try external forecasting APIs (Shopify trends, etc.)
+    if (shopifyInitialized && shopifyMultiStore) {
+      try {
+        logger.info('Attempting to get sales trends from Shopify for forecasting');
+        await shopifyMultiStore.connect();
+        
+        const salesTrends = await shopifyMultiStore.getSalesTrends({
+          period: '12months'
+        });
+
+        if (salesTrends && salesTrends.success) {
+          logger.info('Successfully retrieved Shopify sales trends for forecasting');
+          return res.json({
+            success: true,
+            forecast: {
+              basedOn: 'shopify_sales_trends',
+              period: salesTrends.period,
+              stores: salesTrends.storeCount
+            },
+            data: salesTrends.data,
+            dataSource: 'shopify',
+            timestamp: new Date().toISOString()
+          });
+        }
+      } catch (shopifyError) {
+        errors.push({
+          source: 'shopify',
+          error: shopifyError.message,
+          timestamp: new Date().toISOString()
+        });
+        logger.error('Shopify forecasting failed:', shopifyError.message);
+      }
+    } else {
+      errors.push({
+        source: 'shopify',
+        error: 'Shopify service not initialized',
+        timestamp: new Date().toISOString()
+      });
+    }
+
+    // All attempts failed
+    logger.error('All data sources failed for forecasting endpoint');
+    return res.status(503).json({
+      success: false,
+      error: 'Unable to generate forecasting data from any source',
+      message: 'All configured data sources failed to provide forecasting information',
+      errors: errors,
+      timestamp: new Date().toISOString(),
+      suggestions: [
+        'Check database for historical sales data',
+        'Verify Shopify API connection for sales trends',
+        'Enable AI analytics service for advanced forecasting',
+        'Review server logs for detailed error information'
+      ]
+    });
+
+  } catch (error) {
+    logger.error('Unexpected error in forecasting endpoint:', error);
+    return res.status(500).json({
+      success: false,
+      error: 'Internal server error',
+      message: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
 });
 
 
@@ -683,35 +1018,32 @@ app.get('/api/dashboard/summary', async (req, res) => {
 
 // Working Capital API endpoint
 app.get('/api/working-capital', async (req, res) => {
-  logger.info('Working capital data requested');
+  logger.info('Legacy working capital endpoint called - redirecting to /api/financial/working-capital');
   
+  // Redirect to the main working capital endpoint to avoid duplication
   try {
-    if (!prisma) {
-      return res.status(503).json({
-        success: false,
-        error: 'Database connection unavailable',
-        message: 'Unable to retrieve working capital data - database not connected',
-        timestamp: new Date().toISOString(),
-        userAction: 'Contact system administrator to check database configuration'
-      });
-    }
-
+    const response = await fetch(`${req.protocol}://${req.get('host')}/api/financial/working-capital`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'User-Agent': req.get('User-Agent') || 'Internal-Redirect'
+      }
+    });
+    
+    const data = await response.json();
+    return res.status(response.status).json(data);
+    
+  } catch (redirectError) {
+    logger.error('Failed to redirect to main working capital endpoint:', redirectError.message);
     return res.status(503).json({
       success: false,
-      error: 'Financial system integration required',
-      message: 'Working capital analysis requires connection to accounting and cash management systems',
+      error: 'Internal redirect failed',
+      message: 'Unable to process working capital request via internal redirect',
       timestamp: new Date().toISOString(),
-      userAction: 'Configure Xero, banking APIs, and cash management system integrations',
-      requiredIntegrations: ['Xero API', 'Banking APIs', 'Cash management systems']
-    });
-
-  } catch (error) {
-    logger.error('Working capital API error:', error.message);
-    return res.status(500).json({
-      success: false,
-      error: 'Database error',
-      message: `Unable to retrieve working capital data: ${error.message}`,
-      timestamp: new Date().toISOString()
+      debugInfo: {
+        redirectError: redirectError.message,
+        targetEndpoint: '/api/financial/working-capital'
+      }
     });
   }
 });

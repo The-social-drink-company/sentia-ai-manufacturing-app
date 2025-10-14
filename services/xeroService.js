@@ -31,6 +31,7 @@ class XeroService {
     this.isConnected = false;
     this.tokenSet = null;
     this.organizationId = null;
+    this.tenantId = null;
     this.retryAttempts = 0;
     this.maxRetries = 3;
     this.initialized = false;
@@ -110,14 +111,22 @@ class XeroService {
           scope: tokenResponse.scope
         });
 
-        // Test the connection by fetching organizations
-        const orgsResponse = await this.xero.accountingApi.getOrganisations();
+        // For custom connections, get tenant connections first
+        const tenantResponse = await this.xero.accountingApi.getConnections();
         
-        if (orgsResponse.body && orgsResponse.body.organisations && orgsResponse.body.organisations.length > 0) {
-          this.organizationId = orgsResponse.body.organisations[0].organisationID;
-          this.isConnected = true;
-          logDebug('✅ Xero custom connection authenticated successfully');
-          return true;
+        if (tenantResponse.body && tenantResponse.body.length > 0) {
+          const tenantId = tenantResponse.body[0].tenantId;
+          
+          // Test the connection by fetching organizations with tenant ID
+          const orgsResponse = await this.xero.accountingApi.getOrganisations(tenantId);
+          
+          if (orgsResponse.body && orgsResponse.body.organisations && orgsResponse.body.organisations.length > 0) {
+            this.organizationId = orgsResponse.body.organisations[0].organisationID;
+            this.tenantId = tenantId;
+            this.isConnected = true;
+            logDebug('✅ Xero custom connection authenticated successfully', { tenantId, organizationId: this.organizationId });
+            return true;
+          }
         }
       }
       
@@ -193,7 +202,7 @@ class XeroService {
 
     return await this.executeWithRetry(async () => {
       const response = await this.xero.accountingApi.getReportBalanceSheet(
-        this.organizationId,
+        this.tenantId,
         undefined, // date
         periods,
         'MONTH'
@@ -210,7 +219,7 @@ class XeroService {
 
     return await this.executeWithRetry(async () => {
       const response = await this.xero.accountingApi.getReportCashFlow(
-        this.organizationId,
+        this.tenantId,
         undefined, // fromDate
         undefined, // toDate
         periods
@@ -227,7 +236,7 @@ class XeroService {
 
     return await this.executeWithRetry(async () => {
       const response = await this.xero.accountingApi.getReportProfitAndLoss(
-        this.organizationId,
+        this.tenantId,
         undefined, // fromDate
         undefined, // toDate
         periods,
@@ -323,7 +332,7 @@ class XeroService {
   async getOrganizations() {
     try {
       // Custom connection is already authenticated
-      const response = await this.xero.accountingApi.getOrganisations();
+      const response = await this.xero.accountingApi.getOrganisations(this.tenantId);
       return response.body.organisations;
     } catch (error) {
       logError('Error fetching organizations', error);
@@ -580,6 +589,7 @@ class XeroService {
       // Clear connection state
       this.isConnected = false;
       this.organizationId = null;
+      this.tenantId = null;
       this.lastSyncTime = null;
       
       // Custom connections don't have tokens to clean up
@@ -610,11 +620,12 @@ class XeroService {
         };
       }
 
-      await this.xero.accountingApi.getOrganisations();
+      await this.xero.accountingApi.getOrganisations(this.tenantId);
       
       return {
         status: 'connected',
         organizationId: this.organizationId,
+        tenantId: this.tenantId,
         lastCheck: new Date().toISOString()
       };
     } catch (error) {

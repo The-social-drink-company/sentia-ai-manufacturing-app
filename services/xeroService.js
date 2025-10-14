@@ -142,7 +142,7 @@ class XeroService {
         },
         body: new URLSearchParams({
           'grant_type': 'client_credentials',
-          'scope': 'accounting.transactions accounting.reports.read accounting.settings.read'
+          'scope': 'accounting.transactions.read accounting.settings.read accounting.contacts.read accounting.reports.read'
         })
       });
 

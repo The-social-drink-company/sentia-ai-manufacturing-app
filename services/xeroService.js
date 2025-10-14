@@ -57,7 +57,7 @@ class XeroService {
     logDebug('🔍 Xero Debug - XERO_CLIENT_ID:', process.env.XERO_CLIENT_ID);
     logDebug('🔍 Xero Debug - XERO_CLIENT_SECRET:', process.env.XERO_CLIENT_SECRET);
     
-    this.organizationId = process.env.XERO_ORGANISATION_ID;
+    // OrganizationId will be retrieved dynamically from Xero API
     
     if (!process.env.XERO_CLIENT_ID || !process.env.XERO_CLIENT_SECRET) {
       logDebug('❌ Xero credentials missing - CLIENT_ID:', !!process.env.XERO_CLIENT_ID, 'CLIENT_SECRET:', !!process.env.XERO_CLIENT_SECRET);
@@ -121,31 +121,36 @@ class XeroService {
           scope: tokenResponse.scope
         });
 
-        // For custom connections, try to get tenant connections first
-        // If that fails, use the configured organization ID as tenant ID
-        let tenantId = process.env.XERO_ORGANISATION_ID;
-        
+        // For custom connections, get organization directly without tenant ID
+        // Custom connections are pre-authorized for a specific organization
         try {
-          const tenantResponse = await this.xero.accountingApi.getConnections();
-          if (tenantResponse.body && tenantResponse.body.length > 0) {
-            tenantId = tenantResponse.body[0].tenantId;
-            logDebug('🔍 Retrieved tenant ID from connections API:', tenantId);
-          }
-        } catch (connectError) {
-          logDebug('⚠️ Could not get connections, using configured organization ID as tenant ID:', tenantId);
-        }
-        
-        if (tenantId) {
-          // Test the connection by fetching organizations with tenant ID
-          const orgsResponse = await this.xero.accountingApi.getOrganisations(tenantId);
+          logDebug('🔍 Fetching organization details from Xero API...');
+          
+          // Call /Organisation endpoint directly (no tenant ID required for custom connections)
+          const orgsResponse = await this.xero.accountingApi.getOrganisations();
           
           if (orgsResponse.body && orgsResponse.body.organisations && orgsResponse.body.organisations.length > 0) {
-            this.organizationId = orgsResponse.body.organisations[0].organisationID;
-            this.tenantId = tenantId;
+            const organization = orgsResponse.body.organisations[0];
+            this.organizationId = organization.organisationID;
+            this.tenantId = organization.organisationID; // Use organization ID as tenant ID
             this.isConnected = true;
-            logDebug('✅ Xero custom connection authenticated successfully', { tenantId, organizationId: this.organizationId });
+            
+            logDebug('✅ Xero custom connection authenticated successfully', { 
+              organizationId: this.organizationId,
+              organizationName: organization.name,
+              tenantId: this.tenantId 
+            });
             return true;
+          } else {
+            logError('❌ No organizations found in Xero API response');
+            return false;
           }
+        } catch (orgError) {
+          logError('❌ Failed to fetch organization from Xero API:', orgError.message);
+          if (orgError.response?.statusCode === 403) {
+            logError('❌ Custom connection not authorized - check Xero Developer Portal');
+          }
+          return false;
         }
       }
       

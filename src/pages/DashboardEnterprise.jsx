@@ -1,7 +1,6 @@
 ﻿import { Suspense, lazy, useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import XeroConnectionBanner from '@/components/XeroConnectionBanner'
 import { useXero } from '@/contexts/XeroContext'
 
 const RegionalContributionChart = lazy(() => import('@/components/dashboard/RegionalContributionChart'))
@@ -18,7 +17,7 @@ import workingCapitalApi from '@/services/api/workingCapitalApi'
 import { ApiError } from '@/services/api/baseApi'
 
 const DashboardEnterprise = () => {
-  const { isConnected: xeroConnected, isLoading: xeroLoading } = useXero()
+  const { isConnected: xeroConnected } = useXero()
   
   const [plData, setPLData] = useState([])
   const [plLoading, setPLLoading] = useState(true)
@@ -36,11 +35,6 @@ const DashboardEnterprise = () => {
   const [capitalLoading, setCapitalLoading] = useState(true)
   const [capitalError, setCapitalError] = useState(null)
   const [requiresXeroConnection, setRequiresXeroConnection] = useState(false)
-
-  // Debug logging for requiresXeroConnection state changes
-  useEffect(() => {
-    console.log('[DashboardEnterprise] requiresXeroConnection state changed:', requiresXeroConnection)
-  }, [requiresXeroConnection])
 
   // Fetch P&L analysis data
   useEffect(() => {
@@ -277,22 +271,7 @@ const DashboardEnterprise = () => {
 
   return (
     <section className="space-y-6">
-      {/* Xero Connection Banner - Show when not connected or when APIs require connection */}
-      {(!xeroConnected || requiresXeroConnection) && (
-        <XeroConnectionBanner 
-          variant="full"
-          showDismiss={false}
-          className="mb-6"
-        />
-      )}
-      
-      {/* Debug information - remove in production */}
-      {console.log('[DashboardEnterprise] Banner visibility check:', { 
-        xeroConnected, 
-        xeroLoading, 
-        requiresXeroConnection,
-        shouldShowBanner: (!xeroConnected || requiresXeroConnection)
-      })}
+      {/* Xero connection banners removed - custom connections don't require user interaction */}
 
       <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>

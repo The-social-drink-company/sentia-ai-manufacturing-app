@@ -17,7 +17,6 @@ import AgingChart from './components/AgingChart'
 import CashConversionCycle from './components/CashConversionCycle'
 import CashFlowForecast from './components/CashFlowForecast'
 import OptimizationRecommendations from './components/OptimizationRecommendations'
-import XeroConnectionBanner from '@/components/XeroConnectionBanner'
 import { useXero } from '@/contexts/XeroContext'
 import { logError, devLog } from '../../utils/structuredLogger'
 
@@ -211,15 +210,7 @@ export default function WorkingCapitalDashboard() {
       </div>
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-        {/* Show Xero connection banner if not connected */}
-        {!xeroConnected && (
-          <div className="mb-8">
-            <XeroConnectionBanner 
-              variant="compact"
-              showDismiss={true}
-            />
-          </div>
-        )}
+        {/* Xero connection banners removed - custom connections don't require user interaction */}
 
         <div className="mb-6">
           <div

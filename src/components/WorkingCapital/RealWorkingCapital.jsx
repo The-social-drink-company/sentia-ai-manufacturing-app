@@ -1,6 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useWorkingCapitalLiveData } from '@/hooks/useWorkingCapitalLiveData'
-import XeroConnectionBanner from '@/components/XeroConnectionBanner'
 import { useXero } from '@/contexts/XeroContext'
 
 const RealWorkingCapital = () => {
@@ -47,14 +46,7 @@ const RealWorkingCapital = () => {
           </p>
         </header>
         
-        {/* Show Xero Connection Banner when not connected or when error indicates Xero issue */}
-        {(!xeroConnected || isXeroConnectionError) && (
-          <XeroConnectionBanner 
-            variant="full"
-            showDismiss={false}
-            className="mb-6"
-          />
-        )}
+        {/* Xero connection banners removed - custom connections don't require user interaction */}
         
         <Card className="border-red-200 bg-red-50">
           <CardHeader>
@@ -93,14 +85,7 @@ const RealWorkingCapital = () => {
         </p>
       </header>
 
-      {/* Show Xero Connection Banner when not connected */}
-      {!xeroConnected && (
-        <XeroConnectionBanner 
-          variant="full"
-          showDismiss={false}
-          className="mb-6"
-        />
-      )}
+      {/* Xero connection banners removed - custom connections don't require user interaction */}
 
       {/* Data Status Banner */}
       <Card className="border-green-200 bg-green-50">

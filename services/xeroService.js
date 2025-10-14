@@ -57,7 +57,7 @@ class XeroService {
     logDebug('🔍 Xero Debug - XERO_CLIENT_ID:', process.env.XERO_CLIENT_ID);
     logDebug('🔍 Xero Debug - XERO_CLIENT_SECRET:', process.env.XERO_CLIENT_SECRET);
     
-    this.organizationId = process.env.XERO_ORGANIZATION_ID;
+    this.organizationId = process.env.XERO_ORGANISATION_ID;
     
     if (!process.env.XERO_CLIENT_ID || !process.env.XERO_CLIENT_SECRET) {
       logDebug('❌ Xero credentials missing - CLIENT_ID:', !!process.env.XERO_CLIENT_ID, 'CLIENT_SECRET:', !!process.env.XERO_CLIENT_SECRET);

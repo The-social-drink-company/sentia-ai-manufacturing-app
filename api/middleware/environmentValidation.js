@@ -36,6 +36,7 @@ const SECURITY_PATTERNS = {
 };
 
 // Environment-specific key type validation
+// Note: Development environment can use production keys when VITE_DEVELOPMENT_MODE=true (authentication bypass)
 const ENVIRONMENT_KEY_TYPES = {
   production: {
     VITE_CLERK_PUBLISHABLE_KEY: 'pk_live_',
@@ -46,8 +47,9 @@ const ENVIRONMENT_KEY_TYPES = {
     CLERK_SECRET_KEY: 'sk_test_'
   },
   development: {
-    VITE_CLERK_PUBLISHABLE_KEY: 'pk_test_',
-    CLERK_SECRET_KEY: 'sk_test_'
+    // Development can use either test keys OR production keys with development mode bypass
+    VITE_CLERK_PUBLISHABLE_KEY: ['pk_test_', 'pk_live_'],
+    CLERK_SECRET_KEY: ['sk_test_', 'sk_live_']
   }
 };
 
@@ -99,18 +101,31 @@ export function validateEnvironment() {
   // Validate environment-specific key types
   const envKeyTypes = ENVIRONMENT_KEY_TYPES[env];
   if (envKeyTypes) {
-    for (const [varName, expectedPrefix] of Object.entries(envKeyTypes)) {
+    for (const [varName, expectedPrefixes] of Object.entries(envKeyTypes)) {
       const value = process.env[varName];
-      if (value && !value.startsWith(expectedPrefix)) {
-        validation.warnings.push({
-          variable: varName,
-          message: `Using ${value.startsWith('pk_live_') || value.startsWith('sk_live_') ? 'production' : 'test'} key in ${env} environment`
-        });
-        logWarn('Environment key type mismatch', { 
-          variable: varName, 
-          environment: env, 
-          expectedPrefix 
-        });
+      if (value) {
+        // Handle both single prefix (string) and multiple prefixes (array)
+        const prefixArray = Array.isArray(expectedPrefixes) ? expectedPrefixes : [expectedPrefixes];
+        const isValidPrefix = prefixArray.some(prefix => value.startsWith(prefix));
+        
+        if (!isValidPrefix) {
+          // Only warn if development environment is NOT using production keys with development mode
+          const isDevelopmentBypass = env === 'development' && 
+            process.env.VITE_DEVELOPMENT_MODE === 'true' &&
+            (value.startsWith('pk_live_') || value.startsWith('sk_live_'));
+            
+          if (!isDevelopmentBypass) {
+            validation.warnings.push({
+              variable: varName,
+              message: `Using ${value.startsWith('pk_live_') || value.startsWith('sk_live_') ? 'production' : 'test'} key in ${env} environment`
+            });
+            logWarn('Environment key type mismatch', { 
+              variable: varName, 
+              environment: env, 
+              expectedPrefix: prefixArray.join(' or ')
+            });
+          }
+        }
       }
     }
   }
@@ -130,7 +145,10 @@ export function validateEnvironment() {
       
       validation.security.environmentMatch = pubKeyEnv === secretKeyEnv;
       
-      if (!validation.security.environmentMatch) {
+      // Don't warn about environment mismatch in development mode with authentication bypass
+      const isDevelopmentBypass = env === 'development' && process.env.VITE_DEVELOPMENT_MODE === 'true';
+      
+      if (!validation.security.environmentMatch && !isDevelopmentBypass) {
         validation.warnings.push({
           variable: 'CLERK_KEYS',
           message: 'Publishable and secret keys are from different environments'

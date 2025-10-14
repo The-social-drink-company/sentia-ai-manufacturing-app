@@ -41,11 +41,15 @@ class XeroService {
     // this.initializeXeroClient();
   }
 
-  ensureInitialized() {
+  async ensureInitialized() {
     if (this.initialized) {
       return;
     }
     this.initializeXeroClient();
+    // Wait for authentication to complete
+    if (this.xero) {
+      await this.authenticate();
+    }
     this.initialized = true;
   }
 
@@ -75,7 +79,7 @@ class XeroService {
       });
 
       logDebug('✅ Xero client initialized');
-      this.authenticate();
+      // Authentication will be called from ensureInitialized()
     } catch (error) {
       logError('❌ Failed to initialize Xero client:', error.message);
     }

@@ -365,7 +365,7 @@ app.get('/api/services/status', async (req, res) => {
       const xeroModule = await import('./services/xeroService.js');
       const xeroService = xeroModule.default;
       if (xeroService) {
-        xeroService.ensureInitialized();
+        await xeroService.ensureInitialized();
         serviceStatus.services.xero.configured = !!xeroService;
         serviceStatus.services.xero.connected = xeroService.isConnected || false;
         serviceStatus.services.xero.status = xeroService.isConnected ? 'connected' : 'configured_not_connected';
@@ -552,7 +552,7 @@ app.get('/api/financial/working-capital', async (req, res) => {
       const xeroModule = await import('./services/xeroService.js');
       xeroService = xeroModule.default;
       if (xeroService) {
-        xeroService.ensureInitialized();
+        await xeroService.ensureInitialized();
         xeroInitialized = xeroService.isConnected || false;
       }
     } catch (xeroError) {
@@ -733,7 +733,7 @@ app.get('/api/financial/cash-flow', async (req, res) => {
       const xeroModule = await import('./services/xeroService.js');
       xeroService = xeroModule.default;
       if (xeroService) {
-        xeroService.ensureInitialized();
+        await xeroService.ensureInitialized();
         xeroInitialized = xeroService.isConnected || false;
       }
     } catch (xeroError) {
@@ -1098,7 +1098,7 @@ app.get('/api/xero/status', async (req, res) => {
     const xeroModule = await import('./services/xeroService.js');
     const xeroService = xeroModule.default;
     
-    xeroService.ensureInitialized();
+    await xeroService.ensureInitialized();
     
     // Test connection by attempting to authenticate
     const connected = await xeroService.authenticate();
@@ -1138,7 +1138,7 @@ app.get('/api/dashboard/summary', async (req, res) => {
     try {
       const xeroModule = await import('./services/xeroService.js');
       xeroService = xeroModule.default;
-      xeroService.ensureInitialized();
+      await xeroService.ensureInitialized();
       xeroConnected = xeroService.isConnected;
     } catch (error) {
       logger.warn('Xero service not available:', error.message);
@@ -1605,7 +1605,7 @@ app.get('/api/financial/kpi-summary', async (req, res) => {
         const xeroModule = await import('./services/xeroService.js');
         xeroService = xeroModule.default;
         if (xeroService) {
-          xeroService.ensureInitialized();
+          await xeroService.ensureInitialized();
           xeroInitialized = xeroService.isConnected;
         }
       } catch (xeroError) {
@@ -2011,7 +2011,7 @@ app.get('/api/financial/kpi-summary', async (req, res) => {
         const xeroModule = await import('./services/xeroService.js');
         xeroService = xeroModule.default;
         if (xeroService) {
-          xeroService.ensureInitialized();
+          await xeroService.ensureInitialized();
           xeroInitialized = xeroService.isConnected;
         }
       } catch (xeroError) {

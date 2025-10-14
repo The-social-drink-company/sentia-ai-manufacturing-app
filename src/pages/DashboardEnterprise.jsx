@@ -15,6 +15,7 @@ import plAnalysisApi from '@/services/api/plAnalysisApi'
 import productSalesApi from '@/services/api/productSalesApi'
 import regionalPerformanceApi from '@/services/api/regionalPerformanceApi'
 import workingCapitalApi from '@/services/api/workingCapitalApi'
+import { ApiError } from '@/services/api/baseApi'
 
 const DashboardEnterprise = () => {
   const { isConnected: xeroConnected, isLoading: xeroLoading } = useXero()
@@ -54,6 +55,13 @@ const DashboardEnterprise = () => {
         }
       } catch (error) {
         console.error('Error fetching P&L data:', error)
+        
+        // Check if the error response contains Xero connection requirement
+        if (error instanceof ApiError && error.data && error.data.requiresXeroConnection) {
+          setRequiresXeroConnection(true)
+          setPLData([])
+        }
+        
         setPLError(error.message)
         setPLData([]) // Set empty array on error
       } finally {
@@ -99,6 +107,13 @@ const DashboardEnterprise = () => {
         }
       } catch (error) {
         console.error('Error fetching KPI data:', error)
+        
+        // Check if the error response contains Xero connection requirement
+        if (error instanceof ApiError && error.data && error.data.requiresXeroConnection) {
+          setRequiresXeroConnection(true)
+          setPerformanceKpis([])
+        }
+        
         setKpiError(error.message)
         setPerformanceKpis([]) // Set empty array on error
       } finally {
@@ -127,6 +142,13 @@ const DashboardEnterprise = () => {
         }
       } catch (error) {
         console.error('Error fetching product sales data:', error)
+        
+        // Check if the error response contains Xero connection requirement
+        if (error instanceof ApiError && error.data && error.data.requiresXeroConnection) {
+          setRequiresXeroConnection(true)
+          setProductSalesData([])
+        }
+        
         setSalesError(error.message)
         setProductSalesData([]) // Set empty array on error
       } finally {
@@ -194,6 +216,13 @@ const DashboardEnterprise = () => {
         }
       } catch (error) {
         console.error('Error fetching capital KPIs:', error)
+        
+        // Check if the error response contains Xero connection requirement
+        if (error instanceof ApiError && error.data && error.data.requiresXeroConnection) {
+          setRequiresXeroConnection(true)
+          setCapitalKpis([])
+        }
+        
         setCapitalError(error.message)
         setCapitalKpis([]) // Set empty array on error
       } finally {

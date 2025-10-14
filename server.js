@@ -564,12 +564,12 @@ app.get('/api/financial/working-capital', async (req, res) => {
     if (xeroInitialized && xeroService) {
       try {
         logger.info('Attempting to fetch working capital data from Xero API');
-        workingCapitalData = await xeroService.getWorkingCapital();
-        if (workingCapitalData && workingCapitalData.success) {
+        workingCapitalData = await xeroService.calculateWorkingCapital();
+        if (workingCapitalData) {
           logger.info('Successfully retrieved working capital data from Xero');
           return res.json({
             success: true,
-            data: workingCapitalData.data,
+            data: workingCapitalData,
             dataSource: 'xero',
             timestamp: new Date().toISOString()
           });

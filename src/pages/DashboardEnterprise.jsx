@@ -37,6 +37,11 @@ const DashboardEnterprise = () => {
   const [capitalError, setCapitalError] = useState(null)
   const [requiresXeroConnection, setRequiresXeroConnection] = useState(false)
 
+  // Debug logging for requiresXeroConnection state changes
+  useEffect(() => {
+    console.log('[DashboardEnterprise] requiresXeroConnection state changed:', requiresXeroConnection)
+  }, [requiresXeroConnection])
+
   // Fetch P&L analysis data
   useEffect(() => {
     const fetchPLData = async () => {
@@ -54,10 +59,19 @@ const DashboardEnterprise = () => {
           throw new Error('Failed to fetch P&L data')
         }
       } catch (error) {
-        console.error('Error fetching P&L data:', error)
+        console.error('[DashboardEnterprise] Error fetching P&L data:', error)
         
-        // Check if the error response contains Xero connection requirement
-        if (error instanceof ApiError && error.data && error.data.requiresXeroConnection) {
+        // Check for Xero connection requirement in multiple ways
+        const errorMessage = error.message || ''
+        const requiresXero = (
+          (error instanceof ApiError && error.data && error.data.requiresXeroConnection) ||
+          errorMessage.includes('Xero connection') ||
+          errorMessage.includes('requires Xero') ||
+          errorMessage.includes('financial data')
+        )
+        
+        if (requiresXero) {
+          console.log('[DashboardEnterprise] P&L API indicates Xero connection required')
           setRequiresXeroConnection(true)
           setPLData([])
         }
@@ -106,10 +120,19 @@ const DashboardEnterprise = () => {
           throw new Error('Failed to fetch KPI data')
         }
       } catch (error) {
-        console.error('Error fetching KPI data:', error)
+        console.error('[DashboardEnterprise] Error fetching KPI data:', error)
         
-        // Check if the error response contains Xero connection requirement
-        if (error instanceof ApiError && error.data && error.data.requiresXeroConnection) {
+        // Check for Xero connection requirement in multiple ways
+        const errorMessage = error.message || ''
+        const requiresXero = (
+          (error instanceof ApiError && error.data && error.data.requiresXeroConnection) ||
+          errorMessage.includes('Xero connection') ||
+          errorMessage.includes('requires Xero') ||
+          errorMessage.includes('financial data')
+        )
+        
+        if (requiresXero) {
+          console.log('[DashboardEnterprise] KPI API indicates Xero connection required')
           setRequiresXeroConnection(true)
           setPerformanceKpis([])
         }
@@ -141,10 +164,19 @@ const DashboardEnterprise = () => {
           throw new Error('Failed to fetch product sales data')
         }
       } catch (error) {
-        console.error('Error fetching product sales data:', error)
+        console.error('[DashboardEnterprise] Error fetching product sales data:', error)
         
-        // Check if the error response contains Xero connection requirement
-        if (error instanceof ApiError && error.data && error.data.requiresXeroConnection) {
+        // Check for Xero connection requirement in multiple ways
+        const errorMessage = error.message || ''
+        const requiresXero = (
+          (error instanceof ApiError && error.data && error.data.requiresXeroConnection) ||
+          errorMessage.includes('Xero connection') ||
+          errorMessage.includes('requires Xero') ||
+          errorMessage.includes('financial data')
+        )
+        
+        if (requiresXero) {
+          console.log('[DashboardEnterprise] Product sales API indicates Xero connection required')
           setRequiresXeroConnection(true)
           setProductSalesData([])
         }
@@ -215,10 +247,20 @@ const DashboardEnterprise = () => {
           setCapitalKpis([])
         }
       } catch (error) {
-        console.error('Error fetching capital KPIs:', error)
+        console.error('[DashboardEnterprise] Error fetching capital KPIs:', error)
         
-        // Check if the error response contains Xero connection requirement
-        if (error instanceof ApiError && error.data && error.data.requiresXeroConnection) {
+        // Check for Xero connection requirement in multiple ways
+        const errorMessage = error.message || ''
+        const requiresXero = (
+          (error instanceof ApiError && error.data && error.data.requiresXeroConnection) ||
+          errorMessage.includes('Xero connection') ||
+          errorMessage.includes('requires Xero') ||
+          errorMessage.includes('financial data') ||
+          errorMessage.includes('Working capital analysis requires')
+        )
+        
+        if (requiresXero) {
+          console.log('[DashboardEnterprise] Working capital API indicates Xero connection required:', errorMessage)
           setRequiresXeroConnection(true)
           setCapitalKpis([])
         }
@@ -235,14 +277,22 @@ const DashboardEnterprise = () => {
 
   return (
     <section className="space-y-6">
-      {/* Xero Connection Banner - Show when connection is required */}
-      {requiresXeroConnection && !xeroConnected && (
+      {/* Xero Connection Banner - Show when not connected or when APIs require connection */}
+      {(!xeroConnected || requiresXeroConnection) && (
         <XeroConnectionBanner 
           variant="full"
           showDismiss={false}
           className="mb-6"
         />
       )}
+      
+      {/* Debug information - remove in production */}
+      {console.log('[DashboardEnterprise] Banner visibility check:', { 
+        xeroConnected, 
+        xeroLoading, 
+        requiresXeroConnection,
+        shouldShowBanner: (!xeroConnected || requiresXeroConnection)
+      })}
 
       <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>

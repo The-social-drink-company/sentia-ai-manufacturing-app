@@ -32,12 +32,25 @@ export const XeroProvider = ({ children }) => {
       setIsLoading(true)
       setLastError(null)
       
+      logInfo('[XeroContext] Checking Xero connection status...')
+      
       const response = await fetch('/api/xero/status')
       const data = await response.json()
       
+      logInfo('[XeroContext] Xero status API response:', data)
+      
       if (data.success && data.status) {
+        const wasConnected = isConnected
         setIsConnected(data.status.connected)
         setConnectionStatus(data.status)
+        
+        // Log state changes
+        if (wasConnected !== data.status.connected) {
+          logInfo('[XeroContext] Connection state changed:', { 
+            from: wasConnected, 
+            to: data.status.connected 
+          })
+        }
         
         if (data.status.connected && data.status.organizationId) {
           setOrganizationInfo({
@@ -46,34 +59,49 @@ export const XeroProvider = ({ children }) => {
             lastSync: data.status.lastSync,
             tokenExpiry: data.status.tokenExpiry
           })
+          logInfo('[XeroContext] Organization info updated:', {
+            id: data.status.organizationId,
+            name: data.status.organizationName
+          })
+        } else {
+          setOrganizationInfo(null)
         }
         
-        logInfo('Xero connection status updated', { 
+        logInfo('[XeroContext] Final state:', { 
           connected: data.status.connected,
+          hasTokens: data.status.hasTokens,
           organizationId: data.status.organizationId 
         })
       } else {
+        logWarn('[XeroContext] Invalid API response, setting disconnected state')
         setIsConnected(false)
         setConnectionStatus(null)
         setOrganizationInfo(null)
       }
     } catch (error) {
-      logError('Failed to check Xero connection status', error)
+      logError('[XeroContext] Failed to check Xero connection status', error)
       setLastError(error.message)
       setIsConnected(false)
     } finally {
       setIsLoading(false)
     }
-  }, [])
+  }, [isConnected])
 
   // Initialize connection check on mount
   useEffect(() => {
+    logInfo('[XeroContext] Initializing XeroContext, checking connection status...')
     checkConnectionStatus()
     
     // Check connection status every 5 minutes
-    const interval = setInterval(checkConnectionStatus, 5 * 60 * 1000)
+    const interval = setInterval(() => {
+      logInfo('[XeroContext] Periodic connection check (5min interval)')
+      checkConnectionStatus()
+    }, 5 * 60 * 1000)
     
-    return () => clearInterval(interval)
+    return () => {
+      logInfo('[XeroContext] Cleaning up XeroContext interval')
+      clearInterval(interval)
+    }
   }, [checkConnectionStatus])
 
   // Handle OAuth callback completion
@@ -82,20 +110,24 @@ export const XeroProvider = ({ children }) => {
     const xerConnected = urlParams.get('xero_connected')
     const xeroError = urlParams.get('xero_error')
     
+    logInfo('[XeroContext] OAuth callback check:', { xerConnected, xeroError })
+    
     if (xerConnected === 'true') {
-      logInfo('Xero OAuth callback completed successfully')
+      logInfo('[XeroContext] Xero OAuth callback completed successfully')
       checkConnectionStatus() // Refresh status after successful connection
       
       // Clean up URL parameters
       const newUrl = window.location.pathname
       window.history.replaceState({}, document.title, newUrl)
+      logInfo('[XeroContext] URL parameters cleaned up after successful OAuth')
     } else if (xeroError === 'true') {
-      logError('Xero OAuth callback completed with error')
+      logError('[XeroContext] Xero OAuth callback completed with error')
       setLastError('Xero connection failed. Please try again.')
       
       // Clean up URL parameters
       const newUrl = window.location.pathname
       window.history.replaceState({}, document.title, newUrl)
+      logInfo('[XeroContext] URL parameters cleaned up after OAuth error')
     }
   }, [checkConnectionStatus])
 
@@ -104,12 +136,12 @@ export const XeroProvider = ({ children }) => {
     try {
       setIsAuthenticating(true)
       setLastError(null)
-      logInfo('Starting Xero OAuth flow')
+      logInfo('[XeroContext] Starting Xero OAuth flow')
       
       // Redirect to OAuth endpoint
       window.location.href = '/api/xero/auth'
     } catch (error) {
-      logError('Failed to start Xero OAuth flow', error)
+      logError('[XeroContext] Failed to start Xero OAuth flow', error)
       setLastError(error.message)
       setIsAuthenticating(false)
     }

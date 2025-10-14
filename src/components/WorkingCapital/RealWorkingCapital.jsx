@@ -1,8 +1,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useWorkingCapitalLiveData } from '@/hooks/useWorkingCapitalLiveData'
+import XeroConnectionBanner from '@/components/XeroConnectionBanner'
+import { useXero } from '@/contexts/XeroContext'
 
 const RealWorkingCapital = () => {
   const { data, loading, error, metadata, retryConnection } = useWorkingCapitalLiveData()
+  const { isConnected: xeroConnected } = useXero()
 
   // Loading state
   if (loading) {
@@ -31,6 +34,10 @@ const RealWorkingCapital = () => {
 
   // Error state - no fallback data, show clear error
   if (error) {
+    const isXeroConnectionError = error.message?.includes('Xero connection') || 
+                                 error.message?.includes('requires Xero') ||
+                                 error.message?.includes('financial data')
+    
     return (
       <section className="space-y-6">
         <header>
@@ -39,6 +46,15 @@ const RealWorkingCapital = () => {
             Unable to load financial data
           </p>
         </header>
+        
+        {/* Show Xero Connection Banner when not connected or when error indicates Xero issue */}
+        {(!xeroConnected || isXeroConnectionError) && (
+          <XeroConnectionBanner 
+            variant="full"
+            showDismiss={false}
+            className="mb-6"
+          />
+        )}
         
         <Card className="border-red-200 bg-red-50">
           <CardHeader>
@@ -76,6 +92,15 @@ const RealWorkingCapital = () => {
           Live financial data from Xero
         </p>
       </header>
+
+      {/* Show Xero Connection Banner when not connected */}
+      {!xeroConnected && (
+        <XeroConnectionBanner 
+          variant="full"
+          showDismiss={false}
+          className="mb-6"
+        />
+      )}
 
       {/* Data Status Banner */}
       <Card className="border-green-200 bg-green-50">

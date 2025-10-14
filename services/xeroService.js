@@ -111,12 +111,21 @@ class XeroService {
           scope: tokenResponse.scope
         });
 
-        // For custom connections, get tenant connections first
-        const tenantResponse = await this.xero.accountingApi.getConnections();
+        // For custom connections, try to get tenant connections first
+        // If that fails, use the configured organization ID as tenant ID
+        let tenantId = process.env.XERO_ORGANISATION_ID;
         
-        if (tenantResponse.body && tenantResponse.body.length > 0) {
-          const tenantId = tenantResponse.body[0].tenantId;
-          
+        try {
+          const tenantResponse = await this.xero.accountingApi.getConnections();
+          if (tenantResponse.body && tenantResponse.body.length > 0) {
+            tenantId = tenantResponse.body[0].tenantId;
+            logDebug('🔍 Retrieved tenant ID from connections API:', tenantId);
+          }
+        } catch (connectError) {
+          logDebug('⚠️ Could not get connections, using configured organization ID as tenant ID:', tenantId);
+        }
+        
+        if (tenantId) {
           // Test the connection by fetching organizations with tenant ID
           const orgsResponse = await this.xero.accountingApi.getOrganisations(tenantId);
           

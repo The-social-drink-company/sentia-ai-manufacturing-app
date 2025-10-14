@@ -89,7 +89,9 @@ class XeroService {
   // Custom connections authenticate automatically via Client Credentials
 
   async authenticate() {
+    logDebug('🔍 Starting Xero authentication...');
     if (!this.xero) {
+      logError('❌ Xero client not initialized');
       return false;
     }
 
@@ -103,10 +105,14 @@ class XeroService {
         return false;
       }
 
+      logDebug('🔍 Xero credentials available, requesting token...');
+
       // Exchange credentials for access token using Xero's token endpoint
       const tokenResponse = await this.getCustomConnectionToken();
+      logDebug('🔍 Token response received:', !!tokenResponse);
       
       if (tokenResponse && tokenResponse.access_token) {
+        logDebug('🔍 Valid access token received, setting up client...');
         // Set the access token on the Xero client
         this.xero.setTokenSet({
           access_token: tokenResponse.access_token,
@@ -146,7 +152,9 @@ class XeroService {
       this.isConnected = false;
       return false;
     } catch (error) {
-      logError('❌ Xero custom connection authentication failed:', error.message);
+      const errorMessage = error.message || error.toString() || 'Unknown authentication error';
+      logError('❌ Xero custom connection authentication failed:', errorMessage);
+      logError('❌ Full error object:', JSON.stringify(error, null, 2));
       this.isConnected = false;
       return false;
     }
@@ -178,7 +186,9 @@ class XeroService {
         return null;
       }
     } catch (error) {
-      logError('❌ Error getting custom connection token:', error.message);
+      const errorMessage = error.message || error.toString() || 'Unknown token error';
+      logError('❌ Error getting custom connection token:', errorMessage);
+      logError('❌ Full token error object:', JSON.stringify(error, null, 2));
       return null;
     }
   }

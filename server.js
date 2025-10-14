@@ -662,12 +662,19 @@ app.get('/api/financial/working-capital', async (req, res) => {
       logger.warn('Database not available for working capital data');
     }
 
-    // All attempts failed - return detailed error information
+    // All attempts failed - return detailed error information with Xero connection flag
     logger.error('All data sources failed for working capital endpoint');
+    
+    // Check if this is primarily a Xero connection issue
+    const isXeroConnectionIssue = !xeroInitialized || !xeroService;
+    
     return res.status(503).json({
       success: false,
+      requiresXeroConnection: isXeroConnectionIssue,
       error: 'Unable to retrieve working capital data from any source',
-      message: 'All configured data sources failed to provide working capital information',
+      message: isXeroConnectionIssue 
+        ? 'Working capital analysis requires Xero connection for real-time financial data'
+        : 'All configured data sources failed to provide working capital information',
       errors: errors,
       timestamp: new Date().toISOString(),
       debugInfo: {
@@ -677,11 +684,17 @@ app.get('/api/financial/working-capital', async (req, res) => {
         requestPath: req.path,
         userAgent: req.get('User-Agent')
       },
-      suggestions: [
-        'Check Xero API connection and credentials',
-        'Verify database connection and working capital related tables',
-        'Review server logs for detailed error information'
-      ]
+      suggestions: isXeroConnectionIssue 
+        ? [
+            'Connect to Xero via the dashboard banner for real-time working capital data',
+            'Ensure Xero API credentials are properly configured',
+            'Check Xero service initialization'
+          ]
+        : [
+            'Check Xero API connection and credentials',
+            'Verify database connection and working capital related tables',
+            'Review server logs for detailed error information'
+          ]
     });
 
   } catch (error) {

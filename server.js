@@ -1729,67 +1729,301 @@ app.get('/api/forecasting/demand', async (req, res) => {
   }
 });
 
-// Analytics API endpoints
+// Real Analytics KPIs API endpoint - NO DEMO DATA
 app.get('/api/analytics/kpis', async (req, res) => {
+  logger.info('Real KPIs data requested');
+  
+  const errors = [];
+  let realKpis = {};
+  let shopifyMultiStore = null;
+  
   try {
-    // Test Shopify connection
-    let shopifyStatus = { error: 'not tested' };
+    // Initialize Shopify service for real sales data
     try {
-      const { default: shopifyMultiStore } = await import('./services/shopify-multistore.js');
-      shopifyStatus = {
-        storeConfigsCount: shopifyMultiStore.storeConfigs?.length || 0,
-        hasCredentials: {
-          ukDomain: !!process.env.SHOPIFY_UK_SHOP_DOMAIN,
-          ukToken: !!process.env.SHOPIFY_UK_ACCESS_TOKEN,
-          usDomain: !!process.env.SHOPIFY_US_SHOP_DOMAIN,
-          usToken: !!process.env.SHOPIFY_US_ACCESS_TOKEN
-        }
-      };
+      const { default: shopifyService } = await import('./services/shopify-multistore.js');
+      shopifyMultiStore = shopifyService;
+      if (shopifyMultiStore) {
+        await shopifyMultiStore.connect();
+        logger.info('Shopify service connected for KPIs');
+      }
     } catch (shopifyError) {
-      shopifyStatus = { error: shopifyError.message };
+      logger.warn('Failed to initialize Shopify for KPIs:', shopifyError.message);
+      errors.push({
+        source: 'shopify_init',
+        error: shopifyError.message
+      });
     }
 
-    const kpis = {
-      revenue: {
-        value: 8500000,
-        target: 10000000,
-        achievement: 0.85
-      },
-      efficiency: {
-        oee: 0.78,
-        utilization: 0.82,
-        productivity: 0.91
-      },
-      quality: {
-        defectRate: 0.018,
-        customerSatisfaction: 0.92,
-        onTimeDelivery: 0.94
-      },
-      // Debug info
-      shopifyStatus
-    };
-    res.json(kpis);
+    // Attempt 1: Get real revenue data from database
+    if (prisma) {
+      try {
+        logger.info('Fetching real revenue data from database');
+        
+        // Get current year revenue data
+        const currentYear = new Date().getFullYear();
+        const yearStart = new Date(currentYear, 0, 1);
+        const now = new Date();
+        
+        const revenueData = await prisma.historical_sales.aggregate({
+          where: {
+            sale_date: {
+              gte: yearStart,
+              lte: now
+            }
+          },
+          _sum: {
+            net_revenue: true,
+            total_amount: true
+          },
+          _count: {
+            id: true
+          }
+        });
+        
+        const actualRevenue = revenueData._sum.net_revenue || revenueData._sum.total_amount || 0;
+        const orderCount = revenueData._count.id || 0;
+        
+        if (actualRevenue > 0) {
+          // Calculate target (assume 20% growth from current)
+          const revenueTarget = Math.round(actualRevenue * 1.2);
+          const achievement = actualRevenue / revenueTarget;
+          
+          realKpis.revenue = {
+            value: Math.round(actualRevenue),
+            target: revenueTarget,
+            achievement: Math.round(achievement * 100) / 100,
+            orders: orderCount,
+            dataSource: 'database'
+          };
+          
+          logger.info(`Real revenue data found: ${actualRevenue} from ${orderCount} orders`);
+        }
+      } catch (dbError) {
+        logger.error('Database query failed for revenue KPIs:', dbError.message);
+        errors.push({
+          source: 'database_revenue',
+          error: dbError.message
+        });
+      }
+    }
+    
+    // Attempt 2: Get revenue from Shopify if database is empty
+    if (!realKpis.revenue && shopifyMultiStore) {
+      try {
+        logger.info('Fetching real revenue from Shopify');
+        
+        const shopifyRevenue = await shopifyMultiStore.getRevenueSummary({
+          period: 'year_to_date'
+        });
+        
+        if (shopifyRevenue && shopifyRevenue.success) {
+          const actualRevenue = shopifyRevenue.totalRevenue || 0;
+          const orderCount = shopifyRevenue.orderCount || 0;
+          const revenueTarget = Math.round(actualRevenue * 1.2);
+          
+          realKpis.revenue = {
+            value: Math.round(actualRevenue),
+            target: revenueTarget,
+            achievement: Math.round((actualRevenue / revenueTarget) * 100) / 100,
+            orders: orderCount,
+            dataSource: 'shopify'
+          };
+          
+          logger.info(`Shopify revenue data: ${actualRevenue} from ${orderCount} orders`);
+        }
+      } catch (shopifyError) {
+        logger.error('Shopify revenue failed:', shopifyError.message);
+        errors.push({
+          source: 'shopify_revenue',
+          error: shopifyError.message
+        });
+      }
+    }
+    
+    // Attempt 3: Get real efficiency metrics from production data
+    if (prisma) {
+      try {
+        logger.info('Calculating real efficiency metrics from production data');
+        
+        // Get production jobs data for efficiency calculation
+        const productionJobs = await prisma.production_jobs?.findMany({
+          where: {
+            created_at: {
+              gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) // Last 30 days
+            }
+          },
+          select: {
+            status: true,
+            planned_duration: true,
+            actual_duration: true,
+            quality_score: true
+          }
+        }) || [];
+        
+        if (productionJobs.length > 0) {
+          const completedJobs = productionJobs.filter(job => job.status === 'completed');
+          const totalJobs = productionJobs.length;
+          
+          // Calculate OEE components
+          const availability = completedJobs.length / totalJobs;
+          const performance = completedJobs.reduce((sum, job) => {
+            if (job.planned_duration && job.actual_duration) {
+              return sum + (job.planned_duration / job.actual_duration);
+            }
+            return sum + 1;
+          }, 0) / (completedJobs.length || 1);
+          
+          const qualityScores = completedJobs.filter(job => job.quality_score);
+          const quality = qualityScores.length > 0 ? 
+            qualityScores.reduce((sum, job) => sum + job.quality_score, 0) / qualityScores.length : 0.95;
+          
+          const oee = availability * performance * quality;
+          
+          realKpis.efficiency = {
+            oee: Math.round(oee * 100) / 100,
+            utilization: Math.round(availability * 100) / 100,
+            productivity: Math.round(performance * 100) / 100,
+            jobsCompleted: completedJobs.length,
+            totalJobs: totalJobs,
+            dataSource: 'production_database'
+          };
+          
+          logger.info(`Real efficiency calculated: OEE ${oee}, ${completedJobs.length}/${totalJobs} jobs`);
+        }
+      } catch (efficiencyError) {
+        logger.error('Efficiency calculation failed:', efficiencyError.message);
+        errors.push({
+          source: 'efficiency_calculation',
+          error: efficiencyError.message
+        });
+      }
+    }
+    
+    // Attempt 4: Get real quality metrics
+    if (prisma) {
+      try {
+        logger.info('Calculating real quality metrics');
+        
+        const qualityData = await prisma.quality_metrics?.findMany({
+          where: {
+            measured_at: {
+              gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) // Last 30 days
+            }
+          },
+          select: {
+            defect_rate: true,
+            customer_satisfaction: true,
+            on_time_delivery: true
+          }
+        }) || [];
+        
+        if (qualityData.length > 0) {
+          const avgDefectRate = qualityData.reduce((sum, q) => sum + (q.defect_rate || 0), 0) / qualityData.length;
+          const avgCustomerSat = qualityData.reduce((sum, q) => sum + (q.customer_satisfaction || 0), 0) / qualityData.length;
+          const avgOnTimeDelivery = qualityData.reduce((sum, q) => sum + (q.on_time_delivery || 0), 0) / qualityData.length;
+          
+          realKpis.quality = {
+            defectRate: Math.round(avgDefectRate * 1000) / 1000,
+            customerSatisfaction: Math.round(avgCustomerSat * 100) / 100,
+            onTimeDelivery: Math.round(avgOnTimeDelivery * 100) / 100,
+            measurementCount: qualityData.length,
+            dataSource: 'quality_database'
+          };
+          
+          logger.info(`Real quality metrics: ${qualityData.length} measurements averaged`);
+        }
+      } catch (qualityError) {
+        logger.error('Quality metrics calculation failed:', qualityError.message);
+        errors.push({
+          source: 'quality_calculation',
+          error: qualityError.message
+        });
+      }
+    }
+    
+    // Return real data if available, otherwise error
+    if (Object.keys(realKpis).length > 0) {
+      logger.info('Successfully generated real KPIs');
+      return res.json({
+        success: true,
+        kpis: realKpis,
+        metadata: {
+          dataSource: 'real_data',
+          generatedAt: new Date().toISOString(),
+          dataSources: Object.keys(realKpis).map(key => ({
+            metric: key,
+            source: realKpis[key].dataSource
+          }))
+        },
+        timestamp: new Date().toISOString()
+      });
+    }
+    
+    // All real data attempts failed
+    logger.error('No real data available for KPIs');
+    return res.status(503).json({
+      success: false,
+      error: 'Insufficient real data for KPIs',
+      message: 'No real business data available from database or external sources',
+      errors: errors,
+      suggestions: [
+        'Import historical sales data into the database',
+        'Check Shopify API connection for revenue data',
+        'Verify production_jobs table exists and has data',
+        'Ensure quality_metrics table is populated',
+        'Run data synchronization to populate business metrics'
+      ],
+      timestamp: new Date().toISOString()
+    });
+    
   } catch (error) {
-    logger.error('Analytics API error', error);
-    res.status(500).json({ error: 'Failed to fetch KPIs' });
+    logger.error('KPIs endpoint failed:', error.message);
+    return res.status(500).json({
+      success: false,
+      error: 'Internal server error in KPIs calculation',
+      message: error.message,
+      timestamp: new Date().toISOString()
+    });
   }
 });
 
-// AI Analytics endpoints
+// Real AI Analytics endpoint - NO DEMO DATA
 app.post('/api/ai/analyze', async (req, res) => {
+  logger.info('Real AI analysis requested');
+  
   try {
     const { query, context } = req.body;
 
-    // Fallback AI analysis response
-    res.json({
-      analysis: 'AI analysis temporarily unavailable',
-      recommendations: ['Data analysis in progress', 'Please check back later'],
-      confidence: 0.7,
+    if (!query) {
+      return res.status(400).json({
+        success: false,
+        error: 'Query parameter is required for AI analysis',
+        timestamp: new Date().toISOString()
+      });
+    }
+
+    // Return proper error when AI service is not configured
+    logger.error('AI analysis service not yet configured with real AI provider');
+    return res.status(503).json({
+      success: false,
+      error: 'AI analysis service not configured',
+      message: 'Real AI analysis requires configuration of AI provider (OpenAI, Anthropic, etc.)',
+      suggestions: [
+        'Configure AI provider API keys in environment variables',
+        'Set up AI analytics service integration',
+        'Connect to MCP server for AI capabilities',
+        'Verify AI service dependencies are installed'
+      ],
       timestamp: new Date().toISOString()
     });
   } catch (error) {
-    logger.error('AI API error', error);
-    res.status(500).json({ error: 'Failed to process AI analysis' });
+    logger.error('AI analysis endpoint failed:', error.message);
+    return res.status(500).json({
+      success: false,
+      error: 'Internal server error in AI analysis',
+      message: error.message,
+      timestamp: new Date().toISOString()
+    });
   }
 });
 

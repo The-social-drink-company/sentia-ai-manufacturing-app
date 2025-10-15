@@ -2,6 +2,25 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## 🚨 **CRITICAL DATA INTEGRITY RULE**
+**MANDATORY**: NO FALLBACK, MOCK, OR DEMO DATA is allowed on the dashboard or stored in the database. Only real, live data must be used for all business operations, financial calculations, and dashboard displays.
+
+**Exception**: Clerk authentication bypass in development mode only (see authentication section).
+
+**This rule applies to**:
+- Dashboard widgets and displays
+- Financial calculations and reports
+- Inventory and production data
+- API responses and database storage
+- All business intelligence and analytics
+
+**Error Handling Requirements**:
+- When components fail to retrieve real data, they MUST show clear "no data available" states
+- Detailed error messages and connection status MUST be logged to help debug integration issues
+- Development mode SHOULD provide enhanced debugging information without showing mock data
+- Error logging MUST include specific failure reasons (authentication, timeout, network, API errors)
+- Components SHOULD gracefully indicate data source connectivity status without fabricating data
+
 ## CRITICAL SENIOR DEVELOPER RECOMMENDATIONS (IMPLEMENTED)
 
 ### **NAVIGATION SYSTEM - WORLD-CLASS ENTERPRISE LEVEL** ✅
@@ -79,195 +98,19 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Deployment URLs**: 
   - Production: `sentia-mcp-production.onrender.com`
 
-### **SECURITY VULNERABILITIES IDENTIFIED** ⚠️
-**GitHub Security Alert**: 4 vulnerabilities detected (1 critical, 1 high, 2 moderate)
-- **Action Required**: Address security issues before production deployment
-- **Location**: https://github.com/The-social-drink-company/sentia-ai-manufacturing-app/security/dependabot
+## AUTHENTICATION SYSTEM
+**See**: `context/authentication-config.md` for complete authentication setup including:
+- Development branch bypass configuration (ONLY exception to real data rule)
+- Production Clerk setup with RBAC
+- Branch-specific configuration
+- Security best practices
 
-### **CLERK DOCUMENTATION RESOURCE** 📚
-**Documentation Folder**: `clerk-docs/` (excluded from Git)
-- **Comprehensive Coverage**: Complete Clerk authentication documentation crawled from clerk.com
-- **Platform Support**: React, Next.js, Express, Nuxt, Vue, Go, iOS, Android guides
-- **Authentication Flows**: OAuth, social connections, enterprise SSO, multi-factor authentication
-- **Organization Management**: Role-based access control, team management, domain verification
-- **Security Features**: Bot protection, session management, JWT verification, password policies
-- **Integration Guides**: Custom flows, API references, webhooks, billing integration
-- **Deployment**: Production setup, environment management, troubleshooting guides
-
-**Key Documentation Areas**:
-- Getting Started: `/docs/getting-started/` - Setup and core concepts
-- Guides: `/docs/guides/` - Authentication strategies, customization, security
-- Reference: `/docs/reference/` - Component APIs, hooks, backend utilities
-- Platform-Specific: React, Next.js, Express integration examples
-
-## AUTHENTICATION SYSTEM (BRANCH-SPECIFIC)
-
-### 🔧 **Development Branch Authentication Bypass**
-**CRITICAL RULE**: Development branch bypasses Clerk authentication entirely for faster development workflow.
-
-**Environment Variable**: `VITE_DEVELOPMENT_MODE=true`
-**Implementation**: Custom `DevelopmentAuthProvider` replaces `ClerkProvider`
-**Mock User**: Automatic admin user with full permissions
-**Access**: Direct dashboard access without sign-in flow
-
-**Key Components**:
-- `src/auth/DevelopmentAuthProvider.jsx` - Mock authentication provider
-- `src/auth/MockUser.js` - Mock user data with admin permissions
-- `src/App-environment-aware.jsx` - Environment-aware App component
-- `src/hooks/useAuthRole.jsx` - Environment-aware authentication hook
-
-### 🔐 **Production Clerk Configuration**
-**Domain**: clerk.financeflo.ai
-**Environment**: Production
-**SDK Version**: @clerk/clerk-react@5.47.0
-
-### Critical Production Keys
-```env
-# Frontend (React/Vite)
-VITE_CLERK_PUBLISHABLE_KEY=pk_live_REDACTED
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_REDACTED
-
-# Backend (Node.js/Express)
-CLERK_SECRET_KEY=sk_live_REDACTED
-
-# Configuration
-CLERK_ENVIRONMENT=production
-VITE_CLERK_DOMAIN=clerk.financeflo.ai
-CLERK_WEBHOOK_SECRET=whsec_REDACTED
-```
-
-### Authentication Implementation
-```javascript
-// Frontend (src/main.jsx)
-import { ClerkProvider } from '@clerk/clerk-react'
-
-<ClerkProvider
-  publishableKey={import.meta.env.VITE_CLERK_PUBLISHABLE_KEY}
-  navigate={(to) => navigate(to)}
->
-  <App />
-</ClerkProvider>
-
-// Backend (server.js)
-import { clerkMiddleware } from '@clerk/express'
-
-app.use(clerkMiddleware({
-  secretKey: process.env.CLERK_SECRET_KEY,
-  publishableKey: process.env.VITE_CLERK_PUBLISHABLE_KEY
-}))
-```
-
-### Role-Based Access Control (RBAC)
-- **Admin**: Full system access, user management, configuration
-- **Manager**: Financial planning, production scheduling, reports
-- **Operator**: Production operations, quality control, inventory
-- **Viewer**: Read-only dashboard access (default role)
-
-### Branch-Specific Authentication Configuration
-**Development Branch**: `VITE_DEVELOPMENT_MODE=true` - Authentication bypassed
-**Testing Branch**: `VITE_DEVELOPMENT_MODE=false` - Full Clerk authentication with test keys
-**Production Branch**: `VITE_DEVELOPMENT_MODE=false` - Full Clerk authentication with production keys
-
-### Security Best Practices
-1. **Authorized Parties**: Configured to prevent subdomain cookie leaking
-2. **CSP Headers**: Properly configured for Clerk domains
-3. **Session Validation**: Token verification on each protected route
-4. **Webhook Security**: HMAC signature validation for all webhooks
-5. **Development Security**: Authentication bypass only enabled in development branch
-
-## XERO CUSTOM CONNECTION INTEGRATION
-
-### 🔄 **Migration from OAuth to Custom Connection (October 2025)**
-**COMPLETED**: Migrated from complex OAuth2 flow to simplified custom connection for better reliability and maintenance.
-
-**Previous Implementation**: OAuth2 "Web App" with redirects, callbacks, and token management
-**Current Implementation**: Direct API access using Client ID/Secret with custom connection
-
-### Custom Connection Configuration
-**Required Environment Variables**:
-```env
-# Xero Custom Connection (Required)
-XERO_CLIENT_ID=your-client-id-here
-XERO_CLIENT_SECRET=your-client-secret-here
-# Note: XERO_ORGANIZATION_ID is automatically retrieved after authentication
-```
-
-### How to Set Up Xero Custom Connection (Official Process)
-
-#### Step 1: Create Custom Connection
-1. **Login to Xero Developer Portal**: https://developer.xero.com/
-2. **Click "New App"** → Give it a name
-3. **Select "Custom connection"** as integration type
-4. **Important**: Custom connections are premium and require subscription
-
-#### Step 2: Configure Scopes and Authorizing User
-1. **Select API scopes** your integration needs:
-   - `accounting.transactions`
-   - `accounting.reports.read`
-   - `accounting.settings.read`
-2. **Choose authorizing user** (who will authorize the connection)
-3. **User receives email** with authorization link
-
-#### Step 3: Customer Authorization Required
-**⚠️ CRITICAL**: The Xero customer must:
-1. **Purchase Custom Connection subscription** from Xero
-2. **Click authorization link** in email
-3. **Complete consent screen** and select organization
-4. **Note**: Only organizations with Custom Connection subscription can connect
-
-#### Step 4: Retrieve Credentials
-After authorization is complete:
-1. **Get Client ID**: Available on app details page
-2. **Generate Client Secret**: Private - do not share
-3. **Add to environment variables**
-
-#### Step 5: Authentication Flow
-Our system automatically:
-1. **Exchanges credentials** for access token via `https://identity.xero.com/connect/token`
-2. **Uses Client Credentials grant** (`grant_type=client_credentials`)
-3. **Retrieves organization ID** automatically after authentication
-4. **Sets up API access** with proper Bearer token
-
-### API Integration Features
-- **Working Capital Calculations**: Real-time balance sheet analysis
-- **Financial Reports**: Profit & Loss, Cash Flow, Balance Sheet
-- **Invoice Management**: Create and retrieve invoices
-- **Contact Management**: Customer and supplier data
-- **Item Management**: Product and service catalog
-
-### Connection Status Endpoints
-- **Health Check**: `GET /api/xero/health`
-- **Connection Status**: `GET /api/xero/status`
-
-### Architecture Benefits
-- **Simplified Authentication**: No OAuth flow complexity
-- **Direct API Access**: No token refresh or expiry issues
-- **Better Security**: No callback URLs or redirect vulnerabilities
-- **Improved Reliability**: Consistent connection state
-- **Easier Development**: No browser redirects during testing
-
-### Configuration in Different Environments
-
-#### Development Environment
-```env
-XERO_CLIENT_ID=your-dev-client-id
-XERO_CLIENT_SECRET=your-dev-client-secret
-# Organization ID retrieved automatically after authentication
-```
-
-#### Production Environment (Render)
-Add these environment variables in Render Dashboard:
-```
-XERO_CLIENT_ID=your-prod-client-id
-XERO_CLIENT_SECRET=your-prod-client-secret
-# Organization ID retrieved automatically after authentication
-```
-
-### Important Notes
-- **Single Organization**: Custom connections are tied to one specific Xero organization
-- **No Multi-Tenant**: Cannot access multiple organizations with one connection
-- **Direct Authentication**: No user login required - uses application credentials
-- **Rate Limiting**: Subject to Xero API rate limits (60 calls per minute)
+## XERO INTEGRATION
+**See**: `context/xero-integration-guide.md` for complete Xero setup including:
+- Custom connection migration details
+- Step-by-step setup process
+- API integration features
+- Environment configuration
 
 ## RENDER-ONLY DEPLOYMENT (NO LOCAL DEVELOPMENT)
 
@@ -326,27 +169,6 @@ git push origin production
 1. Install Node.js dependencies: `npm install`
 2. Copy environment template: `cp .env.template .env` and configure
 3. Start development servers: `npm run dev`
-
-### **CRITICAL DEPENDENCY MANAGEMENT RULE** ⚠️
-**MANDATORY**: When adding any new package to `package.json`:
-
-1. **ALWAYS run `pnpm install` immediately after adding to package.json**
-2. **Verify the installation worked locally**
-3. **THEN commit and push changes**
-
-**NEVER commit package.json changes without running pnpm install first!**
-
-```bash
-# Correct workflow:
-1. Add package to package.json
-2. pnpm install              # MANDATORY STEP
-3. Test that it works locally
-4. git add -A
-5. git commit -m "Add package"
-6. git push
-```
-
-**Why**: Render deployments fail when package.json and pnpm-lock.yaml are out of sync. Running `pnpm install` updates the lockfile to match package.json changes.
 
 ### Environment Configuration
 Required environment variables:
@@ -447,7 +269,12 @@ context/
 ├── business-requirements/  # Business logic documentation
 ├── claude-code-docs/      # Claude Code documentation
 ├── technical-specifications/ # Tech stack docs (includes MCP setup)
-└── ui-components/         # UI/UX specifications
+├── ui-components/         # UI/UX specifications
+├── authentication-config.md # Authentication system details
+├── xero-integration-guide.md # Xero setup instructions
+├── development-standards.md # Code quality standards
+├── security-guidelines.md # Security practices
+└── performance-testing.md # Performance and testing info
 
 database/               # Database scripts and migrations
 prisma/                # Prisma schema and migrations
@@ -464,7 +291,7 @@ scripts/               # Utility scripts
 - **ORM**: Prisma for type-safe database operations
 - **Migrations**: Prisma migrations for schema management
 - **Vector Support**: pgvector for embeddings and semantic search
-- **Development**: Fallback mode for local development without external dependencies
+- **Development**: Real data connections in all environments
 
 ### Key Data Models
 - **Users**: Authentication and role management
@@ -548,460 +375,32 @@ Claude must ONLY work in the `development` branch. Any commits, pushes, or PRs t
 
 **Exception**: Only when user explicitly says "commit to test", "push to production", "create PR to production", etc.
 
-## Development Methodology
+## Code Quality and Development Standards
+**See**: `context/development-standards.md` for complete guidelines including:
+- Character encoding standards
+- ESLint configuration best practices
+- Enterprise logging standards
+- Error handling patterns
+- Core development principles
 
-### Context-Driven Development
-Following structured context references from `context/` folder:
-- Use specific context folders/files when working
-- Reference technical specifications for consistency
-- Maintain strict context validation to prevent AI drift
+## Security Guidelines
+**See**: `context/security-guidelines.md` for security practices including:
+- Vulnerability management
+- Security action plans
+- Quality gates and rollback indicators
+- Documentation standards
 
-### Context Folder Structure
-- `context/api-documentation/` - External API documentation (Amazon SP-API, Shopify)
-- `context/claude-code-docs/` - Local Claude Code documentation for reference
-- `context/technical-specifications/` - Tech stack and architecture docs
-- `context/business-requirements/` - Business logic and user workflows
-- `context/ui-components/` - Dashboard layouts and UI specifications
-
-## Code Standards & Guidelines
-
-### Character Encoding
-**CRITICAL**: Always use ASCII-compatible characters in:
-- Console output and logging
-- Error messages
-- Comments and documentation
-- Test output and assertions
-
-**Avoid Unicode characters**: ✅ ❌ 🎉 ⚠️ → ← ↑ ↓ • etc.
-**Use ASCII alternatives**: "PASS:" "FAIL:" "SUCCESS:" "-->" "*" etc.
-
-**Exception**: Unicode acceptable in:
-- HTML templates (properly encoded)
-- JSON responses (UTF-8 encoded)
-- Frontend React components (properly handled)
-
-### File Naming
-- Use `.jsx` extension for React components with JSX
-- Use `.js` extension for plain JavaScript utilities
-- Use PascalCase for React components
-- Use camelCase for hooks, utilities, and services
-
-## Code Quality & ESLint Configuration
-
-### ESLint Best Practices (Lessons Learned 2025)
-**CRITICAL**: Our comprehensive analysis identified key ESLint patterns:
-
-#### Built Files Exclusion
-- **NEVER lint built/dist files**: Causes 7,000+ false errors
-- Update `.eslintignore` to properly exclude: `dist/`, `build/`, `*.min.js`
-- Focus linting on source code only: `src/`, `api/`, `config/`, `services/`
-
-#### Global Variables Configuration
-- **Node.js Environment**: Ensure globals defined for `setTimeout`, `setInterval`, `Intl`
-- **Browser Environment**: Define `window`, `document`, `localStorage`, `alert`
-- **Security Plugin**: Use `plugin:security/recommended` with appropriate warnings
-
-#### Import Patterns
-- **Prefer ES modules**: Use `import/export` over `require/module.exports`
-- **Node.js Timers**: Import explicitly `import { setTimeout, setInterval } from 'timers'`
-- **Remove unused imports**: Clean up imports that aren't used
-
-### Security Configuration
-```json
-{
-  "extends": ["plugin:security/recommended"],
-  "rules": {
-    "security/detect-unsafe-regex": "warn",
-    "security/detect-non-literal-fs-filename": "off",
-    "security/detect-object-injection": "warn"
-  }
-}
-```
-
-## Enterprise Logging Standards
-
-### Logging Best Practices (Mandatory)
-**CRITICAL**: Based on 355+ console statements analysis:
-
-#### Production Logging Rules
-1. **NO console.log in production code**
-2. **Use structured logging with levels**: `logInfo`, `logWarn`, `logError`
-3. **Environment-aware logging**: Only debug logs in development
-4. **Proper error objects**: Pass error objects, not just messages
-
-#### Logging Implementation Pattern
-```javascript
-// Import structured logger
-import { logInfo, logWarn, logError } from './services/observability/structuredLogger.js';
-
-// Development-only logging utility
-const devLog = {
-  log: (...args) => { if (process.env.NODE_ENV === 'development') console.log(...args); },
-  warn: (...args) => { if (process.env.NODE_ENV === 'development') console.warn(...args); },
-  error: (...args) => { if (process.env.NODE_ENV === 'development') console.error(...args); }
-};
-
-// Use in code
-logInfo('Operation completed', { userId, operation: 'data_sync' });
-logWarn('Fallback triggered', { reason, fallbackType });
-logError('Critical failure', error); // Pass error object
-```
-
-#### Acceptable Console Usage
-- **Test files**: Debug output acceptable
-- **Development utilities**: Environment-gated console statements
-- **Setup/build scripts**: Informational output for developers
-
-## Security & Dependencies
-
-### Vulnerability Management (Lessons Learned)
-Based on security audit findings:
-
-#### High Priority Issues
-- **xlsx package**: High severity prototype pollution - no fix available
-- **esbuild**: Development server vulnerability - update to >0.24.2
-- **Dependencies**: Regular `npm audit` checks and fixes
-
-#### Security Practices
-- Run `npm audit fix` for non-breaking fixes
-- Document known vulnerabilities that require breaking changes
-- Use `npm audit --audit-level=moderate` for production checks
-
-## Error Handling Standards
-
-### Enterprise Error Patterns
-Based on service layer analysis:
-
-#### Service Layer Error Handling
-```javascript
-// Standard error handling pattern
-try {
-  const result = await apiCall();
-  logInfo('API call successful', { endpoint, responseTime });
-  return result;
-} catch (error) {
-  logError('API call failed', { 
-    endpoint, 
-    error: error.message, 
-    stack: error.stack,
-    statusCode: error.response?.status 
-  });
-  throw new ServiceError(`${endpoint} failed`, { cause: error });
-}
-```
-
-#### Circuit Breaker Pattern
-- Use circuit breaker for external API calls
-- Implement fallback mechanisms
-- Log state transitions for monitoring
-
-#### Graceful Degradation
-- Provide fallback data when services fail
-- User-friendly error messages
-- Maintain application functionality during partial failures
-
-## Performance Optimization
-
-### Build Performance (Validated Results)
-- **Build Time**: Consistent 9-11 seconds across all environments
-- **Bundle Size**: ~1.7MB total, ~450KB gzipped
-- **Code Splitting**: Effective chunk distribution
-- **Asset Optimization**: All assets properly compressed
-
-### Memory Management
-- Implement memory monitoring in development
-- Use React.memo for expensive components
-- Clean up event listeners and subscriptions
-
-## Testing Standards
-
-### Test Configuration Issues (Identified)
-**CRITICAL**: Our analysis found test infrastructure needs:
-
-#### Module System Issues
-- **ES Module vs CommonJS**: Standardize on ES modules
-- **Missing Dependencies**: Install `@jest/globals` for test utilities
-- **Path Aliases**: Configure test environment path resolution
-
-#### Test Best Practices
-- Use Vitest for unit tests (configured and working)
-- Playwright for E2E tests (needs configuration fixes)
-- Maintain >80% test coverage for critical business logic
+## Performance and Testing
+**See**: `context/performance-testing.md` for optimization guidelines including:
+- Build performance metrics
+- Memory management strategies
+- Testing infrastructure setup
+- API integration status
 
 ## Important Instructions
 
-### Core Development Principles
-- Do what has been asked; nothing more, nothing less
-- NEVER create files unless absolutely necessary for the goal
-- ALWAYS prefer editing existing files to creating new ones
-- NEVER proactively create documentation files unless explicitly requested
-- NEVER add Unicode characters in console output - use ASCII alternatives only
-- Always check existing code patterns and follow the established architecture
-
 ### 🚨 **CRITICAL GIT DEPLOYMENT RULE**
 **MANDATORY**: Claude must NEVER automatically commit, push, or create pull requests to `test` or `production` branches without explicit user instruction. Only work in `development` branch unless specifically told otherwise.
-
-### Pre-Development Checklist
-1. **Check ESLint configuration** - Ensure proper exclusions and globals
-2. **Review logging patterns** - Use structured logging, not console statements
-3. **Validate imports** - Prefer ES modules, import Node.js globals explicitly
-4. **Test build process** - Ensure changes don't break production build
-5. **Run security audit** - Check for new vulnerabilities
-
-### Quality Gates
-- **ESLint**: Must pass without errors in source code
-- **Build**: Must complete successfully in <12 seconds
-- **Tests**: Core functionality must remain working
-- **Security**: No new high-severity vulnerabilities
-- **Performance**: Build size should not increase significantly
-
-### Emergency Rollback Indicators
-- Build failures
-- Critical test failures  
-- New high-severity security vulnerabilities
-- Performance degradation >50%
-
-## Documentation Standards
-
-### Code Documentation
-- **Comprehensive index**: Maintain SENTIA_CODEBASE_INDEX.md
-- **API documentation**: Document all endpoints with methods and purposes
-- **Architecture decisions**: Record significant technical decisions
-- **Environment setup**: Keep setup instructions current
-
-### Change Documentation
-- **Commit messages**: Clear, descriptive with technical details
-- **PR descriptions**: Include before/after analysis and impact assessment
-- **Breaking changes**: Document any changes that affect existing functionality
-
-## COMPREHENSIVE LESSONS LEARNED (SEPTEMBER 2025)
-
-
-### Enterprise Navigation System Implementation
-**SUCCESS**: Comprehensive navigation system implemented addressing senior developer concerns:
-
-#### Navigation Fixes Implemented
-1. **Clickable Sentia Logo**: Added navigation to dashboard homepage (Header.jsx:540-551)
-2. **Enterprise Sidebar**: 9-section navigation with role-based access control (Sidebar.jsx:131-230)
-3. **Functional Buttons**: All Export, Save, Share buttons now operational
-4. **Keyboard Shortcuts**: Complete hotkey system for enterprise efficiency
-5. **What-If Analysis Access**: Direct navigation to /what-if route confirmed working
-6. **Working Capital Access**: Direct navigation to /working-capital route confirmed working
-
-#### Code Implementation Pattern
-```javascript
-// Clickable logo implementation
-<Link to="/dashboard" className="flex items-center space-x-2 hover:opacity-80">
-  <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-blue-800 rounded-lg flex items-center justify-center">
-    <span className="text-white font-bold text-lg">S</span>
-  </div>
-  <h1 className="text-xl font-semibold text-gray-900 dark:text-white">Sentia Manufacturing</h1>
-</Link>
-
-// Enterprise navigation structure
-const navigationItems = [
-  {section: 'Overview', items: [{to: '/dashboard', icon: HomeIcon, label: 'Dashboard'}]},
-  {section: 'Planning & Analytics', items: [
-    {to: '/forecasting', icon: PresentationChartLineIcon, label: 'Demand Forecasting'},
-    {to: '/inventory', icon: CubeIcon, label: 'Inventory Management'},
-    {to: '/production', icon: TruckIcon, label: 'Production Tracking'},
-    {to: '/quality', icon: BeakerIcon, label: 'Quality Control'}
-  ]},
-  {section: 'Financial Management', items: [
-    {to: '/working-capital', icon: BanknotesIcon, label: 'Working Capital'},
-    {to: '/what-if', icon: SlidersIcon, label: 'What-If Analysis'},
-    {to: '/analytics', icon: ChartBarIcon, label: 'Financial Reports'}
-  ]}
-]
-```
-
-### Enterprise Git Workflow Implementation  
-**SUCCESS**: Proper development → testing → production workflow documented and implemented:
-
-#### Git Branch Strategy
-- **development**: Primary coding branch (Render: sentia-manufacturing-dashboard-621h.onrender.com)
-- **test**: UAT environment for client testing (Render: sentia-manufacturing-dashboard-test.onrender.com)
-- **production**: Live operations branch (Render: sentia-manufacturing-dashboard-production.onrender.com)
-
-#### Quality Gates Established
-```markdown
-Development → Test:
-- All features implemented and functional
-- Local testing completed (http://localhost:3000)
-- No console errors or warnings
-- All buttons and navigation working
-- Code review completed
-
-Test → Production:
-- User Acceptance Testing (UAT) completed
-- Client approval received
-- Performance testing passed
-- Security review completed
-```
-
-### Security Vulnerability Management
-**CRITICAL**: Identified 7 security vulnerabilities requiring attention:
-
-#### Vulnerability Breakdown
-- **4 High Severity**: Including xlsx package prototype pollution
-- **1 Moderate Severity**: Various dependency issues  
-- **2 Low Severity**: Development dependencies
-
-#### Security Action Plan
-1. **Immediate**: Run `npm audit fix` for non-breaking fixes
-2. **Planning**: Document vulnerabilities requiring breaking changes
-3. **Production**: Use `npm audit --audit-level=moderate` for production checks
-4. **Monitoring**: Regular security audits in development workflow
-
-### Port Management and Development Environment
-**LESSON LEARNED**: Port conflicts prevent clean development server startup:
-
-#### Port Issues Identified
-- **Port 3000**: Frontend Vite development server conflicts
-- **Port 5000**: Backend Express API server conflicts  
-- **Process Management**: Difficulty killing lingering Node.js processes
-
-#### Development Server Management
-```bash
-# Proper development startup sequence
-npm run dev:client    # Start frontend only on localhost:3000
-npm run dev:server    # Start backend only on localhost:5000  
-npm run dev          # Start both concurrently (preferred)
-
-# Port conflict resolution
-taskkill /F /IM node.exe    # Windows process cleanup
-lsof -ti:3000 | xargs kill  # Mac/Linux port cleanup
-```
-
-### Build Performance and Optimization
-**SUCCESS**: Consistent build performance achieved across all environments:
-
-#### Build Metrics Validated
-- **Build Time**: 9-11 seconds consistently
-- **Bundle Size**: ~1.7MB total, ~450KB gzipped
-- **Code Splitting**: Effective chunk distribution
-- **Asset Optimization**: All assets properly compressed
-
-#### Performance Best Practices
-```javascript
-// React optimization patterns
-import React, { memo, lazy, Suspense } from 'react';
-
-// Lazy loading for code splitting
-const WhatIfAnalysis = lazy(() => import('./components/analytics/WhatIfAnalysis'));
-const WorkingCapital = lazy(() => import('./components/WorkingCapital'));
-
-// Memoization for expensive components
-const ExpensiveWidget = memo(({ data }) => {
-  return <div>{/* Complex rendering */}</div>;
-});
-```
-
-### API Integration and Data Management
-**PARTIAL SUCCESS**: Local API integration working, Railway deployment issues remain:
-
-#### API Integration Status  
-- ✅ **Local Development**: All APIs functional with live data
-- ✅ **Authentication**: Real users via Clerk (no mock users)
-- ✅ **Database**: Render PostgreSQL connections working
-- ✅ **Production Deployment**: APIs working on Render platform
-- ✅ **Service Status**: External services properly configured
-
-#### API Integration Features
-1. **Environment Variable Management**: Render dashboard configuration
-2. **Service Health Checks**: Production endpoints properly validated
-3. **Database Connectivity**: Render PostgreSQL connections stable
-4. **External API Integration**: Xero, Shopify services connected and functional
-
-### Testing Infrastructure and Quality Assurance
-**NEEDS IMPROVEMENT**: Testing configuration requires significant fixes:
-
-#### Testing Issues Identified
-- **Module System Conflicts**: ES Module vs CommonJS inconsistencies
-- **Missing Dependencies**: @jest/globals not installed
-- **Path Aliases**: Test environment path resolution broken
-- **E2E Testing**: Playwright configuration needs fixes
-
-#### Testing Best Practices Implementation
-```javascript
-// Vitest configuration (working)
-export default defineConfig({
-  test: {
-    globals: true,
-    environment: 'jsdom',
-    setupFiles: './src/test/setup.js'
-  }
-});
-
-// Playwright E2E testing (needs configuration)
-// TODO: Fix module resolution and browser setup
-```
-
-### Documentation and Knowledge Management
-**SUCCESS**: Comprehensive documentation system established:
-
-#### Documentation Standards Implemented
-1. **CLAUDE.md**: Complete development guidelines with lessons learned
-2. **ENTERPRISE_GIT_WORKFLOW.md**: Detailed workflow documentation  
-3. **API Documentation**: 138+ microservices documented
-4. **Component Documentation**: React component patterns and standards
-5. **Database Schema**: 47 models documented with relationships
-
-### Critical Success Factors for Client Delivery
-**URGENT ACTION REQUIRED**: 
-
-#### Ready for Client Delivery ✅
-- Enterprise navigation system implemented
-- All buttons functional (Export, Save, Share)
-- What-If Analysis page accessible and working
-- Working Capital page accessible and working
-- Git workflow documentation completed
-- Local development environment fully functional
-
-#### Production Ready ✅  
-- Render production deployments working successfully
-- API endpoints returning proper JSON responses
-- External services connected in production environment
-- Database connections stable and performant
-- Enterprise navigation and functionality complete
-
-#### NEXT STEPS FOR CLIENT DELIVERY
-1. **Security Patches**: Address high-severity vulnerabilities
-2. **UAT Testing**: Complete user acceptance testing in test environment
-3. **Performance Optimization**: Monitor and optimize response times
-4. **Documentation**: Finalize user guides and admin documentation
-5. **Client Training**: Prepare client onboarding materials
-6. **Client Approval**: Obtain formal sign-off before production deployment
-
-### AI Analytics Implementation (September 2025)
-**SUCCESS**: Complete enterprise-grade analytics integration accomplished
-
-✅ **AI Analytics Components Successfully Implemented**:
-- **Built-in AI Endpoints**: Direct analytics capabilities integrated into the main application
-- **Real-time Data Processing**: Live analysis of manufacturing, inventory, and financial data
-- **Database Analytics**: Advanced PostgreSQL queries for intelligent data processing
-- **WebSocket Broadcasting**: Live analytics responses pushed to all clients
-- **Production Deployment**: Complete integration deployed to Render with health monitoring
-
-✅ **Technical Implementation Verified**:
-```
-AI Analytics System initialized successfully
-- Analytics Endpoints: Fully integrated
-- Database Integration: Connected successfully  
-- Real-time Processing: Active
-- Production Deployment: Verified
-```
-
-### Final Senior Developer Assessment
-**IMPLEMENTATION STATUS**: 100% Complete - Analytics Integration Deployed
-
-The enterprise navigation system, Git workflow, local development environment, and AI analytics integration all meet world-class enterprise standards. The comprehensive analytics system is deployed and ready to serve manufacturing intelligence.
-
-**RECOMMENDATION**: Analytics integration architecture is production-ready and fully functional.
-
----
-
-This enhanced CLAUDE.md reflects all lessons learned from comprehensive codebase analysis (September 2025) and establishes enterprise-grade development standards for the Sentia Manufacturing Dashboard.
 
 ### Render Platform Configuration Notes
 - Deployment uses Render for all environments (development, testing, production)
@@ -1010,11 +409,4 @@ This enhanced CLAUDE.md reflects all lessons learned from comprehensive codebase
 - Auto-deployment configured for all three branches via render.yaml
 - Environment variables automatically injected from Render dashboard
 - Health checks configured at `/health` endpoint
-- remember no shorcuts and no emergency pages - I want the full    
-
-    100% working enterprise level software application deployed     
-
-    on Render
-- remember no shortcuts and no emergency pages - I want the full 100% working enterprise level software application deployed on Render
-
-
+- Remember no shortcuts and no emergency pages - I want the full 100% working enterprise level software application deployed on Render

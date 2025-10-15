@@ -119,33 +119,64 @@ const DashboardEnterprise = () => {
         // Enhanced error information for development
         const isDevelopment = import.meta.env.MODE === 'development'
         const errorMessage = error.message || 'Unknown error'
+        const errorData = error.data || {}
+        
+        // Extract detailed error information from server response
+        const serverErrorDetails = errorData.details || {}
+        const serverErrors = serverErrorDetails.errors || []
+        
         const errorDetails = isDevelopment ? {
           message: errorMessage,
           status: error.status || error.response?.status,
           type: error.constructor.name,
+          serverDetails: serverErrorDetails,
+          serverErrors: serverErrors,
           stack: error.stack?.split('\n')[0],
           url: error.config?.url,
           timestamp: new Date().toISOString()
         } : { message: errorMessage }
         
-        // Check for Xero connection requirement in multiple ways
+        // Check for Xero connection issues based on detailed server response
         const requiresXero = (
-          (error instanceof ApiError && error.data && error.data.requiresXeroConnection) ||
-          errorMessage.includes('Xero connection') ||
-          errorMessage.includes('requires Xero') ||
-          errorMessage.includes('financial data')
+          errorMessage.includes('Xero') ||
+          errorMessage.includes('financial data') ||
+          !serverErrorDetails.xeroServiceInitialized ||
+          !serverErrorDetails.xeroServiceConnected ||
+          serverErrors.some(err => err.source?.includes('xero'))
         )
         
         if (requiresXero) {
-          console.log('[DashboardEnterprise] KPI API indicates Xero connection required')
+          console.log('[DashboardEnterprise] KPI API indicates Xero connection issues')
           setRequiresXeroConnection(true)
           setPerformanceKpis([])
         }
         
-        // Set detailed error message for development, simple message for production
-        const displayError = isDevelopment 
-          ? `${errorMessage} (${error.status || 'unknown status'}) - Check console for details`
-          : errorMessage
+        // Create detailed error message with server diagnostics
+        let displayError = 'Unable to load performance metrics'
+        
+        if (isDevelopment && serverErrorDetails) {
+          const diagnostics = []
+          
+          if (!serverErrorDetails.xeroServiceInitialized) {
+            diagnostics.push('Xero service failed to initialize')
+          }
+          
+          if (!serverErrorDetails.xeroServiceConnected) {
+            diagnostics.push('Xero service not connected')
+          }
+          
+          if (serverErrors.length > 0) {
+            serverErrors.forEach(err => {
+              diagnostics.push(`${err.source}: ${err.error}`)
+            })
+          }
+          
+          if (diagnostics.length > 0) {
+            displayError += ` (${diagnostics.join(', ')})`
+          } else {
+            displayError += ` (${error.status || 'unknown status'}) - Check console for details`
+          }
+        }
         
         setKpiError(displayError)
         setPerformanceKpis([]) // Set empty array on error
@@ -396,11 +427,19 @@ const DashboardEnterprise = () => {
                 <p className="text-sm text-destructive mb-2">Failed to load performance metrics</p>
                 <p className="text-xs text-muted-foreground">{kpiError}</p>
                 {import.meta.env.MODE === 'development' && (
-                  <div className="mt-3 p-3 bg-muted rounded text-left">
-                    <p className="text-xs font-medium mb-1">Development Debug Info:</p>
-                    <p className="text-xs text-muted-foreground">• Endpoint: /api/financial/kpi-summary</p>
-                    <p className="text-xs text-muted-foreground">• Check server logs for Xero connection details</p>
-                    <p className="text-xs text-muted-foreground">• Verify Xero service configuration</p>
+                  <div className="mt-3 p-3 bg-muted rounded text-left space-y-2">
+                    <p className="text-xs font-medium">Development Debug Info:</p>
+                    <div className="space-y-1">
+                      <p className="text-xs text-muted-foreground">• Endpoint: /api/financial/kpi-summary</p>
+                      <p className="text-xs text-muted-foreground">• Status: {kpiError.includes('503') ? '503 Service Unavailable' : 'Error'}</p>
+                      <p className="text-xs text-muted-foreground">• No fallback data shown (compliant with data integrity rule)</p>
+                    </div>
+                    {kpiError.includes('Xero') && (
+                      <div className="mt-2 p-2 bg-yellow-50 border-l-2 border-yellow-400 rounded">
+                        <p className="text-xs font-medium text-yellow-800">Xero Integration Issues:</p>
+                        <p className="text-xs text-yellow-700">Check Xero API credentials and connection status in server logs</p>
+                      </div>
+                    )}
                     <button 
                       onClick={() => window.location.reload()} 
                       className="mt-2 px-2 py-1 text-xs bg-primary text-primary-foreground rounded hover:bg-primary/90"

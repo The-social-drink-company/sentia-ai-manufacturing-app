@@ -1736,9 +1736,10 @@ app.get('/api/financial/kpi-summary', async (req, res) => {
             logger.warn('❌ No cash flow data returned from Xero service');
           }
         } catch (xeroError) {
-          const errorMessage = safeExtractError(xeroError);
-          logger.error('❌ Failed to fetch Xero data for KPIs:', errorMessage);
-          logger.debug('🔍 Full Xero error object:', JSON.stringify(xeroError, Object.getOwnPropertyNames(xeroError), 2));
+          // Use XeroService's extractErrorInfo for proper error serialization
+          const errorInfo = xeroService?.extractErrorInfo ? xeroService.extractErrorInfo(xeroError) : safeExtractError(xeroError);
+          logger.error('❌ Failed to fetch Xero data for KPIs:', errorInfo.message || errorInfo);
+          logger.debug('🔍 Full Xero error details:', JSON.stringify(errorInfo, null, 2));
           kpiData.sources.xero = false;
         }
       }
@@ -1760,59 +1761,88 @@ app.get('/api/financial/kpi-summary', async (req, res) => {
         }
       }
 
-      // Provide fallback data when Xero fails - graceful degradation approach
+      // Collect detailed error information for debugging
+      const errors = [];
+      
+      // Check if Xero service was properly initialized
+      if (!xeroInitialized) {
+        errors.push({
+          source: 'xero_initialization',
+          error: 'Xero service failed to initialize',
+          details: 'Could not establish initial connection to Xero service',
+          timestamp: new Date().toISOString()
+        });
+      }
+      
+      // Check if we attempted to fetch data but got no results
+      if (xeroInitialized && xeroService && xeroService.isConnected && !kpiData.sources.xero) {
+        errors.push({
+          source: 'xero_data_fetch',
+          error: 'Xero API calls failed',
+          details: 'Connected to Xero but data retrieval failed - check server logs for specific API errors',
+          timestamp: new Date().toISOString()
+        });
+      }
+      
+      // Check if we have any real data (compliant with CLAUDE.md Critical Data Integrity Rule)
       const hasXeroData = kpiData.sources.xero && (
         kpiData.financial.revenue.current > 0 || 
         kpiData.financial.profit.current > 0 ||
         kpiData.financial.expenses.current > 0
       );
       
-      // If no real data available, provide informative placeholders
+      // CRITICAL: NO FALLBACK DATA - return detailed error state if no real data available
       if (!hasXeroData) {
-        logger.warn('⚠️ No Xero financial data available, providing fallback KPI response');
+        logger.error('❌ No live Xero data available for KPI endpoint - returning detailed error state');
+        return res.status(503).json({
+          success: false,
+          error: 'Unable to retrieve live financial data',
+          message: 'No real-time data available from Xero API',
+          details: {
+            xeroServiceInitialized: xeroInitialized,
+            xeroServiceConnected: xeroService?.isConnected || false,
+            xeroDataSourceActive: kpiData.sources.xero,
+            shopifyConnected: kpiData.sources.shopify,
+            databaseConnected: kpiData.sources.database,
+            errors: errors,
+            lastAttempt: new Date().toISOString(),
+            requiredService: 'Xero API integration for real-time financial data'
+          },
+          timestamp: new Date().toISOString(),
+          userAction: 'Check Xero API credentials, connection status, and server logs for detailed error information'
+        });
       }
 
+      // Return real Xero data only (fully compliant with data integrity rule)
       const responseData = {
         success: true,
         data: {
           annualRevenue: {
-            value: hasXeroData && kpiData.financial.revenue.current > 0 
+            value: kpiData.financial.revenue.current > 0 
               ? `£${(kpiData.financial.revenue.current / 1000000).toFixed(1)}M`
-              : hasXeroData 
-                ? '£0.0M' 
-                : 'Connecting...',
-            helper: hasXeroData && kpiData.financial.revenue.growth > 0 
+              : '£0.0M',
+            helper: kpiData.financial.revenue.growth > 0 
               ? `${kpiData.financial.revenue.growth > 0 ? '+' : ''}${kpiData.financial.revenue.growth.toFixed(1)}% vs last year`
-              : hasXeroData 
-                ? 'Current period data'
-                : 'Establishing Xero connection'
+              : 'Current period data from Xero API'
           },
           unitsSold: {
-            value: hasXeroData ? 'N/A' : 'Loading...',
-            helper: hasXeroData ? 'Sales data pending' : 'Connecting to data sources'
+            value: 'N/A',
+            helper: 'Sales unit data pending integration'
           },
           grossMargin: {
-            value: hasXeroData && kpiData.financial.profit.margin > 0 
+            value: kpiData.financial.profit.margin > 0 
               ? `${kpiData.financial.profit.margin.toFixed(1)}%`
-              : hasXeroData 
-                ? '0.0%'
-                : 'Calculating...',
-            helper: hasXeroData && kpiData.financial.profit.margin > 0 
-              ? 'Current period margin' 
-              : hasXeroData
-                ? 'Current period data'
-                : 'Establishing Xero connection'
+              : '0.0%',
+            helper: 'Current period margin from Xero API'
           }
         },
         meta: {
           timestamp: new Date().toISOString(),
-          dataSource: hasXeroData ? 'xero' : 
-                     kpiData.sources.shopify ? 'shopify' : 
-                     kpiData.sources.database ? 'database' : 'connecting',
+          dataSource: 'xero',
           sources: kpiData.sources,
-          hasRealData: hasXeroData,
+          hasRealData: true,
           connectionStatus: {
-            xero: kpiData.sources.xero ? 'connected' : 'connecting',
+            xero: 'connected',
             shopify: kpiData.sources.shopify ? 'connected' : 'disconnected',
             database: kpiData.sources.database ? 'connected' : 'disconnected'
           }

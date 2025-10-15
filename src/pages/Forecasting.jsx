@@ -279,6 +279,88 @@ const Forecasting = () => {
 
       <Card>
         <CardHeader>
+          <CardTitle>Month-by-Month Forecast Data</CardTitle>
+          <CardDescription>
+            Detailed forecast and actual values by month from {model.label}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {chartData.length > 0 ? (
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-border text-sm">
+                <thead className="bg-muted/40 text-left text-xs uppercase text-muted-foreground">
+                  <tr>
+                    <th className="px-4 py-2 font-medium">Month</th>
+                    <th className="px-4 py-2 font-medium">Forecast</th>
+                    <th className="px-4 py-2 font-medium">Actual</th>
+                    <th className="px-4 py-2 font-medium">Variance</th>
+                    <th className="px-4 py-2 font-medium">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {chartData.map((row, index) => {
+                    const forecast = row.forecast || 0
+                    const actual = row.actual
+                    const variance = actual !== undefined ? actual - forecast : null
+                    const variancePercent = actual !== undefined && forecast > 0 ? 
+                      ((variance / forecast) * 100) : null
+                    
+                    return (
+                      <tr key={index} className="hover:bg-muted/20">
+                        <td className="px-4 py-3 font-medium text-foreground">{row.month}</td>
+                        <td className="px-4 py-3 text-blue-600 font-medium">
+                          {forecast.toLocaleString()} units
+                        </td>
+                        <td className="px-4 py-3">
+                          {actual !== undefined ? (
+                            <span className="text-cyan-600 font-medium">
+                              {actual.toLocaleString()} units
+                            </span>
+                          ) : (
+                            <span className="text-muted-foreground">Projected</span>
+                          )}
+                        </td>
+                        <td className="px-4 py-3">
+                          {variance !== null ? (
+                            <span className={variance >= 0 ? 'text-green-600' : 'text-red-600'}>
+                              {variance >= 0 ? '+' : ''}{variance.toLocaleString()}
+                              {variancePercent !== null && (
+                                <span className="text-xs ml-1">
+                                  ({variancePercent >= 0 ? '+' : ''}{variancePercent.toFixed(1)}%)
+                                </span>
+                              )}
+                            </span>
+                          ) : (
+                            <span className="text-muted-foreground">-</span>
+                          )}
+                        </td>
+                        <td className="px-4 py-3">
+                          {actual !== undefined ? (
+                            <Badge variant="default" className="text-xs">
+                              Historical
+                            </Badge>
+                          ) : (
+                            <Badge variant="secondary" className="text-xs">
+                              Forecast
+                            </Badge>
+                          )}
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div className="text-center py-8 text-muted-foreground">
+              <p>Forecast data table will appear when time series data is available</p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
           <CardTitle>Product Insights</CardTitle>
           <CardDescription>
             Growth expectations and forecast accuracy by product SKU based on real sales patterns

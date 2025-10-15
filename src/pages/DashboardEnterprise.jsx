@@ -116,8 +116,19 @@ const DashboardEnterprise = () => {
       } catch (error) {
         console.error('[DashboardEnterprise] Error fetching KPI data:', error)
         
+        // Enhanced error information for development
+        const isDevelopment = import.meta.env.MODE === 'development'
+        const errorMessage = error.message || 'Unknown error'
+        const errorDetails = isDevelopment ? {
+          message: errorMessage,
+          status: error.status || error.response?.status,
+          type: error.constructor.name,
+          stack: error.stack?.split('\n')[0],
+          url: error.config?.url,
+          timestamp: new Date().toISOString()
+        } : { message: errorMessage }
+        
         // Check for Xero connection requirement in multiple ways
-        const errorMessage = error.message || ''
         const requiresXero = (
           (error instanceof ApiError && error.data && error.data.requiresXeroConnection) ||
           errorMessage.includes('Xero connection') ||
@@ -131,8 +142,23 @@ const DashboardEnterprise = () => {
           setPerformanceKpis([])
         }
         
-        setKpiError(error.message)
+        // Set detailed error message for development, simple message for production
+        const displayError = isDevelopment 
+          ? `${errorMessage} (${error.status || 'unknown status'}) - Check console for details`
+          : errorMessage
+        
+        setKpiError(displayError)
         setPerformanceKpis([]) // Set empty array on error
+        
+        // Log additional debugging information in development
+        if (isDevelopment) {
+          console.group('🔍 KPI Error Debug Information')
+          console.log('Full error object:', error)
+          console.log('Error details:', errorDetails)
+          console.log('API endpoint:', '/api/financial/kpi-summary')
+          console.log('Environment:', import.meta.env.MODE)
+          console.groupEnd()
+        }
       } finally {
         setKpiLoading(false)
       }
@@ -366,16 +392,38 @@ const DashboardEnterprise = () => {
             ))
           ) : kpiError ? (
             <div className="col-span-full flex items-center justify-center p-8">
-              <div className="text-center">
+              <div className="text-center space-y-2">
                 <p className="text-sm text-destructive mb-2">Failed to load performance metrics</p>
                 <p className="text-xs text-muted-foreground">{kpiError}</p>
+                {import.meta.env.MODE === 'development' && (
+                  <div className="mt-3 p-3 bg-muted rounded text-left">
+                    <p className="text-xs font-medium mb-1">Development Debug Info:</p>
+                    <p className="text-xs text-muted-foreground">• Endpoint: /api/financial/kpi-summary</p>
+                    <p className="text-xs text-muted-foreground">• Check server logs for Xero connection details</p>
+                    <p className="text-xs text-muted-foreground">• Verify Xero service configuration</p>
+                    <button 
+                      onClick={() => window.location.reload()} 
+                      className="mt-2 px-2 py-1 text-xs bg-primary text-primary-foreground rounded hover:bg-primary/90"
+                    >
+                      Retry Connection
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           ) : (!performanceKpis || performanceKpis.length === 0) ? (
             <div className="col-span-full flex items-center justify-center p-8">
-              <div className="text-center">
+              <div className="text-center space-y-2">
                 <p className="text-sm text-muted-foreground">No performance metrics available</p>
-                <p className="text-xs text-muted-foreground">Check API configuration</p>
+                <p className="text-xs text-muted-foreground">Data sources connecting...</p>
+                {import.meta.env.MODE === 'development' && (
+                  <div className="mt-3 p-3 bg-muted rounded text-left">
+                    <p className="text-xs font-medium mb-1">Development Status:</p>
+                    <p className="text-xs text-muted-foreground">• API endpoint responding but no data</p>
+                    <p className="text-xs text-muted-foreground">• Check Xero integration status</p>
+                    <p className="text-xs text-muted-foreground">• Fallback data should appear soon</p>
+                  </div>
+                )}
               </div>
             </div>
           ) : (

@@ -265,15 +265,54 @@ class XeroService {
   }
 
   extractErrorInfo(error) {
-    return {
-      message: error?.message || error?.toString() || 'Unknown error',
-      status: error?.response?.status || error?.status || null,
-      code: error?.code || null,
-      type: typeof error,
-      hasMessage: !!error?.message,
-      hasResponse: !!error?.response,
-      fullError: error
-    };
+    if (!error) return { message: 'No error object provided', type: 'null' };
+    
+    try {
+      // Handle string errors
+      if (typeof error === 'string') {
+        return { message: error, type: 'string' };
+      }
+      
+      // Extract comprehensive error information
+      const errorInfo = {
+        message: error?.message || error?.toString() || 'Unknown error',
+        status: error?.response?.status || error?.status || null,
+        statusText: error?.response?.statusText || error?.statusText || null,
+        code: error?.code || null,
+        name: error?.name || null,
+        type: typeof error,
+        hasMessage: !!error?.message,
+        hasResponse: !!error?.response,
+        isTimeout: error?.code === 'TIMEOUT' || error?.message?.includes('timeout') || error?.name === 'TimeoutError',
+        isNetworkError: error?.code === 'ENOTFOUND' || error?.code === 'ECONNREFUSED' || error?.message?.includes('network'),
+        isAuthError: error?.response?.status === 401 || error?.message?.includes('authentication') || error?.message?.includes('unauthorized')
+      };
+      
+      // Add additional context for Xero-specific errors
+      if (error?.response?.data) {
+        errorInfo.responseData = typeof error.response.data === 'string' ? error.response.data : JSON.stringify(error.response.data);
+      }
+      
+      // Ensure we have a readable message
+      if (errorInfo.message === 'Unknown error' || errorInfo.message === '[object Object]') {
+        if (errorInfo.status) {
+          errorInfo.message = `HTTP ${errorInfo.status} ${errorInfo.statusText || 'Error'}`;
+        } else if (errorInfo.code) {
+          errorInfo.message = `${errorInfo.code} Error`;
+        } else {
+          errorInfo.message = `${errorInfo.type} error occurred`;
+        }
+      }
+      
+      return errorInfo;
+    } catch (extractError) {
+      // Fallback if error extraction itself fails
+      return {
+        message: `Error extraction failed: ${extractError.message}`,
+        type: 'extraction_error',
+        originalError: error?.toString() || 'Unable to stringify original error'
+      };
+    }
   }
 
   async executeWithRetry(operation) {
@@ -292,7 +331,13 @@ class XeroService {
           }
         }
 
-        const result = await operation();
+        // Add timeout to the operation (30 seconds default)
+        const timeoutMs = 30000;
+        const timeoutPromise = new Promise((_, reject) => {
+          setTimeout(() => reject(new Error(`Operation timed out after ${timeoutMs/1000} seconds`)), timeoutMs);
+        });
+        
+        const result = await Promise.race([operation(), timeoutPromise]);
         logDebug(`✅ Xero API operation succeeded on attempt ${attempt}`);
         return result;
       } catch (error) {

@@ -34,6 +34,36 @@ try {
   loggingMiddleware = (req, res, next) => next();
 }
 
+// Helper function to safely extract error information for logging
+function safeExtractError(error) {
+  if (!error) return 'Unknown error';
+  
+  try {
+    // If it's a string, return it directly
+    if (typeof error === 'string') return error;
+    
+    // If it has a message property, use it
+    if (error.message) return error.message;
+    
+    // Try to extract meaningful information from the error object
+    const errorInfo = {
+      message: error.message || error.toString() || 'Unknown error',
+      status: error.response?.status || error.status || null,
+      code: error.code || null,
+      type: typeof error,
+      stack: error.stack ? error.stack.split('\n')[0] : null
+    };
+    
+    // Return the message if available, otherwise a formatted string
+    return errorInfo.message !== 'Unknown error' 
+      ? errorInfo.message 
+      : `${errorInfo.type} error (status: ${errorInfo.status || 'none'}, code: ${errorInfo.code || 'none'})`;
+  } catch (extractError) {
+    // Fallback if error extraction itself fails
+    return `Error extraction failed: ${extractError.message || 'Unable to read error'}`;
+  }
+}
+
 // Load environment variables
 dotenv.config();
 
@@ -1706,7 +1736,9 @@ app.get('/api/financial/kpi-summary', async (req, res) => {
             logger.warn('❌ No cash flow data returned from Xero service');
           }
         } catch (xeroError) {
-          logger.error('❌ Failed to fetch Xero data for KPIs:', xeroError.message);
+          const errorMessage = safeExtractError(xeroError);
+          logger.error('❌ Failed to fetch Xero data for KPIs:', errorMessage);
+          logger.debug('🔍 Full Xero error object:', JSON.stringify(xeroError, Object.getOwnPropertyNames(xeroError), 2));
           kpiData.sources.xero = false;
         }
       }
@@ -1722,53 +1754,68 @@ app.get('/api/financial/kpi-summary', async (req, res) => {
             }
           }
         } catch (shopifyError) {
-          logger.warn('Failed to fetch Shopify data for KPIs:', shopifyError.message);
+          const errorMessage = safeExtractError(shopifyError);
+          logger.warn('Failed to fetch Shopify data for KPIs:', errorMessage);
           kpiData.sources.shopify = false;
         }
       }
 
-      // No database fallback - Xero connection required for real financial data
-
-      // Require Xero connection - no fallback data
-      if (!kpiData.sources.xero) {
-        return res.json({
-          success: false,
-          requiresXeroConnection: true,
-          message: 'Real-time financial KPIs require Xero connection',
-          connectionRequired: true,
-          timestamp: new Date().toISOString(),
-          sources: kpiData.sources
-        });
+      // Provide fallback data when Xero fails - graceful degradation approach
+      const hasXeroData = kpiData.sources.xero && (
+        kpiData.financial.revenue.current > 0 || 
+        kpiData.financial.profit.current > 0 ||
+        kpiData.financial.expenses.current > 0
+      );
+      
+      // If no real data available, provide informative placeholders
+      if (!hasXeroData) {
+        logger.warn('⚠️ No Xero financial data available, providing fallback KPI response');
       }
 
       const responseData = {
         success: true,
         data: {
           annualRevenue: {
-            value: kpiData.financial.revenue.current > 0 
-              ? `$${(kpiData.financial.revenue.current / 1000000).toFixed(1)}M`
-              : 'N/A',
-            helper: kpiData.financial.revenue.growth > 0 
+            value: hasXeroData && kpiData.financial.revenue.current > 0 
+              ? `£${(kpiData.financial.revenue.current / 1000000).toFixed(1)}M`
+              : hasXeroData 
+                ? '£0.0M' 
+                : 'Connecting...',
+            helper: hasXeroData && kpiData.financial.revenue.growth > 0 
               ? `${kpiData.financial.revenue.growth > 0 ? '+' : ''}${kpiData.financial.revenue.growth.toFixed(1)}% vs last year`
-              : 'Awaiting data'
+              : hasXeroData 
+                ? 'Current period data'
+                : 'Establishing Xero connection'
           },
           unitsSold: {
-            value: 'N/A',
-            helper: 'Xero integration required'
+            value: hasXeroData ? 'N/A' : 'Loading...',
+            helper: hasXeroData ? 'Sales data pending' : 'Connecting to data sources'
           },
           grossMargin: {
-            value: kpiData.financial.profit.margin > 0 
+            value: hasXeroData && kpiData.financial.profit.margin > 0 
               ? `${kpiData.financial.profit.margin.toFixed(1)}%`
-              : 'N/A',
-            helper: kpiData.financial.profit.margin > 0 ? 'Current period' : 'Awaiting data'
+              : hasXeroData 
+                ? '0.0%'
+                : 'Calculating...',
+            helper: hasXeroData && kpiData.financial.profit.margin > 0 
+              ? 'Current period margin' 
+              : hasXeroData
+                ? 'Current period data'
+                : 'Establishing Xero connection'
           }
         },
         meta: {
           timestamp: new Date().toISOString(),
-          dataSource: kpiData.sources.xero ? 'xero' : 
+          dataSource: hasXeroData ? 'xero' : 
                      kpiData.sources.shopify ? 'shopify' : 
-                     kpiData.sources.database ? 'database' : 'no-data',
-          sources: kpiData.sources
+                     kpiData.sources.database ? 'database' : 'connecting',
+          sources: kpiData.sources,
+          hasRealData: hasXeroData,
+          connectionStatus: {
+            xero: kpiData.sources.xero ? 'connected' : 'connecting',
+            shopify: kpiData.sources.shopify ? 'connected' : 'disconnected',
+            database: kpiData.sources.database ? 'connected' : 'disconnected'
+          }
         }
       };
 

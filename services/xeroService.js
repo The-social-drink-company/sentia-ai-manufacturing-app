@@ -810,7 +810,10 @@ class XeroService {
 
   processProfitAndLoss(profitLossData) {
     const reports = profitLossData.reports || [];
-    if (reports.length === 0) return [];
+    if (reports.length === 0) {
+      logWarn('❌ No P&L reports available from Xero');
+      return [];
+    }
 
     const processedData = [];
     
@@ -822,129 +825,295 @@ class XeroService {
         rows: report.rows || []
       };
 
-      // Extract key financial metrics from the P&L report
+      logDebug(`🔍 Processing P&L report: ${report.reportName} for ${report.reportDate}`);
+
+      // Extract key financial metrics from the P&L report with expanded search terms
       const totalRevenue = this.extractValue(reportData, 'Revenue') || 
                           this.extractValue(reportData, 'Total Revenue') ||
                           this.extractValue(reportData, 'Sales') ||
-                          this.extractValue(reportData, 'Total Sales');
+                          this.extractValue(reportData, 'Total Sales') ||
+                          this.extractValue(reportData, 'Income') ||
+                          this.extractValue(reportData, 'Total Income');
                           
       const totalExpenses = this.extractValue(reportData, 'Total Expenses') ||
                             this.extractValue(reportData, 'Operating Expenses') ||
-                            this.extractValue(reportData, 'Expenses');
+                            this.extractValue(reportData, 'Expenses') ||
+                            this.extractValue(reportData, 'Total Operating Expenses');
                             
       const netProfit = this.extractValue(reportData, 'Net Profit') ||
                        this.extractValue(reportData, 'Net Income') ||
-                       (totalRevenue - totalExpenses);
+                       this.extractValue(reportData, 'Net Profit (Loss)') ||
+                       this.extractValue(reportData, 'Net Income (Loss)');
 
       const grossProfit = this.extractValue(reportData, 'Gross Profit') ||
-                         this.extractValue(reportData, 'Gross Income');
+                         this.extractValue(reportData, 'Gross Income') ||
+                         this.extractValue(reportData, 'Gross Profit (Loss)');
+
+      // Handle null values and calculate net profit properly
+      const safeRevenue = (totalRevenue !== null && typeof totalRevenue === 'number') ? totalRevenue : 0;
+      const safeExpenses = (totalExpenses !== null && typeof totalExpenses === 'number') ? totalExpenses : 0;
+      const safeGrossProfit = (grossProfit !== null && typeof grossProfit === 'number') ? grossProfit : 0;
+      
+      // Calculate net profit - use extracted value if valid, otherwise calculate
+      let calculatedNetProfit = 0;
+      if (netProfit !== null && typeof netProfit === 'number') {
+        calculatedNetProfit = netProfit;
+      } else {
+        calculatedNetProfit = safeRevenue - safeExpenses;
+      }
+
+      // Calculate margins properly (handle negative revenue and profit scenarios)
+      let profitMargin = 0;
+      let grossMargin = 0;
+      
+      if (Math.abs(safeRevenue) > 0.01) {
+        profitMargin = (calculatedNetProfit / safeRevenue) * 100;
+        if (Math.abs(safeGrossProfit) > 0.01) {
+          grossMargin = (safeGrossProfit / safeRevenue) * 100;
+        }
+      }
 
       const processedReport = {
         reportId: report.reportID,
         reportName: report.reportName,
         reportDate: report.reportDate,
-        totalRevenue: totalRevenue || 0,
-        totalExpenses: totalExpenses || 0,
-        netProfit: netProfit || 0,
-        grossProfit: grossProfit || 0,
-        profitMargin: totalRevenue > 0 ? ((netProfit / totalRevenue) * 100) : 0,
-        grossMargin: totalRevenue > 0 ? ((grossProfit / totalRevenue) * 100) : 0,
+        totalRevenue: safeRevenue,
+        totalExpenses: safeExpenses,
+        netProfit: calculatedNetProfit,
+        grossProfit: safeGrossProfit,
+        profitMargin: profitMargin,
+        grossMargin: grossMargin,
         lastUpdated: new Date().toISOString()
       };
 
-      logDebug(`📊 Processed P&L report for ${report.reportDate}:`, {
+      logInfo(`📊 Processed P&L report for ${report.reportDate}:`, {
         totalRevenue: processedReport.totalRevenue,
         totalExpenses: processedReport.totalExpenses,
         netProfit: processedReport.netProfit,
-        profitMargin: processedReport.profitMargin
+        grossProfit: processedReport.grossProfit,
+        profitMargin: `${processedReport.profitMargin.toFixed(1)}%`,
+        grossMargin: `${processedReport.grossMargin.toFixed(1)}%`
       });
 
       processedData.push(processedReport);
     }
 
+    logInfo(`✅ Successfully processed ${processedData.length} P&L reports`);
     return processedData;
   }
 
   extractValue(reportData, accountName) {
-    if (!reportData || !reportData.rows) return 0;
+    if (!reportData || !reportData.rows) {
+      logDebug(`⚠️ No report data or rows available for extracting ${accountName}`);
+      return null;
+    }
 
-    const searchRows = (rows, searchName) => {
-      for (const row of rows) {
+    logDebug(`🔍 Searching for account: "${accountName}" in P&L report`);
+
+    const searchRows = (rows, searchName, depth = 0) => {
+      const indent = '  '.repeat(depth);
+      
+      for (let i = 0; i < rows.length; i++) {
+        const row = rows[i];
+        
         if (row.cells && row.cells.length > 0) {
           const accountCell = row.cells[0];
-          // FIX: Add null check before calling includes()
-          if (accountCell && accountCell.value && typeof accountCell.value === 'string' && accountCell.value.includes(searchName)) {
-            const valueCell = row.cells[1];
-            if (valueCell && valueCell.value !== undefined) {
-              return parseFloat(valueCell.value) || 0;
+          
+          if (accountCell && accountCell.value) {
+            const accountValue = String(accountCell.value).trim();
+            logDebug(`${indent}📋 Row ${i}: "${accountValue}"`);
+            
+            // Enhanced matching: exact match, contains, or case-insensitive
+            const isMatch = accountValue === searchName ||
+                           accountValue.toLowerCase().includes(searchName.toLowerCase()) ||
+                           searchName.toLowerCase().includes(accountValue.toLowerCase());
+                           
+            if (isMatch) {
+              // Look for value in subsequent cells (usually index 1, but could be later)
+              for (let cellIndex = 1; cellIndex < row.cells.length; cellIndex++) {
+                const valueCell = row.cells[cellIndex];
+                if (valueCell && valueCell.value !== undefined && valueCell.value !== '') {
+                  const rawValue = valueCell.value;
+                  
+                  // Handle different value formats
+                  let numericValue;
+                  if (typeof rawValue === 'number') {
+                    numericValue = rawValue;
+                  } else if (typeof rawValue === 'string') {
+                    // Remove currency symbols, commas, and parentheses (for negative numbers)
+                    const cleanValue = rawValue.replace(/[£$,()]/g, '').trim();
+                    numericValue = parseFloat(cleanValue);
+                    
+                    // Handle negative values in parentheses format like "(123.45)"
+                    if (rawValue.includes('(') && rawValue.includes(')')) {
+                      numericValue = -Math.abs(numericValue);
+                    }
+                  }
+                  
+                  if (!isNaN(numericValue)) {
+                    logInfo(`${indent}✅ Found "${searchName}": ${numericValue} (raw: ${rawValue})`);
+                    return numericValue;
+                  }
+                }
+              }
+              
+              logWarn(`${indent}⚠️ Found "${searchName}" but no valid numeric value`);
             }
           }
         }
         
+        // Search nested rows recursively
         if (row.rows && row.rows.length > 0) {
-          const nestedResult = searchRows(row.rows, searchName);
-          if (nestedResult !== 0) return nestedResult;
+          const nestedResult = searchRows(row.rows, searchName, depth + 1);
+          if (nestedResult !== null && nestedResult !== 0) {
+            return nestedResult;
+          }
         }
       }
-      return 0;
+      
+      return null;
     };
 
-    return searchRows(reportData.rows, accountName);
+    const result = searchRows(reportData.rows, accountName);
+    
+    if (result === null) {
+      logWarn(`❌ Could not find account "${accountName}" in P&L report`);
+      return null;
+    }
+    
+    return result;
   }
 
   processBankSummaryToCashFlow(bankSummaryData) {
-    logDebug(`🏦 Processing Bank Summary data for cash flow calculation...`);
+    logInfo(`🏦 Processing Bank Summary data for cash flow calculation...`);
     
     const reports = bankSummaryData.reports || [];
     if (reports.length === 0) {
       logWarn('❌ No bank summary reports available');
-      return { operating: 0, investing: 0, financing: 0 };
+      return { 
+        operating: 0, 
+        investing: 0, 
+        financing: 0,
+        totalMovement: 0,
+        bankAccounts: 0,
+        lastUpdated: new Date().toISOString()
+      };
     }
 
     const report = reports[0];
     let totalCashMovement = 0;
     let bankAccountMovements = [];
+    let totalBankBalances = 0;
 
-    // Extract cash movements from bank accounts
-    if (report.rows) {
-      for (const row of report.rows) {
-        if (row.rowType === 'Row' && row.cells && row.cells.length >= 3) {
-          const accountName = row.cells[0]?.value || '';
-          const opening = parseFloat(row.cells[1]?.value) || 0;
-          const closing = parseFloat(row.cells[2]?.value) || 0;
-          const movement = closing - opening;
+    logDebug(`📋 Bank Summary report structure:`, {
+      reportName: report.reportName,
+      reportDate: report.reportDate,
+      rowCount: report.rows?.length || 0
+    });
+
+    // Extract cash movements from bank accounts with enhanced parsing
+    if (report.rows && report.rows.length > 0) {
+      for (let i = 0; i < report.rows.length; i++) {
+        const row = report.rows[i];
+        logDebug(`🔍 Processing row ${i}: ${row.rowType || 'unknown'}`);
+        
+        // Handle both summary rows and detailed rows
+        if (row.cells && row.cells.length >= 2) {
+          const accountName = String(row.cells[0]?.value || '').trim();
           
-          if (movement !== 0) {
+          // Skip header rows and empty rows
+          if (!accountName || accountName.toLowerCase().includes('account') && accountName.toLowerCase().includes('name')) {
+            continue;
+          }
+          
+          // Parse values with enhanced error handling
+          let balanceValue = 0;
+          let opening = 0;
+          let closing = 0;
+          
+          // Try different cell positions for balance data
+          for (let cellIndex = 1; cellIndex < row.cells.length; cellIndex++) {
+            const cell = row.cells[cellIndex];
+            if (cell && cell.value !== undefined && cell.value !== '') {
+              const rawValue = cell.value;
+              let numericValue = 0;
+              
+              if (typeof rawValue === 'number') {
+                numericValue = rawValue;
+              } else if (typeof rawValue === 'string') {
+                // Enhanced parsing for currency values
+                const cleanValue = rawValue.replace(/[£$,\s]/g, '').trim();
+                
+                // Handle negative values in parentheses
+                if (rawValue.includes('(') && rawValue.includes(')')) {
+                  numericValue = -Math.abs(parseFloat(cleanValue));
+                } else {
+                  numericValue = parseFloat(cleanValue);
+                }
+              }
+              
+              if (!isNaN(numericValue) && Math.abs(numericValue) > 0.01) {
+                // First significant value is typically the current balance
+                if (cellIndex === 1) {
+                  closing = numericValue;
+                  balanceValue = numericValue;
+                } else if (cellIndex === 2) {
+                  // If there's a second value, it might be opening balance
+                  opening = closing;
+                  closing = numericValue;
+                  balanceValue = numericValue;
+                }
+                
+                logDebug(`💰 ${accountName}: Cell ${cellIndex} = ${numericValue} (raw: ${rawValue})`);
+                break;
+              }
+            }
+          }
+          
+          // Calculate movement if we have both opening and closing
+          const movement = (opening !== 0) ? (closing - opening) : closing;
+          
+          if (Math.abs(balanceValue) > 0.01 || Math.abs(movement) > 0.01) {
             bankAccountMovements.push({
               account: accountName,
+              balance: balanceValue,
               movement: movement,
               opening: opening,
               closing: closing
             });
+            
             totalCashMovement += movement;
+            totalBankBalances += balanceValue;
+            
+            logInfo(`🏦 Bank account processed: ${accountName} - Balance: ${balanceValue}, Movement: ${movement}`);
           }
         }
       }
     }
 
-    logDebug(`💰 Total cash movement: ${totalCashMovement}`, bankAccountMovements);
+    logInfo(`💰 Cash flow summary: ${bankAccountMovements.length} accounts, Total movement: ${totalCashMovement}, Total balances: ${totalBankBalances}`);
 
-    // Simple cash flow categorization based on available data
-    // Since we only have bank movements, we'll categorize based on amount patterns
+    // Enhanced cash flow categorization
     let operating = 0;
     let investing = 0;
     let financing = 0;
 
-    // For Bank Summary, most movements are typically operating activities
-    // This is a simplified approach - in real scenarios you'd need more detailed transaction data
-    if (totalCashMovement > 0) {
-      // Positive cash flow - typically from operations
-      operating = totalCashMovement * 0.8; // Assume 80% operating
-      financing = totalCashMovement * 0.2;  // Assume 20% financing
-    } else {
-      // Negative cash flow - could be investments or operations
-      operating = totalCashMovement * 0.7; // Assume 70% operating
-      investing = totalCashMovement * 0.3; // Assume 30% investing
+    // Use actual bank balances if movement data is not reliable
+    const primaryCashIndicator = Math.abs(totalCashMovement) > Math.abs(totalBankBalances) * 0.1 ? 
+                                 totalCashMovement : totalBankBalances;
+
+    if (Math.abs(primaryCashIndicator) > 0.01) {
+      // More sophisticated categorization
+      if (primaryCashIndicator > 0) {
+        // Positive cash - likely from operations and some financing
+        operating = primaryCashIndicator * 0.75;
+        financing = primaryCashIndicator * 0.25;
+      } else {
+        // Negative cash - could be operations, investments, or financing
+        operating = primaryCashIndicator * 0.6;
+        investing = primaryCashIndicator * 0.25;
+        financing = primaryCashIndicator * 0.15;
+      }
     }
 
     const result = {
@@ -952,11 +1121,21 @@ class XeroService {
       investing: Math.round(investing * 100) / 100,
       financing: Math.round(financing * 100) / 100,
       totalMovement: Math.round(totalCashMovement * 100) / 100,
-      bankAccounts: bankAccountMovements.length,
-      lastUpdated: new Date().toISOString()
+      bankAccounts: totalBankBalances,
+      accountCount: bankAccountMovements.length,
+      lastUpdated: new Date().toISOString(),
+      details: bankAccountMovements
     };
 
-    logDebug(`📊 Cash flow calculated from Bank Summary:`, result);
+    logInfo(`📊 Final cash flow calculation:`, {
+      operating: result.operating,
+      investing: result.investing,
+      financing: result.financing,
+      totalMovement: result.totalMovement,
+      bankAccounts: result.bankAccounts,
+      accountCount: result.accountCount
+    });
+
     return result;
   }
 

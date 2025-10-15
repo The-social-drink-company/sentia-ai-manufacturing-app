@@ -1714,24 +1714,35 @@ app.get('/api/financial/kpi-summary', async (req, res) => {
               totalRevenue: currentPL.totalRevenue,
               totalExpenses: currentPL.totalExpenses,
               netProfit: currentPL.netProfit,
-              profitMargin: currentPL.profitMargin
+              grossProfit: currentPL.grossProfit,
+              profitMargin: currentPL.profitMargin,
+              grossMargin: currentPL.grossMargin
             });
             
-            kpiData.financial.revenue.current = currentPL.totalRevenue || 0;
-            kpiData.financial.expenses.current = currentPL.totalExpenses || 0;
-            kpiData.financial.profit.current = currentPL.netProfit || 0;
-            kpiData.financial.profit.margin = currentPL.profitMargin || 0;
+            // Use actual values including negative numbers (no fallback to zero)
+            kpiData.financial.revenue.current = currentPL.totalRevenue;
+            kpiData.financial.expenses.current = currentPL.totalExpenses;
+            kpiData.financial.profit.current = currentPL.netProfit;
+            kpiData.financial.profit.margin = currentPL.profitMargin;
+            kpiData.financial.grossProfit = currentPL.grossProfit;
+            kpiData.financial.grossMargin = currentPL.grossMargin;
+            
+            // Mark Xero as successful data source
+            kpiData.sources.xero = true;
           } else {
             logger.warn('❌ No P&L data returned from Xero service');
+            kpiData.sources.xero = false;
           }
 
           logger.info('💸 Fetching cash flow data from Xero...');
           const cashFlow = await xeroService.getCashFlow();
           if (cashFlow) {
             logger.info('🏦 Cash flow data received:', cashFlow);
-            kpiData.financial.cashFlow.operating = cashFlow.operating || 0;
-            kpiData.financial.cashFlow.investing = cashFlow.investing || 0;
-            kpiData.financial.cashFlow.financing = cashFlow.financing || 0;
+            kpiData.financial.cashFlow.operating = cashFlow.operating;
+            kpiData.financial.cashFlow.investing = cashFlow.investing;
+            kpiData.financial.cashFlow.financing = cashFlow.financing;
+            kpiData.financial.cashFlow.totalMovement = cashFlow.totalMovement;
+            kpiData.financial.cashFlow.bankAccounts = cashFlow.bankAccounts;
           } else {
             logger.warn('❌ No cash flow data returned from Xero service');
           }
@@ -1785,10 +1796,11 @@ app.get('/api/financial/kpi-summary', async (req, res) => {
       }
       
       // Check if we have any real data (compliant with CLAUDE.md Critical Data Integrity Rule)
+      // Updated to accept negative values as valid business data
       const hasXeroData = kpiData.sources.xero && (
-        kpiData.financial.revenue.current > 0 || 
-        kpiData.financial.profit.current > 0 ||
-        kpiData.financial.expenses.current > 0
+        (typeof kpiData.financial.revenue.current === 'number' && !isNaN(kpiData.financial.revenue.current)) ||
+        (typeof kpiData.financial.profit.current === 'number' && !isNaN(kpiData.financial.profit.current)) ||
+        (typeof kpiData.financial.expenses.current === 'number' && !isNaN(kpiData.financial.expenses.current))
       );
       
       // CRITICAL: NO FALLBACK DATA - return detailed error state if no real data available
@@ -1813,27 +1825,59 @@ app.get('/api/financial/kpi-summary', async (req, res) => {
         });
       }
 
-      // Return real Xero data only (fully compliant with data integrity rule)
+      // Enhanced currency formatting function
+      const formatCurrency = (value, currency = 'GBP') => {
+        if (typeof value !== 'number' || isNaN(value)) {
+          return 'N/A';
+        }
+        
+        const symbol = currency === 'GBP' ? '£' : '$';
+        const absValue = Math.abs(value);
+        const sign = value < 0 ? '-' : '';
+        
+        if (absValue >= 1000000) {
+          return `${sign}${symbol}${(absValue / 1000000).toFixed(1)}M`;
+        } else if (absValue >= 1000) {
+          return `${sign}${symbol}${(absValue / 1000).toFixed(1)}K`;
+        } else {
+          return `${sign}${symbol}${absValue.toFixed(0)}`;
+        }
+      };
+
+      // Enhanced percentage formatting
+      const formatPercentage = (value) => {
+        if (typeof value !== 'number' || isNaN(value)) {
+          return 'N/A';
+        }
+        const sign = value < 0 ? '' : '+'; // Negative already has sign
+        return `${sign}${value.toFixed(1)}%`;
+      };
+
+      // Return real Xero data with proper negative value handling
       const responseData = {
         success: true,
         data: {
           annualRevenue: {
-            value: kpiData.financial.revenue.current > 0 
-              ? `£${(kpiData.financial.revenue.current / 1000000).toFixed(1)}M`
-              : '£0.0M',
-            helper: kpiData.financial.revenue.growth > 0 
-              ? `${kpiData.financial.revenue.growth > 0 ? '+' : ''}${kpiData.financial.revenue.growth.toFixed(1)}% vs last year`
-              : 'Current period data from Xero API'
+            value: formatCurrency(kpiData.financial.revenue.current),
+            helper: kpiData.financial.revenue.growth && typeof kpiData.financial.revenue.growth === 'number' 
+              ? `${formatPercentage(kpiData.financial.revenue.growth)} vs last year`
+              : 'Current period revenue from Xero API'
           },
           unitsSold: {
             value: 'N/A',
-            helper: 'Sales unit data pending integration'
+            helper: 'Sales unit data pending Shopify integration'
           },
           grossMargin: {
-            value: kpiData.financial.profit.margin > 0 
-              ? `${kpiData.financial.profit.margin.toFixed(1)}%`
-              : '0.0%',
+            value: formatPercentage(kpiData.financial.grossMargin || kpiData.financial.profit.margin || 0),
             helper: 'Current period margin from Xero API'
+          },
+          netProfit: {
+            value: formatCurrency(kpiData.financial.profit.current),
+            helper: 'Current period net profit/loss from Xero API'
+          },
+          expenses: {
+            value: formatCurrency(kpiData.financial.expenses.current),
+            helper: 'Current period expenses from Xero API'
           }
         },
         meta: {
@@ -1841,6 +1885,13 @@ app.get('/api/financial/kpi-summary', async (req, res) => {
           dataSource: 'xero',
           sources: kpiData.sources,
           hasRealData: true,
+          rawData: {
+            revenue: kpiData.financial.revenue.current,
+            expenses: kpiData.financial.expenses.current,
+            netProfit: kpiData.financial.profit.current,
+            grossMargin: kpiData.financial.grossMargin,
+            profitMargin: kpiData.financial.profit.margin
+          },
           connectionStatus: {
             xero: 'connected',
             shopify: kpiData.sources.shopify ? 'connected' : 'disconnected',

@@ -264,6 +264,18 @@ class XeroService {
     }
   }
 
+  extractErrorInfo(error) {
+    return {
+      message: error?.message || error?.toString() || 'Unknown error',
+      status: error?.response?.status || error?.status || null,
+      code: error?.code || null,
+      type: typeof error,
+      hasMessage: !!error?.message,
+      hasResponse: !!error?.response,
+      fullError: error
+    };
+  }
+
   async executeWithRetry(operation) {
     for (let attempt = 1; attempt <= this.maxRetries; attempt++) {
       try {
@@ -284,10 +296,12 @@ class XeroService {
         logDebug(`✅ Xero API operation succeeded on attempt ${attempt}`);
         return result;
       } catch (error) {
-        logError(`❌ Xero API attempt ${attempt} failed:`, error.message);
+        const errorInfo = this.extractErrorInfo(error);
+        logError(`❌ Xero API attempt ${attempt} failed:`, errorInfo.message);
+        logDebug('🔍 Full error details:', errorInfo);
         
         // Handle authentication errors
-        if (error.response?.status === 401 || error.message.includes('authentication')) {
+        if (errorInfo.status === 401 || (errorInfo.hasMessage && errorInfo.message.includes('authentication'))) {
           logWarn(`❌ Attempt ${attempt}: Authentication error, resetting connection state`);
           this.isConnected = false;
           this.organizationId = null;
@@ -303,15 +317,15 @@ class XeroService {
         }
         
         // Handle rate limiting
-        if (error.response?.status === 429) {
-          const retryAfter = error.response.headers['retry-after'] || Math.pow(2, attempt);
+        if (errorInfo.status === 429) {
+          const retryAfter = error.response?.headers?.['retry-after'] || Math.pow(2, attempt);
           logWarn(`❌ Attempt ${attempt}: Rate limited, waiting ${retryAfter} seconds`);
           await new Promise(resolve => setTimeout(resolve, retryAfter * 1000));
         }
         
         // If this is the last attempt, throw the error
         if (attempt === this.maxRetries) {
-          throw new Error(`Xero API failed after ${this.maxRetries} attempts: ${error.message}`);
+          throw new Error(`Xero API failed after ${this.maxRetries} attempts: ${errorInfo.message}`);
         }
         
         // Exponential backoff for other errors

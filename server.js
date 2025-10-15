@@ -1765,6 +1765,20 @@ app.get('/api/financial/kpi-summary', async (req, res) => {
               kpiData.financial.revenue.current = salesData.totalRevenue;
             }
           }
+
+          // Get product performance data for units sold
+          const productPerformance = await shopifyMultiStore.getProductPerformance({
+            startDate: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString(),
+            endDate: new Date().toISOString(),
+            limit: 50
+          });
+          
+          if (productPerformance && productPerformance.totalUnitsSold) {
+            kpiData.sales = kpiData.sales || {};
+            kpiData.sales.unitsSold = productPerformance.totalUnitsSold;
+            kpiData.sales.lastUpdated = productPerformance.lastUpdated;
+            logger.info(`KPI: Shopify units sold data: ${productPerformance.totalUnitsSold} units`);
+          }
         } catch (shopifyError) {
           const errorMessage = safeExtractError(shopifyError);
           logger.warn('Failed to fetch Shopify data for KPIs:', errorMessage);
@@ -1844,6 +1858,23 @@ app.get('/api/financial/kpi-summary', async (req, res) => {
         }
       };
 
+      // Enhanced number formatting function
+      const formatNumber = (value, unit = '') => {
+        if (typeof value !== 'number' || isNaN(value)) {
+          return 'N/A';
+        }
+        
+        const absValue = Math.abs(value);
+        
+        if (absValue >= 1000000) {
+          return `${(value / 1000000).toFixed(1)}M${unit}`;
+        } else if (absValue >= 1000) {
+          return `${(value / 1000).toFixed(1)}K${unit}`;
+        } else {
+          return `${value.toFixed(0)}${unit}`;
+        }
+      };
+
       // Enhanced percentage formatting
       const formatPercentage = (value) => {
         if (typeof value !== 'number' || isNaN(value)) {
@@ -1864,8 +1895,10 @@ app.get('/api/financial/kpi-summary', async (req, res) => {
               : 'Current period revenue from Xero API'
           },
           unitsSold: {
-            value: 'N/A',
-            helper: 'Sales unit data pending Shopify integration'
+            value: kpiData.sales?.unitsSold ? formatNumber(kpiData.sales.unitsSold, ' units') : 'N/A',
+            helper: kpiData.sales?.unitsSold 
+              ? `${kpiData.sales.unitsSold} units sold from Shopify integration`
+              : 'Sales unit data pending Shopify integration'
           },
           grossMargin: {
             value: formatPercentage(kpiData.financial.grossMargin || kpiData.financial.profit.margin || 0),
@@ -2004,6 +2037,7 @@ app.get('/api/financial/kpi-summary', async (req, res) => {
 
             salesData.summary.totalRevenue = shopifyData.totalRevenue || 0;
             salesData.summary.totalOrders = shopifyData.totalOrders || 0;
+            salesData.summary.totalUnitsSold = shopifyData.totalUnitsSold || 0;
             salesData.summary.averageOrderValue = 
               salesData.summary.totalOrders > 0 
                 ? salesData.summary.totalRevenue / salesData.summary.totalOrders 

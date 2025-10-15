@@ -423,6 +423,7 @@ class ShopifyMultiStoreService {
         products: [],
         totalRevenue: 0,
         totalOrders: 0,
+        totalUnitsSold: 0,
         averageOrderValue: 0,
         dateRange: {
           start: startDate || new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString(),
@@ -528,12 +529,17 @@ class ShopifyMultiStoreService {
         ? performanceData.totalRevenue / performanceData.totalOrders 
         : 0;
 
+      // Calculate total units sold across all products
+      performanceData.totalUnitsSold = performanceData.products.reduce((total, product) => {
+        return total + (product.unitsSold || 0);
+      }, 0);
+
       // Check if we have any data
       if (performanceData.products.length === 0 && performanceData.storeErrors.length > 0) {
         throw new Error(`No product performance data available. Store errors: ${performanceData.storeErrors.map(e => `${e.storeName}: ${e.error}`).join('; ')}`);
       }
 
-      logInfo(`SHOPIFY: Product performance retrieved successfully: ${performanceData.products.length} products, £${performanceData.totalRevenue.toFixed(2)} revenue`);
+      logInfo(`SHOPIFY: Product performance retrieved successfully: ${performanceData.products.length} products, ${performanceData.totalUnitsSold} units sold, £${performanceData.totalRevenue.toFixed(2)} revenue`);
       return performanceData;
 
     } catch (error) {

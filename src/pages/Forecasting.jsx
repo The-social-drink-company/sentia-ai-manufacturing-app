@@ -1,65 +1,63 @@
-﻿import { useMemo, useState } from 'react'
+﻿import { useMemo, useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
 import { ResponsiveContainer, LineChart, Line, Area, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts'
-
-const DATA_MODELS = {
-  arima: {
-    label: 'ARIMA Ensemble',
-    accuracy: 0.93,
-    bias: '+1.2%',
-    series: [
-      { month: '2025-09', actual: 12500, forecast: 12800 },
-      { month: '2025-10', actual: 13200, forecast: 13540 },
-      { month: '2025-11', actual: null, forecast: 14260 },
-      { month: '2025-12', actual: null, forecast: 15780 },
-      { month: '2026-01', actual: null, forecast: 13820 },
-      { month: '2026-02', actual: null, forecast: 13140 },
-      { month: '2026-03', actual: null, forecast: 14560 }
-    ]
-  },
-  lstm: {
-    label: 'LSTM Neural Net',
-    accuracy: 0.9,
-    bias: '+2.8%',
-    series: [
-      { month: '2025-09', actual: 12500, forecast: 12930 },
-      { month: '2025-10', actual: 13200, forecast: 13750 },
-      { month: '2025-11', actual: null, forecast: 14410 },
-      { month: '2025-12', actual: null, forecast: 16180 },
-      { month: '2026-01', actual: null, forecast: 13990 },
-      { month: '2026-02', actual: null, forecast: 13440 },
-      { month: '2026-03', actual: null, forecast: 14920 }
-    ]
-  },
-  holt: {
-    label: 'Holt-Winters',
-    accuracy: 0.88,
-    bias: '-1.5%',
-    series: [
-      { month: '2025-09', actual: 12500, forecast: 12340 },
-      { month: '2025-10', actual: 13200, forecast: 13020 },
-      { month: '2025-11', actual: null, forecast: 13610 },
-      { month: '2025-12', actual: null, forecast: 14820 },
-      { month: '2026-01', actual: null, forecast: 13040 },
-      { month: '2026-02', actual: null, forecast: 12710 },
-      { month: '2026-03', actual: null, forecast: 13870 }
-    ]
-  }
-}
-
-const PRODUCT_INSIGHTS = [
-  { sku: 'SENT-RED-500', name: 'Sentia Red 500ml', growth: '+12%', risk: 'low', accuracy: '94%' },
-  { sku: 'SENT-GOLD-500', name: 'Sentia Gold 500ml', growth: '+7%', risk: 'medium', accuracy: '91%' },
-  { sku: 'SENT-WHITE-500', name: 'Sentia White 500ml', growth: '+3%', risk: 'low', accuracy: '92%' }
-]
+import { AlertTriangle, TrendingUp, Database, CheckCircle } from 'lucide-react'
 
 const Forecasting = () => {
   const [modelKey, setModelKey] = useState('arima')
   const [confidence, setConfidence] = useState('95')
+  const [forecastData, setForecastData] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
-  const model = DATA_MODELS[modelKey]
+  // Fetch real forecast data from API
+  useEffect(() => {
+    const fetchForecastData = async () => {
+      try {
+        setLoading(true)
+        setError(null)
+        
+        console.log('Fetching real demand forecast data...')
+        const response = await fetch('/api/forecasting/demand')
+        const data = await response.json()
+        
+        if (!response.ok) {
+          throw new Error(data.message || `HTTP ${response.status}: Failed to fetch forecast data`)
+        }
+        
+        if (data.success && data.models) {
+          console.log('Real forecast data loaded:', data)
+          setForecastData(data)
+        } else {
+          throw new Error(data.error || 'Invalid forecast data format')
+        }
+      } catch (err) {
+        console.error('Failed to fetch forecast data:', err)
+        setError({
+          message: err.message,
+          suggestions: err.suggestions || ['Check server logs', 'Verify data connections']
+        })
+      } finally {
+        setLoading(false)
+      }
+    }
+    
+    fetchForecastData()
+  }, [])
+
+  // Use real data if available, otherwise show loading/error state
+  const models = forecastData?.models || {}
+  const productInsights = forecastData?.productInsights || []
+  const metadata = forecastData?.metadata || {}
+  
+  const model = models[modelKey] || {
+    label: 'Loading...',
+    accuracy: 0,
+    bias: '0%',
+    series: []
+  }
 
   const chartData = useMemo(
     () =>
@@ -71,8 +69,92 @@ const Forecasting = () => {
     [model.series]
   )
 
-  const nextMonth = model.series[2]?.forecast ?? 0
-  const runRate = Math.round(chartData.reduce((sum, p) => sum + (p.forecast ?? 0), 0) / chartData.length)
+  const nextMonth = model.series?.find(p => p.actual === null)?.forecast ?? 0
+  const runRate = chartData.length > 0 ? 
+    Math.round(chartData.reduce((sum, p) => sum + (p.forecast ?? 0), 0) / chartData.length) : 0
+
+  // Show loading state
+  if (loading) {
+    return (
+      <section className="space-y-6">
+        <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h1 className="text-3xl font-semibold tracking-tight">Demand Forecasting</h1>
+            <p className="text-sm text-muted-foreground">
+              Loading real demand forecast data from Shopify and historical sales...
+            </p>
+          </div>
+          <Badge variant="outline" className="animate-pulse">Loading...</Badge>
+        </header>
+        
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-center h-40">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                <p className="text-sm text-muted-foreground">Generating forecast from real sales data...</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </section>
+    )
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <section className="space-y-6">
+        <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h1 className="text-3xl font-semibold tracking-tight">Demand Forecasting</h1>
+            <p className="text-sm text-muted-foreground">
+              Unable to load real forecast data - check data connections
+            </p>
+          </div>
+          <Badge variant="destructive">Data Error</Badge>
+        </header>
+        
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-orange-500" />
+              Forecast Data Unavailable
+            </CardTitle>
+            <CardDescription>Unable to generate real demand forecasts from available data sources</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                <p className="text-sm text-red-800 font-medium">Error: {error.message}</p>
+              </div>
+              
+              {error.suggestions && error.suggestions.length > 0 && (
+                <div>
+                  <p className="text-sm font-medium mb-2">Suggested Actions:</p>
+                  <ul className="text-sm text-muted-foreground space-y-1">
+                    {error.suggestions.map((suggestion, index) => (
+                      <li key={index} className="flex items-start gap-2">
+                        <span className="text-blue-600">•</span>
+                        {suggestion}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              
+              <button 
+                onClick={() => window.location.reload()} 
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"
+              >
+                Retry Loading Data
+              </button>
+            </div>
+          </CardContent>
+        </Card>
+      </section>
+    )
+  }
 
   return (
     <section className="space-y-6">
@@ -80,24 +162,39 @@ const Forecasting = () => {
         <div>
           <h1 className="text-3xl font-semibold tracking-tight">Demand Forecasting</h1>
           <p className="text-sm text-muted-foreground">
-            Compare model projections and review product-level signals before locking production plans.
+            Real demand forecasts based on {metadata.dataSource === 'real_data' ? 'historical sales data' : 'Shopify sales trends'} - 
+            {metadata.historicalDataPoints} months of data, 6-month projections
           </p>
         </div>
-        <Badge variant="outline">Confidence {confidence}%</Badge>
+        <div className="flex items-center gap-2">
+          <Badge variant="outline">Confidence {confidence}%</Badge>
+          <Badge variant={metadata.dataSource === 'real_data' ? 'default' : 'secondary'} className="flex items-center gap-1">
+            {metadata.dataSource === 'real_data' ? <Database className="h-3 w-3" /> : <TrendingUp className="h-3 w-3" />}
+            {metadata.dataSource === 'real_data' ? 'Database' : 'Shopify'}
+          </Badge>
+        </div>
       </header>
 
       <Card>
         <CardHeader>
-          <CardTitle>Forecast controls</CardTitle>
-          <CardDescription>Switch between forecasting models and adjust confidence interval.</CardDescription>
+          <CardTitle className="flex items-center gap-2">
+            <CheckCircle className="h-5 w-5 text-green-600" />
+            Forecast Controls
+          </CardTitle>
+          <CardDescription>
+            Real forecasting models using {metadata.algorithm || 'ensemble methods'} - 
+            Generated {metadata.generatedAt ? new Date(metadata.generatedAt).toLocaleString() : 'recently'}
+          </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <Control label="Model">
             <Select value={modelKey} onValueChange={setModelKey}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
-                {Object.entries(DATA_MODELS).map(([key, value]) => (
-                  <SelectItem key={key} value={key}>{value.label}</SelectItem>
+                {Object.entries(models).map(([key, model]) => (
+                  <SelectItem key={key} value={key}>
+                    {model.label} ({Math.round(model.accuracy * 100)}%)
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -112,15 +209,33 @@ const Forecasting = () => {
               </SelectContent>
             </Select>
           </Control>
-          <Metric label="Next month" value={`${nextMonth.toLocaleString()} units`} helper="Model projection" />
-          <Metric label="Run rate" value={`${runRate.toLocaleString()} units`} helper="Mean of forecast horizon" />
+          <Metric 
+            label="Next month" 
+            value={`${nextMonth.toLocaleString()} units`} 
+            helper={`${model.label} projection`} 
+          />
+          <Metric 
+            label="Run rate" 
+            value={`${runRate.toLocaleString()} units`} 
+            helper="6-month average" 
+          />
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader>
-          <CardTitle>{DATA_MODELS[modelKey].label}</CardTitle>
-          <CardDescription>Historical actuals with projected demand for the next six months.</CardDescription>
+          <CardTitle className="flex items-center justify-between">
+            <span>{model.label}</span>
+            <div className="flex items-center gap-2 text-sm">
+              <span className="text-muted-foreground">Accuracy:</span>
+              <Badge variant="secondary">{Math.round(model.accuracy * 100)}%</Badge>
+              <span className="text-muted-foreground">Bias:</span>
+              <Badge variant={model.bias.startsWith('+') ? 'destructive' : 'default'}>{model.bias}</Badge>
+            </div>
+          </CardTitle>
+          <CardDescription>
+            Historical actuals with projected demand for the next six months using real sales data
+          </CardDescription>
         </CardHeader>
         <CardContent className="h-80">
           <ResponsiveContainer width="100%" height="100%">
@@ -128,7 +243,10 @@ const Forecasting = () => {
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="month" tickLine={false} axisLine={false} />
               <YAxis tickFormatter={(value) => value.toLocaleString()} />
-              <Tooltip formatter={(value) => value.toLocaleString()} labelFormatter={(label) => `Month ${label}`} />
+              <Tooltip 
+                formatter={(value, name) => [value?.toLocaleString() || 'N/A', name === 'forecast' ? 'Forecast' : 'Actual']} 
+                labelFormatter={(label) => `Month: ${label}`} 
+              />
               <Area type="monotone" dataKey="forecast" stroke="#2563eb" fill="#2563eb22" strokeWidth={2} />
               <Line type="monotone" dataKey="actual" stroke="#0ea5e9" strokeWidth={2} dot activeDot={{ r: 5 }} />
             </LineChart>
@@ -138,39 +256,86 @@ const Forecasting = () => {
 
       <Card>
         <CardHeader>
-          <CardTitle>Product insights</CardTitle>
-          <CardDescription>Model-level growth expectations and confidence by SKU.</CardDescription>
+          <CardTitle>Product Insights</CardTitle>
+          <CardDescription>
+            Growth expectations and forecast accuracy by product SKU based on real sales patterns
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-border text-sm">
-              <thead className="bg-muted/40 text-left text-xs uppercase text-muted-foreground">
-                <tr>
-                  <th className="px-4 py-2 font-medium">Product</th>
-                  <th className="px-4 py-2 font-medium">Growth</th>
-                  <th className="px-4 py-2 font-medium">Risk</th>
-                  <th className="px-4 py-2 font-medium">Accuracy</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {PRODUCT_INSIGHTS.map((row) => (
-                  <tr key={row.sku}>
-                    <td className="px-4 py-3">
-                      <p className="font-medium text-foreground">{row.name}</p>
-                      <p className="text-xs text-muted-foreground">{row.sku}</p>
-                    </td>
-                    <td className="px-4 py-3 text-emerald-600">{row.growth}</td>
-                    <td className="px-4 py-3">
-                      <Badge variant="secondary" className="text-xs capitalize">{row.risk}</Badge>
-                    </td>
-                    <td className="px-4 py-3">{row.accuracy}</td>
+          {productInsights.length > 0 ? (
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-border text-sm">
+                <thead className="bg-muted/40 text-left text-xs uppercase text-muted-foreground">
+                  <tr>
+                    <th className="px-4 py-2 font-medium">Product</th>
+                    <th className="px-4 py-2 font-medium">Growth</th>
+                    <th className="px-4 py-2 font-medium">Risk</th>
+                    <th className="px-4 py-2 font-medium">Accuracy</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {productInsights.map((row) => (
+                    <tr key={row.sku}>
+                      <td className="px-4 py-3">
+                        <p className="font-medium text-foreground">{row.name}</p>
+                        <p className="text-xs text-muted-foreground">{row.sku}</p>
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className={row.growth.startsWith('+') ? 'text-emerald-600' : 'text-red-600'}>
+                          {row.growth}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3">
+                        <Badge 
+                          variant={row.risk === 'low' ? 'default' : row.risk === 'medium' ? 'secondary' : 'destructive'} 
+                          className="text-xs capitalize"
+                        >
+                          {row.risk}
+                        </Badge>
+                      </td>
+                      <td className="px-4 py-3">{row.accuracy}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div className="text-center py-8 text-muted-foreground">
+              <p>Product-level insights will appear when sufficient sales data is available</p>
+            </div>
+          )}
         </CardContent>
       </Card>
+      
+      {metadata.aiInsights && metadata.aiInsights.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>AI Insights & Recommendations</CardTitle>
+            <CardDescription>Intelligence-driven insights from demand pattern analysis</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {metadata.aiInsights.map((insight, index) => (
+                <div key={index} className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
+                  <div className={`w-2 h-2 rounded-full mt-2 ${
+                    insight.severity === 'warning' ? 'bg-orange-500' : 
+                    insight.severity === 'error' ? 'bg-red-500' : 'bg-blue-500'
+                  }`} />
+                  <div className="flex-1">
+                    <h4 className="font-medium text-sm">{insight.title}</h4>
+                    <p className="text-sm text-muted-foreground mt-1">{insight.description}</p>
+                    {insight.recommendation && (
+                      <p className="text-sm text-blue-700 mt-2 font-medium">
+                        Recommendation: {insight.recommendation}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </section>
   )
 }

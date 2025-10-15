@@ -229,11 +229,40 @@ const DashboardEnterprise = () => {
         if (response && response.success && response.data) {
           // Transform working capital data into KPI format
           const data = response.data
+          
+          // Format working capital as currency
+          const formatCurrency = (amount) => {
+            if (amount === 0 || amount === null || amount === undefined) return '£0'
+            const absAmount = Math.abs(amount)
+            const formatted = new Intl.NumberFormat('en-GB', {
+              style: 'currency',
+              currency: 'GBP',
+              minimumFractionDigits: 0
+            }).format(absAmount)
+            return amount < 0 ? `-${formatted}` : formatted
+          }
+          
           setCapitalKpis([
-            { label: 'Global working capital', value: data.totalWorkingCapital || '$0', helper: 'Across all subsidiaries' },
-            { label: 'Cash coverage', value: data.cashCoverage || '0 days', helper: 'Including credit facilities' },
-            { label: 'Intercompany exposure', value: data.intercompanyExposure || '$0', helper: 'Pending settlements' },
-            { label: 'FX sensitivity', value: data.fxSensitivity || '$0', helper: '±1% USD/EUR/JPY' }
+            { 
+              label: 'Global working capital', 
+              value: formatCurrency(data.workingCapital), 
+              helper: 'Across all subsidiaries' 
+            },
+            { 
+              label: 'Cash coverage', 
+              value: data.cashConversionCycle ? `${data.cashConversionCycle} days` : '0 days', 
+              helper: 'Cash conversion cycle' 
+            },
+            { 
+              label: 'Current ratio', 
+              value: data.currentRatio ? data.currentRatio.toFixed(2) : '0.00', 
+              helper: 'Current assets / Current liabilities' 
+            },
+            { 
+              label: 'Quick ratio', 
+              value: data.quickRatio ? data.quickRatio.toFixed(2) : '0.00', 
+              helper: 'Liquid assets / Current liabilities' 
+            }
           ])
         } else {
           // Show integration required message for working capital

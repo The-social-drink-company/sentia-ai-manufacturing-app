@@ -1197,10 +1197,10 @@ app.get('/api/dashboard/summary', async (req, res) => {
       });
     }
     
-    // Get real data from Xero
+    // Get real data from Xero (using periods: 11 - Xero API constraint)
     const [profitLoss, cashFlow] = await Promise.allSettled([
-      xeroService.getProfitAndLoss({ periods: 12 }),
-      xeroService.getCashFlow({ periods: 12 })
+      xeroService.getProfitAndLoss({ periods: 11 }),
+      xeroService.getCashFlow({ periods: 11 })
     ]);
     
     const dashboardData = {

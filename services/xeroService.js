@@ -401,9 +401,15 @@ class XeroService {
     });
   }
 
-  async getCashFlow(periods = 12) {
+  async getCashFlow(periods = 11) {
     if (!this.isConnected) {
       throw new Error('Xero service not connected - no fallback data available');
+    }
+
+    // Validate periods parameter (Xero API requires 1-11)
+    if (periods < 1 || periods > 11) {
+      logWarn(`⚠️ Invalid periods parameter: ${periods}. Xero API requires 1-11, using 11.`);
+      periods = 11;
     }
 
     return await this.executeWithRetry(async () => {
@@ -418,9 +424,15 @@ class XeroService {
     });
   }
 
-  async getProfitAndLoss(periods = 12) {
+  async getProfitAndLoss(periods = 11) {
     if (!this.isConnected) {
       throw new Error('Xero service not connected - no fallback data available');
+    }
+
+    // Validate periods parameter (Xero API requires 1-11)
+    if (periods < 1 || periods > 11) {
+      logWarn(`⚠️ Invalid periods parameter: ${periods}. Xero API requires 1-11, using 11.`);
+      periods = 11;
     }
 
     logDebug(`🔍 Fetching P&L report with ${periods} periods...`);

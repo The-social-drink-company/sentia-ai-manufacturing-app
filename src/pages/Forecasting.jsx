@@ -2,7 +2,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
-import { ResponsiveContainer, LineChart, Line, Area, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts'
+import { ResponsiveContainer, LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts'
 import { AlertTriangle, TrendingUp, Database, CheckCircle } from 'lucide-react'
 
 const Forecasting = () => {
@@ -59,15 +59,21 @@ const Forecasting = () => {
     series: []
   }
 
-  const chartData = useMemo(
-    () =>
-      model.series.map((point) => ({
-        month: point.month,
-        forecast: point.forecast,
-        actual: point.actual ?? undefined
-      })),
-    [model.series]
-  )
+  const chartData = useMemo(() => {
+    if (!model.series || model.series.length === 0) {
+      console.log('No series data available for chart')
+      return []
+    }
+    
+    const data = model.series.map((point) => ({
+      month: point.month,
+      forecast: point.forecast,
+      actual: point.actual ?? undefined
+    }))
+    
+    console.log('Chart data prepared:', data)
+    return data
+  }, [model.series])
 
   const nextMonth = model.series?.find(p => p.actual === null)?.forecast ?? 0
   const runRate = chartData.length > 0 ? 
@@ -238,19 +244,36 @@ const Forecasting = () => {
           </CardDescription>
         </CardHeader>
         <CardContent className="h-80">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" tickLine={false} axisLine={false} />
-              <YAxis tickFormatter={(value) => value.toLocaleString()} />
-              <Tooltip 
-                formatter={(value, name) => [value?.toLocaleString() || 'N/A', name === 'forecast' ? 'Forecast' : 'Actual']} 
-                labelFormatter={(label) => `Month: ${label}`} 
-              />
-              <Area type="monotone" dataKey="forecast" stroke="#2563eb" fill="#2563eb22" strokeWidth={2} />
-              <Line type="monotone" dataKey="actual" stroke="#0ea5e9" strokeWidth={2} dot activeDot={{ r: 5 }} />
-            </LineChart>
-          </ResponsiveContainer>
+          {chartData.length > 0 ? (
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={chartData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="month" tickLine={false} axisLine={false} />
+                <YAxis tickFormatter={(value) => value.toLocaleString()} />
+                <Tooltip 
+                  formatter={(value, name) => [value?.toLocaleString() || 'N/A', name === 'forecast' ? 'Forecast' : 'Actual']} 
+                  labelFormatter={(label) => `Month: ${label}`} 
+                />
+                <Line type="monotone" dataKey="forecast" stroke="#2563eb" strokeWidth={3} dot={{ fill: '#2563eb', r: 4 }} />
+                <Line type="monotone" dataKey="actual" stroke="#0ea5e9" strokeWidth={2} dot={{ fill: '#0ea5e9', r: 4 }} activeDot={{ r: 6 }} />
+              </LineChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="flex items-center justify-center h-full">
+              <div className="text-center">
+                <TrendingUp className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-foreground mb-2">No Chart Data Available</h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Chart will appear when forecast data contains time series information
+                </p>
+                <div className="text-xs text-muted-foreground bg-muted/50 rounded-lg p-3">
+                  <p>Data Source: {metadata.dataSource || 'Unknown'}</p>
+                  <p>Historical Points: {metadata.historicalDataPoints || 0}</p>
+                  <p>Algorithm: {metadata.algorithm || 'N/A'}</p>
+                </div>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 

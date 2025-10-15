@@ -1443,10 +1443,14 @@ app.get('/api/forecasting/demand', async (req, res) => {
           },
           select: {
             sale_date: true,
-            total_amount: true,
+            gross_revenue: true,
             net_revenue: true,
             quantity_sold: true,
-            product_name: true
+            products: {
+              select: {
+                name: true
+              }
+            }
           },
           orderBy: {
             sale_date: 'asc'
@@ -1465,7 +1469,7 @@ app.get('/api/forecasting/demand', async (req, res) => {
                 orders: 0
               };
             }
-            monthlyData[monthKey].revenue += parseFloat(sale.net_revenue || sale.total_amount || 0);
+            monthlyData[monthKey].revenue += parseFloat(sale.net_revenue || sale.gross_revenue || 0);
             monthlyData[monthKey].quantity += parseInt(sale.quantity_sold || 0);
             monthlyData[monthKey].orders += 1;
           });

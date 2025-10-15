@@ -595,6 +595,107 @@ class ShopifyMultiStoreService {
     };
   }
 
+  async getSalesTrends(params = {}) {
+    try {
+      logDebug('SHOPIFY: Getting sales trends data...', params);
+      
+      if (!this.isConnected) {
+        throw new Error('Shopify multistore service not connected. Call connect() first.');
+      }
+
+      const { period = '12months', includeQuantity = true } = params;
+      
+      // Calculate date range based on period
+      let daysBack = 365; // 12 months default
+      if (period === '6months') daysBack = 180;
+      if (period === '3months') daysBack = 90;
+      if (period === '1month') daysBack = 30;
+      
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - daysBack);
+      
+      const trendsData = [];
+      const monthlyData = new Map();
+      
+      for (const [storeId, store] of this.stores.entries()) {
+        if (!store.isActive || !store.client) {
+          logWarn(`SHOPIFY: Skipping inactive store ${store.name} for trends data`);
+          continue;
+        }
+
+        try {
+          const ordersResponse = await store.client.get({
+            path: 'orders',
+            query: {
+              status: 'any',
+              financial_status: 'paid',
+              created_at_min: startDate.toISOString(),
+              limit: 250,
+              fields: 'id,line_items,total_price,currency,created_at'
+            }
+          });
+
+          if (ordersResponse.body && ordersResponse.body.orders) {
+            const orders = ordersResponse.body.orders;
+            
+            orders.forEach(order => {
+              const orderDate = new Date(order.created_at);
+              const monthKey = `${orderDate.getFullYear()}-${String(orderDate.getMonth() + 1).padStart(2, '0')}`;
+              
+              if (!monthlyData.has(monthKey)) {
+                monthlyData.set(monthKey, {
+                  date: monthKey + '-01',
+                  revenue: 0,
+                  quantity: 0,
+                  orders: 0
+                });
+              }
+              
+              const monthData = monthlyData.get(monthKey);
+              monthData.revenue += parseFloat(order.total_price || 0);
+              monthData.orders += 1;
+              
+              if (includeQuantity && order.line_items) {
+                order.line_items.forEach(item => {
+                  monthData.quantity += parseInt(item.quantity || 0);
+                });
+              }
+            });
+          }
+        } catch (storeError) {
+          logError(`SHOPIFY: Failed to get trends data from ${store.name}:`, storeError);
+        }
+      }
+      
+      // Convert to array and sort by date
+      const sortedData = Array.from(monthlyData.values()).sort((a, b) => 
+        new Date(a.date) - new Date(b.date)
+      );
+      
+      logInfo(`SHOPIFY: Retrieved sales trends for ${sortedData.length} months`);
+      
+      return {
+        success: true,
+        data: sortedData,
+        period: period,
+        dateRange: {
+          start: startDate.toISOString(),
+          end: new Date().toISOString()
+        },
+        lastUpdated: new Date().toISOString()
+      };
+      
+    } catch (error) {
+      logError('SHOPIFY: Error getting sales trends:', error);
+      return {
+        success: false,
+        error: error.message,
+        data: [],
+        lastUpdated: new Date().toISOString()
+      };
+    }
+  }
+
   async getRegionalPerformance() {
     try {
       const regionalData = [];

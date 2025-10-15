@@ -1777,14 +1777,14 @@ app.get('/api/analytics/kpis', async (req, res) => {
           },
           _sum: {
             net_revenue: true,
-            total_amount: true
+            gross_revenue: true
           },
           _count: {
             id: true
           }
         });
         
-        const actualRevenue = revenueData._sum.net_revenue || revenueData._sum.total_amount || 0;
+        const actualRevenue = revenueData._sum.net_revenue || revenueData._sum.gross_revenue || 0;
         const orderCount = revenueData._count.id || 0;
         
         if (actualRevenue > 0) {

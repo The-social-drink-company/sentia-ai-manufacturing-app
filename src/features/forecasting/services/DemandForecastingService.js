@@ -253,7 +253,7 @@ export class DemandForecastingService {
     const seasonalCounts = new Array(period).fill(0)
 
     // Calculate seasonal averages
-    data.forEach((point, _index) => {
+    data.forEach((point, index) => {
       const seasonIndex = index % period
       seasonalAverages[seasonIndex] += point.value
       seasonalCounts[seasonIndex]++

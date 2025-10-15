@@ -1728,19 +1728,6 @@ app.get('/api/forecasting/demand', async (req, res) => {
     });
   }
 });
-      trend: 'increasing',
-      seasonalFactors: {
-        january: 0.95,
-        february: 0.98,
-        march: 1.05
-      }
-    };
-    res.json(forecast);
-  } catch (error) {
-    logger.error('Forecasting API error', error);
-    res.status(500).json({ error: 'Failed to generate forecast' });
-  }
-});
 
 // Analytics API endpoints
 app.get('/api/analytics/kpis', async (req, res) => {

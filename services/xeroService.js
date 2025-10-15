@@ -364,6 +364,8 @@ class XeroService {
       throw new Error('Xero service not connected - no fallback data available');
     }
 
+    logDebug(`🔍 Fetching P&L report with ${periods} periods...`);
+    
     return await this.executeWithRetry(async () => {
       const response = await this.xero.accountingApi.getReportProfitAndLoss(
         this.tenantId,
@@ -373,7 +375,11 @@ class XeroService {
         'MONTH'
       );
 
-      return this.processProfitAndLoss(response.body);
+      logDebug('📄 Raw P&L response received, processing...');
+      const processedData = this.processProfitAndLoss(response.body);
+      logDebug(`✅ P&L processing complete. Returned ${processedData?.length || 0} report periods`);
+      
+      return processedData;
     });
   }
 
@@ -410,17 +416,34 @@ class XeroService {
       }
       
       // Extract key financial metrics from balance sheet
+      logDebug('📊 Extracting financial metrics from balance sheet...');
       const cash = this.extractValue(balanceSheet, 'Cash and Cash Equivalents');
       const accountsReceivable = this.extractValue(balanceSheet, 'Accounts Receivable');
       const inventory = this.extractValue(balanceSheet, 'Inventory');
       const accountsPayable = this.extractValue(balanceSheet, 'Accounts Payable');
       const shortTermDebt = this.extractValue(balanceSheet, 'Short-term Debt');
 
+      logDebug(`💰 Extracted values:`, {
+        cash,
+        accountsReceivable,
+        inventory,
+        accountsPayable,
+        shortTermDebt
+      });
+
       const currentAssets = cash + accountsReceivable + inventory;
       const currentLiabilities = accountsPayable + shortTermDebt;
       const workingCapital = currentAssets - currentLiabilities;
       const currentRatio = currentLiabilities > 0 ? currentAssets / currentLiabilities : 0;
       const quickRatio = currentLiabilities > 0 ? (currentAssets - inventory) / currentLiabilities : 0;
+
+      logDebug(`🧮 Calculated working capital metrics:`, {
+        currentAssets,
+        currentLiabilities,
+        workingCapital,
+        currentRatio,
+        quickRatio
+      });
 
       // Calculate cash conversion cycle
       const dso = 35; // Days Sales Outstanding - calculated from AR and revenue
@@ -709,16 +732,59 @@ class XeroService {
 
   processProfitAndLoss(profitLossData) {
     const reports = profitLossData.reports || [];
-    if (reports.length === 0) return null;
+    if (reports.length === 0) return [];
 
-    const report = reports[0];
-    return {
-      reportId: report.reportID,
-      reportName: report.reportName,
-      reportDate: report.reportDate,
-      rows: report.rows || [],
-      lastUpdated: new Date().toISOString()
-    };
+    const processedData = [];
+    
+    for (const report of reports) {
+      const reportData = {
+        reportId: report.reportID,
+        reportName: report.reportName,
+        reportDate: report.reportDate,
+        rows: report.rows || []
+      };
+
+      // Extract key financial metrics from the P&L report
+      const totalRevenue = this.extractValue(reportData, 'Revenue') || 
+                          this.extractValue(reportData, 'Total Revenue') ||
+                          this.extractValue(reportData, 'Sales') ||
+                          this.extractValue(reportData, 'Total Sales');
+                          
+      const totalExpenses = this.extractValue(reportData, 'Total Expenses') ||
+                            this.extractValue(reportData, 'Operating Expenses') ||
+                            this.extractValue(reportData, 'Expenses');
+                            
+      const netProfit = this.extractValue(reportData, 'Net Profit') ||
+                       this.extractValue(reportData, 'Net Income') ||
+                       (totalRevenue - totalExpenses);
+
+      const grossProfit = this.extractValue(reportData, 'Gross Profit') ||
+                         this.extractValue(reportData, 'Gross Income');
+
+      const processedReport = {
+        reportId: report.reportID,
+        reportName: report.reportName,
+        reportDate: report.reportDate,
+        totalRevenue: totalRevenue || 0,
+        totalExpenses: totalExpenses || 0,
+        netProfit: netProfit || 0,
+        grossProfit: grossProfit || 0,
+        profitMargin: totalRevenue > 0 ? ((netProfit / totalRevenue) * 100) : 0,
+        grossMargin: totalRevenue > 0 ? ((grossProfit / totalRevenue) * 100) : 0,
+        lastUpdated: new Date().toISOString()
+      };
+
+      logDebug(`📊 Processed P&L report for ${report.reportDate}:`, {
+        totalRevenue: processedReport.totalRevenue,
+        totalExpenses: processedReport.totalExpenses,
+        netProfit: processedReport.netProfit,
+        profitMargin: processedReport.profitMargin
+      });
+
+      processedData.push(processedReport);
+    }
+
+    return processedData;
   }
 
   extractValue(reportData, accountName) {
@@ -728,9 +794,12 @@ class XeroService {
       for (const row of rows) {
         if (row.cells && row.cells.length > 0) {
           const accountCell = row.cells[0];
-          if (accountCell.value && accountCell.value.includes(searchName)) {
+          // FIX: Add null check before calling includes()
+          if (accountCell && accountCell.value && typeof accountCell.value === 'string' && accountCell.value.includes(searchName)) {
             const valueCell = row.cells[1];
-            return parseFloat(valueCell.value) || 0;
+            if (valueCell && valueCell.value !== undefined) {
+              return parseFloat(valueCell.value) || 0;
+            }
           }
         }
         

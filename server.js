@@ -1675,23 +1675,38 @@ app.get('/api/financial/kpi-summary', async (req, res) => {
       // Try to get Xero financial data
       if (xeroInitialized && xeroService && xeroService.isConnected) {
         try {
+          logger.info('📊 Fetching P&L data from Xero for KPI summary...');
           const profitLoss = await xeroService.getProfitAndLoss();
+          
           if (profitLoss && profitLoss.length > 0) {
             const currentPL = profitLoss[0];
+            logger.info('💰 P&L data received:', {
+              totalRevenue: currentPL.totalRevenue,
+              totalExpenses: currentPL.totalExpenses,
+              netProfit: currentPL.netProfit,
+              profitMargin: currentPL.profitMargin
+            });
+            
             kpiData.financial.revenue.current = currentPL.totalRevenue || 0;
             kpiData.financial.expenses.current = currentPL.totalExpenses || 0;
             kpiData.financial.profit.current = currentPL.netProfit || 0;
             kpiData.financial.profit.margin = currentPL.profitMargin || 0;
+          } else {
+            logger.warn('❌ No P&L data returned from Xero service');
           }
 
+          logger.info('💸 Fetching cash flow data from Xero...');
           const cashFlow = await xeroService.getCashFlow();
           if (cashFlow) {
+            logger.info('🏦 Cash flow data received:', cashFlow);
             kpiData.financial.cashFlow.operating = cashFlow.operating || 0;
             kpiData.financial.cashFlow.investing = cashFlow.investing || 0;
             kpiData.financial.cashFlow.financing = cashFlow.financing || 0;
+          } else {
+            logger.warn('❌ No cash flow data returned from Xero service');
           }
         } catch (xeroError) {
-          logger.warn('Failed to fetch Xero data for KPIs:', xeroError.message);
+          logger.error('❌ Failed to fetch Xero data for KPIs:', xeroError.message);
           kpiData.sources.xero = false;
         }
       }
@@ -1726,7 +1741,7 @@ app.get('/api/financial/kpi-summary', async (req, res) => {
         });
       }
 
-      return res.json({
+      const responseData = {
         success: true,
         data: {
           annualRevenue: {
@@ -1755,7 +1770,17 @@ app.get('/api/financial/kpi-summary', async (req, res) => {
                      kpiData.sources.database ? 'database' : 'no-data',
           sources: kpiData.sources
         }
+      };
+
+      logger.info('📤 Sending KPI response to frontend:', {
+        success: responseData.success,
+        annualRevenue: responseData.data.annualRevenue.value,
+        grossMargin: responseData.data.grossMargin.value,
+        dataSource: responseData.meta.dataSource,
+        sources: responseData.meta.sources
       });
+
+      return res.json(responseData);
 
     } catch (error) {
       logger.error('Failed to fetch KPI summary:', error);

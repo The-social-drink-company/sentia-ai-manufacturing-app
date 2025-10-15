@@ -53,16 +53,56 @@ class XeroService {
     this.initialized = true;
   }
 
+  validateEnvironmentVariables() {
+    const required = ['XERO_CLIENT_ID', 'XERO_CLIENT_SECRET'];
+    const missing = [];
+    const invalid = [];
+
+    for (const envVar of required) {
+      const value = process.env[envVar];
+      if (!value) {
+        missing.push(envVar);
+      } else if (typeof value !== 'string' || value.trim().length === 0) {
+        invalid.push(envVar);
+      }
+    }
+
+    if (missing.length > 0 || invalid.length > 0) {
+      const errorMsg = [
+        missing.length > 0 ? `Missing: ${missing.join(', ')}` : '',
+        invalid.length > 0 ? `Invalid: ${invalid.join(', ')}` : ''
+      ].filter(Boolean).join('; ');
+      
+      logError(`❌ Xero environment validation failed: ${errorMsg}`);
+      return {
+        valid: false,
+        error: `Xero configuration error: ${errorMsg}`,
+        missing,
+        invalid
+      };
+    }
+
+    logDebug('✅ Xero environment variables validated successfully');
+    return {
+      valid: true,
+      error: null,
+      missing: [],
+      invalid: []
+    };
+  }
+
   initializeXeroClient() {
-    logDebug('🔍 Xero Debug - XERO_CLIENT_ID:', process.env.XERO_CLIENT_ID);
-    logDebug('🔍 Xero Debug - XERO_CLIENT_SECRET:', process.env.XERO_CLIENT_SECRET);
+    logDebug('🔍 Validating Xero environment configuration...');
     
-    // OrganizationId will be retrieved dynamically from Xero API
-    
-    if (!process.env.XERO_CLIENT_ID || !process.env.XERO_CLIENT_SECRET) {
-      logDebug('❌ Xero credentials missing - CLIENT_ID:', !!process.env.XERO_CLIENT_ID, 'CLIENT_SECRET:', !!process.env.XERO_CLIENT_SECRET);
+    // Validate environment variables first
+    const validation = this.validateEnvironmentVariables();
+    if (!validation.valid) {
+      logError('❌ Xero client initialization failed:', validation.error);
       return;
     }
+
+    // Log presence of credentials (but not values for security)
+    logDebug('🔍 Xero credentials present - CLIENT_ID:', !!process.env.XERO_CLIENT_ID, 'CLIENT_SECRET:', !!process.env.XERO_CLIENT_SECRET);
 
     if (!XeroClientClass) {
       logWarn('⚠️ Xero client class not available, service will not be initialized');
@@ -78,7 +118,7 @@ class XeroService {
         httpTimeout: 30000
       });
 
-      logDebug('✅ Xero client initialized');
+      logDebug('✅ Xero client initialized successfully');
       // Authentication will be called from ensureInitialized()
     } catch (error) {
       logError('❌ Failed to initialize Xero client:', error.message);
@@ -227,21 +267,57 @@ class XeroService {
   async executeWithRetry(operation) {
     for (let attempt = 1; attempt <= this.maxRetries; attempt++) {
       try {
-        return await operation();
+        // Check connection state before each attempt
+        if (!this.isConnected) {
+          logWarn(`❌ Attempt ${attempt}: Not connected, trying to authenticate...`);
+          const authenticated = await this.authenticate();
+          if (!authenticated) {
+            logWarn(`❌ Attempt ${attempt}: Authentication failed`);
+            if (attempt === this.maxRetries) {
+              throw new Error('Authentication failed after maximum retries - please check Xero credentials');
+            }
+            continue;
+          }
+        }
+
+        const result = await operation();
+        logDebug(`✅ Xero API operation succeeded on attempt ${attempt}`);
+        return result;
       } catch (error) {
         logError(`❌ Xero API attempt ${attempt} failed:`, error.message);
         
-        if (error.response?.status === 401) {
-          // For custom connections, re-authenticate directly
-          const authenticated = await this.authenticate();
-          if (!authenticated && attempt === this.maxRetries) {
-            throw new Error('Authentication failed - please check Xero credentials');
+        // Handle authentication errors
+        if (error.response?.status === 401 || error.message.includes('authentication')) {
+          logWarn(`❌ Attempt ${attempt}: Authentication error, resetting connection state`);
+          this.isConnected = false;
+          this.organizationId = null;
+          this.tenantId = null;
+          
+          // Try to re-authenticate on first auth error
+          if (attempt < this.maxRetries) {
+            const authenticated = await this.authenticate();
+            if (!authenticated) {
+              logWarn(`❌ Attempt ${attempt}: Re-authentication failed`);
+            }
           }
-        } else if (attempt === this.maxRetries) {
-          throw error;
         }
         
-        await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
+        // Handle rate limiting
+        if (error.response?.status === 429) {
+          const retryAfter = error.response.headers['retry-after'] || Math.pow(2, attempt);
+          logWarn(`❌ Attempt ${attempt}: Rate limited, waiting ${retryAfter} seconds`);
+          await new Promise(resolve => setTimeout(resolve, retryAfter * 1000));
+        }
+        
+        // If this is the last attempt, throw the error
+        if (attempt === this.maxRetries) {
+          throw new Error(`Xero API failed after ${this.maxRetries} attempts: ${error.message}`);
+        }
+        
+        // Exponential backoff for other errors
+        const delay = Math.pow(2, attempt) * 1000;
+        logDebug(`⏱️ Waiting ${delay}ms before retry attempt ${attempt + 1}`);
+        await new Promise(resolve => setTimeout(resolve, delay));
       }
     }
   }
@@ -304,13 +380,34 @@ class XeroService {
   async calculateWorkingCapital() {
     await this.ensureInitialized();
     
-    // FORCE REAL DATA ONLY - No fallback allowed
+    // Check connection status first
     if (!this.isConnected) {
-      throw new Error('Xero authentication required. Please authenticate via /api/xero/auth to access real financial data. No mock data will be returned.');
+      logWarn('❌ Xero service not connected - authentication required');
+      return {
+        success: false,
+        error: 'Xero authentication required',
+        message: 'Please authenticate with Xero to access real financial data',
+        data: null,
+        dataSource: 'authentication_required',
+        lastUpdated: new Date().toISOString()
+      };
     }
 
     try {
+      logDebug('🔍 Calculating working capital from Xero API...');
       const balanceSheet = await this.getBalanceSheet();
+      
+      if (!balanceSheet) {
+        logWarn('❌ No balance sheet data received from Xero');
+        return {
+          success: false,
+          error: 'No balance sheet data available',
+          message: 'Xero API returned no balance sheet data',
+          data: null,
+          dataSource: 'xero_api_no_data',
+          lastUpdated: new Date().toISOString()
+        };
+      }
       
       // Extract key financial metrics from balance sheet
       const cash = this.extractValue(balanceSheet, 'Cash and Cash Equivalents');
@@ -331,26 +428,39 @@ class XeroService {
       const dpo = 38; // Days Payable Outstanding - calculated from AP and expenses
       const cashConversionCycle = dso + dio - dpo;
 
+      logDebug('✅ Working capital calculation successful');
       return {
-        currentAssets: Math.round(currentAssets),
-        currentLiabilities: Math.round(currentLiabilities),
-        workingCapital: Math.round(workingCapital),
-        currentRatio: Math.round(currentRatio * 100) / 100,
-        quickRatio: Math.round(quickRatio * 100) / 100,
-        cashConversionCycle: Math.round(cashConversionCycle),
-        accountsReceivable: Math.round(accountsReceivable),
-        accountsPayable: Math.round(accountsPayable),
-        inventory: Math.round(inventory),
-        cash: Math.round(cash),
-        dso: dso,
-        dio: dio,
-        dpo: dpo,
+        success: true,
+        error: null,
+        message: 'Working capital calculated successfully from Xero API',
+        data: {
+          currentAssets: Math.round(currentAssets),
+          currentLiabilities: Math.round(currentLiabilities),
+          workingCapital: Math.round(workingCapital),
+          currentRatio: Math.round(currentRatio * 100) / 100,
+          quickRatio: Math.round(quickRatio * 100) / 100,
+          cashConversionCycle: Math.round(cashConversionCycle),
+          accountsReceivable: Math.round(accountsReceivable),
+          accountsPayable: Math.round(accountsPayable),
+          inventory: Math.round(inventory),
+          cash: Math.round(cash),
+          dso: dso,
+          dio: dio,
+          dpo: dpo
+        },
         dataSource: 'xero_api',
         lastUpdated: new Date().toISOString()
       };
     } catch (error) {
-      logError('❌ Working capital calculation failed:', error);
-      throw new Error(`Real Xero API failed: ${error.message}. Authentication required for real financial data.`);
+      logError('❌ Working capital calculation failed:', error.message);
+      return {
+        success: false,
+        error: error.message,
+        message: 'Xero API failed to calculate working capital',
+        data: null,
+        dataSource: 'xero_api_error',
+        lastUpdated: new Date().toISOString()
+      };
     }
   }
 
@@ -614,7 +724,7 @@ class XeroService {
   extractValue(reportData, accountName) {
     if (!reportData || !reportData.rows) return 0;
 
-    const searchRows = (rows, _searchName) => {
+    const searchRows = (rows, searchName) => {
       for (const row of rows) {
         if (row.cells && row.cells.length > 0) {
           const accountCell = row.cells[0];
@@ -657,35 +767,58 @@ class XeroService {
 
   // Health check
   async healthCheck() {
-    await this.ensureInitialized();
-    
     try {
+      // Check environment configuration first
+      const envValidation = this.validateEnvironmentVariables();
+      if (!envValidation.valid) {
+        return {
+          status: 'configuration_error',
+          message: envValidation.error,
+          details: {
+            missing: envValidation.missing,
+            invalid: envValidation.invalid
+          },
+          lastCheck: new Date().toISOString()
+        };
+      }
+
+      await this.ensureInitialized();
+      
       if (!this.xero) {
         return {
-          status: 'not_configured',
-          message: 'Xero credentials not configured'
+          status: 'initialization_failed',
+          message: 'Xero client failed to initialize despite valid configuration',
+          lastCheck: new Date().toISOString()
         };
       }
 
       if (!this.isConnected) {
         return {
           status: 'not_authenticated',
-          message: 'Xero not authenticated - no data available'
+          message: 'Xero client initialized but not authenticated - no data available',
+          details: {
+            organizationId: this.organizationId,
+            tenantId: this.tenantId
+          },
+          lastCheck: new Date().toISOString()
         };
       }
 
+      // Test actual API connectivity
       await this.xero.accountingApi.getOrganisations(this.tenantId);
       
       return {
         status: 'connected',
+        message: 'Xero API fully operational',
         organizationId: this.organizationId,
         tenantId: this.tenantId,
         lastCheck: new Date().toISOString()
       };
     } catch (error) {
       return {
-        status: 'error',
+        status: 'api_error',
         message: error.message,
+        error: error.message,
         lastCheck: new Date().toISOString()
       };
     }

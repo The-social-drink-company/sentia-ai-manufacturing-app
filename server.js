@@ -564,15 +564,27 @@ app.get('/api/financial/working-capital', async (req, res) => {
     if (xeroInitialized && xeroService) {
       try {
         logger.info('Attempting to fetch working capital data from Xero API');
-        workingCapitalData = await xeroService.calculateWorkingCapital();
-        if (workingCapitalData) {
+        const xeroResponse = await xeroService.calculateWorkingCapital();
+        
+        if (xeroResponse.success && xeroResponse.data) {
           logger.info('Successfully retrieved working capital data from Xero');
           return res.json({
             success: true,
-            data: workingCapitalData,
-            dataSource: 'xero',
-            timestamp: new Date().toISOString()
+            data: xeroResponse.data,
+            dataSource: xeroResponse.dataSource,
+            message: xeroResponse.message,
+            timestamp: xeroResponse.lastUpdated
           });
+        } else {
+          // Xero service returned an error state
+          errors.push({
+            source: 'xero',
+            error: xeroResponse.error || 'Unknown Xero error',
+            message: xeroResponse.message || 'Xero service failed',
+            dataSource: xeroResponse.dataSource,
+            timestamp: xeroResponse.lastUpdated
+          });
+          logger.warn('Xero API returned error state:', xeroResponse.error);
         }
       } catch (xeroError) {
         errors.push({
@@ -1867,9 +1879,6 @@ app.get('/api/financial/kpi-summary', async (req, res) => {
                     gte: startDate,
                     lte: now
                   }
-                },
-                include: {
-                  order: true
                 }
               }
             }
@@ -1878,10 +1887,10 @@ app.get('/api/financial/kpi-summary', async (req, res) => {
           // If no Shopify data, use database data
           if (!salesData.sources.shopify && dbProducts.length > 0) {
             salesData.products = dbProducts.map(product => {
-              const revenue = product.orderItems.reduce((sum, item) => 
-                sum + (item.quantity * item.unitPrice), 0);
-              const unitsSold = product.orderItems.reduce((sum, item) => 
-                sum + item.quantity, 0);
+              const revenue = product.historical_sales.reduce((sum, sale) => 
+                sum + parseFloat(sale.net_revenue || 0), 0);
+              const unitsSold = product.historical_sales.reduce((sum, sale) => 
+                sum + (sale.quantity_sold || 0), 0);
 
               return {
                 id: product.id,

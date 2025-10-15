@@ -340,6 +340,54 @@ class ShopifyMultiStoreService {
     }
   }
 
+  async getConsolidatedSalesData(params = {}) {
+    try {
+      logDebug('SHOPIFY: Getting consolidated sales data...');
+      
+      // Use the existing consolidated data method
+      const consolidatedData = await this.getConsolidatedData();
+      
+      if (consolidatedData.error) {
+        logWarn('SHOPIFY: Error in consolidated data:', consolidatedData.error);
+        return {
+          success: false,
+          error: consolidatedData.error,
+          totalRevenue: 0,
+          totalOrders: 0,
+          totalCustomers: 0,
+          avgOrderValue: 0,
+          dataSource: 'shopify_multistore',
+          lastUpdated: new Date().toISOString()
+        };
+      }
+
+      // Transform the data to match expected structure
+      return {
+        success: true,
+        totalRevenue: consolidatedData.totalSales || 0,
+        totalOrders: consolidatedData.totalOrders || 0,
+        totalCustomers: consolidatedData.totalCustomers || 0,
+        avgOrderValue: consolidatedData.avgOrderValue || 0,
+        stores: consolidatedData.stores || [],
+        dataSource: 'shopify_multistore',
+        lastUpdated: consolidatedData.lastUpdated || new Date().toISOString()
+      };
+      
+    } catch (error) {
+      logError('SHOPIFY: Error getting consolidated sales data:', error.message);
+      return {
+        success: false,
+        error: error.message,
+        totalRevenue: 0,
+        totalOrders: 0,
+        totalCustomers: 0,
+        avgOrderValue: 0,
+        dataSource: 'shopify_multistore_error',
+        lastUpdated: new Date().toISOString()
+      };
+    }
+  }
+
   async getStoreData(storeId) {
     try {
       const cacheKey = redisCacheService.generateCacheKey('shopify', 'store', storeId);

@@ -354,34 +354,69 @@ class FinancialAlgorithms {
 
   async getReceivablesData() {
     try {
-      const response = await fetch(`${this.apiEndpoints.xero}/aged-receivables`)
+      // Try to fetch from working capital API (real Sentia data)
+      const response = await fetch(`${this.apiEndpoints.api}/financial/working-capital`)
       const data = await response.json()
-      return data
+      
+      if (data.success && data.data && data.dataSource === 'sentia_database') {
+        return { 
+          totalAmount: data.data.accountsReceivable,
+          dataSource: 'sentia_database',
+          lastUpdated: data.timestamp
+        }
+      } else {
+        throw new Error('Sentia database data not available')
+      }
     } catch (error) {
-      return { totalAmount: 170300 }
+      // NO MOCK DATA FALLBACK - return proper error
+      throw new Error(`Receivables data unavailable: ${error.message}. Please ensure Sentia database is connected.`)
     }
   }
 
   async getPayablesData() {
     try {
-      const response = await fetch(`${this.apiEndpoints.xero}/aged-payables`)
+      // Try to fetch from working capital API (real Sentia data)
+      const response = await fetch(`${this.apiEndpoints.api}/financial/working-capital`)
       const data = await response.json()
-      return data
+      
+      if (data.success && data.data && data.dataSource === 'sentia_database') {
+        return { 
+          totalAmount: data.data.accountsPayable,
+          dataSource: 'sentia_database',
+          lastUpdated: data.timestamp
+        }
+      } else {
+        throw new Error('Sentia database data not available')
+      }
     } catch (error) {
-      return { totalAmount: 95000 }
+      // NO MOCK DATA FALLBACK - return proper error
+      throw new Error(`Payables data unavailable: ${error.message}. Please ensure Sentia database is connected.`)
     }
   }
 
   async getCashFlowData() {
-    return {
-      currentCash: 245000,
-      operating: 180000,
-      investing: -45000,
-      financing: -25000,
-      currentLiabilities: 95000,
-      totalDebt: 150000,
-      capitalExpenditures: 35000,
-      historical: [150000, 165000, 180000, 175000, 180000]
+    try {
+      // Try to fetch from working capital API (real Sentia data)
+      const response = await fetch(`${this.apiEndpoints.api}/financial/working-capital`)
+      const data = await response.json()
+      
+      if (data.success && data.data && data.dataSource === 'sentia_database') {
+        return {
+          currentCash: data.data.cash || 0,
+          currentAssets: data.data.currentAssets,
+          currentLiabilities: data.data.currentLiabilities,
+          workingCapital: data.data.workingCapital,
+          cashConversionCycle: data.data.cashConversionCycle,
+          dataSource: 'sentia_database',
+          lastUpdated: data.timestamp,
+          businessContext: data.businessContext
+        }
+      } else {
+        throw new Error('Sentia database data not available')
+      }
+    } catch (error) {
+      // NO MOCK DATA FALLBACK - return proper error
+      throw new Error(`Cash flow data unavailable: ${error.message}. Please ensure Sentia database is connected.`)
     }
   }
 

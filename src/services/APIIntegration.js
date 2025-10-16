@@ -128,21 +128,30 @@ class APIIntegration {
         this.getQualityMetrics()
       ])
 
+      // NO FALLBACK TO MOCK DATA - Return error states for failed data fetches
       const dashboardData = {
-        financial: financialData.status === 'fulfilled' ? financialData.value : this.getDefaultFinancialData(),
-        sales: salesData.status === 'fulfilled' ? salesData.value : this.getDefaultSalesData(),
-        inventory: inventoryData.status === 'fulfilled' ? inventoryData.value : this.getDefaultInventoryData(),
-        production: productionData.status === 'fulfilled' ? productionData.value : this.getDefaultProductionData(),
-        quality: qualityData.status === 'fulfilled' ? qualityData.value : this.getDefaultQualityData(),
+        financial: financialData.status === 'fulfilled' ? financialData.value : { error: 'Financial data unavailable - database connection required' },
+        sales: salesData.status === 'fulfilled' ? salesData.value : { error: 'Sales data unavailable - database connection required' },
+        inventory: inventoryData.status === 'fulfilled' ? inventoryData.value : { error: 'Inventory data unavailable - database connection required' },
+        production: productionData.status === 'fulfilled' ? productionData.value : { error: 'Production data unavailable - manufacturing system integration required' },
+        quality: qualityData.status === 'fulfilled' ? qualityData.value : { error: 'Quality data unavailable - quality control system integration required' },
         lastUpdated: new Date().toISOString(),
-        systemStatus: this.getSystemStatus()
+        systemStatus: this.getSystemStatus(),
+        dataIntegrity: 'real_data_only' // Indicates no mock data fallbacks
       }
 
       this.cache.set(cacheKey, { data: dashboardData, timestamp: Date.now() })
       return dashboardData
     } catch (error) {
       console.error('Failed to fetch dashboard data:', error)
-      return this.getDefaultDashboardData()
+      // NO MOCK DATA FALLBACK - Return error state
+      return {
+        error: 'Dashboard data unavailable',
+        message: error.message,
+        dataIntegrity: 'real_data_only',
+        systemStatus: 'error',
+        lastUpdated: new Date().toISOString()
+      }
     }
   }
 
@@ -208,7 +217,8 @@ class APIIntegration {
       }
     } catch (error) {
       console.error('Sales metrics error:', error)
-      return this.getDefaultSalesData()
+      // NO MOCK DATA FALLBACK - Throw error for proper handling
+      throw new Error(`Sales metrics unavailable: ${error.message}. Please ensure Sentia database and Shopify integrations are connected.`)
     }
   }
 
@@ -240,10 +250,35 @@ class APIIntegration {
       console.error(`Shopify ${region} API error:`, error)
     }
 
-    // Return sample data for development
-    return {
-      orders: this.generateSampleOrders(region),
-      revenue: region === 'UK' ? 98470 : 107970
+    // Try to get real data from Sentia database instead of mock data
+    try {
+      console.log(`🏢 Fetching real Sentia sales data for ${region} region from database`)
+      
+      // Fetch real historical sales data from our database
+      const response = await fetch(`${this.baseURLs.api}/sales/product-performance?region=${region}`)
+      
+      if (response.ok) {
+        const data = await response.json()
+        if (data.success && data.data) {
+          console.log(`✅ Retrieved real Sentia sales data for ${region}`)
+          return {
+            orders: data.data.orders || [],
+            revenue: data.data.revenue || 0,
+            dataSource: 'sentia_database',
+            region: region,
+            timestamp: new Date().toISOString()
+          }
+        }
+      }
+      
+      // If database also fails, throw proper error instead of mock data
+      throw new Error(`No sales data available for ${region} region`)
+      
+    } catch (dbError) {
+      console.error(`Failed to retrieve Sentia database sales data for ${region}:`, dbError)
+      
+      // NO MOCK DATA FALLBACK - throw proper error
+      throw new Error(`Sales data unavailable for ${region}: External API failed and database unavailable. Please ensure Shopify integration is configured or Sentia database is connected.`)
     }
   }
 
@@ -267,7 +302,8 @@ class APIIntegration {
       console.error('Unleashed API error:', error)
     }
 
-    return this.getDefaultInventoryData()
+    // NO MOCK DATA FALLBACK - Throw error for proper handling
+    throw new Error('Inventory metrics unavailable: External API failed and database unavailable. Please ensure Unleashed ERP integration is configured or Sentia database is connected.')
   }
 
   /**
@@ -374,85 +410,61 @@ class APIIntegration {
     }
   }
 
-  getDefaultSalesData() {
-    return {
-      totalRevenue: 206440,
-      ukRevenue: 98470,
-      usaRevenue: 107970,
-      totalOrders: 1250,
-      ukOrders: 580,
-      usaOrders: 670,
-      growth: 15.2
-    }
-  }
-
-  getDefaultInventoryData() {
-    return {
-      totalValue: 850000,
-      activeItems: 245,
-      lowStockItems: 12,
-      turnoverRatio: 3.33,
-      forecastAccuracy: 94.8
-    }
-  }
-
-  getDefaultProductionData() {
-    return {
-      unitsProduced: 245000,
-      efficiency: 87.2,
-      qualityScore: 96.5,
-      downtime: 2.3,
-      forecast: 285000
-    }
-  }
-
-  getDefaultQualityData() {
-    return {
-      overallScore: 96.5,
-      defectRate: 0.8,
-      customerSatisfaction: 4.7,
-      compliance: 98.2
-    }
-  }
-
-  getDefaultDashboardData() {
-    return {
-      financial: this.getDefaultFinancialData(),
-      sales: this.getDefaultSalesData(),
-      inventory: this.getDefaultInventoryData(),
-      production: this.getDefaultProductionData(),
-      quality: this.getDefaultQualityData(),
-      lastUpdated: new Date().toISOString(),
-      systemStatus: {
-        shopifyUK: { status: 'connected' },
-        shopifyUSA: { status: 'connected' },
-        xero: { status: 'token_refresh_needed' },
-        unleashed: { status: 'auth_required' },
-        mcp: { status: 'connected' }
+  async getDefaultSalesData() {
+    // NO MOCK DATA - Fetch real Sentia sales data or throw error
+    try {
+      const response = await fetch(`${this.baseURLs.api}/sales/product-performance`)
+      if (response.ok) {
+        const data = await response.json()
+        if (data.success) {
+          return {
+            ...data.data,
+            dataSource: 'sentia_database',
+            lastUpdated: new Date().toISOString()
+          }
+        }
       }
+      throw new Error('Sales data API returned error')
+    } catch (error) {
+      throw new Error(`Sales data unavailable: ${error.message}. Please ensure Sentia database is connected.`)
     }
   }
 
-  generateSampleOrders(region) {
-    const orders = []
-    const products = [
-      'GABA Bundle', 'GABA Red + Gold', 'Premium Spirit Collection',
-      'Craft Distillery Set', 'Limited Edition Reserve'
-    ]
-    
-    for (let i = 0; i < 10; i++) {
-      orders.push({
-        id: `#${5770 + i}`,
-        name: products[Math.floor(Math.random() * products.length)],
-        total_price: (Math.random() * 200 + 50).toFixed(2),
-        created_at: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString(),
-        financial_status: Math.random() > 0.1 ? 'paid' : 'pending',
-        fulfillment_status: Math.random() > 0.2 ? 'fulfilled' : 'pending'
-      })
+  async getDefaultInventoryData() {
+    // NO MOCK DATA - Fetch real Sentia inventory data or throw error
+    try {
+      const response = await fetch(`${this.baseURLs.api}/inventory/levels`)
+      if (response.ok) {
+        const data = await response.json()
+        if (data.success || data.totalValue !== undefined) {
+          return {
+            ...data,
+            dataSource: 'sentia_database',
+            lastUpdated: new Date().toISOString()
+          }
+        }
+      }
+      throw new Error('Inventory data API returned error')
+    } catch (error) {
+      throw new Error(`Inventory data unavailable: ${error.message}. Please ensure Sentia database is connected.`)
     }
-    
-    return orders
   }
+
+  async getDefaultProductionData() {
+    // NO MOCK DATA - Production data should come from manufacturing systems
+    throw new Error('Production data unavailable: Manufacturing system integration required. No fallback data provided.')
+  }
+
+  async getDefaultQualityData() {
+    // NO MOCK DATA - Quality data should come from quality control systems  
+    throw new Error('Quality data unavailable: Quality control system integration required. No fallback data provided.')
+  }
+
+  // getDefaultDashboardData method REMOVED - no mock data allowed
+  // Dashboard now returns proper error states when data is unavailable
+
+  // generateSampleOrders method REMOVED - no mock data allowed
+  // Use real historical_sales data from Sentia database instead
 
   calculateSalesGrowth(currentRevenue) {
     // Simulate growth calculation
@@ -460,13 +472,35 @@ class APIIntegration {
   }
 
   parseXeroFinancialData(data) {
-    // Parse Xero API response
-    return this.getDefaultFinancialData()
+    // Parse Xero API response - NO MOCK DATA FALLBACK
+    if (!data || !data.Accounts) {
+      throw new Error('Invalid Xero financial data format')
+    }
+    
+    // Parse real Xero data structure here
+    return {
+      totalAssets: data.totalAssets || 0,
+      totalLiabilities: data.totalLiabilities || 0,
+      workingCapital: (data.totalAssets || 0) - (data.totalLiabilities || 0),
+      dataSource: 'xero_api',
+      lastUpdated: new Date().toISOString()
+    }
   }
 
   parseUnleashedInventoryData(data) {
-    // Parse Unleashed API response
-    return this.getDefaultInventoryData()
+    // Parse Unleashed API response - NO MOCK DATA FALLBACK
+    if (!data || !data.Items) {
+      throw new Error('Invalid Unleashed inventory data format')
+    }
+    
+    // Parse real Unleashed data structure here
+    return {
+      totalValue: data.Items.reduce((sum, item) => sum + (item.QtyOnHand * item.UnitCost), 0),
+      totalItems: data.Items.length,
+      lowStockItems: data.Items.filter(item => item.QtyOnHand < item.ReorderPoint).length,
+      dataSource: 'unleashed_api',
+      lastUpdated: new Date().toISOString()
+    }
   }
 }
 

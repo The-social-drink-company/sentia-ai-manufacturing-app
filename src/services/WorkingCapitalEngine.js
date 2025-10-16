@@ -53,6 +53,9 @@ class WorkingCapitalEngine {
     // Channel-specific working capital impact
     const channelAnalysis = await this.analyzeChannelImpact()
     
+    // Manufacturing impact analysis with Unleashed data
+    const manufacturingAnalysis = await this.analyzeManufacturingImpact()
+    
     // Risk assessment
     const riskAssessment = this.assessWorkingCapitalRisk(baseData)
     
@@ -63,6 +66,7 @@ class WorkingCapitalEngine {
         efficiency: efficiencyMetrics,
         seasonal: seasonalAnalysis,
         channels: channelAnalysis,
+        manufacturing: manufacturingAnalysis,
         risk: riskAssessment
       }
     }
@@ -244,6 +248,162 @@ class WorkingCapitalEngine {
         workingCapitalReduction: this.calculateChannelOptimization(channelProfiles)
       }
     }
+  }
+
+  /**
+   * Analyze manufacturing impact on working capital with Unleashed ERP data
+   */
+  async analyzeManufacturingImpact() {
+    try {
+      // Fetch manufacturing data from Unleashed ERP
+      const [productionResponse, inventoryResponse, qualityResponse] = await Promise.allSettled([
+        fetch(`${this.apiBase}/unleashed/production`),
+        fetch(`${this.apiBase}/unleashed/inventory`),
+        fetch(`${this.apiBase}/unleashed/quality`)
+      ]);
+
+      const manufacturingData = {
+        production: null,
+        inventory: null,
+        quality: null,
+        workingCapitalImpact: {}
+      };
+
+      // Process production data
+      if (productionResponse.status === 'fulfilled' && productionResponse.value.ok) {
+        const productionData = await productionResponse.value.json();
+        if (productionData.success) {
+          manufacturingData.production = {
+            activeBatches: productionData.data.activeBatches || 0,
+            utilizationRate: productionData.data.utilizationRate || 0,
+            qualityScore: productionData.data.qualityScore || 95.0,
+            schedule: productionData.data.schedule || []
+          };
+        }
+      }
+
+      // Process inventory data
+      if (inventoryResponse.status === 'fulfilled' && inventoryResponse.value.ok) {
+        const inventoryData = await inventoryResponse.value.json();
+        if (inventoryData.success) {
+          manufacturingData.inventory = {
+            totalValue: inventoryData.data.totalValue || 0,
+            totalItems: inventoryData.data.totalItems || 0,
+            lowStockItems: inventoryData.data.lowStockItems || 0,
+            alerts: inventoryData.data.alerts || []
+          };
+        }
+      }
+
+      // Process quality data
+      if (qualityResponse.status === 'fulfilled' && qualityResponse.value.ok) {
+        const qualityData = await qualityResponse.value.json();
+        if (qualityData.success) {
+          manufacturingData.quality = {
+            qualityScore: qualityData.data.qualityScore || 95.0,
+            completedToday: qualityData.data.completedToday || 0,
+            alerts: qualityData.data.alerts || []
+          };
+        }
+      }
+
+      // Calculate working capital impact from manufacturing operations
+      manufacturingData.workingCapitalImpact = this.calculateManufacturingWorkingCapitalImpact(manufacturingData);
+
+      return manufacturingData;
+
+    } catch (error) {
+      return {
+        error: 'Manufacturing analysis unavailable',
+        message: error.message,
+        production: null,
+        inventory: null,
+        quality: null,
+        workingCapitalImpact: {
+          productionEfficiencyImpact: 0,
+          inventoryOptimizationPotential: 0,
+          qualityRiskAdjustment: 0,
+          recommendations: ['Manufacturing data integration pending']
+        }
+      };
+    }
+  }
+
+  /**
+   * Calculate working capital impact from manufacturing operations
+   */
+  calculateManufacturingWorkingCapitalImpact(manufacturingData) {
+    const impact = {
+      productionEfficiencyImpact: 0,
+      inventoryOptimizationPotential: 0,
+      qualityRiskAdjustment: 0,
+      recommendations: []
+    };
+
+    // Production efficiency impact on working capital
+    if (manufacturingData.production) {
+      const utilizationRate = manufacturingData.production.utilizationRate;
+      
+      if (utilizationRate > 90) {
+        impact.productionEfficiencyImpact = 5; // High efficiency reduces working capital needs
+        impact.recommendations.push('Excellent production utilization maintains lean inventory');
+      } else if (utilizationRate < 70) {
+        impact.productionEfficiencyImpact = -8; // Low efficiency increases working capital needs
+        impact.recommendations.push('Low production utilization may require increased inventory buffer');
+      } else {
+        impact.productionEfficiencyImpact = 0;
+        impact.recommendations.push('Production utilization within normal range');
+      }
+    }
+
+    // Inventory optimization potential
+    if (manufacturingData.inventory) {
+      const lowStockRatio = manufacturingData.inventory.totalItems > 0 ? 
+        manufacturingData.inventory.lowStockItems / manufacturingData.inventory.totalItems : 0;
+      
+      if (lowStockRatio > 0.2) {
+        impact.inventoryOptimizationPotential = -15; // High low-stock ratio increases working capital risk
+        impact.recommendations.push('High number of low-stock items increases working capital risk');
+      } else if (lowStockRatio < 0.05) {
+        impact.inventoryOptimizationPotential = 10; // Very low stock-out risk, potential for optimization
+        impact.recommendations.push('Low stock-out risk provides opportunity to optimize inventory levels');
+      } else {
+        impact.inventoryOptimizationPotential = 0;
+        impact.recommendations.push('Inventory levels balanced for current demand');
+      }
+    }
+
+    // Quality score impact on working capital
+    if (manufacturingData.quality) {
+      const qualityScore = manufacturingData.quality.qualityScore;
+      
+      if (qualityScore > 98) {
+        impact.qualityRiskAdjustment = 3; // Excellent quality reduces rework and waste
+        impact.recommendations.push('Excellent quality scores minimize working capital waste');
+      } else if (qualityScore < 90) {
+        impact.qualityRiskAdjustment = -12; // Poor quality increases costs and working capital needs
+        impact.recommendations.push('Quality issues may increase working capital requirements due to rework/waste');
+      } else {
+        impact.qualityRiskAdjustment = 0;
+        impact.recommendations.push('Quality performance within acceptable range');
+      }
+    }
+
+    // Calculate overall manufacturing impact
+    impact.overallImpact = impact.productionEfficiencyImpact + 
+                           impact.inventoryOptimizationPotential + 
+                           impact.qualityRiskAdjustment;
+
+    // Add strategic recommendations based on manufacturing data
+    if (manufacturingData.production?.activeBatches > 3) {
+      impact.recommendations.push('High production volume may benefit from enhanced supplier payment terms');
+    }
+
+    if (manufacturingData.inventory?.alerts?.length > 0) {
+      impact.recommendations.push('Inventory alerts require attention to prevent working capital disruption');
+    }
+
+    return impact;
   }
 
   /**

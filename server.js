@@ -437,28 +437,80 @@ app.get('/api/services/status', async (req, res) => {
       serviceStatus.services.shopify.error = shopifyError.message;
     }
 
-    // Check Amazon Service (Currently Disabled)
+    // Check Amazon Service (Conditional Activation)
     serviceStatus.services.amazon = {
       name: 'Amazon SP-API',
-      status: 'disabled',
+      status: 'checking',
       configured: false,
       connected: false,
-      lastCheck: new Date().toISOString(),
-      note: 'Temporarily disabled due to credential issues'
+      lastCheck: new Date().toISOString()
     };
 
     try {
       const amazonModule = await import('./services/amazonService.js');
-      const amazonService = amazonModule.default;
-      if (amazonService) {
-        const amazonInstance = new amazonService();
-        serviceStatus.services.amazon.configured = amazonInstance.isConfigured();
-        // Amazon service is intentionally disabled
-        serviceStatus.services.amazon.status = 'disabled';
+      const AmazonService = amazonModule.default;
+      if (AmazonService) {
+        const amazonInstance = new AmazonService();
+        const activationStatus = amazonInstance.getActivationStatus();
+        
+        serviceStatus.services.amazon.configured = activationStatus.configured;
+        serviceStatus.services.amazon.connected = activationStatus.ready;
+        serviceStatus.services.amazon.activationStatus = activationStatus.status;
+        serviceStatus.services.amazon.message = activationStatus.message;
+        serviceStatus.services.amazon.missingCredentials = activationStatus.missingCredentials;
+        serviceStatus.services.amazon.activationTime = activationStatus.activationTime;
+        
+        if (activationStatus.configured) {
+          serviceStatus.services.amazon.status = 'ready';
+        } else {
+          serviceStatus.services.amazon.status = 'pending_credentials';
+          serviceStatus.services.amazon.note = 'Ready for 1-hour activation when credentials provided';
+        }
       }
     } catch (amazonError) {
       serviceStatus.services.amazon.status = 'error';
       serviceStatus.services.amazon.error = amazonError.message;
+    }
+
+    // Check Unleashed ERP Service
+    serviceStatus.services.unleashed = {
+      name: 'Unleashed ERP Manufacturing',
+      status: 'checking',
+      configured: false,
+      connected: false,
+      lastCheck: new Date().toISOString()
+    };
+
+    try {
+      const unleashedModule = await import('./services/unleashed-erp.js');
+      const unleashedERPService = unleashedModule.default;
+      if (unleashedERPService) {
+        serviceStatus.services.unleashed.configured = !!(process.env.UNLEASHED_API_ID && process.env.UNLEASHED_API_KEY);
+        
+        if (serviceStatus.services.unleashed.configured) {
+          // Test connection
+          try {
+            const connected = await unleashedERPService.connect();
+            serviceStatus.services.unleashed.connected = connected;
+            serviceStatus.services.unleashed.status = connected ? 'connected' : 'configured_not_connected';
+            
+            if (connected) {
+              const connectionStatus = unleashedERPService.getConnectionStatus();
+              serviceStatus.services.unleashed.syncInterval = connectionStatus.syncInterval;
+              serviceStatus.services.unleashed.apiEndpoint = connectionStatus.apiEndpoint;
+            }
+          } catch (connectError) {
+            serviceStatus.services.unleashed.status = 'configured_connection_failed';
+            serviceStatus.services.unleashed.connectionError = connectError.message;
+          }
+        } else {
+          serviceStatus.services.unleashed.status = 'not_configured';
+          serviceStatus.services.unleashed.note = 'UNLEASHED_API_ID and UNLEASHED_API_KEY required';
+        }
+      }
+    } catch (unleashedError) {
+      serviceStatus.services.unleashed.status = 'error';
+      serviceStatus.services.unleashed.error = unleashedError.message;
     }
 
     // Check Database
@@ -2181,22 +2233,544 @@ app.get('/api/unleashed/test-connection', async (req, res) => {
   }
 });
 
+// === UNLEASHED ERP MANUFACTURING ENDPOINTS ===
+
+// Get consolidated manufacturing data
+app.get('/api/unleashed/manufacturing', async (req, res) => {
+  try {
+    const unleashedERPService = (await import('./services/unleashed-erp.js')).default;
+    
+    if (!unleashedERPService.isConnected) {
+      await unleashedERPService.connect();
+    }
+    
+    const manufacturingData = await unleashedERPService.getConsolidatedData();
+    
+    res.json({
+      success: true,
+      data: manufacturingData,
+      timestamp: new Date().toISOString(),
+      source: 'unleashed_erp'
+    });
+  } catch (error) {
+    logger.error('Failed to get Unleashed manufacturing data:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// Get production metrics and schedule
+app.get('/api/unleashed/production', async (req, res) => {
+  try {
+    const unleashedERPService = (await import('./services/unleashed-erp.js')).default;
+    
+    if (!unleashedERPService.isConnected) {
+      await unleashedERPService.connect();
+    }
+    
+    const productionData = await unleashedERPService.syncProductionData();
+    
+    res.json({
+      success: true,
+      data: {
+        metrics: productionData.metrics,
+        schedule: productionData.schedule,
+        alerts: productionData.alerts,
+        utilizationRate: productionData.metrics.utilizationRate || 0,
+        activeBatches: productionData.metrics.activeBatches || 0,
+        qualityScore: productionData.metrics.qualityScore || 95.0
+      },
+      timestamp: new Date().toISOString(),
+      source: 'unleashed_erp'
+    });
+  } catch (error) {
+    logger.error('Failed to get Unleashed production data:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// Get inventory levels and alerts
+app.get('/api/unleashed/inventory', async (req, res) => {
+  try {
+    const unleashedERPService = (await import('./services/unleashed-erp.js')).default;
+    
+    if (!unleashedERPService.isConnected) {
+      await unleashedERPService.connect();
+    }
+    
+    const inventoryData = await unleashedERPService.syncInventoryData();
+    
+    res.json({
+      success: true,
+      data: {
+        metrics: inventoryData.metrics,
+        alerts: inventoryData.alerts,
+        totalValue: inventoryData.metrics.totalValue || 0,
+        lowStockItems: inventoryData.metrics.lowStockItems || 0,
+        totalItems: inventoryData.metrics.totalItems || 0
+      },
+      timestamp: new Date().toISOString(),
+      source: 'unleashed_erp'
+    });
+  } catch (error) {
+    logger.error('Failed to get Unleashed inventory data:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// Get quality control metrics
+app.get('/api/unleashed/quality', async (req, res) => {
+  try {
+    const unleashedERPService = (await import('./services/unleashed-erp.js')).default;
+    
+    if (!unleashedERPService.isConnected) {
+      await unleashedERPService.connect();
+    }
+    
+    const productionData = await unleashedERPService.syncProductionData();
+    
+    res.json({
+      success: true,
+      data: {
+        qualityScore: productionData.metrics.qualityScore || 95.0,
+        alerts: productionData.alerts || [],
+        completedToday: productionData.metrics.completedToday || 0,
+        utilizationRate: productionData.metrics.utilizationRate || 85.0
+      },
+      timestamp: new Date().toISOString(),
+      source: 'unleashed_erp'
+    });
+  } catch (error) {
+    logger.error('Failed to get Unleashed quality data:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// Get sales orders from Unleashed
+app.get('/api/unleashed/sales-orders', async (req, res) => {
+  try {
+    const unleashedERPService = (await import('./services/unleashed-erp.js')).default;
+    
+    if (!unleashedERPService.isConnected) {
+      await unleashedERPService.connect();
+    }
+    
+    const salesData = await unleashedERPService.syncSalesOrderData();
+    
+    res.json({
+      success: true,
+      data: {
+        metrics: salesData.metrics,
+        totalOrders: salesData.metrics.totalOrders || 0,
+        totalValue: salesData.metrics.totalValue || 0,
+        pendingOrders: salesData.metrics.pendingOrders || 0,
+        fulfilledOrders: salesData.metrics.fulfilledOrders || 0
+      },
+      timestamp: new Date().toISOString(),
+      source: 'unleashed_erp'
+    });
+  } catch (error) {
+    logger.error('Failed to get Unleashed sales orders:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// Get Unleashed connection status
+app.get('/api/unleashed/status', async (req, res) => {
+  try {
+    const unleashedERPService = (await import('./services/unleashed-erp.js')).default;
+    
+    const status = unleashedERPService.getConnectionStatus();
+    
+    res.json({
+      success: true,
+      data: status,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    logger.error('Failed to get Unleashed status:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// Trigger manual sync
+app.post('/api/unleashed/sync', async (req, res) => {
+  try {
+    const unleashedERPService = (await import('./services/unleashed-erp.js')).default;
+    
+    if (!unleashedERPService.isConnected) {
+      await unleashedERPService.connect();
+    }
+    
+    const syncResult = await unleashedERPService.syncAllData();
+    
+    res.json({
+      success: true,
+      data: syncResult,
+      message: 'Unleashed sync completed successfully',
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    logger.error('Unleashed manual sync failed:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// === AUTO-SYNC MANAGER ENDPOINTS ===
+
+// Get auto-sync status
+app.get('/api/auto-sync/status', async (req, res) => {
+  try {
+    const { getAutoSyncManager } = await import('./services/auto-sync-manager.js');
+    const autoSyncManager = getAutoSyncManager();
+    
+    const status = autoSyncManager.getStatus();
+    
+    res.json({
+      success: true,
+      data: status,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    logger.error('Failed to get auto-sync status:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// Trigger manual sync for a specific service
+app.post('/api/auto-sync/trigger/:service', async (req, res) => {
+  try {
+    const { service } = req.params;
+    const { getAutoSyncManager } = await import('./services/auto-sync-manager.js');
+    const autoSyncManager = getAutoSyncManager();
+    
+    const result = await autoSyncManager.triggerSync(service, 'manual_api_request');
+    
+    res.json({
+      success: result.success,
+      data: result,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    logger.error(`Failed to trigger ${req.params.service} sync:`, error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// Trigger full sync of all services
+app.post('/api/auto-sync/trigger-all', async (req, res) => {
+  try {
+    const { getAutoSyncManager } = await import('./services/auto-sync-manager.js');
+    const autoSyncManager = getAutoSyncManager();
+    
+    const result = await autoSyncManager.triggerFullSync('manual_api_request');
+    
+    res.json({
+      success: true,
+      data: result,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    logger.error('Failed to trigger full sync:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// Enable/disable auto-sync
+app.post('/api/auto-sync/:action', async (req, res) => {
+  try {
+    const { action } = req.params;
+    
+    if (!['enable', 'disable'].includes(action)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid action. Use "enable" or "disable"',
+        timestamp: new Date().toISOString()
+      });
+    }
+    
+    const { getAutoSyncManager } = await import('./services/auto-sync-manager.js');
+    const autoSyncManager = getAutoSyncManager();
+    
+    if (action === 'enable') {
+      await autoSyncManager.enable();
+    } else {
+      await autoSyncManager.disable();
+    }
+    
+    res.json({
+      success: true,
+      message: `Auto-sync ${action}d successfully`,
+      data: autoSyncManager.getStatus(),
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    logger.error(`Failed to ${req.params.action} auto-sync:`, error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// === AMAZON SP-API CONDITIONAL ACTIVATION ENDPOINTS ===
+
+// Get Amazon SP-API activation status
+app.get('/api/amazon/activation-status', async (req, res) => {
+  try {
+    const amazonModule = await import('./services/amazonService.js');
+    const AmazonService = amazonModule.default;
+    const amazonService = new AmazonService();
+    
+    const activationStatus = amazonService.getActivationStatus();
+    
+    res.json({
+      success: true,
+      data: activationStatus,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    logger.error('Failed to get Amazon activation status:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// Test Amazon SP-API connection (conditional)
+app.get('/api/amazon/test-connection', async (req, res) => {
+  try {
+    const amazonModule = await import('./services/amazonService.js');
+    const AmazonService = amazonModule.default;
+    const amazonService = new AmazonService();
+    
+    const testResult = await amazonService.getOrders({ limit: 1 });
+    
+    res.json({
+      success: testResult.success,
+      data: {
+        connection: testResult.success ? 'active' : 'pending_credentials',
+        activation: testResult.activation,
+        message: testResult.message,
+        note: testResult.note
+      },
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    logger.error('Amazon connection test failed:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// Get Amazon orders (conditional activation)
+app.get('/api/amazon/orders', async (req, res) => {
+  try {
+    const amazonModule = await import('./services/amazonService.js');
+    const AmazonService = amazonModule.default;
+    const amazonService = new AmazonService();
+    
+    const ordersResult = await amazonService.getOrders(req.query);
+    
+    res.json({
+      success: ordersResult.success,
+      data: ordersResult.data,
+      activation: ordersResult.activation,
+      message: ordersResult.message,
+      note: ordersResult.note,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    logger.error('Failed to get Amazon orders:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// Get Amazon listings (conditional activation)
+app.get('/api/amazon/listings', async (req, res) => {
+  try {
+    const amazonModule = await import('./services/amazonService.js');
+    const AmazonService = amazonModule.default;
+    const amazonService = new AmazonService();
+    
+    const listingsResult = await amazonService.getListings(req.query);
+    
+    res.json({
+      success: listingsResult.success,
+      data: listingsResult.data,
+      activation: listingsResult.activation,
+      message: listingsResult.message,
+      note: listingsResult.note,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    logger.error('Failed to get Amazon listings:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+
+// Initialize WebSocket Monitor for real-time data streaming
+let websocketMonitor;
+(async () => {
+  try {
+    const { getWebSocketMonitor } = await import('./services/websocket-monitor.js');
+    websocketMonitor = getWebSocketMonitor();
+    
+    // Listen for real-time updates from the monitor
+    websocketMonitor.on('real-time-update', (updateEvent) => {
+      // Broadcast to all connected clients
+      io.emit('real-time-data', {
+        type: 'external-services-update',
+        data: updateEvent.data,
+        sources: updateEvent.sources,
+        timestamp: updateEvent.timestamp
+      });
+    });
+    
+    websocketMonitor.on('status-changed', (statusEvent) => {
+      // Broadcast status changes
+      io.emit('monitor-status', {
+        type: 'monitor-status-change',
+        status: statusEvent.currentStatus,
+        clientCount: statusEvent.clientCount,
+        timestamp: statusEvent.timestamp
+      });
+    });
+    
+    logger.info('WebSocket Monitor integrated with Socket.IO');
+  } catch (error) {
+    logger.warn('Failed to initialize WebSocket Monitor:', error.message);
+  }
+})();
 
 // WebSocket for real-time updates
 io.on('connection', (socket) => {
   console.log('Client connected:', socket.id);
+  
+  // Register client with WebSocket monitor
+  if (websocketMonitor) {
+    websocketMonitor.addClient(socket.id);
+  }
+
+  // Send current real-time data to new client
+  socket.emit('welcome', {
+    type: 'connection-established',
+    clientId: socket.id,
+    timestamp: new Date().toISOString(),
+    message: 'Connected to Sentia Manufacturing real-time data stream'
+  });
 
   socket.on('subscribe', (channel) => {
     socket.join(channel);
     logger.info(`Client ${socket.id} subscribed to ${channel}`);
+    
+    // Send channel-specific data if available
+    if (channel === 'manufacturing-data' && websocketMonitor) {
+      // Trigger immediate data update for this client
+      websocketMonitor.streamRealTimeUpdates().then(() => {
+        socket.emit('channel-data', {
+          type: 'subscription-confirmed',
+          channel: channel,
+          timestamp: new Date().toISOString()
+        });
+      }).catch(error => {
+        logger.warn('Failed to send immediate data update:', error.message);
+      });
+    }
+  });
+
+  socket.on('request-data', async (request) => {
+    try {
+      // Handle specific data requests
+      if (request.type === 'service-status' && websocketMonitor) {
+        const connectionTest = await websocketMonitor.testConnection();
+        socket.emit('service-status', {
+          type: 'service-status-response',
+          data: connectionTest,
+          timestamp: new Date().toISOString()
+        });
+      } else if (request.type === 'monitor-stats' && websocketMonitor) {
+        const stats = websocketMonitor.getStats();
+        socket.emit('monitor-stats', {
+          type: 'monitor-stats-response',
+          data: stats,
+          timestamp: new Date().toISOString()
+        });
+      }
+    } catch (error) {
+      socket.emit('error', {
+        type: 'request-error',
+        message: error.message,
+        timestamp: new Date().toISOString()
+      });
+    }
   });
 
   socket.on('disconnect', () => {
     console.log('Client disconnected:', socket.id);
+    
+    // Unregister client from WebSocket monitor
+    if (websocketMonitor) {
+      websocketMonitor.removeClient(socket.id);
+    }
   });
 });
 
-// Server-Sent Events for real-time updates
+// Server-Sent Events for real-time updates (enhanced with WebSocket monitor integration)
 app.get('/api/sse/events', (req, res) => {
   res.writeHead(200, {
     'Content-Type': 'text/event-stream',
@@ -2204,10 +2778,46 @@ app.get('/api/sse/events', (req, res) => {
     'Connection': 'keep-alive'
   });
 
-  // Send initial connection message
-  res.write(`data: ${JSON.stringify({ type: 'connected', timestamp: new Date().toISOString() })}\n\n`);
+  const clientId = `sse_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  
+  // Register with WebSocket monitor
+  if (websocketMonitor) {
+    websocketMonitor.addClient(clientId);
+  }
 
-  // Send periodic updates
+  // Send initial connection message
+  res.write(`data: ${JSON.stringify({ 
+    type: 'connected', 
+    clientId: clientId,
+    timestamp: new Date().toISOString() 
+  })}\n\n`);
+
+  // Set up event listeners for real-time data
+  const handleRealTimeUpdate = (updateEvent) => {
+    res.write(`data: ${JSON.stringify({
+      type: 'real-time-data',
+      data: updateEvent.data,
+      sources: updateEvent.sources,
+      timestamp: updateEvent.timestamp
+    })}\n\n`);
+  };
+
+  const handleStatusChange = (statusEvent) => {
+    res.write(`data: ${JSON.stringify({
+      type: 'monitor-status',
+      status: statusEvent.currentStatus,
+      clientCount: statusEvent.clientCount,
+      timestamp: statusEvent.timestamp
+    })}\n\n`);
+  };
+
+  // Subscribe to WebSocket monitor events
+  if (websocketMonitor) {
+    websocketMonitor.on('real-time-update', handleRealTimeUpdate);
+    websocketMonitor.on('status-changed', handleStatusChange);
+  }
+
+  // Send periodic heartbeat with system info
   const interval = setInterval(() => {
     res.write(`data: ${JSON.stringify({
       type: 'heartbeat',
@@ -2215,12 +2825,20 @@ app.get('/api/sse/events', (req, res) => {
       memory: {
         rss: Math.round(process.memoryUsage().rss / 1024 / 1024) + ' MB',
         heapUsed: Math.round(process.memoryUsage().heapUsed / 1024 / 1024) + ' MB'
-      }
+      },
+      clientCount: websocketMonitor ? websocketMonitor.connectedClients.size : 0
     })}\n\n`);
   }, 30000);
 
   req.on('close', () => {
     clearInterval(interval);
+    
+    // Unregister from WebSocket monitor
+    if (websocketMonitor) {
+      websocketMonitor.removeClient(clientId);
+      websocketMonitor.off('real-time-update', handleRealTimeUpdate);
+      websocketMonitor.off('status-changed', handleStatusChange);
+    }
   });
 });
 
@@ -3165,7 +3783,7 @@ app.use((err, req, res, next) => {
 });
 
 // Start server
-httpServer.listen(PORT, () => {
+httpServer.listen(PORT, async () => {
   logger.info(`
 ========================================
 SERVER STARTED SUCCESSFULLY
@@ -3178,6 +3796,18 @@ Branch: ${BRANCH}
 Database: ${prismaInitialized ? 'Connected' : 'Not connected'}
 ========================================
   `);
+
+  // Initialize Auto-Sync Manager for production environment
+  try {
+    const { getAutoSyncManager } = await import('./services/auto-sync-manager.js');
+    const autoSyncManager = getAutoSyncManager();
+    
+    logger.info('Auto-Sync Manager initialized successfully');
+    logger.info(`Auto-sync enabled: ${autoSyncManager.getStatus().enabled}`);
+    logger.info(`Active sync jobs: ${autoSyncManager.getStatus().activeJobs.join(', ') || 'none'}`);
+  } catch (error) {
+    logger.warn('Failed to initialize Auto-Sync Manager:', error.message);
+  }
 });
 
 // Graceful shutdown

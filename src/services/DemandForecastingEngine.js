@@ -9,22 +9,24 @@ class DemandForecastingEngine {
   constructor() {
     this.apiBase = import.meta.env.VITE_API_BASE_URL || '/api'
     
-    // Sentia business model constants
-    this.products = {
-      'GABA-RED': { basedemand: 100, seasonality: 1.2, channels: ['amazon', 'shopify'] },
-      'GABA-BLACK': { basedemand: 85, seasonality: 1.1, channels: ['amazon', 'shopify'] },
-      'GABA-GOLD': { basedemand: 120, seasonality: 1.4, channels: ['amazon', 'shopify'] }
-    }
-    
+    // Documented business model constants (from business requirements)
     this.regions = {
-      'UK': { currency: 'GBP', price: 29.99, marketSize: 1.0, growth: 0.12 },
-      'EU': { currency: 'EUR', price: 34.99, marketSize: 1.5, growth: 0.15 },
-      'USA': { currency: 'USD', price: 39.99, marketSize: 2.0, growth: 0.18 }
+      'UK': { currency: 'GBP', price: 29.99 },
+      'EU': { currency: 'EUR', price: 34.99 },
+      'USA': { currency: 'USD', price: 39.99 }
     }
     
     this.channels = {
-      'amazon': { commission: 0.15, conversionRate: 0.08, marketShare: 0.6 },
-      'shopify': { commission: 0.029, conversionRate: 0.12, marketShare: 0.4 }
+      'amazon': { commission: 0.15 },  // Documented: 15% Amazon commission
+      'shopify': { commission: 0.029 } // Documented: 2.9% Shopify transaction fees
+    }
+    
+    // Cache for learned patterns (reset daily)
+    this.learnedPatterns = {
+      seasonal: null,
+      channel: null,
+      regional: null,
+      lastUpdated: null
     }
   }
 
@@ -105,73 +107,69 @@ class DemandForecastingEngine {
   }
 
   /**
-   * Generate seasonal forecast with Q4 boost analysis
+   * Generate seasonal forecast using learned patterns from historical data
    */
   async generateSeasonalForecast(historicalData) {
-    // Seasonal multipliers based on supplement industry patterns
-    const seasonalFactors = {
-      'Q1': 0.85,  // Post-holiday decline
-      'Q2': 1.0,   // Baseline spring/summer
-      'Q3': 1.1,   // Pre-holiday preparation
-      'Q4': 1.35   // Holiday season boost (+35%)
-    }
+    // Learn seasonal patterns from historical data
+    const learnedSeasonality = await this.learnSeasonalPatterns(historicalData)
     
     const baseForecast = await this.generateStatisticalForecast(historicalData)
     
-    // Apply seasonal adjustments
+    // Apply learned seasonal adjustments
     const seasonalForecast = baseForecast.data.map((month, index) => {
-      const quarter = Math.floor((index % 12) / 3) + 1
-      const seasonalMultiplier = seasonalFactors[`Q${quarter}`]
+      const monthIndex = index % 12
+      const quarter = Math.floor(monthIndex / 3) + 1
+      const seasonalMultiplier = learnedSeasonality.monthlyFactors[monthIndex] || 1.0
       
       return {
         ...month,
         demand: Math.round(month.demand * seasonalMultiplier),
         seasonalAdjustment: seasonalMultiplier,
-        quarter: `Q${quarter}`
+        quarter: `Q${quarter}`,
+        monthName: new Date(2025, monthIndex, 1).toLocaleString('default', { month: 'long' }),
+        historicalAverage: learnedSeasonality.monthlyAverages[monthIndex] || 0
       }
     })
     
     return {
       type: 'seasonal',
-      method: 'quarterly_adjustment',
+      method: 'learned_from_historical_data',
       data: seasonalForecast,
-      seasonalFactors,
-      peakSeason: 'Q4',
-      peakLift: 0.35,
-      confidence: 0.82
+      seasonalFactors: learnedSeasonality.quarterlyFactors,
+      monthlyFactors: learnedSeasonality.monthlyFactors,
+      peakSeason: learnedSeasonality.peakQuarter,
+      peakMonth: learnedSeasonality.peakMonth,
+      dataPoints: learnedSeasonality.dataPoints,
+      confidence: learnedSeasonality.confidence
     }
   }
 
   /**
-   * Generate channel-specific demand patterns
+   * Generate channel-specific demand patterns using learned data
    */
   async generateChannelForecast(historicalData) {
+    const learnedChannelPatterns = await this.learnChannelPatterns(historicalData)
     const channelForecasts = {}
     
     Object.entries(this.channels).forEach(([channel, channelData]) => {
-      const baseDemand = 100 // Base monthly demand
-      const channelMultiplier = channelData.marketShare
-      const conversionImpact = channelData.conversionRate / 0.1 // Normalized
+      const channelPattern = learnedChannelPatterns[channel] || {
+        monthlyFactors: Array(12).fill(1.0),
+        averageDemand: 100,
+        seasonalPeaks: []
+      }
       
-      // Amazon vs Shopify patterns
       const monthlyForecast = Array.from({ length: 12 }, (_, month) => {
-        let demand = baseDemand * channelMultiplier * conversionImpact
-        
-        // Channel-specific seasonality
-        if (channel === 'amazon') {
-          // Amazon peaks during holiday shopping (Nov-Dec)
-          demand *= month >= 10 ? 1.5 : 1.0
-        } else {
-          // Shopify more consistent, slight summer boost
-          demand *= month >= 5 && month <= 7 ? 1.2 : 1.0
-        }
+        const seasonalMultiplier = channelPattern.monthlyFactors[month] || 1.0
+        const demand = Math.round(channelPattern.averageDemand * seasonalMultiplier)
         
         return {
           month: month + 1,
           channel,
-          demand: Math.round(demand),
+          demand,
           commission: channelData.commission,
-          netRevenue: Math.round(demand * (1 - channelData.commission) * 30) // Avg £30 per unit
+          netRevenue: Math.round(demand * (1 - channelData.commission) * channelPattern.averagePrice || 30),
+          seasonalFactor: seasonalMultiplier,
+          historicalAverage: channelPattern.monthlyAverages?.[month] || 0
         }
       })
       
@@ -180,56 +178,48 @@ class DemandForecastingEngine {
         totalDemand: monthlyForecast.reduce((sum, m) => sum + m.demand, 0),
         avgMonthlyDemand: Math.round(monthlyForecast.reduce((sum, m) => sum + m.demand, 0) / 12),
         peakMonth: monthlyForecast.reduce((max, m) => m.demand > max.demand ? m : max),
-        characteristics: this.getChannelCharacteristics(channel)
+        seasonalPeaks: channelPattern.seasonalPeaks,
+        dataPoints: channelPattern.dataPoints || 0,
+        confidence: channelPattern.confidence || 0.5
       }
     })
     
     return {
       type: 'channel_specific',
-      method: 'channel_behavior_analysis',
+      method: 'learned_channel_patterns',
       data: channelForecasts,
       insights: this.generateChannelInsights(channelForecasts),
-      confidence: 0.75
+      confidence: this.calculateAverageConfidence(channelForecasts)
     }
   }
 
   /**
-   * Generate regional demand variations
+   * Generate regional demand variations using learned patterns
    */
   async generateRegionalForecast(historicalData) {
+    const learnedRegionalPatterns = await this.learnRegionalPatterns(historicalData)
     const regionalForecasts = {}
     
     Object.entries(this.regions).forEach(([region, regionData]) => {
-      const baseDemand = 100
-      const priceElasticity = this.calculatePriceElasticity(regionData.price)
-      const marketSizeMultiplier = regionData.marketSize
-      const growthRate = regionData.growth
+      const regionPattern = learnedRegionalPatterns[region] || {
+        monthlyFactors: Array(12).fill(1.0),
+        averageDemand: 100,
+        seasonalPeaks: [],
+        confidence: 0.5
+      }
       
       const monthlyForecast = Array.from({ length: 12 }, (_, month) => {
-        let demand = baseDemand * marketSizeMultiplier * priceElasticity
-        
-        // Apply growth rate
-        demand *= (1 + (growthRate * month / 12))
-        
-        // Regional seasonality patterns
-        if (region === 'UK') {
-          // UK peaks in autumn/winter (vitamin season)
-          demand *= month >= 8 && month <= 11 ? 1.3 : 1.0
-        } else if (region === 'USA') {
-          // USA peaks around New Year resolutions and summer
-          demand *= (month === 0 || month === 1 || month >= 5 && month <= 7) ? 1.2 : 1.0
-        } else if (region === 'EU') {
-          // EU steady growth with slight summer dip
-          demand *= month >= 6 && month <= 8 ? 0.9 : 1.1
-        }
+        const seasonalMultiplier = regionPattern.monthlyFactors[month] || 1.0
+        const demand = Math.round(regionPattern.averageDemand * seasonalMultiplier)
         
         return {
           month: month + 1,
           region,
-          demand: Math.round(demand),
+          demand,
           currency: regionData.currency,
           revenue: Math.round(demand * regionData.price),
-          marketGrowth: growthRate
+          seasonalFactor: seasonalMultiplier,
+          historicalAverage: regionPattern.monthlyAverages?.[month] || 0
         }
       })
       
@@ -238,17 +228,17 @@ class DemandForecastingEngine {
         totalDemand: monthlyForecast.reduce((sum, m) => sum + m.demand, 0),
         totalRevenue: monthlyForecast.reduce((sum, m) => sum + m.revenue, 0),
         avgPrice: regionData.price,
-        growthRate: regionData.growth,
-        marketSize: regionData.marketSize
+        seasonalPeaks: regionPattern.seasonalPeaks,
+        dataPoints: regionPattern.dataPoints || 0,
+        confidence: regionPattern.confidence
       }
     })
     
     return {
       type: 'regional',
-      method: 'regional_elasticity_analysis',
+      method: 'learned_regional_patterns',
       data: regionalForecasts,
-      priceComparison: this.generatePriceImpactAnalysis(),
-      confidence: 0.80
+      confidence: this.calculateAverageConfidence(regionalForecasts)
     }
   }
 
@@ -514,6 +504,321 @@ class DemandForecastingEngine {
         Object.entries(forecasts).map(([key, forecast]) => [key, forecast.confidence])
       )
     }
+  }
+
+  /**
+   * Learn seasonal patterns from historical sales data
+   */
+  async learnSeasonalPatterns(historicalData) {
+    // Check cache first
+    if (this.learnedPatterns.seasonal && this.isCacheValid()) {
+      return this.learnedPatterns.seasonal
+    }
+
+    let patterns = {
+      monthlyFactors: Array(12).fill(1.0),
+      quarterlyFactors: { Q1: 1.0, Q2: 1.0, Q3: 1.0, Q4: 1.0 },
+      monthlyAverages: Array(12).fill(0),
+      peakQuarter: 'Q4',
+      peakMonth: 'December',
+      dataPoints: 0,
+      confidence: 0.5
+    }
+
+    try {
+      if (historicalData?.success && historicalData.data?.products) {
+        const salesData = this.extractMonthlySalesData(historicalData.data.products)
+        
+        if (salesData.length >= 12) {
+          // Calculate monthly averages
+          const monthlyTotals = Array(12).fill(0)
+          const monthlyCounts = Array(12).fill(0)
+          
+          salesData.forEach(sale => {
+            const month = new Date(sale.date).getMonth()
+            monthlyTotals[month] += sale.quantity || sale.revenue || 0
+            monthlyCounts[month] += 1
+          })
+          
+          // Calculate monthly averages and seasonal factors
+          const monthlyAverages = monthlyTotals.map((total, i) => 
+            monthlyCounts[i] > 0 ? total / monthlyCounts[i] : 0
+          )
+          
+          const overallAverage = monthlyAverages.reduce((sum, avg) => sum + avg, 0) / 12
+          
+          if (overallAverage > 0) {
+            patterns.monthlyAverages = monthlyAverages
+            patterns.monthlyFactors = monthlyAverages.map(avg => avg / overallAverage)
+            
+            // Calculate quarterly factors
+            for (let q = 0; q < 4; q++) {
+              const quarterMonths = patterns.monthlyFactors.slice(q * 3, (q + 1) * 3)
+              patterns.quarterlyFactors[`Q${q + 1}`] = quarterMonths.reduce((sum, f) => sum + f, 0) / 3
+            }
+            
+            // Find peak season
+            const maxQuarterlyFactor = Math.max(...Object.values(patterns.quarterlyFactors))
+            patterns.peakQuarter = Object.keys(patterns.quarterlyFactors)
+              .find(q => patterns.quarterlyFactors[q] === maxQuarterlyFactor)
+            
+            // Find peak month
+            const maxMonthlyFactor = Math.max(...patterns.monthlyFactors)
+            const peakMonthIndex = patterns.monthlyFactors.indexOf(maxMonthlyFactor)
+            patterns.peakMonth = new Date(2025, peakMonthIndex, 1).toLocaleString('default', { month: 'long' })
+            
+            patterns.dataPoints = salesData.length
+            patterns.confidence = Math.min(0.95, 0.5 + (salesData.length / 100)) // Higher confidence with more data
+          }
+        }
+      }
+    } catch (error) {
+      console.warn('Failed to learn seasonal patterns:', error.message)
+    }
+    
+    // Cache the learned patterns
+    this.learnedPatterns.seasonal = patterns
+    this.learnedPatterns.lastUpdated = new Date()
+    
+    return patterns
+  }
+
+  /**
+   * Learn channel-specific patterns from historical data
+   */
+  async learnChannelPatterns(historicalData) {
+    // Check cache first
+    if (this.learnedPatterns.channel && this.isCacheValid()) {
+      return this.learnedPatterns.channel
+    }
+
+    let channelPatterns = {}
+
+    try {
+      if (historicalData?.success && historicalData.data?.products) {
+        const salesByChannel = this.groupSalesByChannel(historicalData.data.products)
+        
+        Object.entries(salesByChannel).forEach(([channel, sales]) => {
+          if (sales.length >= 6) { // Require at least 6 months of data
+            const monthlyData = this.calculateMonthlyChannelData(sales)
+            
+            channelPatterns[channel] = {
+              monthlyFactors: monthlyData.factors,
+              monthlyAverages: monthlyData.averages,
+              averageDemand: monthlyData.overallAverage,
+              averagePrice: monthlyData.averagePrice,
+              seasonalPeaks: monthlyData.peaks,
+              dataPoints: sales.length,
+              confidence: Math.min(0.9, 0.4 + (sales.length / 50))
+            }
+          }
+        })
+      }
+    } catch (error) {
+      console.warn('Failed to learn channel patterns:', error.message)
+    }
+
+    // Cache the patterns
+    this.learnedPatterns.channel = channelPatterns
+    this.learnedPatterns.lastUpdated = new Date()
+    
+    return channelPatterns
+  }
+
+  /**
+   * Extract monthly sales data from products array
+   */
+  extractMonthlySalesData(products) {
+    const salesData = []
+    
+    products.forEach(product => {
+      if (product.created_at || product.updated_at) {
+        salesData.push({
+          date: product.created_at || product.updated_at,
+          quantity: product.unitsSold || 1,
+          revenue: product.revenue || 0,
+          product: product.title || product.sku
+        })
+      }
+    })
+    
+    return salesData.sort((a, b) => new Date(a.date) - new Date(b.date))
+  }
+
+  /**
+   * Group sales data by channel (Amazon/Shopify detection)
+   */
+  groupSalesByChannel(products) {
+    const channelSales = { amazon: [], shopify: [], other: [] }
+    
+    products.forEach(product => {
+      let channel = 'other'
+      
+      // Detect channel from SKU patterns or product IDs
+      if (product.sku?.includes('Amazon') || product.id?.toString().length > 10) {
+        channel = 'amazon'
+      } else if (product.sku?.includes('Shopify') || product.sku?.includes('Sentia')) {
+        channel = 'shopify'
+      }
+      
+      channelSales[channel].push(product)
+    })
+    
+    return channelSales
+  }
+
+  /**
+   * Calculate monthly channel performance data
+   */
+  calculateMonthlyChannelData(sales) {
+    const monthlyTotals = Array(12).fill(0)
+    const monthlyCounts = Array(12).fill(0)
+    const monthlyRevenue = Array(12).fill(0)
+    
+    sales.forEach(sale => {
+      const month = new Date(sale.created_at || sale.updated_at).getMonth()
+      monthlyTotals[month] += sale.unitsSold || 1
+      monthlyRevenue[month] += sale.revenue || 0
+      monthlyCounts[month] += 1
+    })
+    
+    const monthlyAverages = monthlyTotals.map((total, i) => 
+      monthlyCounts[i] > 0 ? total / monthlyCounts[i] : 0
+    )
+    
+    const overallAverage = monthlyAverages.reduce((sum, avg) => sum + avg, 0) / 12
+    const totalRevenue = monthlyRevenue.reduce((sum, rev) => sum + rev, 0)
+    const totalQuantity = monthlyTotals.reduce((sum, qty) => sum + qty, 0)
+    
+    return {
+      averages: monthlyAverages,
+      factors: monthlyAverages.map(avg => overallAverage > 0 ? avg / overallAverage : 1.0),
+      overallAverage: overallAverage,
+      averagePrice: totalQuantity > 0 ? totalRevenue / totalQuantity : 30,
+      peaks: monthlyAverages.map((avg, i) => ({ month: i, average: avg }))
+        .filter(m => m.average > overallAverage * 1.2)
+        .map(m => new Date(2025, m.month, 1).toLocaleString('default', { month: 'long' }))
+    }
+  }
+
+  /**
+   * Check if cached patterns are still valid (refresh daily)
+   */
+  isCacheValid() {
+    if (!this.learnedPatterns.lastUpdated) return false
+    
+    const now = new Date()
+    const lastUpdate = new Date(this.learnedPatterns.lastUpdated)
+    const daysDiff = (now - lastUpdate) / (1000 * 60 * 60 * 24)
+    
+    return daysDiff < 1 // Cache valid for 1 day
+  }
+
+  /**
+   * Calculate average confidence across channel forecasts
+   */
+  /**
+   * Learn regional patterns from historical data
+   */
+  async learnRegionalPatterns(historicalData) {
+    // Check cache first
+    if (this.learnedPatterns.regional && this.isCacheValid()) {
+      return this.learnedPatterns.regional
+    }
+
+    let regionalPatterns = {}
+
+    try {
+      if (historicalData?.success && historicalData.data?.products) {
+        const salesByRegion = this.groupSalesByRegion(historicalData.data.products)
+        
+        Object.entries(salesByRegion).forEach(([region, sales]) => {
+          if (sales.length >= 6) { // Require at least 6 months of data
+            const monthlyData = this.calculateMonthlyRegionalData(sales)
+            
+            regionalPatterns[region] = {
+              monthlyFactors: monthlyData.factors,
+              monthlyAverages: monthlyData.averages,
+              averageDemand: monthlyData.overallAverage,
+              seasonalPeaks: monthlyData.peaks,
+              dataPoints: sales.length,
+              confidence: Math.min(0.9, 0.4 + (sales.length / 50))
+            }
+          }
+        })
+      }
+    } catch (error) {
+      console.warn('Failed to learn regional patterns:', error.message)
+    }
+
+    // Cache the patterns
+    this.learnedPatterns.regional = regionalPatterns
+    this.learnedPatterns.lastUpdated = new Date()
+    
+    return regionalPatterns
+  }
+
+  /**
+   * Group sales data by region (currency detection)
+   */
+  groupSalesByRegion(products) {
+    const regionSales = { UK: [], EU: [], USA: [], other: [] }
+    
+    products.forEach(product => {
+      let region = 'other'
+      
+      // Detect region from currency or SKU patterns
+      if (product.currency === 'GBP' || product.sku?.includes('UK')) {
+        region = 'UK'
+      } else if (product.currency === 'EUR' || product.sku?.includes('EU')) {
+        region = 'EU'
+      } else if (product.currency === 'USD' || product.sku?.includes('US')) {
+        region = 'USA'
+      }
+      
+      regionSales[region].push(product)
+    })
+    
+    return regionSales
+  }
+
+  /**
+   * Calculate monthly regional performance data
+   */
+  calculateMonthlyRegionalData(sales) {
+    const monthlyTotals = Array(12).fill(0)
+    const monthlyCounts = Array(12).fill(0)
+    
+    sales.forEach(sale => {
+      const month = new Date(sale.created_at || sale.updated_at).getMonth()
+      monthlyTotals[month] += sale.unitsSold || 1
+      monthlyCounts[month] += 1
+    })
+    
+    const monthlyAverages = monthlyTotals.map((total, i) => 
+      monthlyCounts[i] > 0 ? total / monthlyCounts[i] : 0
+    )
+    
+    const overallAverage = monthlyAverages.reduce((sum, avg) => sum + avg, 0) / 12
+    
+    return {
+      averages: monthlyAverages,
+      factors: monthlyAverages.map(avg => overallAverage > 0 ? avg / overallAverage : 1.0),
+      overallAverage: overallAverage,
+      peaks: monthlyAverages.map((avg, i) => ({ month: i, average: avg }))
+        .filter(m => m.average > overallAverage * 1.2)
+        .map(m => new Date(2025, m.month, 1).toLocaleString('default', { month: 'long' }))
+    }
+  }
+
+  calculateAverageConfidence(channelForecasts) {
+    const confidences = Object.values(channelForecasts)
+      .map(forecast => forecast.confidence || 0.5)
+      .filter(conf => conf > 0)
+    
+    return confidences.length > 0 
+      ? confidences.reduce((sum, conf) => sum + conf, 0) / confidences.length 
+      : 0.5
   }
 
   generateSimulatedForecast(type) {

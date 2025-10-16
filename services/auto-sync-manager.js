@@ -65,7 +65,7 @@ class AutoSyncManager {
 
   setupEventListeners() {
     // Listen for API updates that require sync
-    this.wsMonitor.on(_'api-update-received', (event) => {
+    this.wsMonitor.on('api-update-received', (event) => {
       if (event.service && event.requiresSync) {
         this.triggerSync(event.service, 'api-update');
       }

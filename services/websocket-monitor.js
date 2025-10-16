@@ -4,7 +4,7 @@
  */
 
 import EventEmitter from 'events';
-import { logDebug, logInfo, logWarn, logError } from '../src/utils/logger';
+import { logDebug, logInfo, logWarn, logError } from '../src/utils/logger.js';
 
 
 class WebSocketMonitor extends EventEmitter {

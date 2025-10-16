@@ -7,7 +7,7 @@
 
 class DemandForecastingEngine {
   constructor() {
-    this.apiBase = import.meta.env.VITE_API_BASE_URL || '/api'
+    this.apiBase = process.env.VITE_API_BASE_URL || '/api'
     
     // Documented business model constants (from business requirements)
     this.regions = {

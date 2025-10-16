@@ -1,0 +1,158 @@
+╭────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Ready to code?                                                                                     │
+│                                                                                                    │
+│ Here is Claude's plan:                                                                             │
+│ ╭────────────────────────────────────────────────────────────────────────────────────────────────╮ │
+│ │ SENTIA MANUFACTURING REBUILD - AMENDED 5-PHASE PLAN                                            │ │
+│ │                                                                                                │ │
+│ │ Updated: 2025-10-16                                                                            │ │
+│ │                                                                                                │ │
+│ │ 🎯 MISSION: Complete business logic reconstruction + documentation updates + MCP removal       │ │
+│ │                                                                                                │ │
+│ │ Based on progress snapshot: Infrastructure excellent, but zero functional business logic.      │ │
+│ │ Resume from Phase 1 with documentation updates integrated.                                     │ │
+│ │                                                                                                │ │
+│ │ ---                                                                                            │ │
+│ │ PHASE 1: DATA LAYER RECONSTRUCTION (Weeks 1-3) - RESUME CURRENT PHASE                          │ │
+│ │                                                                                                │ │
+│ │ ✅ ALREADY COMPLETED:                                                                           │ │
+│ │                                                                                                │ │
+│ │ 1. Database Schema Analysis: Prisma schema supports full Sentia business model                 │ │
+│ │ 2. Seed Script Creation: prisma/seed-sentia.js ready with 9-SKU business model                 │ │
+│ │                                                                                                │ │
+│ │ 🔄 IMMEDIATE NEXT STEPS (Resume here):                                                         │ │
+│ │                                                                                                │ │
+│ │ 1. Run Database Seed: Execute node prisma/seed-sentia.js to populate real data                 │ │
+│ │ 2. Documentation Reality Check: Update CLAUDE.md to reflect actual vs claimed implementation   │ │
+│ │ 3. Remove MCP Dependencies: Clean out unused MCP connections from main application             │ │
+│ │ 4. API Service Updates: Update API services to query real database instead of mock data        │ │
+│ │ 5. Mock Data Purge: Remove ALL fallback data from FinancialAlgorithms.js and APIIntegration.js │ │
+│ │ 6. Error Handling: Implement "no data available" states instead of mock data fallbacks         │ │
+│ │                                                                                                │ │
+│ │ Phase 1 Success Criteria:                                                                      │ │
+│ │                                                                                                │ │
+│ │ - ✅ Database populated with real Sentia 9-SKU business model                                   │ │
+│ │ - ✅ Documentation accurately reflects current state (no false claims)                          │ │
+│ │ - ✅ Zero MCP dependencies in main application                                                  │ │
+│ │ - ✅ All API endpoints query actual database (no mock fallbacks)                                │ │
+│ │ - ✅ Proper "no data available" error handling implemented                                      │ │
+│ │ - ✅ Working capital calculations use real data only                                            │ │
+│ │                                                                                                │ │
+│ │ ---                                                                                            │ │
+│ │ PHASE 2: CORE BUSINESS LOGIC IMPLEMENTATION (Weeks 4-8)                                        │ │
+│ │                                                                                                │ │
+│ │ 2.1 Financial Logic Implementation                                                             │ │
+│ │                                                                                                │ │
+│ │ - Working Capital Engine: Real calculations based on database data                             │ │
+│ │ - Cash Flow Analysis: Actual receivables, payables, inventory turnover                         │ │
+│ │ - Demand Forecasting: Replace placeholder with functional forecasting algorithms               │ │
+│ │ - Inventory Optimization: Real stock level optimization based on sales data                    │ │
+│ │                                                                                                │ │
+│ │ 2.2 Manufacturing Logic                                                                        │ │
+│ │                                                                                                │ │
+│ │ - Production Planning: Real lead time calculations for 2.5-4 hour batches                      │ │
+│ │ - Capacity Planning: Actual resource allocation and scheduling                                 │ │
+│ │ - Quality Control: Real metrics tracking and alerting                                          │ │
+│ │ - Supply Chain: Functional supplier and procurement management                                 │ │
+│ │                                                                                                │ │
+│ │ 2.3 Component Replacement                                                                      │ │
+│ │                                                                                                │ │
+│ │ - Replace InventoryManagement.jsx placeholder with functional component                        │ │
+│ │ - Replace DemandForecasting.jsx placeholder with real forecasting                              │ │
+│ │ - Replace AIAnalyticsDashboard.jsx hardcoded data with real analytics                          │ │
+│ │                                                                                                │ │
+│ │ ---                                                                                            │ │
+│ │ PHASE 3: API INTEGRATION COMPLETION (Weeks 9-12)                                               │ │
+│ │                                                                                                │ │
+│ │ 3.1 External API Implementation                                                                │ │
+│ │                                                                                                │ │
+│ │ - Amazon SP-API: Complete integration for UK/USA marketplaces                                  │ │
+│ │ - Shopify Integration: Full multi-store integration (UK/EU/USA)                                │ │
+│ │ - Xero Integration: Complete financial data synchronization                                    │ │
+│ │ - Unleashed ERP: Full manufacturing and inventory integration                                  │ │
+│ │                                                                                                │ │
+│ │ 3.2 Real-time Data Processing                                                                  │ │
+│ │                                                                                                │ │
+│ │ - WebSocket Implementation: Live data updates without mock data                                │ │
+│ │ - Data Synchronization: Automated sync between all external systems                            │ │
+│ │ - Error Recovery: Robust error handling without falling back to fake data                      │ │
+│ │                                                                                                │ │
+│ │ ---                                                                                            │ │
+│ │ PHASE 4: ADVANCED ANALYTICS IMPLEMENTATION (Weeks 13-16)                                       │ │
+│ │                                                                                                │ │
+│ │ 4.1 Business Intelligence Engine                                                               │ │
+│ │                                                                                                │ │
+│ │ - Real AI Analytics: Replace hardcoded scenarios with actual ML models                         │ │
+│ │ - Predictive Analytics: Real demand forecasting and trend analysis                             │ │
+│ │ - Performance Metrics: Actual KPIs based on real business data                                 │ │
+│ │ - Automated Insights: Real anomaly detection and recommendations                               │ │
+│ │                                                                                                │ │
+│ │ 4.2 Reporting Systems                                                                          │ │
+│ │                                                                                                │ │
+│ │ - Financial Reports: Real P&L, cash flow, working capital reports                              │ │
+│ │ - Manufacturing Reports: Actual production efficiency and quality metrics                      │ │
+│ │ - Executive Dashboard: Real-time business intelligence for decision making                     │ │
+│ │                                                                                                │ │
+│ │ ---                                                                                            │ │
+│ │ PHASE 5: PRODUCTION OPTIMIZATION & HANDOVER (Weeks 17-20)                                      │ │
+│ │                                                                                                │ │
+│ │ 5.1 Performance Optimization                                                                   │ │
+│ │                                                                                                │ │
+│ │ - Database Optimization: Query performance for large datasets                                  │ │
+│ │ - Caching Strategy: Intelligent caching without mock data corruption                           │ │
+│ │ - Load Testing: Verify performance with real data volumes                                      │ │
+│ │                                                                                                │ │
+│ │ 5.2 Documentation Completion & MCP Cleanup                                                     │ │
+│ │                                                                                                │ │
+│ │ - Final Documentation Update: Complete technical documentation accuracy                        │ │
+│ │ - MCP Server Archival: Move sentia-mcp-server/ to archive                                      │ │
+│ │ - Architecture Documentation: Update all diagrams and specifications                           │ │
+│ │ - User Training Materials: Create guides based on actual functionality                         │ │
+│ │                                                                                                │ │
+│ │ 5.3 Production Readiness                                                                       │ │
+│ │                                                                                                │ │
+│ │ - Security Audit: Comprehensive security review                                                │ │
+│ │ - Performance Validation: Sub-2-second response times with real data                           │ │
+│ │ - Business Validation: Accurate working capital optimization results                           │ │
+│ │ - User Acceptance Testing: Full functionality testing with real scenarios                      │ │
+│ │                                                                                                │ │
+│ │ ---                                                                                            │ │
+│ │ 🚨 CRITICAL IMPLEMENTATION PRIORITIES                                                          │ │
+│ │                                                                                                │ │
+│ │ Week 1 Immediate Actions:                                                                      │ │
+│ │                                                                                                │ │
+│ │ 1. ✅ Run node prisma/seed-sentia.js to populate database                                       │ │
+│ │ 2. ✅ Update CLAUDE.md to remove false claims and MCP references                                │ │
+│ │ 3. ✅ Remove MCP client and connections from main application                                   │ │
+│ │ 4. ✅ Remove ALL mock data fallbacks from FinancialAlgorithms.js (lines 355-387)                │ │
+│ │ 5. ✅ Remove fake data generation from APIIntegration.js (lines 244-247)                        │ │
+│ │                                                                                                │ │
+│ │ Critical Files Requiring Immediate Attention:                                                  │ │
+│ │                                                                                                │ │
+│ │ - src/services/FinancialAlgorithms.js - Remove hardcoded receivables data                      │ │
+│ │ - src/services/APIIntegration.js - Remove sample data generation                               │ │
+│ │ - src/components/AI/AIAnalyticsDashboard.jsx - Remove hardcoded scenarios                      │ │
+│ │ - CLAUDE.md - Update to reflect reality, remove MCP claims                                     │ │
+│ │ - src/services/mcpClient.js - Remove or replace with direct API calls                          │ │
+│ │                                                                                                │ │
+│ │ Success Metrics:                                                                               │ │
+│ │                                                                                                │ │
+│ │ - Technical: Zero mock data, sub-2-second response times, 99.9% uptime                         │ │
+│ │ - Business: Accurate working capital optimization, reliable demand forecasting                 │ │
+│ │ - User Experience: Real-time visibility into 9-SKU, 5-channel operation with actionable        │ │
+│ │ insights                                                                                       │ │
+│ │                                                                                                │ │
+│ │ ---                                                                                            │ │
+│ │ ⚠️ IMPLEMENTATION RULES                                                                        │ │
+│ │                                                                                                │ │
+│ │ 1. NO MOCK DATA: Show "no data available" states instead of fake data                          │ │
+│ │ 2. SYSTEMATIC APPROACH: Complete each phase before moving to next                              │ │
+│ │ 3. REAL DATA ONLY: All calculations must use actual database queries                           │ │
+│ │ 4. DEVELOPMENT BRANCH ONLY: No commits to test/production without explicit instruction         │ │
+│ │ 5. VERIFY CONTINUOUSLY: Test every change against real business requirements                   │ │
+│ │                                                                                                │ │
+│ │ The foundation is excellent. The business logic needs complete reconstruction. Execute         │ │
+│ │ systematically, starting with database population and immediate mock data removal.             │ │
+│ ╰────────────────────────────────────────────────────────────────────────────────────────────────╯ │
+│                                                                                                    │
+│ Would you like to proceed?                                                                         │

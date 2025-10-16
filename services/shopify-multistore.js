@@ -217,13 +217,31 @@ class ShopifyMultiStoreService {
 
       if (ordersResponse.body && ordersResponse.body.orders) {
         const orders = ordersResponse.body.orders;
+        const grossSales = orders.reduce((sum, order) => sum + parseFloat(order.total_price || 0), 0);
+        const transactionFeeRate = 0.029; // 2.9% Shopify transaction fee
+        const transactionFees = grossSales * transactionFeeRate;
+        const netSales = grossSales - transactionFees;
+
         storeData.orders = orders.length;
-        storeData.sales = orders.reduce((sum, order) => sum + parseFloat(order.total_price || 0), 0);
+        storeData.sales = grossSales;
+        storeData.netSales = netSales;
+        storeData.transactionFees = transactionFees;
+        storeData.feeRate = transactionFeeRate;
         storeData.avgOrderValue = storeData.orders > 0 ? storeData.sales / storeData.orders : 0;
+        storeData.avgNetOrderValue = storeData.orders > 0 ? netSales / storeData.orders : 0;
+        storeData.commission = {
+          grossRevenue: grossSales,
+          transactionFees: transactionFees,
+          netRevenue: netSales,
+          effectiveMargin: grossSales > 0 ? netSales / grossSales : 0,
+          feeImpact: `${(transactionFeeRate * 100).toFixed(1)}% Shopify fees`
+        };
         storeData.recentOrders = orders.slice(0, 10).map(order => ({
           id: order.id,
           orderNumber: order.order_number,
           totalPrice: parseFloat(order.total_price),
+          netPrice: parseFloat(order.total_price) * (1 - transactionFeeRate),
+          transactionFee: parseFloat(order.total_price) * transactionFeeRate,
           currency: order.currency,
           createdAt: order.created_at,
           customerEmail: order.customer?.email
@@ -293,12 +311,26 @@ class ShopifyMultiStoreService {
 
     const stores = successfulSyncs.map(sync => sync.data);
     
+    const totalGrossSales = stores.reduce((sum, store) => sum + (store.sales || 0), 0);
+    const totalNetSales = stores.reduce((sum, store) => sum + (store.netSales || 0), 0);
+    const totalTransactionFees = stores.reduce((sum, store) => sum + (store.transactionFees || 0), 0);
+    const totalOrders = stores.reduce((sum, store) => sum + store.orders, 0);
+
     const consolidated = {
       stores,
-      totalSales: stores.reduce((sum, store) => sum + store.sales, 0),
-      totalOrders: stores.reduce((sum, store) => sum + store.orders, 0), 
+      totalSales: totalGrossSales,
+      totalNetSales: totalNetSales,
+      totalTransactionFees: totalTransactionFees,
+      totalOrders: totalOrders, 
       totalCustomers: stores.reduce((sum, store) => sum + store.customers, 0),
-      avgOrderValue: 0,
+      avgOrderValue: totalOrders > 0 ? totalGrossSales / totalOrders : 0,
+      avgNetOrderValue: totalOrders > 0 ? totalNetSales / totalOrders : 0,
+      commission: {
+        totalTransactionFees: totalTransactionFees,
+        effectiveMargin: totalGrossSales > 0 ? totalNetSales / totalGrossSales : 0,
+        feeRate: 0.029,
+        totalFeeImpact: `£${totalTransactionFees.toFixed(2)} in Shopify transaction fees`
+      },
       syncStatus: {
         inSync: syncResults.every(r => r.success),
         pendingItems: syncResults.filter(r => !r.success).length,
@@ -307,9 +339,7 @@ class ShopifyMultiStoreService {
       lastUpdated: new Date().toISOString()
     };
 
-    consolidated.avgOrderValue = consolidated.totalOrders > 0 
-      ? consolidated.totalSales / consolidated.totalOrders 
-      : 0;
+    // avgOrderValue already calculated above
 
     return consolidated;
   }
@@ -361,14 +391,29 @@ class ShopifyMultiStoreService {
         };
       }
 
+      // Calculate commission impact (2.9% Shopify transaction fees)
+      const grossRevenue = consolidatedData.totalSales || 0;
+      const transactionFeeRate = 0.029; // 2.9% Shopify transaction fee
+      const transactionFees = grossRevenue * transactionFeeRate;
+      const netRevenue = grossRevenue - transactionFees;
+
       // Transform the data to match expected structure
       return {
         success: true,
-        totalRevenue: consolidatedData.totalSales || 0,
+        totalRevenue: grossRevenue,
+        netRevenue: netRevenue,
+        transactionFees: transactionFees,
+        feeRate: transactionFeeRate,
         totalOrders: consolidatedData.totalOrders || 0,
         totalCustomers: consolidatedData.totalCustomers || 0,
         avgOrderValue: consolidatedData.avgOrderValue || 0,
+        avgNetOrderValue: consolidatedData.totalOrders > 0 ? netRevenue / consolidatedData.totalOrders : 0,
         stores: consolidatedData.stores || [],
+        commission: {
+          shopifyTransactionFees: transactionFees,
+          effectiveMargin: netRevenue / Math.max(grossRevenue, 1),
+          feeImpact: `${(transactionFeeRate * 100).toFixed(1)}% transaction fees applied`
+        },
         dataSource: 'shopify_multistore',
         lastUpdated: consolidatedData.lastUpdated || new Date().toISOString()
       };

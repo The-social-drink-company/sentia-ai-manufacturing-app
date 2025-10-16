@@ -590,14 +590,24 @@ app.get('/api/financial/working-capital', async (req, res) => {
       xeroInitialized = false;
     }
 
-    // Skip Xero for now - use REAL Sentia database data instead
-    logger.info('🎯 Prioritizing REAL Sentia database data over external integrations');
+    // PHASE 3: Integrate Xero data alongside Sentia database data
+    logger.info('🎯 Integrating REAL Xero financial data with Sentia database data');
     
-    // Log Xero status for debugging but don't attempt
+    let xeroData = null;
     if (xeroInitialized && xeroService) {
-      logger.info('ℹ️ Xero service available but using Sentia database for working capital');
+      try {
+        logger.info('📊 Fetching real-time financial data from Xero...');
+        xeroData = await xeroService.getWorkingCapital();
+        if (xeroData && xeroData.success) {
+          logger.info('✅ Xero working capital data retrieved successfully');
+        } else {
+          logger.warn('⚠️ Xero working capital data failed:', xeroData?.error || 'Unknown error');
+        }
+      } catch (xeroError) {
+        logger.warn('⚠️ Failed to fetch Xero working capital data:', xeroError.message);
+      }
     } else {
-      logger.info('ℹ️ Xero service not available - using Sentia database for working capital');
+      logger.info('ℹ️ Xero service not available - using Sentia database only');
     }
 
     // Attempt 2: Query REAL Sentia working capital data from database
@@ -1367,34 +1377,132 @@ app.get('/api/quality/metrics', async (req, res) => {
   }
 });
 
-// Inventory API endpoints
+// Inventory API endpoints - Enhanced with real Shopify inventory data
 app.get('/api/inventory/levels', async (req, res) => {
   try {
-    const inventory = {
-      totalValue: 3200000,
-      items: [
-        {
-          sku: 'RAW-001',
-          name: 'Raw Material A',
-          quantity: 5000,
-          unit: 'kg',
-          value: 150000
-        },
-        {
-          sku: 'RAW-002',
-          name: 'Raw Material B',
-          quantity: 3000,
-          unit: 'liters',
-          value: 90000
-        }
-      ],
-      lowStock: 5,
-      outOfStock: 1
+    logger.info('🏭 Real-time inventory levels requested');
+    
+    let inventory = {
+      totalValue: 0,
+      items: [],
+      lowStock: 0,
+      outOfStock: 0,
+      dataSource: 'fallback',
+      lastUpdated: new Date().toISOString(),
+      sources: {
+        shopify: false,
+        database: false
+      }
     };
+
+    // Get real inventory from Shopify multi-store
+    try {
+      const { default: shopifyMultiStore } = await import('./services/shopify-multistore.js');
+      
+      if (shopifyMultiStore) {
+        await shopifyMultiStore.connect();
+        const shopifyInventory = await shopifyMultiStore.getInventorySync();
+        
+        if (shopifyInventory && shopifyInventory.products && !shopifyInventory.error) {
+          logger.info(`Shopify inventory retrieved: ${shopifyInventory.products.length} products`);
+          
+          inventory.items = shopifyInventory.products.map(product => ({
+            sku: product.productHandle || product.productTitle.toLowerCase().replace(/\s+/g, '-'),
+            name: product.productTitle,
+            quantity: product.totalInventory || 0,
+            unit: 'units',
+            value: product.stores.reduce((sum, store) => 
+              sum + ((store.inventory || 0) * parseFloat(store.price || 0)), 0),
+            stores: product.stores,
+            currency: product.stores[0]?.currency || 'GBP',
+            lastSync: shopifyInventory.syncTime
+          }));
+
+          // Calculate summary metrics
+          inventory.totalValue = inventory.items.reduce((sum, item) => sum + (item.value || 0), 0);
+          inventory.lowStock = inventory.items.filter(item => item.quantity > 0 && item.quantity <= 10).length;
+          inventory.outOfStock = inventory.items.filter(item => item.quantity === 0).length;
+          inventory.dataSource = 'shopify_multistore';
+          inventory.sources.shopify = true;
+          inventory.lastUpdated = shopifyInventory.syncTime;
+          
+          logger.info(`Inventory summary: ${inventory.items.length} products, ${inventory.lowStock} low stock, ${inventory.outOfStock} out of stock`);
+        }
+      }
+    } catch (shopifyError) {
+      logger.warn('Failed to fetch Shopify inventory:', shopifyError.message);
+    }
+
+    // Supplement with database data if available
+    if (prisma) {
+      try {
+        const dbInventory = await prisma.inventory_levels.findMany({
+          include: {
+            products: true
+          }
+        });
+
+        if (dbInventory && dbInventory.length > 0) {
+          logger.info(`Database inventory found: ${dbInventory.length} items`);
+          
+          // Merge with Shopify data or use as fallback
+          const dbItems = dbInventory.map(item => ({
+            sku: item.sku,
+            name: item.products?.name || `Product ${item.sku}`,
+            quantity: item.quantity_on_hand || 0,
+            unit: 'units',
+            value: (item.quantity_on_hand || 0) * (item.unit_cost || 0),
+            location: item.location || 'Main Warehouse',
+            lastUpdated: item.last_updated || new Date().toISOString()
+          }));
+
+          if (inventory.items.length === 0) {
+            // Use database as primary source if Shopify failed
+            inventory.items = dbItems;
+            inventory.totalValue = inventory.items.reduce((sum, item) => sum + (item.value || 0), 0);
+            inventory.lowStock = inventory.items.filter(item => item.quantity > 0 && item.quantity <= 10).length;
+            inventory.outOfStock = inventory.items.filter(item => item.quantity === 0).length;
+            inventory.dataSource = 'sentia_database';
+            inventory.sources.database = true;
+          } else {
+            // Merge database items not found in Shopify
+            const shopifySkus = new Set(inventory.items.map(item => item.sku));
+            const additionalItems = dbItems.filter(item => !shopifySkus.has(item.sku));
+            inventory.items.push(...additionalItems);
+            inventory.sources.database = true;
+          }
+        }
+      } catch (dbError) {
+        logger.warn('Failed to fetch database inventory:', dbError.message);
+      }
+    }
+
+    // Final fallback to ensure response is never empty
+    if (inventory.items.length === 0) {
+      logger.warn('No inventory data available from any source, using minimal fallback');
+      inventory = {
+        totalValue: 0,
+        items: [],
+        lowStock: 0,
+        outOfStock: 0,
+        dataSource: 'no_data_available',
+        lastUpdated: new Date().toISOString(),
+        sources: {
+          shopify: false,
+          database: false
+        },
+        message: 'No inventory data available. Please check external integrations.'
+      };
+    }
+
     res.json(inventory);
   } catch (error) {
     logger.error('Inventory API error', error);
-    res.status(500).json({ error: 'Failed to fetch inventory levels' });
+    res.status(500).json({ 
+      error: 'Failed to fetch inventory levels',
+      details: error.message,
+      timestamp: new Date().toISOString()
+    });
   }
 });
 
@@ -2555,6 +2663,9 @@ app.get('/api/financial/kpi-summary', async (req, res) => {
             endDate: now.toISOString(),
             limit: 50
           });
+
+          // Get commission and financial data
+          const shopifyFinancials = await shopifyMultiStore.getConsolidatedSalesData();
           
           logger.info(`Shopify data retrieved: ${shopifyData?.products?.length || 0} products`);
 
@@ -2578,6 +2689,16 @@ app.get('/api/financial/kpi-summary', async (req, res) => {
               salesData.summary.totalOrders > 0 
                 ? salesData.summary.totalRevenue / salesData.summary.totalOrders 
                 : 0;
+
+            // Add commission and financial data from Shopify
+            if (shopifyFinancials && shopifyFinancials.success) {
+              salesData.summary.grossRevenue = shopifyFinancials.totalRevenue || 0;
+              salesData.summary.netRevenue = shopifyFinancials.netRevenue || 0;
+              salesData.summary.transactionFees = shopifyFinancials.transactionFees || 0;
+              salesData.summary.commission = shopifyFinancials.commission;
+              salesData.summary.avgNetOrderValue = shopifyFinancials.avgNetOrderValue || 0;
+              salesData.summary.feeImpact = shopifyFinancials.commission?.feeImpact || '';
+            }
             
             if (salesData.products.length > 0) {
               salesData.summary.topPerformingProduct = salesData.products[0];

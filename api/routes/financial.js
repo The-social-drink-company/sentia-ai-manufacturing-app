@@ -246,13 +246,13 @@ router.get('/cashflow',
 
 /**
  * GET /api/financial/working-capital
- * Get working capital metrics with proper error handling
+ * Get working capital metrics from REAL DATABASE - Sentia business model
  */
 router.get('/working-capital',
   requireAuth,
   rateLimiters.read,
   asyncHandler(async (req, res) => {
-    logDebug('[Working Capital API] Request received');
+    logInfo('[Working Capital API] Request received - fetching REAL Sentia data');
 
     // Check cache first
     const cacheKey = 'working-capital-current';
@@ -263,149 +263,132 @@ router.get('/working-capital',
       return res.json(cached);
     }
 
-    logDebug('[Cache Miss] Working capital - fetching from database');
+    logDebug('[Working Capital API] Fetching from REAL working_capital table');
 
     try {
       // Check database connection
       await prisma.$queryRaw`SELECT 1`;
-      logDebug('[Working Capital API] Database connection successful');
+      logInfo('[Working Capital API] Database connection successful');
 
-      // Get current assets and liabilities with error handling
-      const [inventory, receivables, payables, cash] = await Promise.all([
-        // Inventory value - with fallback
-        prisma.$queryRaw`
-          SELECT COALESCE(SUM(quantity * unit_cost), 0) as total_value
-          FROM inventory
-        `.catch((err) => {
-          logError('[Working Capital API] Inventory query failed:', err);
-          return [{ total_value: 0 }];
-        }),
+      // Get latest working capital projection from REAL database
+      const latestWorkingCapital = await prisma.working_capital.findFirst({
+        orderBy: { projection_date: 'desc' },
+        where: {
+          scenario_type: 'actual'
+        }
+      });
 
-        // Accounts receivable - with fallback
-        prisma.invoice.aggregate({
-          where: {
-            status: { in: ['pending', 'overdue'] }
-          },
-          _sum: { totalAmount: true }
-        }).catch((err) => {
-          logError('[Working Capital API] Receivables query failed:', err);
-          return { _sum: { totalAmount: 0 } };
-        }),
+      if (!latestWorkingCapital) {
+        logWarn('[Working Capital API] No working capital data found in database');
+        return res.status(404).json({
+          success: false,
+          error: 'No working capital data available',
+          message: 'Working capital projections not found in database. Please ensure data is loaded.',
+          dataSource: 'database',
+          timestamp: new Date().toISOString()
+        });
+      }
 
-        // Accounts payable - with fallback
-        prisma.expense.aggregate({
-          where: {
-            status: { in: ['pending', 'approved'] }
-          },
-          _sum: { amount: true }
-        }).catch((err) => {
-          logError('[Working Capital API] Payables query failed:', err);
-          return { _sum: { amount: 0 } };
-        }),
+      // Get inventory value from REAL inventory_levels table
+      const inventoryData = await prisma.inventory_levels.aggregate({
+        _sum: {
+          total_value: true
+        },
+        _count: true
+      });
 
-        // Cash balance - with fallback
-        prisma.$queryRaw`
-          SELECT balance FROM cash_accounts
-          WHERE is_primary = true
-          LIMIT 1
-        `.then(rows => rows[0] || { balance: 0 })
-        .catch((err) => {
-          logError('[Working Capital API] Cash query failed:', err);
-          return { balance: 0 };
-        })
-      ]);
+      // Get historical sales for revenue calculations
+      const recentSales = await prisma.historical_sales.aggregate({
+        where: {
+          sale_date: {
+            gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) // Last 30 days
+          }
+        },
+        _sum: {
+          net_revenue: true,
+          cost_of_goods_sold: true
+        },
+        _count: true
+      });
 
-      logDebug('[Working Capital API] Data fetched successfully');
+      logInfo('[Working Capital API] Real data fetched successfully');
 
-      // Calculate metrics
-      const inventoryValue = Number(inventory[0]?.total_value) || 0;
-      const receivablesValue = Number(receivables._sum?.totalAmount) || 0;
-      const cashValue = Number(cash?.balance) || 0;
-      const currentAssets = inventoryValue + receivablesValue + cashValue;
-      const currentLiabilities = Number(payables._sum?.amount) || 0;
-      const workingCapital = currentAssets - currentLiabilities;
+      // Calculate metrics from REAL data
+      const workingCapitalValue = latestWorkingCapital.working_capital_requirement || 0;
+      const currentAssets = 
+        (inventoryData._sum.total_value || 0) + 
+        (latestWorkingCapital.accounts_receivable || 0);
+      const currentLiabilities = latestWorkingCapital.accounts_payable || 0;
       const currentRatio = currentLiabilities > 0 ? currentAssets / currentLiabilities : 0;
-      const quickRatio = currentLiabilities > 0 ?
-        (receivablesValue + cashValue) / currentLiabilities : 0;
-
-      // Calculate cash conversion cycle (using estimates if actual data not available)
-      const daysInventory = 45; // Would calculate from actual data
-      const daysReceivables = 30; // Would calculate from actual data
-      const daysPayables = 35; // Would calculate from actual data
-      const cashConversionCycle = daysInventory + daysReceivables - daysPayables;
+      const quickRatio = currentLiabilities > 0 ? 
+        (latestWorkingCapital.accounts_receivable || 0) / currentLiabilities : 0;
 
       const response = {
         success: true,
+        dataSource: 'database',
+        lastUpdated: latestWorkingCapital.updated_at,
         summary: {
-          workingCapital,
+          workingCapital: workingCapitalValue,
           currentAssets,
           currentLiabilities,
-          cashConversionCycle,
-          operatingCashFlow: workingCapital * 0.6, // Estimated
+          cashConversionCycle: latestWorkingCapital.cash_conversion_cycle_days || 0,
+          operatingCashFlow: latestWorkingCapital.net_cash_flow || 0,
           currentRatio,
           quickRatio,
-          daysReceivables,
-          daysPayables,
-          daysInventory
+          daysReceivables: latestWorkingCapital.days_sales_outstanding || 0,
+          daysPayables: latestWorkingCapital.days_payable_outstanding || 0,
+          daysInventory: latestWorkingCapital.days_inventory_outstanding || 0
         },
         details: {
           assets: {
-            inventory: inventoryValue,
-            receivables: receivablesValue,
-            cash: cashValue,
+            inventory: inventoryData._sum.total_value || 0,
+            receivables: latestWorkingCapital.accounts_receivable || 0,
+            cash: 0, // Would come from separate cash tracking
             other: 0
           },
           liabilities: {
-            payables: currentLiabilities,
+            payables: latestWorkingCapital.accounts_payable || 0,
             shortTermDebt: 0,
-            accruedExpenses: 0,
+            accruedExpenses: latestWorkingCapital.accrued_expenses || 0,
             other: 0
           }
         },
-        trends: {
-          workingCapital: [
-            workingCapital * 0.85,
-            workingCapital * 0.90,
-            workingCapital * 0.95,
-            workingCapital,
-            workingCapital * 1.02,
-            workingCapital * 1.05
-          ],
-          cashFlow: [
-            workingCapital * 0.5,
-            workingCapital * 0.52,
-            workingCapital * 0.55,
-            workingCapital * 0.6,
-            workingCapital * 0.58,
-            workingCapital * 0.61
-          ]
+        businessMetrics: {
+          projectedSalesRevenue: latestWorkingCapital.projected_sales_revenue,
+          costOfGoodsSold: latestWorkingCapital.cost_of_goods_sold,
+          inventoryInvestment: latestWorkingCapital.inventory_investment,
+          manufacturingCosts: latestWorkingCapital.manufacturing_costs,
+          workingCapitalTurnover: latestWorkingCapital.working_capital_turnover
         },
-        recommendations: [
-          {
-            title: 'Optimize Inventory',
-            description: 'Reduce inventory holding by 10% to free up cash',
-            impact: Math.round(inventoryValue * 0.1)
-          },
-          {
-            title: 'Accelerate Collections',
-            description: 'Reduce days receivables by 5 days',
-            impact: Math.round(receivablesValue * 0.15)
-          }
-        ]
+        recentPerformance: {
+          last30DaysRevenue: recentSales._sum.net_revenue || 0,
+          last30DaysCogs: recentSales._sum.cost_of_goods_sold || 0,
+          transactionCount: recentSales._count,
+          inventoryItems: inventoryData._count
+        },
+        sentiaSpecific: {
+          projectionPeriod: latestWorkingCapital.projection_period,
+          confidenceLevel: latestWorkingCapital.confidence_level,
+          scenario: latestWorkingCapital.scenario_type,
+          currency: latestWorkingCapital.currency_code
+        }
       };
 
-      logDebug('[Working Capital API] Response prepared successfully');
+      logInfo('[Working Capital API] Response prepared with REAL Sentia data');
 
-      // Cache the successful response
-      cache.set(cacheKey, response);
+      // Cache the successful response for 5 minutes
+      cache.set(cacheKey, response, 300);
 
       res.json(response);
 
     } catch (error) {
-      logError('[Working Capital API] Error:', error);
+      logError('[Working Capital API] Error fetching real data:', error);
       res.status(500).json({
-        error: 'Failed to fetch working capital data. Please ensure database connection is active.',
-        message: error.message
+        success: false,
+        error: 'Failed to fetch working capital data from database',
+        message: error.message,
+        dataSource: 'database_error',
+        timestamp: new Date().toISOString()
       });
     }
   })

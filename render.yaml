@@ -1,6 +1,6 @@
 # render.yaml - Sentia AI Manufacturing Dashboard
-# Production Blueprint for Render Deployment (Updated: 2025-10-17)
-# Four-service architecture: Database, MCP Server, Backend API, Frontend
+# Simplified Blueprint for Render Deployment (Updated: 2025-10-17)
+# Free-tier compatible configuration
 
 databases:
   - name: sentia-db-prod
@@ -14,7 +14,6 @@ services:
   - type: web
     name: sentia-mcp-prod
     env: node
-    plan: free
     region: oregon
     rootDir: sentia-mcp-server
     buildCommand: |
@@ -56,7 +55,6 @@ services:
   - type: web
     name: sentia-backend-prod
     env: node
-    plan: free
     region: oregon
     buildCommand: |
       corepack enable &&
@@ -87,11 +85,11 @@ services:
   - type: web
     name: sentia-frontend-prod
     env: static
-    plan: free
+    region: oregon
     buildCommand: |
       corepack enable &&
       pnpm install --frozen-lockfile &&
-      pnpm exec vite build
+      pnpm run build
     staticPublishPath: dist
     headers:
       - path: /*

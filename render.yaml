@@ -1,89 +1,101 @@
 databases:
-  - name: sentia-manufacturing-db
-    databaseName: sentia_manufacturing
+  - name: sentia-db-prod
+    databaseName: sentia_prod_db
     user: sentia_user
-    plan: free
+    plan: starter
+    region: oregon
 
 services:
-  # Development Environment
+  # MCP Server (API integrations)
   - type: web
-    name: sentia-manufacturing-development
+    name: sentia-mcp-prod
     env: node
     plan: starter
     region: oregon
-    branch: development
-    buildCommand: "corepack enable && pnpm install --no-frozen-lockfile && pnpm prisma generate && pnpm run build"
-    startCommand: "node server.js"
+    rootDir: sentia-mcp-server
+    buildCommand: |
+      corepack enable &&
+      pnpm install --frozen-lockfile
+    startCommand: pnpm start
     healthCheckPath: /health
-    autoDeploy: true
-    envVars:
-      - key: NODE_ENV
-        value: development
-      - key: BRANCH
-        value: development
-      - key: PORT
-        value: 10000
-      - key: DATABASE_URL
-        value: postgresql://sentia_dev:twIkfNHlhXfoOpHuWsZ45lzeLnjFNVQA@dpg-d3bbggggjchc73fdf1sg-a.oregon-postgres.render.com/sentia_manufacturing_dev_hl6w?sslmode=require
-      # fromDatabase:
-          name: sentia-manufacturing-db
-          property: connectionString
-      # Clerk Authentication Variables - SET VIA RENDER DASHBOARD
-      # SECURITY: Keys removed from config - use Render environment variables
-      # Required: VITE_CLERK_PUBLISHABLE_KEY, CLERK_SECRET_KEY, CLERK_WEBHOOK_SECRET
-
-  # Testing Environment
-  - type: web
-    name: sentia-manufacturing-testing
-    env: node
-    plan: starter
-    region: oregon
-    branch: testing
-    buildCommand: "corepack enable && pnpm install --no-frozen-lockfile && pnpm prisma migrate deploy && pnpm prisma generate && pnpm run build"
-    startCommand: "node server.js"
-    healthCheckPath: /health
-    autoDeploy: true
-    envVars:
-      - key: NODE_ENV
-        value: testing
-      - key: BRANCH
-        value: testing
-      - key: PORT
-        value: 10000
-      - key: DATABASE_URL
-        value: postgresql://sentia_test:Y5C66K5Thr2gIa2inIsfDlfw0RtyPtK4@dpg-d3bbkkmr433s738jbg6g-a.oregon-postgres.render.com/sentia_manufacturing_test_4fky?sslmode=require
-      # fromDatabase:
-          name: sentia-manufacturing-db
-          property: connectionString
-      # Clerk Authentication Variables - SET VIA RENDER DASHBOARD
-      # SECURITY: Keys removed from config - use Render environment variables
-      # Required: VITE_CLERK_PUBLISHABLE_KEY, CLERK_SECRET_KEY, CLERK_WEBHOOK_SECRET
-
-  # Production Environment
-  - type: web
-    name: sentia-manufacturing-production
-    env: node
-    plan: starter
-    region: oregon
-    branch: production
-    buildCommand: "corepack enable && pnpm install --no-frozen-lockfile && pnpm prisma migrate deploy && pnpm prisma generate && pnpm run build"
-    startCommand: "node server.js"
-    healthCheckPath: /health
-    autoDeploy: true
     envVars:
       - key: NODE_ENV
         value: production
-      - key: BRANCH
-        value: production
       - key: PORT
         value: 10000
-      - key: DATABASE_URL
-        value: postgresql://sentia_prod:2o0PtIRQYR27VpwElifkaqI88jsX2Fb7@dpg-d3bbik3e5dus73ce3da0-a.oregon-postgres.render.com/sentia_manufacturing_prod_7lgf?sslmode=require
-      # fromDatabase:
-          name: sentia-manufacturing-db
-          property: connectionString
       - key: LOG_LEVEL
-        value: error
-      # Clerk Authentication Variables - SET VIA RENDER DASHBOARD
-      # SECURITY: Keys removed from config - use Render environment variables
-      # Required: VITE_CLERK_PUBLISHABLE_KEY, CLERK_SECRET_KEY, CLERK_WEBHOOK_SECRET
+        value: info
+      - key: DATABASE_URL
+        fromDatabase:
+          name: sentia-db-prod
+          property: connectionString
+      - key: XERO_CLIENT_ID
+        sync: false
+      - key: XERO_CLIENT_SECRET
+        sync: false
+      - key: SHOPIFY_API_KEY
+        sync: false
+      - key: SHOPIFY_API_SECRET
+        sync: false
+      - key: SHOPIFY_ACCESS_TOKEN
+        sync: false
+      - key: AMAZON_SP_API_KEY
+        sync: false
+      - key: AMAZON_SP_API_SECRET
+        sync: false
+      - key: UNLEASHED_API_ID
+        sync: false
+      - key: UNLEASHED_API_KEY
+        sync: false
+
+  # Backend API
+  - type: web
+    name: sentia-backend-prod
+    env: node
+    plan: starter
+    region: oregon
+    buildCommand: |
+      corepack enable &&
+      pnpm install --frozen-lockfile &&
+      pnpm exec prisma generate
+    startCommand: pnpm run start:render
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10001
+      - key: DATABASE_URL
+        fromDatabase:
+          name: sentia-db-prod
+          property: connectionString
+      - key: MCP_SERVER_URL
+        fromService:
+          type: web
+          name: sentia-mcp-prod
+          property: url
+      - key: CLERK_SECRET_KEY
+        sync: false
+      - key: VITE_CLERK_PUBLISHABLE_KEY
+        sync: false
+
+  # Frontend static site
+  - type: static
+    name: sentia-frontend-prod
+    buildCommand: |
+      corepack enable &&
+      pnpm install --frozen-lockfile &&
+      pnpm run build
+    publishPath: dist
+    envVars:
+      - key: VITE_API_BASE_URL
+        fromService:
+          type: web
+          name: sentia-backend-prod
+          property: url
+      - key: VITE_CLERK_PUBLISHABLE_KEY
+        sync: false
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html

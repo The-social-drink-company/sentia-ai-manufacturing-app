@@ -14,11 +14,11 @@ import { useAuth } from '../../hooks/useAuth'
 import TimeSeriesAnalysis from './components/TimeSeriesAnalysis'
 import ForecastChart from './components/ForecastChart'
 import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui'
-import { demandForecastingService } from './services/DemandForecastingService'
 import { logError } from '../../utils/structuredLogger'
 
 export default function ForecastingDashboard() {
   const { user } = useAuth()
+  const isViewer = user?.role === 'viewer'
   const [data, setData] = useState([])
   const [analysis, setAnalysis] = useState(null)
   const [loading, setLoading] = useState(false)
@@ -51,12 +51,11 @@ export default function ForecastingDashboard() {
     },
   }
 
-  // Role-based access control
-  if (user?.role === 'viewer') {
-    return <Navigate to="/dashboard" replace />
-  }
-
   useEffect(() => {
+    if (isViewer) {
+      return
+    }
+
     const fetchData = async () => {
       try {
         setLoading(true)
@@ -84,7 +83,7 @@ export default function ForecastingDashboard() {
     }
 
     fetchData()
-  }, [selectedDataSource])
+  }, [selectedDataSource, isViewer])
 
   const handleForecastUpdate = forecastResult => {
     setAnalysis(forecastResult)

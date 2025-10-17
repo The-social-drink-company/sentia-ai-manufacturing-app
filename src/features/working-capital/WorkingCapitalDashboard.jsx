@@ -6,7 +6,6 @@ import {
   ArrowTrendingUpIcon,
   ArrowTrendingDownIcon,
   ExclamationTriangleIcon,
-  DocumentTextIcon,
   ArrowDownTrayIcon
 } from '@heroicons/react/24/solid'
 import { useAuth } from '../../hooks/useAuth'
@@ -24,7 +23,6 @@ const SUPPORTED_EXPORTS = ['csv', 'json']
 
 export default function WorkingCapitalDashboard() {
   const { user } = useAuth()
-  const { isConnected: xeroConnected } = useXero()
   const [selectedPeriod, setSelectedPeriod] = useState('current')
   const [selectedCurrency, setSelectedCurrency] = useState('USD')
   const {
@@ -33,7 +31,6 @@ export default function WorkingCapitalDashboard() {
     error,
     refetch,
     exportData,
-    isXeroConnected,
     isUsingRealData
   } = useWorkingCapitalMetrics(selectedPeriod)
 
@@ -214,10 +211,10 @@ export default function WorkingCapitalDashboard() {
 
         <div className="mb-6">
           <div
-            className={inline-flex items-center px-3 py-1 rounded-full text-sm font-medium }
+            className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium"
           >
             <span
-              className={w-2 h-2 rounded-full mr-2 }
+              className="w-2 h-2 rounded-full mr-2"
             />
             {isUsingRealData ? 'Data source: PostgreSQL (live)' : 'Data source: awaiting live feed'}
           </div>
@@ -230,10 +227,10 @@ export default function WorkingCapitalDashboard() {
               {alerts.map(alert => (
                 <div
                   key={alert.id}
-                  className={p-4 rounded-lg border flex items-start }
+                  className="p-4 rounded-lg border flex items-start"
                 >
                   <ExclamationTriangleIcon
-                    className={h-5 w-5 mt-0.5 mr-3 flex-shrink-0 }
+                    className="h-5 w-5 mt-0.5 mr-3 flex-shrink-0"
                   />
                   <div className="flex-1">
                     <h4 className="font-medium text-gray-900 dark:text-white">{alert.title}</h4>

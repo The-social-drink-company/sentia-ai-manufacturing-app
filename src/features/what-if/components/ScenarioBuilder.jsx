@@ -60,39 +60,44 @@ export function ScenarioBuilder({ onScenarioChange }) {
   const [activeScenario, setActiveScenario] = useState('base')
   const [isEditing, setIsEditing] = useState(false)
 
-  const handleVariableChange = (_scenarioId, _variable, value) => {
-    setScenarios(prev =>
-      prev.map(scenario =>
+  const handleVariableChange = (scenarioId, variable, value) => {
+    const numericValue = Number(value)
+
+    setScenarios(prev => {
+      const updatedScenarios = prev.map(scenario =>
         scenario.id === scenarioId
-          ? { ...scenario, variables: { ...scenario.variables, [variable]: Number(value) } }
+          ? { ...scenario, variables: { ...scenario.variables, [variable]: numericValue } }
           : scenario
       )
-    )
 
-    if (onScenarioChange) {
-      const updatedScenario = scenarios.find(s => s.id === scenarioId)
-      if (updatedScenario) {
-        onScenarioChange({
-          ...updatedScenario,
-          variables: { ...updatedScenario.variables, [variable]: Number(value) },
-        })
+      if (onScenarioChange) {
+        const updatedScenario = updatedScenarios.find(s => s.id === scenarioId)
+        if (updatedScenario) {
+          onScenarioChange(updatedScenario)
+        }
       }
-    }
+
+      return updatedScenarios
+    })
   }
 
-  const handleScenarioSelect = _scenarioId => {
+  const handleScenarioSelect = scenarioId => {
     setActiveScenario(scenarioId)
-    setScenarios(prev =>
-      prev.map(scenario => ({
+    setScenarios(prev => {
+      const updatedScenarios = prev.map(scenario => ({
         ...scenario,
         isActive: scenario.id === scenarioId,
       }))
-    )
 
-    const selectedScenario = scenarios.find(s => s.id === scenarioId)
-    if (selectedScenario && onScenarioChange) {
-      onScenarioChange(selectedScenario)
-    }
+      if (onScenarioChange) {
+        const selectedScenario = updatedScenarios.find(s => s.id === scenarioId)
+        if (selectedScenario) {
+          onScenarioChange(selectedScenario)
+        }
+      }
+
+      return updatedScenarios
+    })
   }
 
   const currentScenario = scenarios.find(s => s.id === activeScenario)

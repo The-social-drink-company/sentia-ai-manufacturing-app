@@ -132,6 +132,30 @@ const parseCashFlowReport = data => {
   }))
 }
 
+const parseCashFlowData = data => {
+  const historical = parseCashFlowReport(data)
+
+  const aggregates = historical.reduce(
+    (acc, entry) => {
+      acc.inflow += toNumber(entry.inflow)
+      acc.outflow += toNumber(entry.outflow)
+      acc.net += toNumber(entry.net)
+      return acc
+    },
+    { inflow: 0, outflow: 0, net: 0 }
+  )
+
+  return {
+    historical,
+    summary: {
+      totalInflow: Number(aggregates.inflow.toFixed(2)),
+      totalOutflow: Number(aggregates.outflow.toFixed(2)),
+      netChange: Number(aggregates.net.toFixed(2)),
+      periods: historical.length,
+    },
+  }
+}
+
 const fetchInventorySummary = async () => {
   const items = await prisma.inventory.findMany({
     include: { movements: true },
@@ -179,6 +203,114 @@ const fetchInventorySummary = async () => {
   }
 }
 
+const parseInventory = summary => {
+  if (!summary) {
+    return {
+      totalValue: 0,
+      totalQuantity: 0,
+      turnoverRate: 0,
+      stockouts: 0,
+      excessStock: 0,
+      categories: [],
+    }
+  }
+
+  return {
+    totalValue: toNumber(summary.totalValue),
+    totalQuantity: toNumber(summary.totalQuantity),
+    turnoverRate: toNumber(summary.turnoverRate),
+    stockouts: summary.stockouts ?? 0,
+    excessStock: summary.excessStock ?? 0,
+    categories: summary.categories ?? [],
+  }
+}
+
+const parseCurrentAssets = latest => ({
+  cash: toNumber(latest?.cash),
+  accountsReceivable: toNumber(latest?.accountsReceivable),
+  inventory: toNumber(latest?.inventory),
+  otherCurrentAssets: toNumber(latest?.otherCurrentAssets),
+  total: toNumber(latest?.currentAssets),
+})
+
+const parseCurrentLiabilities = latest => ({
+  accountsPayable: toNumber(latest?.accountsPayable),
+  shortTermDebt: toNumber(latest?.shortTermDebt),
+  accruedExpenses: toNumber(latest?.accruedExpenses),
+  otherCurrentLiabilities: toNumber(latest?.otherCurrentLiabilities),
+  total: toNumber(latest?.currentLiabilities),
+})
+
+const parseBankAccounts = (accounts, fallbackCash) => {
+  if (Array.isArray(accounts) && accounts.length) {
+    return accounts.map(account => ({
+      id: account.id ?? account.accountId ?? `acct-${Math.random().toString(36).slice(2, 8)}`,
+      name: account.name ?? account.accountName ?? 'Operating Account',
+      institution: account.institution ?? account.bankName ?? 'Primary Bank',
+      balance: toNumber(account.balance ?? account.currentBalance),
+      currency: account.currency ?? 'USD',
+      updatedAt: account.updatedAt
+        ? new Date(account.updatedAt).toISOString()
+        : new Date().toISOString(),
+    }))
+  }
+
+  if (typeof fallbackCash === 'number') {
+    return [
+      {
+        id: 'operating-cash',
+        name: 'Operating Cash',
+        institution: 'Primary Bank',
+        balance: toNumber(fallbackCash),
+        currency: 'USD',
+        updatedAt: new Date().toISOString(),
+      },
+    ]
+  }
+
+  return []
+}
+
+const fetchInventoryData = async () => {
+  try {
+    return await fetchInventorySummary()
+  } catch (error) {
+    console.error('Inventory data retrieval error:', error)
+    return null
+  }
+}
+
+const fetchAICashFlowForecast = async (workingCapitalId, horizon = 90) => {
+  if (!workingCapitalId) {
+    return []
+  }
+
+  try {
+    const periods = Math.max(Math.ceil(horizon / 30), 3)
+    const records = await prisma.cashFlowForecast.findMany({
+      where: { workingCapitalId },
+      orderBy: { forecastDate: 'asc' },
+      take: periods,
+    })
+
+    return records.map(record => ({
+      id: record.id,
+      date: record.forecastDate.toISOString(),
+      openingBalance: toNumber(record.openingBalance),
+      inflows: toNumber(record.cashInflows),
+      outflows: toNumber(record.cashOutflows),
+      closingBalance: toNumber(record.closingBalance),
+      runway: record.cashRunway ?? null,
+      burnRate: record.burnRate ? toNumber(record.burnRate) : null,
+      confidence: record.confidence ?? null,
+      assumptions: record.assumptions ?? null,
+    }))
+  } catch (error) {
+    console.error('Cash flow forecast retrieval error:', error)
+    return []
+  }
+}
+
 const calculateDaysInventory = summary => {
   if (!summary.totalValue || !summary.turnoverRate) {
     return 0
@@ -206,16 +338,35 @@ router.get('/', async (req, res) => {
 
     let workingCapitalData = {}
 
-    if (history.length > 0) {
-      const latest = history[0]
+    const latestRecord = history[0] ?? null
+    const [inventorySummary, forecast] = await Promise.all([
+      fetchInventoryData(),
+      fetchAICashFlowForecast(latestRecord?.id ?? null, 90),
+    ])
+
+    if (latestRecord) {
+      const cashBalance = toNumber(latestRecord.cash ?? runwayHistory[0]?.cashBalance)
       workingCapitalData = {
-        workingCapital: toNumber(latest.currentAssets - latest.currentLiabilities),
-        currentRatio: toNumber(latest.workingCapitalRatio),
-        quickRatio: toNumber(latest.quickRatio),
-        cash: toNumber(latest.cash || runwayHistory[0]?.cashBalance),
-        receivables: toNumber(latest.accountsReceivable),
-        payables: toNumber(latest.accountsPayable),
-        lastCalculated: latest.date || new Date().toISOString(),
+        workingCapital: toNumber(
+          latestRecord.currentAssets - latestRecord.currentLiabilities
+        ),
+        currentRatio: toNumber(latestRecord.workingCapitalRatio),
+        quickRatio: toNumber(latestRecord.quickRatio),
+        cash: cashBalance,
+        receivables: toNumber(latestRecord.accountsReceivable),
+        payables: toNumber(latestRecord.accountsPayable),
+        cashRunwayMonths: toNumber(runwayHistory[0]?.runwayMonths),
+        liquiditySnapshot: {
+          bankAccounts: parseBankAccounts(latestRecord.bankAccounts, cashBalance),
+          currentAssets: parseCurrentAssets(latestRecord),
+          currentLiabilities: parseCurrentLiabilities(latestRecord),
+          inventory: parseInventory(inventorySummary),
+        },
+        forecast,
+        lastCalculated:
+          latestRecord.date instanceof Date
+            ? latestRecord.date.toISOString()
+            : latestRecord.date || new Date().toISOString(),
       }
     } else {
       // Fallback data if no database records
@@ -226,6 +377,26 @@ router.get('/', async (req, res) => {
         cash: 580000,
         receivables: 1850000,
         payables: 980000,
+        cashRunwayMonths: 6,
+        liquiditySnapshot: {
+          bankAccounts: parseBankAccounts(null, 580000),
+          currentAssets: {
+            cash: 580000,
+            accountsReceivable: 1850000,
+            inventory: 960000,
+            otherCurrentAssets: 230000,
+            total: 3620000,
+          },
+          currentLiabilities: {
+            accountsPayable: 980000,
+            shortTermDebt: 210000,
+            accruedExpenses: 175000,
+            otherCurrentLiabilities: 160000,
+            total: 1525000,
+          },
+          inventory: parseInventory(inventorySummary),
+        },
+        forecast,
         lastCalculated: new Date().toISOString(),
       }
     }
@@ -238,6 +409,8 @@ router.get('/', async (req, res) => {
         source: 'database',
         timestamp: new Date().toISOString(),
         dataSource: 'database',
+        inventoryRefreshedAt: inventorySummary?.updatedAt ?? null,
+        forecastPeriods: forecast.length,
       },
     })
   } catch (error) {
@@ -258,7 +431,7 @@ router.get('/', async (req, res) => {
 
 router.get('/metrics', authenticateToken, async (_req, res) => {
   try {
-    const [history, runwayHistory] = await Promise.all([
+    const [history, runwayHistory, inventorySummary] = await Promise.all([
       prisma.workingCapital.findMany({
         orderBy: { date: 'desc' },
         take: 24,
@@ -267,6 +440,7 @@ router.get('/metrics', authenticateToken, async (_req, res) => {
         orderBy: { date: 'desc' },
         take: 6,
       }),
+      fetchInventoryData(),
     ])
 
     if (!history.length) {
@@ -277,6 +451,7 @@ router.get('/metrics', authenticateToken, async (_req, res) => {
     const latest = orderedHistory[orderedHistory.length - 1]
     const previous = orderedHistory[orderedHistory.length - 2] ?? null
     const runwayChange = calculateRunwayChange(runwayHistory)
+    const forecast = await fetchAICashFlowForecast(latest.id, 120)
 
     const metrics = {
       cashPosition: toNumber(latest.cash),
@@ -293,6 +468,13 @@ router.get('/metrics', authenticateToken, async (_req, res) => {
       wcStatus: determineStatus(latest.workingCapitalRatio),
       quickStatus: determineStatus(latest.quickRatio),
       history: buildWorkingCapitalTrend(orderedHistory),
+      balanceSheet: {
+        assets: parseCurrentAssets(latest),
+        liabilities: parseCurrentLiabilities(latest),
+      },
+      bankAccounts: parseBankAccounts(latest.bankAccounts, latest.cash),
+      inventory: parseInventory(inventorySummary),
+      forecast,
       timestamp: new Date().toISOString(),
     }
 
@@ -338,11 +520,14 @@ router.get('/xero/cashflow', authenticateToken, async (req, res) => {
       },
     })
 
-    const parsed = parseCashFlowReport(response.data)
+    const cashflow = parseCashFlowData(response.data)
+    const latestRecord = history[0]
+    const forecast = await fetchAICashFlowForecast(latestRecord?.id ?? null, 90)
 
     return res.json({
-      historical: parsed,
-      forecast: null,
+      historical: cashflow.historical,
+      summary: cashflow.summary,
+      forecast,
       metadata: {
         source: 'xero',
         period,

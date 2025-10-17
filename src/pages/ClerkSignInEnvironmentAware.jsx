@@ -31,7 +31,7 @@ const ClerkSignInEnvironmentAware = () => {
     }
 
     loadAuthComponents()
-  }, [isDevelopmentMode])
+  }, [])
 
   if (isDevelopmentMode) {
     console.log('[Development] Sign-in bypassed, redirecting to dashboard')

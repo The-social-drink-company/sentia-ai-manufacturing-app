@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Navigate } from 'react-router-dom'
 import {
   BanknotesIcon,
@@ -16,13 +16,13 @@ import AgingChart from './components/AgingChart'
 import CashConversionCycle from './components/CashConversionCycle'
 import CashFlowForecast from './components/CashFlowForecast'
 import OptimizationRecommendations from './components/OptimizationRecommendations'
-import { useXero } from '@/contexts/XeroContext'
 import { logError, devLog } from '../../utils/structuredLogger'
 
 const SUPPORTED_EXPORTS = ['csv', 'json']
 
 export default function WorkingCapitalDashboard() {
   const { user } = useAuth()
+  const isViewer = user?.role === 'viewer'
   const [selectedPeriod, setSelectedPeriod] = useState('current')
   const [selectedCurrency, setSelectedCurrency] = useState('USD')
   const {
@@ -36,24 +36,58 @@ export default function WorkingCapitalDashboard() {
 
   const audit = useDashboardAudit()
 
+  const currencyFormatter = useMemo(
+    () =>
+      new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: selectedCurrency,
+        maximumFractionDigits: 0,
+      }),
+    [selectedCurrency]
+  )
+
+  const formatCurrency = value =>
+    typeof value === 'number' && Number.isFinite(value) ? currencyFormatter.format(value) : '--'
+
+  const formatNumber = value =>
+    typeof value === 'number' && Number.isFinite(value) ? value.toLocaleString() : '--'
+
+  const getMonetaryTotal = source => {
+    if (!source || typeof source !== 'object') return null
+    const keys = ['total', 'totalOutstanding', 'value', 'totalValue', 'balance', 'amount']
+    for (const key of keys) {
+      const candidate = source[key]
+      if (typeof candidate === 'number' && Number.isFinite(candidate)) {
+        return candidate
+      }
+    }
+    return null
+  }
+
   useEffect(() => {
+    if (isViewer) {
+      return
+    }
     const start = performance.now()
     if (metrics && !loading) {
       audit.logDashboardLoad(performance.now() - start, Object.keys(metrics).length)
     }
-  }, [metrics, loading, audit])
-
-  if (user?.role === 'viewer') {
-    return <Navigate to="/dashboard" replace />
-  }
+  }, [metrics, loading, audit, isViewer])
 
   useEffect(() => {
+    if (isViewer) {
+      return undefined
+    }
     const interval = setInterval(() => {
       audit.logMetricRefresh('auto_refresh', 'periodic')
       refetch()
     }, 15 * 60 * 1000)
     return () => clearInterval(interval)
-  }, [refetch, audit])
+  }, [refetch, audit, isViewer])
+
+  if (isViewer) {
+    return <Navigate to="/dashboard" replace />
+  }
 
   if (loading && !metrics) {
     return (
@@ -99,6 +133,10 @@ export default function WorkingCapitalDashboard() {
   }
 
   const { summary, receivables, payables, inventory, cashFlow, recommendations, alerts, cccHistory } = metrics
+
+  const receivablesTotal = getMonetaryTotal(receivables)
+  const payablesTotal = getMonetaryTotal(payables)
+  const inventoryTotal = getMonetaryTotal(inventory)
 
   const handleExport = async format => {
     const start = performance.now()
@@ -210,11 +248,9 @@ export default function WorkingCapitalDashboard() {
         {/* Xero connection banners removed - custom connections don't require user interaction */}
 
         <div className="mb-6">
-          <div
-            className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium"
-          >
+          <div className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium">
             <span
-              className="w-2 h-2 rounded-full mr-2"
+              className={`w-2 h-2 rounded-full mr-2 ${isUsingRealData ? 'bg-emerald-500' : 'bg-amber-500 animate-pulse'}`}
             />
             {isUsingRealData ? 'Data source: PostgreSQL (live)' : 'Data source: awaiting live feed'}
           </div>
@@ -293,13 +329,13 @@ export default function WorkingCapitalDashboard() {
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-600 dark:text-gray-400">Total Outstanding</span>
                   <span className="font-semibold text-gray-900 dark:text-white">
-                    
+                    {formatCurrency(receivablesTotal)}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-600 dark:text-gray-400">DSO</span>
                   <span className="font-semibold text-gray-900 dark:text-white">
-                    {receivables.dso ?? '--'} days
+                    {formatNumber(receivables.dso)} days
                   </span>
                 </div>
               </div>
@@ -315,13 +351,13 @@ export default function WorkingCapitalDashboard() {
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-600 dark:text-gray-400">Total Outstanding</span>
                   <span className="font-semibold text-gray-900 dark:text-white">
-                    
+                    {formatCurrency(payablesTotal)}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-600 dark:text-gray-400">DPO</span>
                   <span className="font-semibold text-gray-900 dark:text-white">
-                    {payables.dpo ?? '--'} days
+                    {formatNumber(payables.dpo)} days
                   </span>
                 </div>
               </div>
@@ -337,19 +373,19 @@ export default function WorkingCapitalDashboard() {
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-600 dark:text-gray-400">Total Value</span>
                   <span className="font-semibold text-gray-900 dark:text-white">
-                    
+                    {formatCurrency(inventoryTotal)}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-600 dark:text-gray-400">DIO</span>
                   <span className="font-semibold text-gray-900 dark:text-white">
-                    {inventory.dio ?? '--'} days
+                    {formatNumber(inventory.dio)} days
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-600 dark:text-gray-400">Turnover Ratio</span>
                   <span className="font-semibold text-gray-900 dark:text-white">
-                    {inventory.turnoverRatio ?? '--'}x
+                    {formatNumber(inventory.turnoverRatio)}x
                   </span>
                 </div>
               </div>

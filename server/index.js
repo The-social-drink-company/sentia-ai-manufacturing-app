@@ -11,6 +11,9 @@ import helmet from 'helmet';
 import compression from 'compression';
 import fs from 'fs';
 import workingCapitalRouter from './api/working-capital.js';
+import realApiRouter from './api/real-api.js';
+import enterpriseApiRouter from './api/enterprise-api.js';
+import enhancedForecastingRouter from './api/enhanced-forecasting.js';
 
 // ES module compatibility
 const __filename = fileURLToPath(import.meta.url);
@@ -129,109 +132,11 @@ app.get('/api/status', (req, res) => {
   });
 });
 
-// Dashboard Summary endpoint
-app.get('/api/dashboard/summary', (req, res) => {
-  res.json({
-    revenue: {
-      monthly: 2543000,
-      quarterly: 7850000,
-      yearly: 32400000,
-      growth: 12.3
-    },
-    workingCapital: {
-      current: 1945000,
-      ratio: 2.76,
-      cashFlow: 850000,
-      daysReceivable: 45
-    },
-    production: {
-      efficiency: 94.2,
-      unitsProduced: 12543,
-      defectRate: 0.8,
-      oeeScore: 87.5
-    },
-    inventory: {
-      value: 1234000,
-      turnover: 4.2,
-      skuCount: 342,
-      lowStock: 8
-    },
-    financial: {
-      grossMargin: 42.3,
-      netMargin: 18.7,
-      ebitda: 485000,
-      roi: 23.4
-    },
-    timestamp: new Date().toISOString(),
-    dataSource: 'bulletproof-api'
-  });
-});
-
-// Working Capital endpoint
-app.get('/api/financial/working-capital', (req, res) => {
-  res.json({
-    data: [{
-      date: new Date().toISOString(),
-      currentAssets: 5420000,
-      currentLiabilities: 2340000,
-      workingCapital: 3080000,
-      ratio: 2.32,
-      cashFlow: 850000,
-      daysReceivable: 45
-    }],
-    latest: {
-      currentAssets: 5420000,
-      currentLiabilities: 2340000,
-      workingCapital: 3080000,
-      ratio: 2.32
-    },
-    dataSource: 'bulletproof-api'
-  });
-});
-
 // Mount working capital router for MCP integration
 app.use('/api/working-capital', workingCapitalRouter);
-
-// Cash Flow endpoint
-app.get('/api/financial/cash-flow', (req, res) => {
-  res.json({
-    data: [{
-      date: new Date().toISOString(),
-      operatingCashFlow: 850000,
-      investingCashFlow: -120000,
-      financingCashFlow: -45000,
-      netCashFlow: 685000
-    }],
-    latest: {
-      operatingCashFlow: 850000,
-      netCashFlow: 685000
-    },
-    dataSource: 'bulletproof-api'
-  });
-});
-
-// Enhanced Forecasting endpoint
-app.get('/api/forecasting/enhanced', (req, res) => {
-  res.json({
-    forecast: {
-      horizon: 365,
-      accuracy: 88.5,
-      confidence: 0.92,
-      model: 'ensemble-ai',
-      dataPoints: Array.from({length: 12}, (_, i) => ({
-        month: new Date(Date.now() + i * 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 7),
-        revenue: 2500000 + (Math.random() * 500000),
-        growth: 8.5 + (Math.random() * 5),
-        confidence: 0.85 + (Math.random() * 0.1)
-      }))
-    },
-    aiModels: {
-      gpt4: { status: 'active', accuracy: 87.2 },
-      claude: { status: 'active', accuracy: 89.8 }
-    },
-    timestamp: new Date().toISOString()
-  });
-});
+app.use('/api/enterprise', enterpriseApiRouter);
+app.use('/api/forecasting/enhanced', enhancedForecastingRouter);
+app.use('/api', realApiRouter);
 
 // MCP Status endpoint
 app.get('/api/mcp/status', async (req, res) => {
@@ -262,104 +167,6 @@ app.get('/api/mcp/status', async (req, res) => {
   }
 });
 
-// Financial KPI Summary endpoint
-app.get('/api/financial/kpi-summary', (req, res) => {
-  console.log('📊 KPI summary data requested');
-  res.json({
-    success: true,
-    data: {
-      annualRevenue: {
-        value: '$32.4M',
-        helper: '+12.3% vs last year'
-      },
-      unitsSold: {
-        value: '145,650',
-        helper: '+8.7% vs last year'
-      },
-      grossMargin: {
-        value: '42.3%',
-        helper: '+2.1pp vs last year'
-      }
-    },
-    meta: {
-      timestamp: new Date().toISOString(),
-      dataSource: 'main-server-fallback'
-    }
-  });
-});
-
-// Product Sales Performance endpoint
-app.get('/api/sales/product-performance', (req, res) => {
-  console.log('📈 Product sales data requested');
-  const period = req.query.period || 'year';
-  
-  // Generate sample data based on period
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  const data = months.slice(0, period === 'quarter' ? 3 : 12).map((month, index) => ({
-    month,
-    revenue: 2500000 + (Math.random() * 500000),
-    units: 12000 + (Math.random() * 3000),
-    growth: (Math.random() * 20) - 5 // -5% to +15%
-  }));
-
-  res.json({
-    success: true,
-    data,
-    meta: {
-      timestamp: new Date().toISOString(),
-      period,
-      dataSource: 'main-server-fallback'
-    }
-  });
-});
-
-// P&L Analysis endpoint
-app.get('/api/financial/pl-analysis', (req, res) => {
-  console.log('💼 P&L analysis data requested');
-  const period = req.query.period || 'year';
-  
-  // Generate sample P&L data
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  const data = months.slice(0, period === 'quarter' ? 3 : 12).map((month, index) => ({
-    month,
-    revenue: 2700000 + (Math.random() * 300000),
-    cogs: 1500000 + (Math.random() * 200000),
-    grossProfit: 1200000 + (Math.random() * 150000),
-    operatingExpenses: 800000 + (Math.random() * 100000),
-    netIncome: 400000 + (Math.random() * 80000)
-  }));
-
-  res.json({
-    success: true,
-    data,
-    meta: {
-      timestamp: new Date().toISOString(),
-      period,
-      dataSource: 'main-server-fallback'
-    }
-  });
-});
-
-// Regional Performance endpoint
-app.get('/api/regional/performance', (req, res) => {
-  console.log('🌍 Regional performance data requested');
-  const regions = [
-    { name: 'North America', revenue: 12500000, growth: 15.2, market_share: 35 },
-    { name: 'Europe', revenue: 9800000, growth: 8.7, market_share: 28 },
-    { name: 'Asia Pacific', revenue: 7200000, growth: 22.1, market_share: 22 },
-    { name: 'Latin America', revenue: 3400000, growth: 5.8, market_share: 10 },
-    { name: 'Middle East & Africa', revenue: 1800000, growth: 12.4, market_share: 5 }
-  ];
-
-  res.json({
-    success: true,
-    data: regions,
-    meta: {
-      timestamp: new Date().toISOString(),
-      dataSource: 'main-server-fallback'
-    }
-  });
-});
 
 // Catch-all API handler to prevent static file serving for API routes
 app.use('/api/*', (req, res) => {

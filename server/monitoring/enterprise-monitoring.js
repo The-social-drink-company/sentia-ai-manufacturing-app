@@ -379,13 +379,9 @@ class EnterpriseMonitoringSystem {
     }));
   }
 
-  getRequestHistory(points = 60) {
-    // This would need real request tracking over time
-    // For now, return mock data
-    return Array.from({ length: points }, (_, i) => ({
-      timestamp: new Date(Date.now() - (points - i) * 60000).toISOString(),
-      count: Math.floor(Math.random() * 100) + 50
-    }));
+  getRequestHistory() {
+    // Real request tracking requires integration with a metrics store.
+    return [];
   }
 }
 

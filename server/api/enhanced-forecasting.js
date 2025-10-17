@@ -132,8 +132,7 @@ router.post('/', authenticateToken, async (req, res) => {
     logError('Enhanced forecast generation failed', _error);
     res.status(500).json({
       error: 'Forecast generation failed',
-      message: _error.message,
-      fallback: await generateFallbackForecast(req.body.horizon || 90)
+      message: _error.message
     });
   }
 });
@@ -297,8 +296,8 @@ async function fetchHistoricalDemandData(source = 'database') {
         return await fetchDatabaseDemandData();
     }
   } catch (_error) {
-    logWarn('Failed to fetch historical data, using fallback', _error);
-    return generateFallbackHistoricalData();
+    logError('Failed to fetch historical demand data', _error);
+    throw _error;
   }
 }
 
@@ -327,27 +326,6 @@ async function fetchExternalDemandData() {
   // Would integrate with Shopify, Amazon, etc.
   logInfo('External demand data integration not yet implemented');
   return await fetchDatabaseDemandData();
-}
-
-function generateFallbackHistoricalData() {
-  const data = [];
-  const baseValue = 8000;
-
-  for (let i = 179; i >= 0; i--) {
-    const date = new Date(Date.now() - i * 24 * 60 * 60 * 1000);
-    const trend = (179 - i) * 2; // Slight upward trend
-    const seasonality = Math.sin((179 - i) * 2 * Math.PI / 30) * 200;
-    const noise = (Math.random() - 0.5) * 400;
-
-    data.push({
-      date: date.toISOString(),
-      value: Math.round(baseValue + trend + seasonality + noise),
-      source: 'fallback',
-      quality: 0.7
-    });
-  }
-
-  return data;
 }
 
 /**
@@ -435,36 +413,6 @@ function generateActionableInsights(forecastResult) {
   }
 
   return insights;
-}
-
-/**
- * Generate fallback forecast when AI models unavailable
- */
-async function generateFallbackForecast(horizon) {
-  const historicalData = await fetchHistoricalDemandData();
-  const recentAverage = historicalData.slice(-30)
-    .reduce((sum, d) => sum + d.value, 0) / 30;
-
-  const predictions = [];
-  for (let i = 0; i < horizon; i++) {
-    predictions.push({
-      day: i + 1,
-      value: Math.round(recentAverage + (Math.random() - 0.5) * 200),
-      confidence: 0.6
-    });
-  }
-
-  return {
-    forecast: {
-      predictions,
-      confidence: 0.6,
-      fallback: true
-    },
-    analytics: {
-      summary: { averageDemand: recentAverage }
-    },
-    models: { fallback: true }
-  };
 }
 
 /**

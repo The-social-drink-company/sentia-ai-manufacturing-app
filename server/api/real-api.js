@@ -11,6 +11,28 @@ import { PrismaClient } from '@prisma/client';
 const router = express.Router();
 const prisma = new PrismaClient();
 
+const toNumber = (value) => {
+  if (value === null || value === undefined) return 0;
+  if (typeof value === 'number') return value;
+  if (typeof value === 'bigint') return Number(value);
+  return Number(value);
+};
+
+const formatCurrency = (value) => new Intl.NumberFormat('en-GB', {
+  style: 'currency',
+  currency: 'GBP',
+  maximumFractionDigits: 0
+}).format(value);
+
+const formatPercentage = (value) => {
+  if (value === null || value === undefined || Number.isNaN(value)) {
+    return null;
+  }
+  const rounded = Number(value.toFixed(1));
+  const sign = rounded > 0 ? '+' : '';
+  return `${sign}${rounded}%`;
+};
+
 
 /**
  * Dashboard Summary - Real Production Data
@@ -199,6 +221,88 @@ router.get('/financial/metrics', async (req, res) => {
 });
 
 /**
+ * Financial KPI Summary - Real Data
+ */
+router.get('/financial/kpi-summary', async (_req, res) => {
+  try {
+    const now = new Date();
+    const startOfCurrentMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const startOfQuarter = new Date(now.getFullYear(), now.getMonth() - 2, 1);
+    const startOfYear = new Date(now.getFullYear(), 0, 1);
+    const startOfPreviousYear = new Date(now.getFullYear() - 1, 0, 1);
+
+    const [revenueAgg] = await prisma.$queryRaw`
+      SELECT
+        SUM(CASE WHEN sale_date >= ${startOfCurrentMonth} THEN net_revenue ELSE 0 END) AS monthly,
+        SUM(CASE WHEN sale_date >= ${startOfQuarter} THEN net_revenue ELSE 0 END) AS quarterly,
+        SUM(CASE WHEN sale_date >= ${startOfYear} THEN net_revenue ELSE 0 END) AS yearly,
+        SUM(CASE WHEN sale_date >= ${startOfPreviousYear} AND sale_date < ${startOfYear} THEN net_revenue ELSE 0 END) AS previous_year
+      FROM historical_sales
+    `;
+
+    const [unitsAgg] = await prisma.$queryRaw`
+      SELECT
+        SUM(CASE WHEN sale_date >= ${startOfYear} THEN quantity_sold ELSE 0 END) AS units,
+        SUM(CASE WHEN sale_date >= ${startOfPreviousYear} AND sale_date < ${startOfYear} THEN quantity_sold ELSE 0 END) AS previous_units
+      FROM historical_sales
+    `;
+
+    const latestFinancial = await prisma.financialMetrics.findFirst({
+      orderBy: { date: 'desc' }
+    });
+
+    const currentYearRevenue = toNumber(revenueAgg?.yearly || 0);
+    const previousYearRevenue = toNumber(revenueAgg?.previous_year || 0);
+    const revenueGrowth = previousYearRevenue > 0
+      ? ((currentYearRevenue - previousYearRevenue) / previousYearRevenue) * 100
+      : null;
+
+    const currentUnits = toNumber(unitsAgg?.units || 0);
+    const previousUnits = toNumber(unitsAgg?.previous_units || 0);
+    const unitsGrowth = previousUnits > 0
+      ? ((currentUnits - previousUnits) / previousUnits) * 100
+      : null;
+
+    res.json({
+      success: true,
+      data: {
+        annualRevenue: {
+          value: formatCurrency(currentYearRevenue),
+          helper: revenueGrowth === null ? 'No prior-year data' : `YoY ${formatPercentage(revenueGrowth)}`
+        },
+        unitsSold: {
+          value: new Intl.NumberFormat('en-GB').format(currentUnits),
+          helper: unitsGrowth === null ? 'No prior-year data' : `YoY ${formatPercentage(unitsGrowth)}`
+        },
+        grossMargin: {
+          value: latestFinancial?.grossMargin !== undefined && latestFinancial?.grossMargin !== null
+            ? `${Number(latestFinancial.grossMargin).toFixed(1)}%`
+            : null,
+          helper: latestFinancial?.grossMarginTrend || null
+        },
+        netMargin: {
+          value: latestFinancial?.netMargin !== undefined && latestFinancial?.netMargin !== null
+            ? `${Number(latestFinancial.netMargin).toFixed(1)}%`
+            : null,
+          helper: latestFinancial?.netMarginTrend || null
+        }
+      },
+      meta: {
+        generatedAt: new Date().toISOString(),
+        dataSource: 'database'
+      }
+    });
+  } catch (error) {
+    console.error('Financial KPI summary error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to compute financial KPI summary',
+      details: error.message
+    });
+  }
+});
+
+/**
  * Production Metrics - Real Manufacturing Data
  */
 router.get('/production/metrics', async (req, res) => {
@@ -308,6 +412,200 @@ router.get('/quality/metrics', async (req, res) => {
     console.error('Quality API Error:', error);
     res.status(500).json({
       error: 'Failed to fetch quality data',
+      details: error.message
+    });
+  }
+});
+
+
+/**
+ * Product Sales Performance - Real Data
+ */
+router.get('/sales/product-performance', async (req, res) => {
+  try {
+    const period = (req.query.period || 'year').toString();
+    const months = period === 'quarter' ? 3 : 12;
+    const since = new Date();
+    since.setMonth(since.getMonth() - months);
+
+    const rows = await prisma.$queryRaw`
+      SELECT
+        date_trunc('month', sale_date) AS month,
+        SUM(net_revenue) AS revenue,
+        SUM(quantity_sold) AS units
+      FROM historical_sales
+      WHERE sale_date >= ${since}
+      GROUP BY 1
+      ORDER BY 1
+    `;
+
+    if (!rows.length) {
+      return res.status(404).json({
+        success: false,
+        error: 'No sales data available'
+      });
+    }
+
+    const data = rows.map((row, index) => {
+      const revenue = toNumber(row.revenue || 0);
+      const units = toNumber(row.units || 0);
+      const previousRevenue = index > 0 ? toNumber(rows[index - 1].revenue || 0) : null;
+      const growth = previousRevenue && previousRevenue !== 0
+        ? ((revenue - previousRevenue) / previousRevenue) * 100
+        : null;
+
+      return {
+        month: row.month instanceof Date ? row.month.toISOString().slice(0, 7) : String(row.month).slice(0, 7),
+        revenue,
+        units,
+        growth
+      };
+    });
+
+    res.json({
+      success: true,
+      data,
+      meta: {
+        period,
+        start: since.toISOString(),
+        end: new Date().toISOString(),
+        dataSource: 'database'
+      }
+    });
+  } catch (error) {
+    console.error('Product performance error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to compute product performance',
+      details: error.message
+    });
+  }
+});
+
+/**
+ * P&L Analysis - Real Data
+ */
+router.get('/financial/pl-analysis', async (req, res) => {
+  try {
+    const period = (req.query.period || 'year').toString();
+    const months = period === 'quarter' ? 3 : 12;
+    const since = new Date();
+    since.setMonth(since.getMonth() - months);
+
+    const rows = await prisma.$queryRaw`
+      SELECT
+        date_trunc('month', sale_date) AS month,
+        SUM(net_revenue) AS revenue,
+        SUM(cost_of_goods_sold) AS cogs,
+        SUM(net_profit) AS net_profit
+      FROM historical_sales
+      WHERE sale_date >= ${since}
+      GROUP BY 1
+      ORDER BY 1
+    `;
+
+    if (!rows.length) {
+      return res.status(404).json({
+        success: false,
+        error: 'No P&L data available'
+      });
+    }
+
+    const data = rows.map((row) => {
+      const revenue = toNumber(row.revenue || 0);
+      const cogs = toNumber(row.cogs || 0);
+      const netIncome = toNumber(row.net_profit || 0);
+      const grossProfit = revenue - cogs;
+      const operatingExpenses = revenue - grossProfit - netIncome;
+
+      return {
+        month: row.month instanceof Date ? row.month.toISOString().slice(0, 7) : String(row.month).slice(0, 7),
+        revenue,
+        cogs,
+        grossProfit,
+        operatingExpenses,
+        netIncome
+      };
+    });
+
+    res.json({
+      success: true,
+      data,
+      meta: {
+        period,
+        start: since.toISOString(),
+        end: new Date().toISOString(),
+        dataSource: 'database'
+      }
+    });
+  } catch (error) {
+    console.error('P&L analysis error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to compute P&L analysis',
+      details: error.message
+    });
+  }
+});
+
+/**
+ * Regional Performance - Real Data
+ */
+router.get('/regional/performance', async (_req, res) => {
+  try {
+    const currentPeriodStart = new Date();
+    currentPeriodStart.setMonth(currentPeriodStart.getMonth() - 3);
+    const previousPeriodStart = new Date(currentPeriodStart);
+    previousPeriodStart.setMonth(previousPeriodStart.getMonth() - 3);
+
+    const rows = await prisma.$queryRaw`
+      SELECT
+        COALESCE(region, 'Unspecified') AS region,
+        SUM(CASE WHEN sale_date >= ${currentPeriodStart} THEN net_revenue ELSE 0 END) AS current_revenue,
+        SUM(CASE WHEN sale_date >= ${previousPeriodStart} AND sale_date < ${currentPeriodStart} THEN net_revenue ELSE 0 END) AS previous_revenue
+      FROM historical_sales
+      WHERE sale_date >= ${previousPeriodStart}
+      GROUP BY 1
+      ORDER BY 1
+    `;
+
+    if (!rows.length) {
+      return res.status(404).json({
+        success: false,
+        error: 'No regional sales data available'
+      });
+    }
+
+    const totalCurrentRevenue = rows.reduce((sum, row) => sum + toNumber(row.current_revenue || 0), 0);
+
+    const data = rows.map((row) => {
+      const current = toNumber(row.current_revenue || 0);
+      const previous = toNumber(row.previous_revenue || 0);
+      const growth = previous > 0 ? ((current - previous) / previous) * 100 : null;
+      const marketShare = totalCurrentRevenue > 0 ? (current / totalCurrentRevenue) * 100 : null;
+
+      return {
+        name: row.region,
+        revenue: current,
+        growth,
+        market_share: marketShare
+      };
+    });
+
+    res.json({
+      success: true,
+      data,
+      meta: {
+        period: 'quarter',
+        generatedAt: new Date().toISOString(),
+        dataSource: 'database'
+      }
+    });
+  } catch (error) {
+    console.error('Regional performance error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to compute regional performance',
       details: error.message
     });
   }

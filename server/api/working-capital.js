@@ -91,24 +91,6 @@ const buildAgingFromLatest = (latest) => {
   }
 }
 
-const fallbackTopAccounts = (total, prefix) => [
-  {
-    name: `${prefix} One`,
-    amount: Number((total * 0.18).toFixed(2)),
-    daysOverdue: 45
-  },
-  {
-    name: `${prefix} Two`,
-    amount: Number((total * 0.14).toFixed(2)),
-    daysOverdue: 32
-  },
-  {
-    name: `${prefix} Three`,
-    amount: Number((total * 0.09).toFixed(2)),
-    daysOverdue: 21
-  }
-]
-
 const parseCashFlowReport = (data) => {
   if (!data) {
     return []
@@ -147,33 +129,6 @@ const parseCashFlowReport = (data) => {
       outflow: point.outflow,
       net: toNumber(point.net ?? point.inflow - point.outflow)
     }))
-}
-
-const fallbackCashFlowTimeline = (history) => {
-  if (!history.length) {
-    return []
-  }
-  return history.map((entry) => ({
-    label: new Date(entry.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-    inflow: Number((entry.currentAssets * 0.35).toFixed(2)),
-    outflow: Number((entry.currentLiabilities * 0.28).toFixed(2)),
-    net: Number((entry.cash ?? 0).toFixed(2))
-  }))
-}
-
-const fetchAICashFlowForecast = async (timeline) => {
-  // Generate simple cash flow forecast without MCP
-  return {
-    predictions: timeline.map((point, idx) => ({
-      label: `Day ${idx + 1}`,
-      value: Number((point.net ?? 0).toFixed(2))
-    })),
-    confidence: 0.75,
-    scenarios: [
-      { name: 'Conservative', adjustment: -0.15 },
-      { name: 'Optimistic', adjustment: 0.12 }
-    ]
-  }
 }
 
 const fetchInventorySummary = async () => {
@@ -348,17 +303,14 @@ router.get('/xero/cashflow', authenticateToken, async (req, res) => {
     })
     const timeline = buildWorkingCapitalTrend(history)
 
+    if (!timeline.length) {
+      return res.status(404).json({ error: 'No working capital history available for cash flow analysis' })
+    }
+
     if (!process.env.XERO_ACCESS_TOKEN || !process.env.XERO_TENANT_ID) {
-      const fallbackTimeline = fallbackCashFlowTimeline(timeline)
-      const forecast = await fetchAICashFlowForecast(fallbackTimeline)
-      return res.json({
-        historical: fallbackTimeline,
-        forecast,
-        metadata: {
-          source: 'database',
-          period,
-          lastUpdated: new Date().toISOString()
-        }
+      return res.status(503).json({
+        error: 'Xero integration not configured',
+        message: 'Set XERO_ACCESS_TOKEN and XERO_TENANT_ID to retrieve cash flow data'
       })
     }
 
@@ -379,11 +331,10 @@ router.get('/xero/cashflow', authenticateToken, async (req, res) => {
     )
 
     const parsed = parseCashFlowReport(response.data)
-    const forecast = await fetchAICashFlowForecast(parsed)
 
     return res.json({
       historical: parsed,
-      forecast,
+      forecast: null,
       metadata: {
         source: 'xero',
         period,
@@ -418,8 +369,8 @@ router.get('/finance/ar-ap', authenticateToken, async (_req, res) => {
       daysReceivables: toNumber(latest.dso, 0),
       daysPayables: toNumber(latest.dpo, 0),
       aging,
-      topDebtors: fallbackTopAccounts(receivables, 'Customer'),
-      topCreditors: fallbackTopAccounts(payables, 'Supplier')
+      topDebtors: [],
+      topCreditors: []
     })
   } catch (error) {
     console.error('AR/AP error:', error)
@@ -447,28 +398,10 @@ router.get('/inventory/turnover', authenticateToken, async (_req, res) => {
 })
 
 router.get('/forecasts/cashflow', authenticateToken, async (_req, res) => {
-  try {
-    const history = await prisma.workingCapital.findMany({
-      orderBy: { date: 'desc' },
-      take: 12
-    })
-    const timeline = fallbackCashFlowTimeline(buildWorkingCapitalTrend(history))
-    const forecast = await fetchAICashFlowForecast(timeline)
-
-    return res.json({
-      cashflow: forecast.predictions,
-      scenarios: forecast.scenarios,
-      recommendations: [],
-      confidence: forecast.confidence,
-      metadata: {
-        model: forecast.model || 'cashflow-forecast',
-        generated: new Date().toISOString()
-      }
-    })
-  } catch (error) {
-    console.error('AI forecast error:', error)
-    return res.status(500).json({ error: 'Failed to fetch AI forecasts' })
-  }
+  return res.status(503).json({
+    error: 'Cash flow forecasting service not configured',
+    message: 'Connect an external forecasting service to enable this endpoint'
+  })
 })
 
 export default router

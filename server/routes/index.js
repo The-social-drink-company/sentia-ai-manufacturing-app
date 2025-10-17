@@ -35,12 +35,11 @@ export function setupRoutes(app) {
           'POST /api/auth/signout': 'User logout'
         },
         data: {
-          'GET /api/data/manufacturing': 'Get manufacturing data',
-          'POST /api/data/upload': 'Upload data files',
-          'GET /api/data/export': 'Export data'
+          'GET /api/data/manufacturing': '503 - data ingestion pipeline not connected',
+          'POST /api/data/upload': '503 - data ingestion pipeline not connected'
         },
         sse: {
-          'GET /api/events': 'Server-sent events stream'
+          'GET /api/events/live-data': '503 - real-time telemetry not configured'
         },
         health: {
           'GET /api/health': 'Health check',

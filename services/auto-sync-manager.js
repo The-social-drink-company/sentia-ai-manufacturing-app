@@ -175,9 +175,18 @@ class AutoSyncManager {
       case 'xero':
         return process.env.XERO_CLIENT_ID && process.env.XERO_CLIENT_SECRET;
       case 'shopify':
-        return process.env.SHOPIFY_API_KEY && process.env.SHOPIFY_API_SECRET;
+        return (
+          (process.env.SHOPIFY_API_KEY && process.env.SHOPIFY_API_SECRET) ||
+          (process.env.SHOPIFY_UK_ACCESS_TOKEN && process.env.SHOPIFY_UK_SHOP_DOMAIN) ||
+          (process.env.SHOPIFY_USA_ACCESS_TOKEN && process.env.SHOPIFY_USA_SHOP_DOMAIN)
+        );
       case 'amazon':
-        return process.env.AMAZON_SP_API_KEY && process.env.AMAZON_SP_API_SECRET;
+        return (
+          process.env.AMAZON_REFRESH_TOKEN &&
+          process.env.AMAZON_LWA_APP_ID &&
+          process.env.AMAZON_LWA_CLIENT_SECRET &&
+          (process.env.AMAZON_SP_ROLE_ARN || process.env.AMAZON_SELLER_ID)
+        );
       case 'unleashed':
         return process.env.UNLEASHED_API_ID && process.env.UNLEASHED_API_KEY;
       case 'database':

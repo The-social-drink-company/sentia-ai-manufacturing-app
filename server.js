@@ -15,6 +15,9 @@ import fs from 'fs'
 import { createServer } from 'http'
 import { Server as SocketIOServer } from 'socket.io'
 
+// Import API routers
+import authRouter from './server/routes/auth.js'
+
 // Initialize logger with fallback
 let logger
 let createLogger, loggingMiddleware
@@ -310,6 +313,12 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }))
 
 // Enterprise logging middleware
 app.use(loggingMiddleware)
+
+// Make prisma available to routes
+app.locals.prisma = prisma
+
+// API Routes
+app.use('/api/auth', authRouter)
 
 // Health check endpoint with REAL status
 app.get('/health', async (req, res) => {
@@ -1136,18 +1145,7 @@ app.get('/api/forecasting/enhanced', async (req, res) => {
   }
 })
 
-// Authentication endpoints
-app.get('/api/auth/me', async (req, res) => {
-  // This would integrate with Clerk in production
-  res.json({
-    user: {
-      id: 'user_123',
-      email: 'admin@sentia.com',
-      role: 'admin',
-      permissions: ['all'],
-    },
-  })
-})
+// Authentication endpoints are now handled by authRouter (/api/auth/*)
 
 // Xero diagnostic endpoint
 app.get('/api/xero/health', async (req, res) => {

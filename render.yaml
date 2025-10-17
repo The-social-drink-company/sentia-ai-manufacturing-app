@@ -77,7 +77,7 @@ services:
         fromService:
           type: web
           name: sentia-mcp-prod
-          property: url
+          envVarKey: RENDER_EXTERNAL_URL
       - key: CLERK_SECRET_KEY
         sync: false
       - key: VITE_CLERK_PUBLISHABLE_KEY
@@ -88,7 +88,6 @@ services:
     name: sentia-frontend-prod
     env: static
     plan: starter
-    region: oregon
     buildCommand: |
       corepack enable &&
       pnpm install --frozen-lockfile &&
@@ -110,6 +109,6 @@ services:
         fromService:
           type: web
           name: sentia-backend-prod
-          property: url
+          envVarKey: RENDER_EXTERNAL_URL
       - key: VITE_CLERK_PUBLISHABLE_KEY
         sync: false

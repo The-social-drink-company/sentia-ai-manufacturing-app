@@ -91,7 +91,7 @@ services:
   # 3. Frontend - React application served as static site
   - type: web
     name: sentia-frontend-prod
-    env: static
+    runtime: static
     buildCommand: |
       corepack enable &&
       pnpm install --frozen-lockfile &&

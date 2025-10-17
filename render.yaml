@@ -13,7 +13,7 @@ services:
   # 1. MCP Server - Handles external API integrations (Xero, Shopify, Amazon, Unleashed)
   - type: web
     name: sentia-mcp-prod
-    env: node
+    runtime: node
     region: oregon
     rootDir: sentia-mcp-server
     buildCommand: |
@@ -54,7 +54,7 @@ services:
   # 2. Backend API - Main application server with Express and Prisma
   - type: web
     name: sentia-backend-prod
-    env: node
+    runtime: node
     region: oregon
     buildCommand: |
       corepack enable &&

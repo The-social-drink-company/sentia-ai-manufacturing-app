@@ -92,7 +92,6 @@ services:
   - type: web
     name: sentia-frontend-prod
     env: static
-    region: oregon
     buildCommand: |
       corepack enable &&
       pnpm install --frozen-lockfile &&

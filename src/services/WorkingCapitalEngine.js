@@ -76,7 +76,7 @@ class WorkingCapitalEngine {
    * Calculate advanced cash conversion cycle analytics
    */
   calculateAdvancedCCC(data) {
-    const { dso, dio, dpo, accountsReceivable, inventory, accountsPayable } = data
+    const { dso, dio, dpo } = data
 
     // Industry benchmarks for supplement manufacturing
     const benchmarks = {
@@ -166,7 +166,7 @@ class WorkingCapitalEngine {
     try {
       // Fetch historical sales data for seasonal analysis
       const response = await fetch(`${this.apiBase}/sales/product-performance?period=12months`)
-      const salesData = await response.json()
+      await response.json()
 
       if (!response.ok) {
         throw new Error('Failed to fetch seasonal data')
@@ -556,7 +556,7 @@ class WorkingCapitalEngine {
     }))
   }
 
-  calculateOptimalChannelMix(profiles) {
+  calculateOptimalChannelMix() {
     // Optimize for working capital efficiency
     return {
       'Shopify Direct': 0.4, // Prioritize for immediate payment
@@ -564,7 +564,7 @@ class WorkingCapitalEngine {
     }
   }
 
-  calculateChannelOptimization(profiles) {
+  calculateChannelOptimization() {
     // Estimate working capital improvement from channel optimization
     const currentMix = { amazon: 0.7, shopify: 0.3 }
     const optimalMix = { amazon: 0.6, shopify: 0.4 }
@@ -615,3 +615,5 @@ class WorkingCapitalEngine {
 }
 
 export default WorkingCapitalEngine
+
+

@@ -11,7 +11,11 @@ The Sentia AI Manufacturing platform delivers an end-to-end manufacturing intell
 - **Demand Forecasting Stability** - `src/components/DemandForecasting.jsx` now memoises `fetchForecastData` with `useCallback`, preventing redundant network churn when the time horizon changes while keeping the ensemble modelling in `DemandForecastingEngine` intact.
 - **Enterprise AI Chatbot Improvements** - `src/components/EnterpriseAIChatbot.jsx` switched to memoised smart suggestions, cleaned dependency arrays, and hardened error paths so the AI assistant consistently delivers contextual, finance-aware responses backed by `FinancialAlgorithms` outputs.
 - **Real-Time Streaming Restored** - `services/websocket-monitor.js` and Socket.IO wiring re-establish SSE/WebSocket feeds without the MCP bridge, enabling live dashboards for production lines, working capital, and forecasting scenarios.
-- **Render Multi-Service Deployment** - The `render.yaml` file now owns a three-service production topology (frontend, backend API, MCP integration) tied to a shared Postgres instance with pgvector enabled.
+- **Render Multi-Service Deployment** - The `render.yaml` file now owns a **four-service production topology**:
+  1. **Frontend (static)** - React SPA served as static site
+  2. **Backend API** - Express server with Prisma ORM
+  3. **MCP Server** - Standalone integration service for external APIs
+  4. **Database** - PostgreSQL with pgvector extension
 
 ## Solution Architecture
 
@@ -23,13 +27,13 @@ graph TB
     Finance[Finance Analysts]
   end
 
-  subgraph Frontend
+  subgraph Service1[Service 1: Frontend - Static Site]
     ReactApp[React 19 SPA]
     SSE[SSE & Socket.IO Client]
     ClerkUI[Clerk Components]
   end
 
-  subgraph Backend[Render Web Service - sentia-backend-prod]
+  subgraph Service2[Service 2: Backend API - Express Server]
     ExpressAPI[Express API Gateway]
     Prisma[Prisma ORM]
     AutoSync[Auto-Sync Manager]
@@ -38,18 +42,19 @@ graph TB
     InventorySvc[Inventory Intelligence]
   end
 
-  subgraph MCP[Render Web Service - sentia-mcp-prod]
+  subgraph Service3[Service 3: MCP Server - Integration Hub]
     ShopifySvc[Shopify Multi-store]
     XeroSvc[Xero Service]
     AmazonSvc[Amazon SP-API]
     UnleashedSvc[Unleashed ERP]
   end
 
-  subgraph Data
+  subgraph Service4[Service 4: Database - PostgreSQL]
     Postgres[(PostgreSQL + pgvector)]
     Redis[(Redis Cache)]
   end
 
+  Users --> ReactApp
   ReactApp -- Auth --> ClerkUI
   ReactApp -- REST/SSE --> ExpressAPI
   ExpressAPI -- Prisma --> Postgres
@@ -65,6 +70,39 @@ graph TB
   AmazonSvc --> Postgres
   ReactApp -- Live Metrics --> SSE
 ```
+
+## Four-Service Architecture Details
+
+### Service 1: Frontend (Static Site)
+- **Render Service Type**: Static Site
+- **Build Command**: `pnpm run build`
+- **Publish Directory**: `dist/`
+- **Technology**: React 19 + Vite 6.3.5
+- **Purpose**: User interface and client-side routing
+- **Environment**: Build-time injection of API URLs
+
+### Service 2: Backend API (Express Server)
+- **Render Service Type**: Web Service
+- **Start Command**: `pnpm run start:render`
+- **Port**: 5000 (auto-assigned by Render)
+- **Technology**: Node.js + Express 4.21 + Prisma 6.16
+- **Purpose**: REST API, business logic, SSE/WebSocket streaming
+- **Health Check**: `/api/health`
+
+### Service 3: MCP Server (Integration Hub)
+- **Render Service Type**: Web Service
+- **Start Command**: Node.js MCP server
+- **Port**: 3001 (auto-assigned by Render)
+- **Technology**: @modelcontextprotocol/sdk + custom tools
+- **Purpose**: External API integrations (Xero, Shopify, Amazon, Unleashed)
+- **Health Check**: `/health`
+
+### Service 4: Database (PostgreSQL)
+- **Render Service Type**: PostgreSQL
+- **Version**: PostgreSQL 16
+- **Extensions**: pgvector (for AI/ML embeddings)
+- **Purpose**: Persistent data storage for all services
+- **Shared Access**: Both Backend API and MCP Server connect via connection string
 
 ## Technology Stack (as of October 2025)
 
@@ -137,13 +175,35 @@ render.yaml                    # Production deployment topology
 - `pnpm run test:e2e` - Playwright scenarios (requires dev server).
 - `pnpm run build` - Executes Prisma codegen and Vite production build; used by Render.
 
-## Deployment Notes
+## Deployment Notes - Four-Service Architecture
 
-- The Render pipeline uses `corepack` to ensure pnpm 10.4.1 is available before installing.
-- `pnpm run start:render` bootstraps Prisma client generation and starts the Express API for production.
-- Static frontend is published from `dist/`; `VITE_API_BASE_URL` is injected at build time to point to the backend service URL.
-- Backend and MCP services share the same managed Postgres database via Render service bindings.
-- Health checks: `/api/health` (backend), `/health` (MCP), and front-end rewrites to `/index.html`.
+### Service Deployment Configuration
+
+1. **Frontend (Static Site)**
+   - Build pipeline uses `pnpm run build` to generate `dist/` directory
+   - `VITE_API_BASE_URL` injected at build time to point to Backend API service URL
+   - Automatic rewrites to `/index.html` for client-side routing
+   - No runtime server required
+
+2. **Backend API (Web Service)**
+   - Render pipeline uses `corepack` to ensure pnpm 10.4.1 is available
+   - Start command: `pnpm run start:render` (bootstraps Prisma generation then starts Express)
+   - Health check endpoint: `/api/health`
+   - Connects to Service 4 (Database) via `DATABASE_URL` environment variable
+   - Communicates with Service 3 (MCP Server) for external API calls
+
+3. **MCP Server (Web Service)**
+   - Independent deployment with standalone MCP server process
+   - Health check endpoint: `/health`
+   - Connects to Service 4 (Database) via `DATABASE_URL` for data persistence
+   - Exposes tool execution endpoints for Backend API consumption
+   - Manages all external API credentials (Xero, Shopify, Amazon, Unleashed)
+
+4. **Database (PostgreSQL)**
+   - Managed PostgreSQL 16 with pgvector extension
+   - Shared connection string distributed to Services 2 and 3 via Render service bindings
+   - Automatic backups and monitoring through Render dashboard
+   - Stores all application data, financial records, forecasts, and embeddings
 
 ## Operational Checklist
 

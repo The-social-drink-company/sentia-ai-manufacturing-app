@@ -432,7 +432,7 @@ class FinancialAlgorithms {
     }
   }
 
-  calculateTrend(currentValue, metric) {
+  calculateTrend() {
     // Simplified trend calculation
     return {
       direction: 'positive',
@@ -440,7 +440,10 @@ class FinancialAlgorithms {
     }
   }
 
-  forecastWorkingCapital(current, trend) {
+  forecastWorkingCapital(current) {
+    if (typeof current !== 'number') {
+      return { nextQuarter: 0, nextYear: 0 }
+    }
     return {
       nextQuarter: current * 1.05,
       nextYear: current * 1.18,
@@ -483,3 +486,6 @@ class FinancialAlgorithms {
 }
 
 export default FinancialAlgorithms
+
+
+

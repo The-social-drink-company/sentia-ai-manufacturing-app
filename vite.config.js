@@ -154,6 +154,12 @@ export default defineConfig(({ command, mode }) => {
             }
 
             const sanitized = packageName.replace('@', '').replace(/[\/]/g, '-')
+            const skipChunkPackages = new Set(['detect-node-es', 'dom-helpers', 'set-cookie-parser'])
+
+            if (skipChunkPackages.has(sanitized)) {
+              return
+            }
+
             return `pkg-${sanitized}`
           },
         },

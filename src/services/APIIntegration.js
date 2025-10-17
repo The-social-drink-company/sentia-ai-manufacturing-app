@@ -44,7 +44,7 @@ class APIIntegration {
 
       const mcpWS = new WebSocket(mcpWSUrl)
 
-      mcpWS.onopen = event => {
+      mcpWS.onopen = () => {
         console.log('MCP WebSocket connected successfully')
         this.websockets.set('mcp', mcpWS)
         // Reset reconnection attempts on successful connection
@@ -66,7 +66,7 @@ class APIIntegration {
         this.websockets.delete('mcp')
       }
 
-      mcpWS.onclose = event => {
+      mcpWS.onclose = () => {
         console.log('MCP WebSocket closed:', event.code)
         this.websockets.delete('mcp')
 
@@ -399,7 +399,7 @@ class APIIntegration {
     }
   }
 
-  async testConnection(service) {
+  async testConnection() {
     try {
       // Simplified connection test
       return {
@@ -492,7 +492,7 @@ class APIIntegration {
   // generateSampleOrders method REMOVED - no mock data allowed
   // Use real historical_sales data from Sentia database instead
 
-  calculateSalesGrowth(currentRevenue) {
+  calculateSalesGrowth() {
     // Simulate growth calculation
     return 15.2 + (Math.random() - 0.5) * 2
   }
@@ -531,6 +531,11 @@ class APIIntegration {
 }
 
 export default APIIntegration
+
+
+
+
+
 
 
 

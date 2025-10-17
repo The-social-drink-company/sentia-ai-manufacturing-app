@@ -50,7 +50,7 @@ class DemandForecastingEngine {
       const ensembleForecast = this.createEnsembleForecast(forecasts)
 
       // Generate insights and recommendations
-      const insights = this.generateForecastInsights(ensembleForecast, historicalData)
+      const insights = this.generateForecastInsights(ensembleForecast)
 
       return {
         forecast: ensembleForecast,
@@ -304,7 +304,7 @@ class DemandForecastingEngine {
   /**
    * Generate actionable insights from forecast
    */
-  generateForecastInsights(ensembleForecast, historicalData) {
+  generateForecastInsights(ensembleForecast) {
     const insights = []
     const monthlyData = ensembleForecast.data
 
@@ -504,7 +504,7 @@ class DemandForecastingEngine {
     return Math.sqrt(variance) * 1.96 // 95% confidence interval
   }
 
-  calculateHistoricalAccuracy(sales, method) {
+  calculateHistoricalAccuracy() {
     // Simplified accuracy calculation
     return 0.75 + Math.random() * 0.15 // 75-90% accuracy
   }
@@ -841,7 +841,7 @@ class DemandForecastingEngine {
       : 0.5
   }
 
-  generateSimulatedForecast(type) {
+  generateSimulatedForecast() {
     // Generate realistic simulated data for demonstration
     return {
       data: Array.from({ length: 12 }, (_, i) => ({
@@ -855,3 +855,5 @@ class DemandForecastingEngine {
 }
 
 export default DemandForecastingEngine
+
+

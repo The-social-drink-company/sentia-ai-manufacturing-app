@@ -6,7 +6,7 @@ databases:
   - name: sentia-db-prod
     databaseName: sentia_prod_db
     user: sentia_user
-    plan: starter
+    plan: free
     region: oregon
 
 services:
@@ -14,7 +14,7 @@ services:
   - type: web
     name: sentia-mcp-prod
     env: node
-    plan: starter
+    plan: free
     region: oregon
     rootDir: sentia-mcp-server
     buildCommand: |
@@ -56,7 +56,7 @@ services:
   - type: web
     name: sentia-backend-prod
     env: node
-    plan: starter
+    plan: free
     region: oregon
     buildCommand: |
       corepack enable &&
@@ -87,11 +87,11 @@ services:
   - type: web
     name: sentia-frontend-prod
     env: static
-    plan: starter
+    plan: free
     buildCommand: |
       corepack enable &&
       pnpm install --frozen-lockfile &&
-      pnpm run build
+      pnpm exec vite build
     staticPublishPath: dist
     headers:
       - path: /*

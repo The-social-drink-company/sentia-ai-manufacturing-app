@@ -60,7 +60,10 @@ services:
       corepack enable &&
       pnpm install --frozen-lockfile &&
       pnpm exec prisma generate
-    startCommand: pnpm run start:render
+    startCommand: |
+      corepack enable &&
+      pnpm exec prisma migrate deploy &&
+      pnpm run start
     healthCheckPath: /api/health
     envVars:
       - key: NODE_ENV
@@ -80,6 +83,10 @@ services:
         sync: false
       - key: VITE_CLERK_PUBLISHABLE_KEY
         sync: false
+      - key: RATE_LIMIT_MAX
+        value: "100"
+      - key: RATE_LIMIT_WINDOW
+        value: "60000"
 
   # 3. Frontend - React application served as static site
   - type: web
@@ -89,7 +96,7 @@ services:
     buildCommand: |
       corepack enable &&
       pnpm install --frozen-lockfile &&
-      pnpm run build
+      pnpm exec vite build
     staticPublishPath: dist
     headers:
       - path: /*

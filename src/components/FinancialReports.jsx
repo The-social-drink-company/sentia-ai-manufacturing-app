@@ -26,7 +26,6 @@ const FinancialReports = () => {
   })
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  const [timeRange, setTimeRange] = useState('year')
   const [lastUpdated, setLastUpdated] = useState(null)
 
   const apiBase = import.meta.env.VITE_API_BASE_URL || '/api'
@@ -71,7 +70,7 @@ const FinancialReports = () => {
       // Process historical data for trends
       if (historicalRes.status === 'fulfilled' && historicalRes.value.ok) {
         const historical = await historicalRes.value.json()
-        setHistoricalData(calculateTrends(historical, results))
+        setHistoricalData(calculateTrends(historical))
       }
 
       setData(results)
@@ -85,7 +84,7 @@ const FinancialReports = () => {
 
   useEffect(() => {
     fetchFinancialData()
-  }, [timeRange])
+  }, [])
 
   const formatCurrency = (value) => {
     if (typeof value !== 'number') return 'N/A'
@@ -96,12 +95,7 @@ const FinancialReports = () => {
     }).format(value)
   }
 
-  const formatPercentage = (value) => {
-    if (typeof value !== 'number') return 'N/A'
-    return `${(value * 100).toFixed(1)}%`
-  }
-
-  const calculateTrends = (historicalData, currentData) => {
+  const calculateTrends = (historicalData) => {
     if (!historicalData?.success || !historicalData.data) {
       return { trends: {} }
     }
@@ -447,7 +441,7 @@ const TrendIndicator = ({ change, direction }) => {
   )
 }
 
-const MetricCard = ({ title, value, icon: Icon, trend, description, color, changePercent }) => {
+const MetricCard = ({ title, value, icon: IconComponent, trend, description, color, changePercent }) => {
   const colorClasses = {
     blue: 'bg-blue-50 text-blue-900 border-blue-200',
     green: 'bg-green-50 text-green-900 border-green-200',
@@ -466,7 +460,7 @@ const MetricCard = ({ title, value, icon: Icon, trend, description, color, chang
       <CardContent className="p-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <Icon className="w-8 h-8" />
+            {IconComponent && <IconComponent className="w-8 h-8" />}
             <div>
               <p className="text-sm font-medium opacity-80">{title}</p>
               <p className="text-2xl font-bold">{value}</p>
@@ -494,3 +488,9 @@ const MetricCard = ({ title, value, icon: Icon, trend, description, color, chang
 }
 
 export default FinancialReports
+
+
+
+
+
+

@@ -23,20 +23,16 @@ const DebugPanel = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [apiHealth, setApiHealth] = useState(null)
   const [systemInfo, setSystemInfo] = useState({})
-  
+
   const queryClient = useQueryClient()
-  
+
   // Simplified status for rollback version - no MCP dependencies
   const sseStatus = 'offline'
   const connectionDetails = { readyState: 'N/A', reconnectAttempts: 0 }
 
   // Only show in development mode
-  const isDevelopmentMode = import.meta.env.VITE_DEVELOPMENT_MODE === 'true' || 
+  const isDevelopmentMode = import.meta.env.VITE_DEVELOPMENT_MODE === 'true' ||
                            import.meta.env.NODE_ENV === 'development'
-
-  if (!isDevelopmentMode) {
-    return null
-  }
 
   // Check API health
   const checkApiHealth = async () => {
@@ -77,6 +73,7 @@ const DebugPanel = () => {
       checkApiHealth()
       getSystemInfo()
     }
+   
   }, [isOpen])
 
   // Clear all React Query cache
@@ -95,6 +92,10 @@ const DebugPanel = () => {
   const clearLocalStorage = () => {
     localStorage.clear()
     console.log('[DebugPanel] localStorage cleared')
+  }
+
+  if (!isDevelopmentMode) {
+    return null
   }
 
   return (

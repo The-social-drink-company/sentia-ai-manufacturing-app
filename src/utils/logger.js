@@ -6,7 +6,7 @@ const allowed = () => import.meta.env?.MODE !== 'production'
 
 // Enhanced Winston Logger for MCP Server
 export const mcpLogger = winston.createLogger({
-  level: process.env.LOG_LEVEL || 'info',
+  level: import.meta.env.VITE_LOG_LEVEL || 'info',
   format: winston.format.combine(
     winston.format.timestamp(),
     winston.format.errors({ stack: true }),

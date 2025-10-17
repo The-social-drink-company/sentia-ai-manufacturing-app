@@ -64,7 +64,11 @@
       "Bash(cat:*)",
       "WebFetch(domain:sentia-manufacturing-dashboard-test.onrender.com)",
       "Bash(rm:*)",
-      "WebFetch(domain:sentia-manufacturing-dashboard-621h.onrender.com)"
+      "WebFetch(domain:sentia-manufacturing-dashboard-621h.onrender.com)",
+      "Bash(npm run lint:*)",
+      "Bash(git fetch:*)",
+      "Bash(npx bmad-method install)",
+      "Bash(git clone:*)"
     ],
     "deny": [],
     "ask": []

@@ -5,7 +5,6 @@
  */
 
 import express from 'express';
-import axios from 'axios';
 import { PrismaClient } from '@prisma/client';
 
 const router = express.Router();

@@ -23,8 +23,7 @@ const XeroConnectionBanner = ({
 }) => {
   const { 
     isConnected, 
-    isLoading, 
-    organizationInfo, 
+    isLoading,
     lastError,
     retry
   } = useXero()
@@ -188,3 +187,4 @@ const XeroConnectionBanner = ({
 }
 
 export default XeroConnectionBanner
+

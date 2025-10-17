@@ -1,6 +1,7 @@
+/* eslint-env node */
 /**
  * Server Configuration Management
- * 
+ *
  * Centralized configuration for the MCP server with environment-aware settings
  * and validation.
  */

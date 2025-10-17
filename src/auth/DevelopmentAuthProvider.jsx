@@ -53,7 +53,7 @@ export const SignedIn = ({ children }) => {
 }
 
 // Mock SignedOut component
-export const SignedOut = ({ children }) => {
+export const SignedOut = () => {
   return null // Never show signed out content in development
 }
 
@@ -64,7 +64,7 @@ export const RedirectToSignIn = () => {
 }
 
 // Mock SignIn component
-export const SignIn = ({ afterSignInUrl, redirectUrl, ...props }) => {
+export const SignIn = () => {
   console.warn('[Development Mode] SignIn component rendered - authentication bypassed')
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-50">
@@ -84,7 +84,7 @@ export const SignIn = ({ afterSignInUrl, redirectUrl, ...props }) => {
 }
 
 // Mock SignUp component
-export const SignUp = ({ afterSignUpUrl, redirectUrl, ...props }) => {
+export const SignUp = () => {
   console.warn('[Development Mode] SignUp component rendered - authentication bypassed')
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-50">
@@ -104,7 +104,7 @@ export const SignUp = ({ afterSignUpUrl, redirectUrl, ...props }) => {
 }
 
 // Mock UserButton component
-export const UserButton = ({ afterSignOutUrl, ...props }) => {
+export const UserButton = () => {
   return (
     <div className="flex items-center space-x-2 bg-blue-100 px-3 py-2 rounded-lg">
       <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
@@ -121,7 +121,7 @@ export const UserButton = ({ afterSignOutUrl, ...props }) => {
 }
 
 // Mock OrganizationSwitcher component
-export const OrganizationSwitcher = (props) => {
+export const OrganizationSwitcher = () => {
   return (
     <div className="text-sm text-gray-600 bg-gray-100 px-3 py-2 rounded">
       {mockOrganization.name} (Dev)
@@ -130,7 +130,7 @@ export const OrganizationSwitcher = (props) => {
 }
 
 // Main Development Auth Provider
-export const DevelopmentAuthProvider = ({ children, publishableKey, appearance, ...props }) => {
+export const DevelopmentAuthProvider = ({ children }) => {
   console.log('[Development Mode] Authentication provider initialized with mock data')
   
   return (

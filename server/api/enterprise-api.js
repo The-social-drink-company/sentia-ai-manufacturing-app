@@ -2,7 +2,6 @@
 // NO MOCK DATA - ALL DATA FROM EXTERNAL APIS AND DATABASES
 
 import express from 'express';
-import axios from 'axios';
 import { PrismaClient } from '@prisma/client';
 import xeroNode from 'xero-node';
 import Shopify from '@shopify/shopify-api';

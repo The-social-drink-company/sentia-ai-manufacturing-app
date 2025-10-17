@@ -2,6 +2,32 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## 🚀 **DEVELOPMENT METHODOLOGY: BMAD-METHOD v6a**
+
+**CRITICAL**: This project now uses **BMAD-METHOD v6a** (Agentic Agile Driven Development) framework.
+
+**Framework**: https://github.com/bmad-code-org/BMAD-METHOD
+**Implementation Guide**: See [BMAD-METHOD-V6A-IMPLEMENTATION.md](BMAD-METHOD-V6A-IMPLEMENTATION.md)
+**Status**: Initialized - Phase 2 (Planning) in progress
+
+### BMAD Four-Phase Workflow
+
+```
+Phase 1: ANALYSIS → Phase 2: PLANNING → Phase 3: SOLUTIONING → Phase 4: IMPLEMENTATION
+```
+
+### BMAD Agent Roles
+- **PM** (`bmad pm`) - Project planning, epic creation
+- **Architect** (`bmad architect`) - Solution architecture, tech specs
+- **Scrum Master** (`bmad sm`) - Story creation, retrospectives
+- **Developer** (`bmad dev`) - Code implementation
+- **QA** (`bmad qa`) - Quality assurance, testing
+
+### Quick Reference
+- **Next Action**: Run `bmad pm workflow-status` to check project status
+- **Documentation**: See `bmad/docs/` for workflows and guides
+- **Implementation Plan**: Complete roadmap in BMAD-METHOD-V6A-IMPLEMENTATION.md
+
 ## 🎉 **ACTUAL IMPLEMENTATION STATUS**
 **BREAKTHROUGH UPDATE**: This application has been **transformed from 15% to 75% functional implementation** through Phases 1-3 completion. The sophisticated architecture now powers genuine manufacturing intelligence functionality with live external data integration.
 

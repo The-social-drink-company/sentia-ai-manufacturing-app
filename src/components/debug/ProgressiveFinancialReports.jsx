@@ -57,36 +57,41 @@ const ProgressiveFinancialReports = () => {
       console.log(`[DEBUG] Running step ${currentStep + 1}...`)
       
       switch(currentStep + 1) {
-        case 2:
+        case 2: {
           // Test importing the hook
           const hookModule = await import('@/hooks/useFinancialData')
           console.log('[DEBUG] useFinancialData hook imported successfully:', hookModule)
           break
-          
-        case 3:
+        }
+
+        case 3: {
           // Test importing KPI Strip
           const kpiModule = await import('@/components/financial/FinancialKPIStrip')
           console.log('[DEBUG] FinancialKPIStrip imported successfully:', kpiModule)
           break
-          
-        case 4:
+        }
+
+        case 4: {
           // Test importing Charts
           const chartsModule = await import('@/components/financial/FinancialCharts')
           console.log('[DEBUG] FinancialCharts imported successfully:', chartsModule)
           break
-          
-        case 5:
+        }
+
+        case 5: {
           // Test importing Insights
           const insightsModule = await import('@/components/financial/FinancialInsights')
           console.log('[DEBUG] FinancialInsights imported successfully:', insightsModule)
           break
-          
-        case 6:
+        }
+
+        case 6: {
           // Test importing Product Table
           const tableModule = await import('@/components/financial/ProductPerformanceTable')
           console.log('[DEBUG] ProductPerformanceTable imported successfully:', tableModule)
           break
-          
+        }
+
         default:
           console.log('[DEBUG] All components imported successfully!')
       }

@@ -6,11 +6,11 @@
 class FinancialAlgorithms {
   constructor() {
     this.apiEndpoints = {
-      xero: process.env.VITE_XERO_API_URL || '/api/xero',
-      shopifyUK: process.env.VITE_SHOPIFY_UK_API_URL || '/api/shopify-uk',
-      shopifyUSA: process.env.VITE_SHOPIFY_USA_API_URL || '/api/shopify-usa',
-      unleashed: process.env.VITE_UNLEASHED_API_URL || '/api/unleashed',
-      mcp: process.env.VITE_MCP_SERVER_URL || 'https://sentia-mcp-production.onrender.com'
+      xero: import.meta.env.VITE_XERO_API_URL || '/api/xero',
+      shopifyUK: import.meta.env.VITE_SHOPIFY_UK_API_URL || '/api/shopify-uk',
+      shopifyUSA: import.meta.env.VITE_SHOPIFY_USA_API_URL || '/api/shopify-usa',
+      unleashed: import.meta.env.VITE_UNLEASHED_API_URL || '/api/unleashed',
+      mcp: import.meta.env.VITE_MCP_SERVER_URL || 'https://sentia-mcp-production.onrender.com'
     }
     
     this.cache = new Map()
@@ -314,7 +314,7 @@ class FinancialAlgorithms {
       // Integrate with Unleashed ERP API
       const response = await fetch(`${this.apiEndpoints.unleashed}/inventory`, {
         headers: {
-          'Authorization': `Bearer ${process.env.VITE_UNLEASHED_API_KEY}`,
+          'Authorization': `Bearer ${import.meta.env.VITE_UNLEASHED_API_KEY}`,
           'Content-Type': 'application/json'
         }
       })

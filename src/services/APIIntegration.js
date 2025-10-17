@@ -6,18 +6,18 @@
 class APIIntegration {
   constructor() {
     this.baseURLs = {
-      mcp: process.env.VITE_MCP_SERVER_URL || 'https://sentia-mcp-production.onrender.com',
-      shopifyUK: process.env.VITE_SHOPIFY_UK_SHOP_URL || 'https://sentiaspirits.myshopify.com',
-      shopifyUSA: process.env.VITE_SHOPIFY_USA_SHOP_URL || 'https://ussentiaspirits.myshopify.com',
+      mcp: import.meta.env.VITE_MCP_SERVER_URL || 'https://sentia-mcp-production.onrender.com',
+      shopifyUK: import.meta.env.VITE_SHOPIFY_UK_SHOP_URL || 'https://sentiaspirits.myshopify.com',
+      shopifyUSA: import.meta.env.VITE_SHOPIFY_USA_SHOP_URL || 'https://ussentiaspirits.myshopify.com',
       xero: 'https://api.xero.com/api.xro/2.0',
-      unleashed: process.env.VITE_UNLEASHED_API_URL || 'https://api.unleashedsoftware.com'
+      unleashed: import.meta.env.VITE_UNLEASHED_API_URL || 'https://api.unleashedsoftware.com'
     }
     
     this.apiKeys = {
-      shopifyUK: process.env.VITE_SHOPIFY_UK_ACCESS_TOKEN,
-      shopifyUSA: process.env.VITE_SHOPIFY_USA_ACCESS_TOKEN,
-      unleashed: process.env.VITE_UNLEASHED_API_KEY,
-      xero: process.env.VITE_XERO_CLIENT_ID
+      shopifyUK: import.meta.env.VITE_SHOPIFY_UK_ACCESS_TOKEN,
+      shopifyUSA: import.meta.env.VITE_SHOPIFY_USA_ACCESS_TOKEN,
+      unleashed: import.meta.env.VITE_UNLEASHED_API_KEY,
+      xero: import.meta.env.VITE_XERO_CLIENT_ID
     }
     
     this.cache = new Map()

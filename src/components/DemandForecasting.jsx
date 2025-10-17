@@ -16,7 +16,6 @@ const DemandForecasting = () => {
   const [forecastData, setForecastData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  const [selectedModel, setSelectedModel] = useState('ensemble')
   const [timeHorizon, setTimeHorizon] = useState('12months')
   const [lastUpdated, setLastUpdated] = useState(null)
   const [engine] = useState(() => new DemandForecastingEngine())
@@ -38,16 +37,12 @@ const DemandForecasting = () => {
 
   useEffect(() => {
     fetchForecastData()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [timeHorizon])
 
   const formatNumber = (value) => {
     if (typeof value !== 'number') return 'N/A'
     return value.toLocaleString()
-  }
-
-  const formatCurrency = (value, currency = 'GBP') => {
-    const currencySymbols = { 'GBP': '£', 'EUR': '€', 'USD': '$' }
-    return `${currencySymbols[currency] || '£'}${value.toLocaleString()}`
   }
 
   const getConfidenceColor = (confidence) => {
@@ -430,13 +425,15 @@ const DemandForecasting = () => {
   )
 }
 
-const MetricCard = ({ title, value, icon: Icon, color, description }) => {
+const MetricCard = ({ title, value, icon, color, description }) => {
   const colorClasses = {
     green: 'bg-green-50 text-green-900 border-green-200',
     blue: 'bg-blue-50 text-blue-900 border-blue-200',
     purple: 'bg-purple-50 text-purple-900 border-purple-200',
     yellow: 'bg-yellow-50 text-yellow-900 border-yellow-200'
   }
+
+  const Icon = icon
 
   return (
     <Card className={`${colorClasses[color]} border`}>

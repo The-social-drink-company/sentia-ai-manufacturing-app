@@ -1,12 +1,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useWorkingCapitalLiveData } from '@/hooks/useWorkingCapitalLiveData'
-import { useXero } from '@/contexts/XeroContext'
 import { useState, useEffect } from 'react'
 import WorkingCapitalEngine from '@/services/WorkingCapitalEngine'
 
 const RealWorkingCapital = () => {
   const { data, loading, error, metadata, retryConnection } = useWorkingCapitalLiveData()
-  const { isConnected: xeroConnected } = useXero()
   const [enhancedData, setEnhancedData] = useState(null)
   const [analysisLoading, setAnalysisLoading] = useState(false)
   const [engine] = useState(() => new WorkingCapitalEngine())
@@ -56,9 +54,6 @@ const RealWorkingCapital = () => {
 
   // Error state - no fallback data, show clear error
   if (error) {
-    const isXeroConnectionError = error.message?.includes('Xero connection') || 
-                                 error.message?.includes('requires Xero') ||
-                                 error.message?.includes('financial data')
     
     return (
       <section className="space-y-6">
@@ -358,3 +353,8 @@ const currency = (value) =>
   }).format(value)
 
 export default RealWorkingCapital
+
+
+
+
+

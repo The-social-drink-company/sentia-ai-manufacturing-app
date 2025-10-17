@@ -1,5 +1,5 @@
 # render.yaml - Sentia AI Manufacturing Dashboard
-# Production Blueprint for Render Deployment
+# Production Blueprint for Render Deployment (Updated: 2025-10-17)
 # Four-service architecture: Database, MCP Server, Backend API, Frontend
 
 databases:

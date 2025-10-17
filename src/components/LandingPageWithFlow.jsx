@@ -8,47 +8,53 @@ import {
   PresentationChartLineIcon,
   TruckIcon,
   BeakerIcon,
-  ArrowRightIcon
+  ArrowRightIcon,
 } from '@heroicons/react/24/outline'
 
 const FEATURES = [
   {
     icon: BanknotesIcon,
     title: 'Working Capital Intelligence',
-    description: 'Real-time liquidity management with AI-powered cash flow forecasting and optimization.'
+    description:
+      'Real-time liquidity management with AI-powered cash flow forecasting and optimization.',
   },
   {
     icon: PresentationChartLineIcon,
     title: 'Demand Forecasting & Analytics',
-    description: 'Advanced predictive models for demand planning, inventory optimization, and production scheduling.'
+    description:
+      'Advanced predictive models for demand planning, inventory optimization, and production scheduling.',
   },
   {
     icon: ChartBarIcon,
     title: 'Executive Dashboard',
-    description: 'Comprehensive KPI monitoring with drill-down capabilities and executive-ready reporting.'
+    description:
+      'Comprehensive KPI monitoring with drill-down capabilities and executive-ready reporting.',
   },
   {
     icon: CubeIcon,
     title: 'Inventory Management',
-    description: 'Smart inventory tracking with automated reorder points and supplier performance metrics.'
+    description:
+      'Smart inventory tracking with automated reorder points and supplier performance metrics.',
   },
   {
     icon: TruckIcon,
     title: 'Production Tracking',
-    description: 'Real-time production monitoring with efficiency metrics and bottleneck identification.'
+    description:
+      'Real-time production monitoring with efficiency metrics and bottleneck identification.',
   },
   {
     icon: BeakerIcon,
     title: 'Quality Control',
-    description: 'Integrated quality management with defect tracking and continuous improvement analytics.'
-  }
+    description:
+      'Integrated quality management with defect tracking and continuous improvement analytics.',
+  },
 ]
 
 const STATS = [
   { label: 'Monthly Revenue', value: '$2.54M', change: '+12.3%', positive: true },
   { label: 'Production Efficiency', value: '94.2%', change: '+2.1%', positive: true },
   { label: 'Working Capital Ratio', value: '2.76', change: '+0.15', positive: true },
-  { label: 'Order Fulfillment', value: '98.5%', change: '+1.2%', positive: true }
+  { label: 'Order Fulfillment', value: '98.5%', change: '+1.2%', positive: true },
 ]
 
 const LandingPageWithFlow = () => {
@@ -89,16 +95,23 @@ const LandingPageWithFlow = () => {
       <main className="relative">
         <div className="mx-auto max-w-7xl px-6 py-16 sm:py-24">
           <div className="text-center">
-            <Badge variant="secondary" className="mb-6 bg-blue-500/20 text-blue-200 border-blue-400/30">
+            <Badge
+              variant="secondary"
+              className="mb-6 bg-blue-500/20 text-blue-200 border-blue-400/30"
+            >
               Enterprise Manufacturing Intelligence
             </Badge>
             <h1 className="text-5xl font-bold tracking-tight text-white sm:text-6xl lg:text-7xl">
               Manufacturing
-              <span className="bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent"> Intelligence</span>
+              <span className="bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent">
+                {' '}
+                Intelligence
+              </span>
             </h1>
             <p className="mx-auto mt-6 max-w-2xl text-lg text-slate-300">
-              Transform your manufacturing operations with AI-powered analytics, real-time monitoring,
-              and intelligent forecasting. Make data-driven decisions that optimize efficiency and profitability.
+              Transform your manufacturing operations with AI-powered analytics, real-time
+              monitoring, and intelligent forecasting. Make data-driven decisions that optimize
+              efficiency and profitability.
             </p>
             <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:justify-center">
               <Button
@@ -123,11 +136,16 @@ const LandingPageWithFlow = () => {
 
         <div className="mx-auto max-w-7xl px-6 py-12">
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {STATS.map((stat) => (
-              <div key={stat.label} className="rounded-xl bg-white/5 p-6 backdrop-blur-sm border border-white/10">
+            {STATS.map(stat => (
+              <div
+                key={stat.label}
+                className="rounded-xl bg-white/5 p-6 backdrop-blur-sm border border-white/10"
+              >
                 <div className="text-sm font-medium text-slate-400">{stat.label}</div>
                 <div className="mt-2 text-3xl font-bold text-white">{stat.value}</div>
-                <div className={`mt-1 text-sm ${stat.positive ? 'text-green-400' : 'text-red-400'}`}>
+                <div
+                  className={`mt-1 text-sm ${stat.positive ? 'text-green-400' : 'text-red-400'}`}
+                >
                   {stat.change} vs last month
                 </div>
               </div>
@@ -145,8 +163,11 @@ const LandingPageWithFlow = () => {
             </p>
           </div>
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            {FEATURES.map((feature) => (
-              <div key={feature.title} className="rounded-xl bg-white/5 p-8 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-colors">
+            {FEATURES.map(feature => (
+              <div
+                key={feature.title}
+                className="rounded-xl bg-white/5 p-8 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-colors"
+              >
                 <div className="flex items-center space-x-3 mb-4">
                   <div className="rounded-lg bg-gradient-to-br from-blue-500 to-cyan-400 p-2">
                     <feature.icon className="h-6 w-6 text-white" />
@@ -161,7 +182,9 @@ const LandingPageWithFlow = () => {
 
         <div className="mx-auto max-w-7xl px-6 py-16">
           <div className="rounded-2xl bg-gradient-to-r from-blue-600 to-cyan-500 p-8 text-center">
-            <h2 className="text-3xl font-bold text-white">Ready to Transform Your Manufacturing?</h2>
+            <h2 className="text-3xl font-bold text-white">
+              Ready to Transform Your Manufacturing?
+            </h2>
             <p className="mt-4 text-lg text-blue-100">
               Join leading manufacturers who trust Sentia for their operations intelligence
             </p>

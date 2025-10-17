@@ -16,7 +16,7 @@ const useEnvironmentUser = () => {
         isSignedIn: true,
         isLoaded: true,
         user: mockUser,
-        loading: false
+        loading: false,
       }
     } else {
       // Production mode - start with loading state
@@ -24,7 +24,7 @@ const useEnvironmentUser = () => {
         isSignedIn: false,
         isLoaded: false,
         user: null,
-        loading: true
+        loading: true,
       }
     }
   })
@@ -46,11 +46,11 @@ const useEnvironmentUser = () => {
         // This is a simplified implementation
         // In a real scenario, we'd need proper React context integration
         console.log('[useEnvironmentUser] Clerk user loaded successfully')
-        
+
         setUserState(prevState => ({
           ...prevState,
           isLoaded: true,
-          loading: false
+          loading: false,
         }))
       } catch (error) {
         console.error('[useEnvironmentUser] Failed to load Clerk user:', error)
@@ -59,7 +59,7 @@ const useEnvironmentUser = () => {
           isSignedIn: false,
           isLoaded: true,
           user: null,
-          loading: false
+          loading: false,
         })
       }
     }
@@ -68,7 +68,7 @@ const useEnvironmentUser = () => {
   }, [])
 
   // Helper methods for user management
-  const updateUser = async (updates) => {
+  const updateUser = async updates => {
     if (isDevelopmentMode) {
       console.log('[useEnvironmentUser] User update called in development mode:', updates)
       // In development, you could update the mock user if needed
@@ -90,7 +90,7 @@ const useEnvironmentUser = () => {
   return {
     ...userState,
     updateUser,
-    reload
+    reload,
   }
 }
 

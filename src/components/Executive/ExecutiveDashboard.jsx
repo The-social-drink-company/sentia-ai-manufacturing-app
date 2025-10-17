@@ -1,9 +1,9 @@
-import React from 'react';
-import ExecutiveKPIDashboard from './ExecutiveKPIDashboard';
+import React from 'react'
+import ExecutiveKPIDashboard from './ExecutiveKPIDashboard'
 
 // Main Executive Dashboard component
 const ExecutiveDashboard = () => {
-  return <ExecutiveKPIDashboard />;
-};
+  return <ExecutiveKPIDashboard />
+}
 
-export default ExecutiveDashboard;
+export default ExecutiveDashboard

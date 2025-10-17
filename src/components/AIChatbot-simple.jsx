@@ -1,14 +1,14 @@
 /**
  * SIMPLE AI CHATBOT COMPONENT
- * 
+ *
  * Professional AI chatbot for the bottom-right corner
  */
 
-import React, { useState } from 'react';
-import { ChatBubbleLeftRightIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import React, { useState } from 'react'
+import { ChatBubbleLeftRightIcon, XMarkIcon } from '@heroicons/react/24/outline'
 
 const AIChatbot = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState([
     {
       id: 1,
@@ -16,20 +16,20 @@ const AIChatbot = () => {
       sender: 'ai',
       timestamp: new Date(),
     },
-  ]);
-  const [inputText, setInputText] = useState('');
+  ])
+  const [inputText, setInputText] = useState('')
 
   const handleSendMessage = () => {
-    if (!inputText.trim()) return;
+    if (!inputText.trim()) return
 
     const userMessage = {
       id: Date.now(),
       text: inputText,
       sender: 'user',
       timestamp: new Date(),
-    };
+    }
 
-    setMessages(prev => [...prev, userMessage]);
+    setMessages(prev => [...prev, userMessage])
 
     // Simulate AI response
     setTimeout(() => {
@@ -38,28 +38,28 @@ const AIChatbot = () => {
         text: getAIResponse(inputText),
         sender: 'ai',
         timestamp: new Date(),
-      };
-      setMessages(prev => [...prev, aiResponse]);
-    }, 1000);
+      }
+      setMessages(prev => [...prev, aiResponse])
+    }, 1000)
 
-    setInputText('');
-  };
+    setInputText('')
+  }
 
-  const getAIResponse = (input) => {
-    const lowerInput = input.toLowerCase();
-    
+  const getAIResponse = input => {
+    const lowerInput = input.toLowerCase()
+
     if (lowerInput.includes('revenue')) {
-      return "Current revenue is £2.5M with a 15.2% increase from last month. The trend shows strong growth in Q2 with Sentia Red performing exceptionally well.";
+      return 'Current revenue is £2.5M with a 15.2% increase from last month. The trend shows strong growth in Q2 with Sentia Red performing exceptionally well.'
     } else if (lowerInput.includes('inventory')) {
-      return "Current inventory levels: Sentia Red (2,450 units), Sentia Gold (1,200 units). Packaging materials are below reorder level at 150 units.";
+      return 'Current inventory levels: Sentia Red (2,450 units), Sentia Gold (1,200 units). Packaging materials are below reorder level at 150 units.'
     } else if (lowerInput.includes('production')) {
-      return "Production efficiency is at 94.2% with a 2.1% improvement this week. OEE metrics show optimal performance across all lines.";
+      return 'Production efficiency is at 94.2% with a 2.1% improvement this week. OEE metrics show optimal performance across all lines.'
     } else if (lowerInput.includes('forecast')) {
-      return "Demand forecasting shows 8-12% growth expected next quarter. Recommend increasing Sentia Red production by 15% to meet projected demand.";
+      return 'Demand forecasting shows 8-12% growth expected next quarter. Recommend increasing Sentia Red production by 15% to meet projected demand.'
     } else {
-      return "I can help you analyze manufacturing data, forecast demand, optimize inventory, and provide insights on working capital. What specific area would you like to explore?";
+      return 'I can help you analyze manufacturing data, forecast demand, optimize inventory, and provide insights on working capital. What specific area would you like to explore?'
     }
-  };
+  }
 
   return (
     <>
@@ -84,17 +84,14 @@ const AIChatbot = () => {
               </div>
               <span className="font-semibold">AI Assistant</span>
             </div>
-            <button
-              onClick={() => setIsOpen(false)}
-              className="text-white hover:text-gray-200"
-            >
+            <button onClick={() => setIsOpen(false)} className="text-white hover:text-gray-200">
               <XMarkIcon className="w-5 h-5" />
             </button>
           </div>
 
           {/* Messages */}
           <div className="flex-1 overflow-y-auto p-4 space-y-3">
-            {messages.map((message) => (
+            {messages.map(message => (
               <div
                 key={message.id}
                 className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
@@ -118,8 +115,8 @@ const AIChatbot = () => {
               <input
                 type="text"
                 value={inputText}
-                onChange={(e) => setInputText(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                onChange={e => setInputText(e.target.value)}
+                onKeyPress={e => e.key === 'Enter' && handleSendMessage()}
                 placeholder="Ask me anything..."
                 className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
               />
@@ -134,7 +131,7 @@ const AIChatbot = () => {
         </div>
       )}
     </>
-  );
-};
+  )
+}
 
-export default AIChatbot;
+export default AIChatbot

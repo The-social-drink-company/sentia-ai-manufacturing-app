@@ -3,7 +3,7 @@
     "name": "Sentia Manufacturing Dashboard Monitoring System",
     "version": "1.0.0",
     "description": "Comprehensive monitoring and self-correction system for Sentia Manufacturing Dashboard deployments",
-    
+
     "urls": [
       {
         "name": "Railway Production",
@@ -17,7 +17,7 @@
       },
       {
         "name": "Railway Development",
-        "url": "https://sentia-manufacturing-dashboard-development.up.railway.app", 
+        "url": "https://sentia-manufacturing-dashboard-development.up.railway.app",
         "aliases": ["https://sentiadeploy.financeflo.ai"],
         "environment": "development",
         "priority": "high",
@@ -66,12 +66,9 @@
         "startCommand": "npm run dev"
       }
     ],
-    
+
     "phase4Features": {
-      "required": [
-        "PredictiveMaintenanceWidget",
-        "SmartInventoryWidget"
-      ],
+      "required": ["PredictiveMaintenanceWidget", "SmartInventoryWidget"],
       "optional": [
         "predictive-maintenance",
         "smart-inventory",
@@ -86,7 +83,7 @@
         "/api/dashboard/widgets"
       ]
     },
-    
+
     "monitoring": {
       "checkInterval": 300000,
       "requestTimeout": 30000,
@@ -96,7 +93,7 @@
       "failureThreshold": 3,
       "recoveryThreshold": 2
     },
-    
+
     "corrections": {
       "enabled": true,
       "autoRestart": true,
@@ -106,7 +103,7 @@
       "deploymentTimeout": 600000,
       "restartTimeout": 60000
     },
-    
+
     "notifications": {
       "enabled": true,
       "levels": ["error", "warning", "success"],
@@ -116,7 +113,7 @@
         "webhook": false
       }
     },
-    
+
     "logging": {
       "level": "info",
       "file": "monitoring.log",
@@ -125,7 +122,7 @@
       "maxFiles": 5,
       "format": "json"
     },
-    
+
     "performance": {
       "responseTimeThreshold": 5000,
       "uptimeThreshold": 99.0,
@@ -133,7 +130,7 @@
       "memoryUsageThreshold": 80.0,
       "cpuUsageThreshold": 80.0
     },
-    
+
     "security": {
       "userAgent": "Sentia-Monitoring-Agent/1.0",
       "headers": {
@@ -143,7 +140,7 @@
       "validateSSL": true,
       "allowSelfSigned": false
     },
-    
+
     "deployment": {
       "railwayProjects": {
         "production": "sentia-manufacturing-dashboard-production",
@@ -155,17 +152,11 @@
         "development": "development",
         "test": "test"
       },
-      "buildCommands": [
-        "npm install",
-        "npm run build"
-      ],
-      "healthCheckCommands": [
-        "npm run test:run",
-        "npm run lint"
-      ]
+      "buildCommands": ["npm install", "npm run build"],
+      "healthCheckCommands": ["npm run test:run", "npm run lint"]
     }
   },
-  
+
   "alerts": {
     "downtime": {
       "threshold": 60000,
@@ -184,23 +175,13 @@
       "message": "Error rate exceeds 10%"
     }
   },
-  
+
   "recovery": {
     "strategies": {
-      "local": [
-        "restart_server",
-        "clear_cache",
-        "reinstall_dependencies",
-        "rebuild_project"
-      ],
-      "remote": [
-        "trigger_redeploy",
-        "rollback_deployment",
-        "scale_service",
-        "restart_service"
-      ]
+      "local": ["restart_server", "clear_cache", "reinstall_dependencies", "rebuild_project"],
+      "remote": ["trigger_redeploy", "rollback_deployment", "scale_service", "restart_service"]
     },
-    
+
     "escalation": [
       {
         "level": 1,
@@ -208,7 +189,7 @@
         "wait": 120000
       },
       {
-        "level": 2, 
+        "level": 2,
         "actions": ["redeploy"],
         "wait": 300000
       },
@@ -219,7 +200,7 @@
       }
     ]
   },
-  
+
   "dashboard": {
     "enabled": true,
     "port": 3001,

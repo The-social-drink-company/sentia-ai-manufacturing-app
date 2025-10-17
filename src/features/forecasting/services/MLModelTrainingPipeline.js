@@ -18,7 +18,7 @@ export class MLModelTrainingPipeline {
       earlyStopping: options.earlyStopping !== false,
       patience: options.patience || 10,
       minDelta: options.minDelta || 0.001,
-      ...options
+      ...options,
     }
 
     this.models = new Map()
@@ -61,7 +61,7 @@ export class MLModelTrainingPipeline {
         testSize: dataSplits.test.length,
         models: {},
         bestModel: null,
-        trainingTime: 0
+        trainingTime: 0,
       }
 
       // Train different model types
@@ -73,7 +73,7 @@ export class MLModelTrainingPipeline {
         'gradient_boosting',
         'lstm',
         'arima',
-        'ensemble'
+        'ensemble',
       ]
 
       for (const modelType of modelTypes) {
@@ -86,7 +86,7 @@ export class MLModelTrainingPipeline {
           logWarn(`Failed to train ${modelType}`, { modelType, error: error.message })
           trainingResults.models[modelType] = {
             error: error.message,
-            trained: false
+            trained: false,
           }
         }
       }
@@ -101,7 +101,6 @@ export class MLModelTrainingPipeline {
       this.trainingHistory.set(Date.now(), trainingResults)
 
       return trainingResults
-
     } catch (error) {
       logError('ML training pipeline failed', error)
       throw error
@@ -144,14 +143,21 @@ export class MLModelTrainingPipeline {
         lag3: index > 2 ? processed[index - 3].value : item.value,
 
         // Moving averages
-        ma3: index >= 2 ? this.calculateMovingAverage(processed.slice(Math.max(0, index - 2), index + 1)) : item.value,
-        ma7: index >= 6 ? this.calculateMovingAverage(processed.slice(Math.max(0, index - 6), index + 1)) : item.value,
+        ma3:
+          index >= 2
+            ? this.calculateMovingAverage(processed.slice(Math.max(0, index - 2), index + 1))
+            : item.value,
+        ma7:
+          index >= 6
+            ? this.calculateMovingAverage(processed.slice(Math.max(0, index - 6), index + 1))
+            : item.value,
 
         // Trend indicators
         trend: index > 0 ? item.value - processed[index - 1].value : 0,
-        percentChange: index > 0 && processed[index - 1].value !== 0
-          ? (item.value - processed[index - 1].value) / processed[index - 1].value * 100
-          : 0
+        percentChange:
+          index > 0 && processed[index - 1].value !== 0
+            ? ((item.value - processed[index - 1].value) / processed[index - 1].value) * 100
+            : 0,
       }
     })
 
@@ -164,7 +170,7 @@ export class MLModelTrainingPipeline {
     processed = processed.map(item => ({
       ...item,
       normalizedValue: range > 0 ? (item.value - min) / range : 0.5,
-      originalValue: item.value
+      originalValue: item.value,
     }))
 
     return processed
@@ -183,7 +189,7 @@ export class MLModelTrainingPipeline {
     return {
       train: data.slice(0, trainSize),
       validation: data.slice(trainSize, trainSize + validationSize),
-      test: data.slice(trainSize + validationSize)
+      test: data.slice(trainSize + validationSize),
     }
   }
 
@@ -200,35 +206,35 @@ export class MLModelTrainingPipeline {
 
     switch (modelType) {
       case 'linear_regression':
-        ({ model, metrics } = this.trainLinearRegression(dataSplits))
+        ;({ model, metrics } = this.trainLinearRegression(dataSplits))
         break
 
       case 'polynomial_regression':
-        ({ model, metrics } = this.trainPolynomialRegression(dataSplits))
+        ;({ model, metrics } = this.trainPolynomialRegression(dataSplits))
         break
 
       case 'neural_network':
-        ({ model, metrics } = await this.trainNeuralNetwork(dataSplits))
+        ;({ model, metrics } = await this.trainNeuralNetwork(dataSplits))
         break
 
       case 'random_forest':
-        ({ model, metrics } = this.trainRandomForest(dataSplits))
+        ;({ model, metrics } = this.trainRandomForest(dataSplits))
         break
 
       case 'gradient_boosting':
-        ({ model, metrics } = this.trainGradientBoosting(dataSplits))
+        ;({ model, metrics } = this.trainGradientBoosting(dataSplits))
         break
 
       case 'lstm':
-        ({ model, metrics } = await this.trainLSTM(dataSplits))
+        ;({ model, metrics } = await this.trainLSTM(dataSplits))
         break
 
       case 'arima':
-        ({ model, metrics } = this.trainARIMA(dataSplits))
+        ;({ model, metrics } = this.trainARIMA(dataSplits))
         break
 
       case 'ensemble':
-        ({ model, metrics } = this.trainEnsemble(dataSplits))
+        ;({ model, metrics } = this.trainEnsemble(dataSplits))
         break
 
       default:
@@ -243,7 +249,7 @@ export class MLModelTrainingPipeline {
       metrics,
       trainingTime,
       trained: true,
-      config: config[modelType] || {}
+      config: config[modelType] || {},
     }
   }
 
@@ -255,7 +261,10 @@ export class MLModelTrainingPipeline {
 
     // Simple linear regression implementation
     const n = train.length
-    let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0
+    let sumX = 0,
+      sumY = 0,
+      sumXY = 0,
+      sumX2 = 0
 
     train.forEach((point, _index) => {
       sumX += index
@@ -271,7 +280,7 @@ export class MLModelTrainingPipeline {
       type: 'linear_regression',
       slope,
       intercept,
-      predict: (x) => intercept + slope * x
+      predict: x => intercept + slope * x,
     }
 
     // Calculate metrics
@@ -310,13 +319,13 @@ export class MLModelTrainingPipeline {
       type: 'polynomial_regression',
       degree,
       coefficients,
-      predict: (x) => {
+      predict: x => {
         let result = 0
         for (let i = 0; i < coefficients.length; i++) {
           result += coefficients[i] * Math.pow(x, i)
         }
         return result
-      }
+      },
     }
 
     const metrics = this.calculateModelMetrics(model, dataSplits)
@@ -336,17 +345,17 @@ export class MLModelTrainingPipeline {
         { neurons: 64, activation: 'relu' },
         { neurons: 32, activation: 'relu' },
         { neurons: 16, activation: 'relu' },
-        { neurons: 1, activation: 'linear' }
+        { neurons: 1, activation: 'linear' },
       ],
       weights: this.generateRandomWeights(4),
-      predict: (x) => {
+      predict: x => {
         // Simplified forward pass
         let output = x
         output = Math.max(0, output * 0.8 + 0.1) // ReLU-like activation
         output = Math.max(0, output * 0.6 + 0.05)
         output = Math.max(0, output * 0.4 + 0.02)
         return output * 0.2 + 0.01 // Linear output
-      }
+      },
     }
 
     // Simulate training process
@@ -366,7 +375,7 @@ export class MLModelTrainingPipeline {
       type: 'random_forest',
       numTrees,
       trees: [],
-      predict: (x) => {
+      predict: x => {
         // Simplified ensemble prediction
         const predictions = []
         for (let i = 0; i < Math.min(numTrees, 10); i++) {
@@ -374,14 +383,14 @@ export class MLModelTrainingPipeline {
           predictions.push(x * (0.9 + variation) + 0.05)
         }
         return predictions.reduce((a, b) => a + b, 0) / predictions.length
-      }
+      },
     }
 
     // Generate mock trees
     for (let i = 0; i < Math.min(numTrees, 10); i++) {
       model.trees.push({
         depth: Math.floor(Math.random() * 8) + 3,
-        nodes: Math.floor(Math.random() * 50) + 10
+        nodes: Math.floor(Math.random() * 50) + 10,
       })
     }
 
@@ -400,7 +409,7 @@ export class MLModelTrainingPipeline {
       numEstimators,
       learningRate: 0.1,
       maxDepth: 6,
-      predict: (x) => {
+      predict: x => {
         // Simplified boosting prediction
         let prediction = x * 0.5 + 0.25 // Base prediction
 
@@ -411,7 +420,7 @@ export class MLModelTrainingPipeline {
         }
 
         return Math.max(0, Math.min(1, prediction))
-      }
+      },
     }
 
     const metrics = this.calculateModelMetrics(model, dataSplits)
@@ -432,14 +441,14 @@ export class MLModelTrainingPipeline {
       sequenceLength,
       hiddenSize: 64,
       numLayers: 2,
-      predict: (x) => {
+      predict: x => {
         // Simplified LSTM-like prediction with memory
         const memoryFactor = Math.tanh(x * 2 - 1) // Memory gate simulation
         const inputGate = 1 / (1 + Math.exp(-x)) // Sigmoid activation
         const forgetGate = 1 / (1 + Math.exp(-(1 - x))) // Forget gate
 
         return memoryFactor * inputGate * forgetGate * 0.8 + 0.1
-      }
+      },
     }
 
     const metrics = this.calculateModelMetrics(model, dataSplits)
@@ -457,10 +466,14 @@ export class MLModelTrainingPipeline {
       type: 'arima',
       order: { p, d, q },
       coefficients: {
-        ar: Array(p).fill(0).map(() => 0.1 + Math.random() * 0.3),
-        ma: Array(q).fill(0).map(() => 0.1 + Math.random() * 0.2)
+        ar: Array(p)
+          .fill(0)
+          .map(() => 0.1 + Math.random() * 0.3),
+        ma: Array(q)
+          .fill(0)
+          .map(() => 0.1 + Math.random() * 0.2),
       },
-      predict: (x) => {
+      predict: x => {
         // Simplified ARIMA prediction
         let prediction = x * 0.7
 
@@ -475,7 +488,7 @@ export class MLModelTrainingPipeline {
         }
 
         return Math.max(0, prediction)
-      }
+      },
     }
 
     const metrics = this.calculateModelMetrics(model, dataSplits)
@@ -493,15 +506,15 @@ export class MLModelTrainingPipeline {
       type: 'ensemble',
       baseModels,
       weights,
-      predict: (x) => {
+      predict: x => {
         const predictions = [
           x * 0.8 + 0.1, // Linear-like
           x * x * 0.3 + x * 0.5 + 0.1, // Polynomial-like
-          Math.max(0, x * 0.9 + (Math.random() - 0.5) * 0.1) // Neural-like
+          Math.max(0, x * 0.9 + (Math.random() - 0.5) * 0.1), // Neural-like
         ]
 
         return predictions.reduce((sum, pred, i) => sum + pred * weights[i], 0)
-      }
+      },
     }
 
     const metrics = this.calculateModelMetrics(model, dataSplits)
@@ -515,7 +528,7 @@ export class MLModelTrainingPipeline {
     const metrics = {
       train: this.evaluateModel(model, dataSplits.train),
       validation: this.evaluateModel(model, dataSplits.validation),
-      test: this.evaluateModel(model, dataSplits.test)
+      test: this.evaluateModel(model, dataSplits.test),
     }
 
     // Calculate overall scores
@@ -524,7 +537,7 @@ export class MLModelTrainingPipeline {
       mse: (metrics.validation.mse + metrics.test.mse) / 2,
       rmse: Math.sqrt((metrics.validation.mse + metrics.test.mse) / 2),
       r2: (metrics.validation.r2 + metrics.test.r2) / 2,
-      mape: (metrics.validation.mape + metrics.test.mape) / 2
+      mape: (metrics.validation.mape + metrics.test.mape) / 2,
     }
 
     return metrics
@@ -572,7 +585,7 @@ export class MLModelTrainingPipeline {
       return sum + Math.pow(point.normalizedValue - meanActual, 2)
     }, 0)
 
-    const r2 = totalSumSquares > 0 ? 1 - (sumSquaredError / totalSumSquares) : 0
+    const r2 = totalSumSquares > 0 ? 1 - sumSquaredError / totalSumSquares : 0
 
     return { mae, mse, rmse, r2, mape }
   }
@@ -587,11 +600,10 @@ export class MLModelTrainingPipeline {
     Object.entries(models).forEach(([modelType, result]) => {
       if (result.trained && result.metrics) {
         // Use weighted score combining MAE, RMSE, and R²
-        const score = (
+        const score =
           result.metrics.overall.mae * 0.4 +
           result.metrics.overall.rmse * 0.4 +
           (1 - Math.max(0, result.metrics.overall.r2)) * 0.2
-        )
 
         if (score < bestScore) {
           bestScore = score
@@ -599,7 +611,7 @@ export class MLModelTrainingPipeline {
             type: modelType,
             score,
             metrics: result.metrics.overall,
-            trainingTime: result.trainingTime
+            trainingTime: result.trainingTime,
           }
         }
       }
@@ -636,8 +648,8 @@ export class MLModelTrainingPipeline {
       predictions.push({
         period: i + 1,
         value: Math.round(denormalizedPrediction),
-        confidence: Math.max(0.5, 0.95 - (i * 0.05)), // Decreasing confidence
-        modelType: bestModelType
+        confidence: Math.max(0.5, 0.95 - i * 0.05), // Decreasing confidence
+        modelType: bestModelType,
       })
     }
 
@@ -669,9 +681,8 @@ export class MLModelTrainingPipeline {
       isTraining: this.isTraining,
       trainedModels: this.models.size,
       availableModels: Array.from(this.models.keys()),
-      lastTrainingTime: this.trainingHistory.size > 0
-        ? Math.max(...this.trainingHistory.keys())
-        : null
+      lastTrainingTime:
+        this.trainingHistory.size > 0 ? Math.max(...this.trainingHistory.keys()) : null,
     }
   }
 

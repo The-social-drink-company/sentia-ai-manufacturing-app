@@ -4,15 +4,15 @@
  * Part of Phase 3.1: E-commerce Platform Integration
  */
 
-import express from 'express';
-import ShopifyIntegration from '../integrations/shopify.js';
-import { authenticateToken } from '../middleware/auth.js';
+import express from 'express'
+import ShopifyIntegration from '../integrations/shopify.js'
+import { authenticateToken } from '../middleware/auth.js'
 
-const router = express.Router();
-const shopify = new ShopifyIntegration();
+const router = express.Router()
+const shopify = new ShopifyIntegration()
 
 // Apply authentication to all routes
-router.use(authenticateToken);
+router.use(authenticateToken)
 
 /**
  * GET /api/shopify/status
@@ -20,7 +20,7 @@ router.use(authenticateToken);
  */
 router.get('/status', async (req, res) => {
   try {
-    const status = await shopify.getConnectionStatus();
+    const status = await shopify.getConnectionStatus()
 
     res.json({
       success: true,
@@ -28,18 +28,18 @@ router.get('/status', async (req, res) => {
       meta: {
         timestamp: new Date().toISOString(),
         stores: ['UK', 'USA'],
-        apiVersion: '2024-10'
-      }
-    });
+        apiVersion: '2024-10',
+      },
+    })
   } catch (error) {
-    console.error('Shopify status error:', error);
+    console.error('Shopify status error:', error)
     res.status(500).json({
       success: false,
       error: 'Failed to check Shopify connection status',
-      message: error.message
-    });
+      message: error.message,
+    })
   }
-});
+})
 
 /**
  * GET /api/shopify/orders
@@ -54,8 +54,8 @@ router.get('/orders', async (req, res) => {
       fulfillment_status,
       since_id,
       created_at_min,
-      created_at_max
-    } = req.query;
+      created_at_max,
+    } = req.query
 
     const options = {
       limit: parseInt(limit),
@@ -64,34 +64,34 @@ router.get('/orders', async (req, res) => {
       ...(fulfillment_status && { fulfillment_status }),
       ...(since_id && { since_id }),
       ...(created_at_min && { created_at_min }),
-      ...(created_at_max && { created_at_max })
-    };
+      ...(created_at_max && { created_at_max }),
+    }
 
-    const result = await shopify.getOrders(options);
+    const result = await shopify.getOrders(options)
 
     res.json({
       success: result.success,
       data: {
         orders: result.orders,
         totalCount: result.totalOrders,
-        breakdown: result.breakdown
+        breakdown: result.breakdown,
       },
       meta: {
         lastUpdated: result.lastUpdated,
         requestParams: options,
-        rateLimits: shopify.rateLimits
+        rateLimits: shopify.rateLimits,
       },
-      ...(result.error && { error: result.error })
-    });
+      ...(result.error && { error: result.error }),
+    })
   } catch (error) {
-    console.error('Shopify orders error:', error);
+    console.error('Shopify orders error:', error)
     res.status(500).json({
       success: false,
       error: 'Failed to fetch Shopify orders',
-      message: error.message
-    });
+      message: error.message,
+    })
   }
-});
+})
 
 /**
  * GET /api/shopify/products
@@ -99,47 +99,41 @@ router.get('/orders', async (req, res) => {
  */
 router.get('/products', async (req, res) => {
   try {
-    const {
-      limit = 50,
-      since_id,
-      vendor,
-      product_type,
-      handle
-    } = req.query;
+    const { limit = 50, since_id, vendor, product_type, handle } = req.query
 
     const options = {
       limit: parseInt(limit),
       ...(since_id && { since_id }),
       ...(vendor && { vendor }),
       ...(product_type && { product_type }),
-      ...(handle && { handle })
-    };
+      ...(handle && { handle }),
+    }
 
-    const result = await shopify.getProducts(options);
+    const result = await shopify.getProducts(options)
 
     res.json({
       success: result.success,
       data: {
         products: result.products,
         totalCount: result.totalProducts,
-        breakdown: result.breakdown
+        breakdown: result.breakdown,
       },
       meta: {
         lastUpdated: result.lastUpdated,
         requestParams: options,
-        rateLimits: shopify.rateLimits
+        rateLimits: shopify.rateLimits,
       },
-      ...(result.error && { error: result.error })
-    });
+      ...(result.error && { error: result.error }),
+    })
   } catch (error) {
-    console.error('Shopify products error:', error);
+    console.error('Shopify products error:', error)
     res.status(500).json({
       success: false,
       error: 'Failed to fetch Shopify products',
-      message: error.message
-    });
+      message: error.message,
+    })
   }
-});
+})
 
 /**
  * GET /api/shopify/customers
@@ -147,45 +141,40 @@ router.get('/products', async (req, res) => {
  */
 router.get('/customers', async (req, res) => {
   try {
-    const {
-      limit = 50,
-      since_id,
-      created_at_min,
-      created_at_max
-    } = req.query;
+    const { limit = 50, since_id, created_at_min, created_at_max } = req.query
 
     const options = {
       limit: parseInt(limit),
       ...(since_id && { since_id }),
       ...(created_at_min && { created_at_min }),
-      ...(created_at_max && { created_at_max })
-    };
+      ...(created_at_max && { created_at_max }),
+    }
 
-    const result = await shopify.getCustomers(options);
+    const result = await shopify.getCustomers(options)
 
     res.json({
       success: result.success,
       data: {
         customers: result.customers,
         totalCount: result.totalCustomers,
-        breakdown: result.breakdown
+        breakdown: result.breakdown,
       },
       meta: {
         lastUpdated: result.lastUpdated,
         requestParams: options,
-        rateLimits: shopify.rateLimits
+        rateLimits: shopify.rateLimits,
       },
-      ...(result.error && { error: result.error })
-    });
+      ...(result.error && { error: result.error }),
+    })
   } catch (error) {
-    console.error('Shopify customers error:', error);
+    console.error('Shopify customers error:', error)
     res.status(500).json({
       success: false,
       error: 'Failed to fetch Shopify customers',
-      message: error.message
-    });
+      message: error.message,
+    })
   }
-});
+})
 
 /**
  * GET /api/shopify/inventory
@@ -193,43 +182,39 @@ router.get('/customers', async (req, res) => {
  */
 router.get('/inventory', async (req, res) => {
   try {
-    const {
-      limit = 50,
-      location_ids,
-      inventory_item_ids
-    } = req.query;
+    const { limit = 50, location_ids, inventory_item_ids } = req.query
 
     const options = {
       limit: parseInt(limit),
       ...(location_ids && { location_ids: location_ids.split(',') }),
-      ...(inventory_item_ids && { inventory_item_ids: inventory_item_ids.split(',') })
-    };
+      ...(inventory_item_ids && { inventory_item_ids: inventory_item_ids.split(',') }),
+    }
 
-    const result = await shopify.getInventoryLevels(options);
+    const result = await shopify.getInventoryLevels(options)
 
     res.json({
       success: result.success,
       data: {
         inventoryLevels: result.inventoryLevels,
         totalCount: result.totalLevels,
-        breakdown: result.breakdown
+        breakdown: result.breakdown,
       },
       meta: {
         lastUpdated: result.lastUpdated,
         requestParams: options,
-        rateLimits: shopify.rateLimits
+        rateLimits: shopify.rateLimits,
       },
-      ...(result.error && { error: result.error })
-    });
+      ...(result.error && { error: result.error }),
+    })
   } catch (error) {
-    console.error('Shopify inventory error:', error);
+    console.error('Shopify inventory error:', error)
     res.status(500).json({
       success: false,
       error: 'Failed to fetch Shopify inventory',
-      message: error.message
-    });
+      message: error.message,
+    })
   }
-});
+})
 
 /**
  * GET /api/shopify/analytics
@@ -237,17 +222,14 @@ router.get('/inventory', async (req, res) => {
  */
 router.get('/analytics', async (req, res) => {
   try {
-    const {
-      start_date,
-      end_date
-    } = req.query;
+    const { start_date, end_date } = req.query
 
     const options = {
       ...(start_date && { start_date }),
-      ...(end_date && { end_date })
-    };
+      ...(end_date && { end_date }),
+    }
 
-    const result = await shopify.getAnalytics(options);
+    const result = await shopify.getAnalytics(options)
 
     res.json({
       success: result.success,
@@ -255,19 +237,19 @@ router.get('/analytics', async (req, res) => {
       meta: {
         dateRange: result.dateRange,
         lastUpdated: result.lastUpdated,
-        requestParams: options
+        requestParams: options,
       },
-      ...(result.error && { error: result.error })
-    });
+      ...(result.error && { error: result.error }),
+    })
   } catch (error) {
-    console.error('Shopify analytics error:', error);
+    console.error('Shopify analytics error:', error)
     res.status(500).json({
       success: false,
       error: 'Failed to fetch Shopify analytics',
-      message: error.message
-    });
+      message: error.message,
+    })
   }
-});
+})
 
 /**
  * POST /api/shopify/webhook/:store
@@ -275,70 +257,70 @@ router.get('/analytics', async (req, res) => {
  */
 router.post('/webhook/:store', async (req, res) => {
   try {
-    const { store } = req.params;
-    const signature = req.headers['x-shopify-hmac-sha256'];
-    const topic = req.headers['x-shopify-topic'];
-    const shop = req.headers['x-shopify-shop-domain'];
+    const { store } = req.params
+    const signature = req.headers['x-shopify-hmac-sha256']
+    const topic = req.headers['x-shopify-topic']
+    const shop = req.headers['x-shopify-shop-domain']
 
     if (!['uk', 'usa'].includes(store)) {
       return res.status(400).json({
         success: false,
-        error: 'Invalid store parameter'
-      });
+        error: 'Invalid store parameter',
+      })
     }
 
     // Verify webhook signature
-    const body = JSON.stringify(req.body);
-    const isValid = shopify.verifyWebhook(body, signature, store);
+    const body = JSON.stringify(req.body)
+    const isValid = shopify.verifyWebhook(body, signature, store)
 
     if (!isValid) {
-      console.error(`Invalid webhook signature for ${store} store`);
+      console.error(`Invalid webhook signature for ${store} store`)
       return res.status(401).json({
         success: false,
-        error: 'Invalid webhook signature'
-      });
+        error: 'Invalid webhook signature',
+      })
     }
 
     // Process webhook based on topic
-    console.log(`Received ${topic} webhook for ${store} store from ${shop}`);
+    console.log(`Received ${topic} webhook for ${store} store from ${shop}`)
 
     // Handle different webhook topics
     switch (topic) {
       case 'orders/create':
-        console.log(`New order created in ${store} store:`, req.body.id);
+        console.log(`New order created in ${store} store:`, req.body.id)
         // In production, you would update your database, trigger notifications, etc.
-        break;
+        break
 
       case 'orders/updated':
-        console.log(`Order updated in ${store} store:`, req.body.id);
-        break;
+        console.log(`Order updated in ${store} store:`, req.body.id)
+        break
 
       case 'orders/paid':
-        console.log(`Order paid in ${store} store:`, req.body.id);
-        break;
+        console.log(`Order paid in ${store} store:`, req.body.id)
+        break
 
       case 'orders/cancelled':
-        console.log(`Order cancelled in ${store} store:`, req.body.id);
-        break;
+        console.log(`Order cancelled in ${store} store:`, req.body.id)
+        break
 
       case 'orders/fulfilled':
-        console.log(`Order fulfilled in ${store} store:`, req.body.id);
-        break;
+        console.log(`Order fulfilled in ${store} store:`, req.body.id)
+        break
 
       case 'products/create':
-        console.log(`New product created in ${store} store:`, req.body.id);
-        break;
+        console.log(`New product created in ${store} store:`, req.body.id)
+        break
 
       case 'products/update':
-        console.log(`Product updated in ${store} store:`, req.body.id);
-        break;
+        console.log(`Product updated in ${store} store:`, req.body.id)
+        break
 
       case 'inventory_levels/update':
-        console.log(`Inventory level updated in ${store} store`);
-        break;
+        console.log(`Inventory level updated in ${store} store`)
+        break
 
       default:
-        console.log(`Unhandled webhook topic: ${topic} for ${store} store`);
+        console.log(`Unhandled webhook topic: ${topic} for ${store} store`)
     }
 
     res.json({
@@ -348,18 +330,18 @@ router.post('/webhook/:store', async (req, res) => {
         store,
         topic,
         shop,
-        timestamp: new Date().toISOString()
-      }
-    });
+        timestamp: new Date().toISOString(),
+      },
+    })
   } catch (error) {
-    console.error('Shopify webhook error:', error);
+    console.error('Shopify webhook error:', error)
     res.status(500).json({
       success: false,
       error: 'Failed to process webhook',
-      message: error.message
-    });
+      message: error.message,
+    })
   }
-});
+})
 
 /**
  * GET /api/shopify/mock-data
@@ -367,25 +349,25 @@ router.post('/webhook/:store', async (req, res) => {
  */
 router.get('/mock-data', (req, res) => {
   try {
-    const mockData = shopify.generateMockData();
+    const mockData = shopify.generateMockData()
 
     res.json({
       success: true,
       data: mockData,
       meta: {
         note: 'This is mock data for development purposes',
-        timestamp: new Date().toISOString()
-      }
-    });
+        timestamp: new Date().toISOString(),
+      },
+    })
   } catch (error) {
-    console.error('Shopify mock data error:', error);
+    console.error('Shopify mock data error:', error)
     res.status(500).json({
       success: false,
       error: 'Failed to generate mock data',
-      message: error.message
-    });
+      message: error.message,
+    })
   }
-});
+})
 
 /**
  * GET /api/shopify/sync/status
@@ -399,34 +381,34 @@ router.get('/sync/status', async (req, res) => {
         orders: new Date(Date.now() - 5 * 60 * 1000).toISOString(), // 5 minutes ago
         products: new Date(Date.now() - 15 * 60 * 1000).toISOString(), // 15 minutes ago
         customers: new Date(Date.now() - 30 * 60 * 1000).toISOString(), // 30 minutes ago
-        inventory: new Date(Date.now() - 2 * 60 * 1000).toISOString() // 2 minutes ago
+        inventory: new Date(Date.now() - 2 * 60 * 1000).toISOString(), // 2 minutes ago
       },
       syncIntervals: {
         orders: '5 minutes',
         products: '15 minutes',
         customers: '30 minutes',
-        inventory: '2 minutes'
+        inventory: '2 minutes',
       },
       errors: [],
-      isHealthy: true
-    };
+      isHealthy: true,
+    }
 
     res.json({
       success: true,
       data: syncStatus,
       meta: {
         timestamp: new Date().toISOString(),
-        stores: ['UK', 'USA']
-      }
-    });
+        stores: ['UK', 'USA'],
+      },
+    })
   } catch (error) {
-    console.error('Shopify sync status error:', error);
+    console.error('Shopify sync status error:', error)
     res.status(500).json({
       success: false,
       error: 'Failed to get sync status',
-      message: error.message
-    });
+      message: error.message,
+    })
   }
-});
+})
 
-export default router;
+export default router

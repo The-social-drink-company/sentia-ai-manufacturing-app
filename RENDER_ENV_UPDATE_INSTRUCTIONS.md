@@ -39,6 +39,7 @@ The production deployment is failing because critical environment variables are 
    - Create or copy an API key
 
 2. **Run the PowerShell Script**
+
    ```powershell
    cd "C:\Projects\Sentia Manufacturing Dashboard\sentia-manufacturing-dashboard"
    .\update-render-env-vars.ps1
@@ -56,6 +57,7 @@ The production deployment is failing because critical environment variables are 
    - Rename to `render.exe` and add to PATH
 
 2. **Login to Render**
+
    ```bash
    render login
    ```
@@ -70,6 +72,7 @@ The production deployment is failing because critical environment variables are 
 ## Critical Environment Variables Status
 
 ### ❌ MISSING (Must Add Immediately)
+
 - VITE_CLERK_PUBLISHABLE_KEY
 - CLERK_SECRET_KEY
 - CLERK_PUBLISHABLE_KEY
@@ -81,6 +84,7 @@ The production deployment is failing because critical environment variables are 
 - VITE_CLERK_AFTER_SIGN_UP_URL
 
 ### ✅ Already Set (Verify Values)
+
 - DATABASE_URL (automatically set by Render PostgreSQL)
 - PORT (may be auto-set to 10000, should be 5000)
 - Some feature flags
@@ -112,8 +116,8 @@ After updating environment variables:
 ## Support
 
 If you encounter issues:
+
 1. Check deployment logs in Render Dashboard
 2. Verify all critical environment variables are set
 3. Ensure the latest code from production branch is deployed
 4. Check that the build command and start command are correct
-

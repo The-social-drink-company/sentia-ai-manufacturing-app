@@ -6,7 +6,7 @@ class RegionalPerformanceApi {
       const response = await apiClient.get('/api/regional/performance')
       return {
         success: true,
-        data: response.data
+        data: response.data,
       }
     } catch (error) {
       console.error('Failed to fetch regional performance data:', error)
@@ -19,7 +19,7 @@ class RegionalPerformanceApi {
       const response = await apiClient.get(`/api/regional/performance/${region}`)
       return {
         success: true,
-        data: response.data
+        data: response.data,
       }
     } catch (error) {
       console.error(`Failed to fetch metrics for region ${region}:`, error)

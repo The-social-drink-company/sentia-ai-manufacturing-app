@@ -1,4 +1,5 @@
 # Render Unified Deployment Guide
+
 ## Single Application with Integrated PostgreSQL & MCP Server
 
 This guide provides complete instructions for deploying the Sentia Manufacturing Dashboard as a single, unified application on Render with integrated PostgreSQL database and MCP AI server.
@@ -8,12 +9,15 @@ This guide provides complete instructions for deploying the Sentia Manufacturing
 ## 🚀 Quick Start
 
 ### Prerequisites
+
 - GitHub account with repository access
 - Render account (sign up at https://render.com)
 - PostgreSQL client tools (for data migration)
 
 ### One-Click Deploy
+
 1. Push latest changes to GitHub:
+
    ```bash
    git add .
    git commit -m "Complete Render migration with integrated PostgreSQL"
@@ -32,6 +36,7 @@ This guide provides complete instructions for deploying the Sentia Manufacturing
 ## 📦 What Gets Deployed
 
 ### Single Unified Application
+
 ```
 sentia-manufacturing-development
 ├── Web Service (Express + React)
@@ -43,6 +48,7 @@ sentia-manufacturing-development
 ```
 
 ### Services Included
+
 - **Main Application**: Express server serving React frontend and API
 - **MCP AI Server**: AI Central Nervous System with multi-LLM support
 - **PostgreSQL Database**: Integrated Render PostgreSQL (no more Neon!)
@@ -54,16 +60,18 @@ sentia-manufacturing-development
 ## 🔧 Configuration Details
 
 ### Database Configuration
+
 ```yaml
 databases:
   - name: sentia-db
-    plan: starter        # $7/month for production
-    region: oregon       # Same as application
+    plan: starter # $7/month for production
+    region: oregon # Same as application
     databaseName: sentia_manufacturing
     user: sentia_admin
 ```
 
 ### Environment Variables (Automatic)
+
 - `DATABASE_URL`: Automatically injected from Render PostgreSQL
 - `PORT`: Set by Render (3000)
 - All API keys and secrets configured in `render.yaml`
@@ -73,18 +81,21 @@ databases:
 ## 📊 Multi-Environment Setup
 
 ### Development Environment
+
 - **URL**: `https://sentia-manufacturing-development.onrender.com`
 - **Branch**: `development`
 - **Database**: `sentia-db-dev`
 - **Purpose**: Active development and testing
 
 ### Testing Environment
+
 - **URL**: `https://sentia-manufacturing-testing.onrender.com`
 - **Branch**: `test`
 - **Database**: `sentia-db-test`
 - **Purpose**: UAT and client testing
 
 ### Production Environment
+
 - **URL**: `https://sentia-manufacturing-production.onrender.com`
 - **Branch**: `production`
 - **Database**: `sentia-db-prod`
@@ -95,6 +106,7 @@ databases:
 ## 🔄 Data Migration from Neon
 
 ### Step 1: Get Render Database URL
+
 1. After deployment, go to Render Dashboard
 2. Click on `sentia-db` database service
 3. Click **"Connect"** button
@@ -103,12 +115,14 @@ databases:
 ### Step 2: Run Migration Script
 
 **Windows:**
+
 ```cmd
 cd scripts
 migrate-neon-to-render.bat
 ```
 
 **Mac/Linux:**
+
 ```bash
 cd scripts
 chmod +x migrate-neon-to-render.sh
@@ -116,6 +130,7 @@ chmod +x migrate-neon-to-render.sh
 ```
 
 ### Step 3: Verify Migration
+
 ```bash
 # Test connection
 psql "your-render-database-url" -c "SELECT COUNT(*) FROM information_schema.tables;"
@@ -129,6 +144,7 @@ curl https://sentia-manufacturing-development.onrender.com/health
 ## ✅ Deployment Verification Checklist
 
 ### Immediate Checks (5 minutes)
+
 - [ ] Application deployed successfully
 - [ ] Database created and connected
 - [ ] Health endpoint responding: `/health`
@@ -136,6 +152,7 @@ curl https://sentia-manufacturing-development.onrender.com/health
 - [ ] No error logs in Render Dashboard
 
 ### Functionality Checks (15 minutes)
+
 - [ ] User authentication working (Clerk)
 - [ ] Dashboard widgets loading
 - [ ] API endpoints responding
@@ -143,6 +160,7 @@ curl https://sentia-manufacturing-development.onrender.com/health
 - [ ] Data migrated successfully
 
 ### Integration Checks (30 minutes)
+
 - [ ] Xero API connected
 - [ ] Shopify stores syncing
 - [ ] Real-time updates working
@@ -154,12 +172,14 @@ curl https://sentia-manufacturing-development.onrender.com/health
 ## 🔍 Monitoring & Logs
 
 ### View Logs
+
 1. Go to Render Dashboard
 2. Click on your service
 3. Click **"Logs"** tab
 4. Use filters: `error`, `warn`, `info`
 
 ### Health Monitoring
+
 ```bash
 # Application health
 curl https://sentia-manufacturing-development.onrender.com/health
@@ -172,6 +192,7 @@ curl https://sentia-manufacturing-development.onrender.com/api/health/database
 ```
 
 ### Metrics Dashboard
+
 - CPU Usage: Monitor in Render Dashboard
 - Memory: Keep below 512MB for Starter plan
 - Database: Monitor storage and connections
@@ -184,6 +205,7 @@ curl https://sentia-manufacturing-development.onrender.com/api/health/database
 ### Common Issues & Solutions
 
 #### 1. Build Fails
+
 ```bash
 # Check build logs for errors
 # Common fix: Clear build cache in Render Dashboard
@@ -191,6 +213,7 @@ Settings → Clear build cache → Trigger manual deploy
 ```
 
 #### 2. Database Connection Error
+
 ```javascript
 // Verify DATABASE_URL is set
 // Check logs for: "Database connected successfully"
@@ -198,6 +221,7 @@ Settings → Clear build cache → Trigger manual deploy
 ```
 
 #### 3. MCP Server Not Responding
+
 ```bash
 # Check if MCP is running
 curl https://your-app.onrender.com/api/mcp/health
@@ -207,6 +231,7 @@ curl https://your-app.onrender.com/api/mcp/health
 ```
 
 #### 4. Slow Performance
+
 - Upgrade from Free to Starter plan (no spin-down)
 - Check database query performance
 - Enable caching with Redis
@@ -216,11 +241,13 @@ curl https://your-app.onrender.com/api/mcp/health
 ## 💰 Cost Optimization
 
 ### Current Setup (Recommended)
+
 - **Web Service**: Starter ($7/month)
 - **PostgreSQL**: Starter ($7/month)
 - **Total**: $14/month
 
 ### Scaling Options
+
 1. **Free Tier** (Development only)
    - Web: Free (spins down after 15 min)
    - DB: Free (expires after 30 days)
@@ -241,18 +268,21 @@ curl https://your-app.onrender.com/api/mcp/health
 ## 📝 Post-Deployment Tasks
 
 ### Immediate (Day 1)
+
 - [x] Verify all deployments successful
 - [x] Migrate data from Neon
 - [ ] Test critical user flows
 - [ ] Update DNS if using custom domain
 
 ### Short-term (Week 1)
+
 - [ ] Monitor performance metrics
 - [ ] Set up alerting rules
 - [ ] Document any issues found
 - [ ] Train team on Render Dashboard
 
 ### Long-term (Month 1)
+
 - [ ] Cancel Neon subscription
 - [ ] Optimize database queries
 - [ ] Implement backup strategy
@@ -274,12 +304,14 @@ curl https://your-app.onrender.com/api/mcp/health
 ## 📚 Additional Resources
 
 ### Render Documentation
+
 - [Databases](https://render.com/docs/databases)
 - [Environment Variables](https://render.com/docs/environment-variables)
 - [Blueprints](https://render.com/docs/blueprint-spec)
 - [Troubleshooting](https://render.com/docs/troubleshooting)
 
 ### Support Channels
+
 - **Render Status**: https://status.render.com
 - **Community Forum**: https://community.render.com
 - **Support Email**: support@render.com
@@ -290,6 +322,7 @@ curl https://your-app.onrender.com/api/mcp/health
 ## 🎯 Success Metrics
 
 Your deployment is successful when:
+
 - ✅ Application loads without errors
 - ✅ All API endpoints return valid responses
 - ✅ Database queries execute successfully
@@ -310,6 +343,6 @@ Your deployment is successful when:
 
 ---
 
-*Last Updated: December 2024*
-*Version: 1.0.0*
-*Status: Ready for Deployment*
+_Last Updated: December 2024_
+_Version: 1.0.0_
+_Status: Ready for Deployment_

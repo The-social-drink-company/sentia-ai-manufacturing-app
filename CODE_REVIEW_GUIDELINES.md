@@ -9,6 +9,7 @@ This document establishes enterprise-level code review standards for the Sentia 
 ### 1. Pre-Review Checklist (Author)
 
 Before requesting a review:
+
 - [ ] Code compiles without warnings
 - [ ] All tests pass locally
 - [ ] ESLint shows no errors
@@ -18,22 +19,24 @@ Before requesting a review:
 
 ### 2. Review Timeline
 
-| PR Type | Target Response Time | Max Review Time |
-|---------|---------------------|-----------------|
-| Hotfix (Critical) | 30 minutes | 1 hour |
-| Hotfix (High) | 2 hours | 4 hours |
-| Feature/Bugfix | 4 hours | 24 hours |
-| Documentation | 24 hours | 48 hours |
+| PR Type           | Target Response Time | Max Review Time |
+| ----------------- | -------------------- | --------------- |
+| Hotfix (Critical) | 30 minutes           | 1 hour          |
+| Hotfix (High)     | 2 hours              | 4 hours         |
+| Feature/Bugfix    | 4 hours              | 24 hours        |
+| Documentation     | 24 hours             | 48 hours        |
 
 ### 3. Reviewer Responsibilities
 
 #### Primary Reviewer
+
 - Thorough code review
 - Test functionality locally
 - Verify requirements met
 - Check for edge cases
 
 #### Secondary Reviewer (Production PRs)
+
 - Security review
 - Performance impact assessment
 - Breaking change evaluation
@@ -44,6 +47,7 @@ Before requesting a review:
 ### Code Quality
 
 #### Structure & Design
+
 - [ ] Code follows SOLID principles
 - [ ] No code duplication (DRY)
 - [ ] Clear separation of concerns
@@ -51,6 +55,7 @@ Before requesting a review:
 - [ ] Modular and reusable components
 
 #### Readability
+
 - [ ] Clear variable/function names
 - [ ] Consistent naming conventions
 - [ ] Adequate comments for complex logic
@@ -58,6 +63,7 @@ Before requesting a review:
 - [ ] No console.log statements
 
 #### Best Practices
+
 - [ ] Error handling implemented
 - [ ] Input validation present
 - [ ] Defensive programming used
@@ -67,12 +73,14 @@ Before requesting a review:
 ### Security Review
 
 #### Authentication & Authorization
+
 - [ ] Proper authentication checks
 - [ ] Role-based access control enforced
 - [ ] Session management secure
 - [ ] JWT tokens handled safely
 
 #### Data Security
+
 - [ ] No hardcoded credentials
 - [ ] Sensitive data encrypted
 - [ ] SQL injection prevention
@@ -80,6 +88,7 @@ Before requesting a review:
 - [ ] CSRF tokens used
 
 #### API Security
+
 - [ ] Rate limiting considered
 - [ ] Input sanitization
 - [ ] Output encoding
@@ -88,6 +97,7 @@ Before requesting a review:
 ### Performance Review
 
 #### Frontend Performance
+
 - [ ] Lazy loading implemented
 - [ ] Images optimized
 - [ ] Bundle size acceptable
@@ -95,6 +105,7 @@ Before requesting a review:
 - [ ] React re-renders minimized
 
 #### Backend Performance
+
 - [ ] Database queries optimized
 - [ ] N+1 queries avoided
 - [ ] Caching implemented where appropriate
@@ -104,6 +115,7 @@ Before requesting a review:
 ### Testing Review
 
 #### Test Coverage
+
 - [ ] Unit tests present
 - [ ] Integration tests included
 - [ ] Edge cases tested
@@ -111,6 +123,7 @@ Before requesting a review:
 - [ ] Coverage > 80% for critical code
 
 #### Test Quality
+
 - [ ] Tests are meaningful
 - [ ] Tests are isolated
 - [ ] Tests are deterministic
@@ -120,12 +133,14 @@ Before requesting a review:
 ### Documentation Review
 
 #### Code Documentation
+
 - [ ] JSDoc for public functions
 - [ ] Complex algorithms explained
 - [ ] API endpoints documented
 - [ ] Configuration documented
 
 #### Project Documentation
+
 - [ ] README updated if needed
 - [ ] API docs updated
 - [ ] Environment variables documented
@@ -136,6 +151,7 @@ Before requesting a review:
 ### Effective Comments
 
 #### Good Examples
+
 ```
 "Consider extracting this logic into a separate utility function for reusability"
 "This could cause a race condition when multiple users update simultaneously"
@@ -143,6 +159,7 @@ Before requesting a review:
 ```
 
 #### Poor Examples
+
 ```
 "This is wrong"
 "Bad code"
@@ -162,6 +179,7 @@ Use prefixes to categorize comments:
 ## Approval Criteria
 
 ### Can Approve
+
 - All [MUST] items addressed
 - No security vulnerabilities
 - Tests passing
@@ -169,6 +187,7 @@ Use prefixes to categorize comments:
 - Documentation complete
 
 ### Should Not Approve
+
 - Failing tests
 - Security issues present
 - Breaking changes without migration plan
@@ -180,6 +199,7 @@ Use prefixes to categorize comments:
 ### Hotfix Reviews
 
 For critical production issues:
+
 1. Focus on the specific fix
 2. Verify no additional changes
 3. Ensure rollback possible
@@ -188,6 +208,7 @@ For critical production issues:
 ### Large PRs
 
 For PRs > 500 lines:
+
 1. Consider splitting into smaller PRs
 2. Review in multiple sessions
 3. Focus on architecture first
@@ -196,6 +217,7 @@ For PRs > 500 lines:
 ### Breaking Changes
 
 For breaking changes:
+
 1. Migration plan required
 2. Backward compatibility considered
 3. Documentation updated
@@ -204,12 +226,14 @@ For breaking changes:
 ## Tools & Automation
 
 ### Automated Checks
+
 - ESLint for code style
 - npm audit for security
 - Jest for testing
 - Bundle analyzer for size
 
 ### Review Tools
+
 - GitHub PR interface
 - VS Code GitHub Pull Requests extension
 - Local checkout for testing
@@ -217,6 +241,7 @@ For breaking changes:
 ## Review Etiquette
 
 ### Do's
+
 - Be constructive and specific
 - Provide code examples
 - Acknowledge good practices
@@ -224,6 +249,7 @@ For breaking changes:
 - Respond promptly
 
 ### Don'ts
+
 - Make personal attacks
 - Nitpick minor style issues
 - Approve without reviewing
@@ -242,6 +268,7 @@ If consensus cannot be reached:
 ## Metrics & Improvement
 
 Track and review monthly:
+
 - Average review time
 - Number of review cycles
 - Defect escape rate
@@ -255,31 +282,37 @@ Track and review monthly:
 ## Code Review Checklist
 
 ### Functionality
+
 - [ ] Code does what it's supposed to do
 - [ ] Edge cases handled
 - [ ] Error handling appropriate
 
 ### Quality
+
 - [ ] Follows coding standards
 - [ ] No code duplication
 - [ ] Well-structured
 
 ### Security
+
 - [ ] No vulnerabilities introduced
 - [ ] Authentication/authorization correct
 - [ ] Input validation present
 
 ### Performance
+
 - [ ] No performance regressions
 - [ ] Efficient algorithms used
 - [ ] Database queries optimized
 
 ### Testing
+
 - [ ] Tests included and passing
 - [ ] Edge cases tested
 - [ ] Coverage adequate
 
 ### Documentation
+
 - [ ] Code documented
 - [ ] API docs updated
 - [ ] README updated if needed

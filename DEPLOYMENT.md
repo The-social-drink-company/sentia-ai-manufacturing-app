@@ -1,6 +1,7 @@
 # Sentia Manufacturing Dashboard - Production Deployment Guide
 
 ## Overview
+
 This guide provides comprehensive instructions for deploying the Sentia Manufacturing Planning Dashboard to Railway with full CI/CD pipeline, multi-environment setup, and enterprise-grade observability.
 
 ## Architecture
@@ -29,6 +30,7 @@ This guide provides comprehensive instructions for deploying the Sentia Manufact
 **Auto-deploy**: ✅ On push to `development`
 
 #### Environment Variables:
+
 ```bash
 FLASK_CONFIG=development
 SECRET_KEY=${RAILWAY_SECRET_KEY}
@@ -46,6 +48,7 @@ LOG_LEVEL=DEBUG
 **Auto-deploy**: ✅ On push to `test`
 
 #### Environment Variables:
+
 ```bash
 FLASK_CONFIG=test
 SECRET_KEY=${RAILWAY_SECRET_KEY}
@@ -63,6 +66,7 @@ LOG_LEVEL=INFO
 **Auto-deploy**: ✅ On push to `production` (with approval)
 
 #### Environment Variables:
+
 ```bash
 FLASK_CONFIG=production
 SECRET_KEY=${RAILWAY_SECRET_KEY}
@@ -94,6 +98,7 @@ railway project create sentia-manufacturing-dashboard
 ### 2. Set Up Three Environments
 
 #### Create Development Environment:
+
 ```bash
 railway environment create development
 railway environment use development
@@ -101,6 +106,7 @@ railway link
 ```
 
 #### Create Test Environment:
+
 ```bash
 railway environment create test
 railway environment use test
@@ -108,6 +114,7 @@ railway link
 ```
 
 #### Create Production Environment:
+
 ```bash
 railway environment create production
 railway environment use production
@@ -117,6 +124,7 @@ railway link
 ### 3. Configure Databases
 
 #### Neon PostgreSQL Setup:
+
 1. Go to [Neon Console](https://console.neon.tech)
 2. Create three databases:
    - `sentia-dev-db`
@@ -125,7 +133,9 @@ railway link
 3. Copy connection strings to Railway environment variables
 
 #### Redis Setup:
+
 Railway provides Redis add-on:
+
 ```bash
 railway add redis
 ```
@@ -148,11 +158,13 @@ railway variables set DATABASE_URL=postgresql://...
 ### 5. Deploy
 
 #### Development Deployment:
+
 ```bash
 git push origin development
 ```
 
 #### Test Deployment:
+
 ```bash
 git checkout test
 git merge development
@@ -160,6 +172,7 @@ git push origin test
 ```
 
 #### Production Deployment:
+
 ```bash
 git checkout production
 git merge test
@@ -173,6 +186,7 @@ git push origin production
 Railway automatically monitors the `/api/health` endpoint.
 
 Custom health checks available at:
+
 - `/api/health` - Application health
 - `/metrics` - Detailed metrics
 - `/alerts` - Current alerts
@@ -180,16 +194,19 @@ Custom health checks available at:
 ### 2. External Monitoring
 
 #### Slack Alerts:
+
 1. Create Slack webhook URL
 2. Set `SLACK_WEBHOOK_URL` environment variable
 3. Configure alert channel
 
 #### Custom Webhooks:
+
 Set `ALERT_WEBHOOK_URL` for custom alert handling.
 
 ### 3. GitHub Actions Monitoring
 
 Automated monitoring runs every 5 minutes via GitHub Actions:
+
 - Health checks across all environments
 - Performance monitoring
 - Automated alerting
@@ -199,6 +216,7 @@ Automated monitoring runs every 5 minutes via GitHub Actions:
 ### Automated Backups
 
 Daily backups run via GitHub Actions:
+
 - Full database backups
 - 30-day retention
 - Cross-region replication (optional)
@@ -220,22 +238,26 @@ Neon provides point-in-time recovery up to 7 days.
 ## Security Configuration
 
 ### 1. SSL/TLS
+
 - HTTPS enforced via Railway
 - HSTS headers configured
 - TLS 1.3 minimum
 
 ### 2. Security Headers
+
 - Content Security Policy
 - X-Frame-Options: DENY
 - X-Content-Type-Options: nosniff
 - Referrer-Policy configured
 
 ### 3. Rate Limiting
+
 - 100 requests/minute per IP
 - Configurable per endpoint
 - Redis-backed storage
 
 ### 4. Access Control
+
 - Flask-Login session management
 - Strong session protection
 - Secure cookie configuration
@@ -243,22 +265,26 @@ Neon provides point-in-time recovery up to 7 days.
 ## Performance Optimization
 
 ### 1. Application Server
+
 - Gunicorn with gevent workers
 - 4 workers for production
 - Connection pooling enabled
 - Request/response compression
 
 ### 2. Database Optimization
+
 - Connection pooling (10 connections)
 - Query optimization
 - Index management
 
 ### 3. Caching Strategy
+
 - Redis for session storage
 - API response caching
 - Static file caching (1 year)
 
 ### 4. CDN Configuration
+
 Railway provides CDN automatically for static files.
 
 ## Troubleshooting
@@ -266,6 +292,7 @@ Railway provides CDN automatically for static files.
 ### Common Issues
 
 #### 1. Database Connection Issues
+
 ```bash
 # Check database connectivity
 railway logs
@@ -283,6 +310,7 @@ with app.app_context():
 ```
 
 #### 2. Redis Connection Issues
+
 ```bash
 # Check Redis status
 railway logs | grep redis
@@ -298,6 +326,7 @@ print('Redis connected')
 ```
 
 #### 3. High Memory Usage
+
 ```bash
 # Check memory metrics
 python scripts/monitoring.py
@@ -307,6 +336,7 @@ railway logs | grep -i memory
 ```
 
 #### 4. Slow Response Times
+
 ```bash
 # Check performance metrics
 curl https://sentia-manufacturing.railway.app/metrics
@@ -318,9 +348,11 @@ curl https://sentia-manufacturing.railway.app/metrics
 ### Rollback Procedures
 
 #### Automatic Rollback
+
 Failed deployments automatically rollback via GitHub Actions.
 
 #### Manual Rollback
+
 ```bash
 # Via Railway CLI
 railway rollback
@@ -331,6 +363,7 @@ git push origin production
 ```
 
 ### Log Analysis
+
 ```bash
 # View recent logs
 railway logs
@@ -345,11 +378,13 @@ railway logs | grep ERROR
 ## Maintenance Windows
 
 ### Scheduled Maintenance
+
 - Weekly maintenance window: Sunday 2-4 AM UTC
 - Database updates and optimizations
 - Security patch applications
 
 ### Emergency Maintenance
+
 - Critical security updates: As needed
 - System failures: Immediate response
 - Performance issues: Within 4 hours

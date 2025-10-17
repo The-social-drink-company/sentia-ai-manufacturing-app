@@ -68,7 +68,8 @@
       "Bash(npm run lint:*)",
       "Bash(git fetch:*)",
       "Bash(npx bmad-method install)",
-      "Bash(git clone:*)"
+      "Bash(git clone:*)",
+      "Bash(npx eslint:*)"
     ],
     "deny": [],
     "ask": []

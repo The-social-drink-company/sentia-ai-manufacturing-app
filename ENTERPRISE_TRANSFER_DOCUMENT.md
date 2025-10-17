@@ -1,18 +1,19 @@
 # SENTIA MANUFACTURING DASHBOARD
+
 # ENTERPRISE SOFTWARE TRANSFER DOCUMENT
+
 **Version**: 2.0.0
 **Date**: September 16, 2025
 **Classification**: CONFIDENTIAL - ENTERPRISE DOCUMENTATION
 
 ---
 
-
-
 ## EXECUTIVE SUMMARY
 
 This document provides comprehensive technical documentation for the complete transfer of the Sentia Manufacturing Dashboard, a world-class enterprise manufacturing intelligence platform. The application represents a full-stack, production-ready solution with real-time data processing, AI-powered analytics, and comprehensive business intelligence capabilities.
 
 ### Key Achievements
+
 - **100% Production Ready**: All critical systems operational
 - **123 API Endpoints**: Fully functional REST API
 - **58+ Test Cases**: Comprehensive test coverage
@@ -27,6 +28,7 @@ This document provides comprehensive technical documentation for the complete tr
 ### 1.1 Technology Stack
 
 #### Frontend (Client-Side)
+
 - **Framework**: React 18.3.1 with TypeScript 5.7.3
 - **Build Tool**: Vite 7.1.5 (18.92s build time)
 - **Styling**: Tailwind CSS 3.4.17
@@ -38,6 +40,7 @@ This document provides comprehensive technical documentation for the complete tr
 - **Icons**: Heroicons 2.2.0, Lucide React
 
 #### Backend (Server-Side)
+
 - **Runtime**: Node.js v18+ with ES Modules
 - **Framework**: Express.js 4.21.2
 - **Database**: PostgreSQL with Prisma ORM 6.16.1
@@ -48,6 +51,7 @@ This document provides comprehensive technical documentation for the complete tr
 - **AI Integration**: OpenAI, Anthropic Claude, Google Gemini
 
 #### Infrastructure
+
 - **Deployment**: Railway (3 environments: development, testing, production)
 - **Database Hosting**: Neon PostgreSQL with pgvector
 - **MCP Server**: Model Context Protocol for AI orchestration
@@ -126,6 +130,7 @@ sentia-manufacturing-dashboard/
 ## 2. CORE FEATURES & FUNCTIONALITY
 
 ### 2.1 Dashboard System
+
 - **Responsive Grid Layout**: 12-column drag-and-drop grid
 - **Widget System**: 15+ modular widgets
 - **Role-Based Access**: Admin, Manager, Operator, Viewer roles
@@ -134,6 +139,7 @@ sentia-manufacturing-dashboard/
 - **Keyboard Shortcuts**: Enterprise navigation hotkeys
 
 ### 2.2 Manufacturing Intelligence
+
 - **Production Tracking**: Real-time production monitoring
 - **Quality Control**: Statistical process control (SPC)
 - **Inventory Management**: Multi-location inventory tracking
@@ -142,6 +148,7 @@ sentia-manufacturing-dashboard/
 - **Maintenance**: Predictive maintenance scheduling
 
 ### 2.3 Financial Management
+
 - **Working Capital**: Complete WC optimization
 - **Cash Flow**: Real-time cash flow forecasting
 - **Currency Management**: Multi-currency support
@@ -150,6 +157,7 @@ sentia-manufacturing-dashboard/
 - **Financial Reports**: Automated reporting
 
 ### 2.4 AI & Analytics
+
 - **Multi-LLM Support**: Claude 3.5, GPT-4, Gemini Pro
 - **Predictive Analytics**: ML-powered forecasting
 - **Anomaly Detection**: Real-time anomaly detection
@@ -158,6 +166,7 @@ sentia-manufacturing-dashboard/
 - **Decision Engine**: Automated decision support
 
 ### 2.5 Integration Capabilities
+
 - **Xero**: Financial data synchronization
 - **Shopify**: E-commerce integration
 - **Amazon SP-API**: Marketplace integration
@@ -170,7 +179,9 @@ sentia-manufacturing-dashboard/
 ## 3. API DOCUMENTATION
 
 ### 3.1 Authentication
+
 All API requests require authentication via Clerk JWT tokens:
+
 ```
 Authorization: Bearer <token>
 ```
@@ -178,54 +189,63 @@ Authorization: Bearer <token>
 ### 3.2 Core API Endpoints
 
 #### Health & Status
+
 - `GET /api/health` - System health check
 - `GET /api/health/enterprise` - Enterprise health metrics
 - `GET /api/metrics` - Performance metrics
 - `GET /api/status` - Component status
 
 #### Dashboard
+
 - `GET /api/dashboard/overview` - Dashboard metrics
 - `GET /api/dashboard/widgets` - Widget configurations
 - `POST /api/dashboard/layout` - Save layout
 - `GET /api/dashboard/realtime` - SSE stream
 
 #### Financial
+
 - `GET /api/working-capital/summary` - WC summary
 - `POST /api/working-capital/forecast` - WC forecast
 - `GET /api/financial/cashflow` - Cash flow
 - `POST /api/financial/scenario` - Scenario analysis
 
 #### Inventory
+
 - `GET /api/inventory/levels` - Current levels
 - `POST /api/inventory/optimize` - Optimization
 - `GET /api/inventory/movements` - Stock movements
 - `POST /api/inventory/forecast` - Demand forecast
 
 #### Production
+
 - `GET /api/production/status` - Production status
 - `GET /api/production/schedule` - Schedule
 - `POST /api/production/optimize` - Optimization
 - `GET /api/production/quality` - Quality metrics
 
 #### Analytics
+
 - `GET /api/analytics/kpis` - Key metrics
 - `POST /api/analytics/predict` - Predictions
 - `GET /api/analytics/anomalies` - Anomalies
 - `POST /api/analytics/report` - Generate report
 
 #### AI Services
+
 - `POST /api/ai/chat` - AI chat interface
 - `POST /api/ai/analyze` - Data analysis
 - `POST /api/ai/forecast` - AI forecasting
 - `GET /api/ai/insights` - AI insights
 
 #### Integration Status
+
 - `GET /api/xero/status` - Xero status
 - `GET /api/shopify/status` - Shopify status
 - `GET /api/amazon/status` - Amazon status
 - `GET /api/unleashed/status` - Unleashed status
 
 #### Admin
+
 - `GET /api/admin/users` - User management
 - `POST /api/admin/users/:id/role` - Update role
 - `GET /api/admin/audit` - Audit logs
@@ -238,19 +258,20 @@ Authorization: Bearer <token>
 socket.on('connect', () => {})
 
 // Real-time data
-socket.on('production:update', (data) => {})
-socket.on('inventory:change', (data) => {})
-socket.on('alert:new', (alert) => {})
-socket.on('metric:update', (metric) => {})
+socket.on('production:update', data => {})
+socket.on('inventory:change', data => {})
+socket.on('alert:new', alert => {})
+socket.on('metric:update', metric => {})
 
 // AI responses
-socket.on('ai:response', (response) => {})
-socket.on('ai:insight', (insight) => {})
+socket.on('ai:response', response => {})
+socket.on('ai:insight', insight => {})
 ```
 
 ### 3.4 Response Formats
 
 #### Success Response
+
 ```json
 {
   "status": "success",
@@ -261,6 +282,7 @@ socket.on('ai:insight', (insight) => {})
 ```
 
 #### Error Response
+
 ```json
 {
   "status": "error",
@@ -281,6 +303,7 @@ socket.on('ai:insight', (insight) => {})
 ### 4.1 Core Tables
 
 #### Users
+
 ```sql
 CREATE TABLE users (
   id UUID PRIMARY KEY,
@@ -294,6 +317,7 @@ CREATE TABLE users (
 ```
 
 #### Financial Data
+
 ```sql
 CREATE TABLE working_capital (
   id UUID PRIMARY KEY,
@@ -308,6 +332,7 @@ CREATE TABLE working_capital (
 ```
 
 #### Inventory
+
 ```sql
 CREATE TABLE inventory (
   id UUID PRIMARY KEY,
@@ -322,6 +347,7 @@ CREATE TABLE inventory (
 ```
 
 #### Production
+
 ```sql
 CREATE TABLE production_runs (
   id UUID PRIMARY KEY,
@@ -335,6 +361,7 @@ CREATE TABLE production_runs (
 ```
 
 #### AI Insights
+
 ```sql
 CREATE TABLE ai_insights (
   id UUID PRIMARY KEY,
@@ -368,6 +395,7 @@ CREATE INDEX ON embeddings USING ivfflat (embedding vector_cosine_ops);
 ### 5.1 Environment Configuration
 
 #### Development (.env)
+
 ```bash
 NODE_ENV=development
 PORT=5000
@@ -377,6 +405,7 @@ REDIS_URL=redis://localhost:6379
 ```
 
 #### Production (Railway)
+
 ```bash
 NODE_ENV=production
 PORT=${{PORT}}
@@ -389,6 +418,7 @@ RAILWAY_ENVIRONMENT=production
 ### 5.2 Deployment Process
 
 #### Local Development
+
 ```bash
 # Install dependencies
 npm install
@@ -403,6 +433,7 @@ npm run build
 ```
 
 #### Railway Deployment
+
 ```bash
 # Development branch
 git push origin development
@@ -421,6 +452,7 @@ git push origin production
 ### 5.3 Railway Configuration
 
 #### railway.toml
+
 ```toml
 [build]
 builder = "nixpacks"
@@ -436,15 +468,18 @@ restartPolicyType = "always"
 ### 5.4 Infrastructure URLs
 
 #### Development
+
 - Frontend: https://sentia-manufacturing-development.up.railway.app
 - API: https://sentia-manufacturing-development.up.railway.app/api
 - MCP: https://mcp-server-tkyu.onrender.com
 
 #### Testing
+
 - Frontend: https://sentia-manufacturing-testing.up.railway.app
 - API: https://sentia-manufacturing-testing.up.railway.app/api
 
 #### Production
+
 - Frontend: https://sentia-manufacturing-production.up.railway.app
 - API: https://sentia-manufacturing-production.up.railway.app/api
 
@@ -455,24 +490,27 @@ restartPolicyType = "always"
 ### 6.1 Authentication & Authorization
 
 #### Authentication Flow
+
 1. User logs in via Clerk
 2. JWT token generated
 3. Token validated on each request
 4. Session managed by Clerk
 
 #### Role-Based Access Control
+
 ```javascript
 const roles = {
   admin: ['*'],
   manager: ['read', 'write', 'approve'],
   operator: ['read', 'write'],
-  viewer: ['read']
-};
+  viewer: ['read'],
+}
 ```
 
 ### 6.2 Security Measures
 
 #### API Security
+
 - Rate limiting (100 req/min)
 - CORS configuration
 - Helmet.js headers
@@ -481,6 +519,7 @@ const roles = {
 - XSS protection
 
 #### Data Security
+
 - Encryption at rest (PostgreSQL)
 - Encryption in transit (HTTPS)
 - API key rotation
@@ -490,6 +529,7 @@ const roles = {
 ### 6.3 Compliance
 
 #### GDPR Compliance
+
 - Data minimization
 - Right to erasure
 - Data portability
@@ -497,6 +537,7 @@ const roles = {
 - Consent management
 
 #### Industry Standards
+
 - ISO 27001 ready
 - SOC 2 Type II ready
 - PCI DSS compliant architecture
@@ -509,24 +550,28 @@ const roles = {
 ### 7.1 Test Coverage
 
 #### Unit Tests (Vitest)
+
 - **Coverage**: 58+ test cases
 - **Focus**: Business logic, calculations
 - **Location**: `src/utils/*.test.js`
 - **Command**: `npm test`
 
 #### Integration Tests
+
 - API endpoint testing
 - Database operations
 - External service mocks
 - WebSocket testing
 
 #### E2E Tests (Playwright)
+
 - User workflows
 - Critical paths
 - Cross-browser testing
 - Mobile responsiveness
 
 ### 7.2 Testing Commands
+
 ```bash
 npm test              # Run unit tests
 npm run test:run      # Single run
@@ -536,6 +581,7 @@ npm run test:ui       # Test UI
 ```
 
 ### 7.3 Quality Metrics
+
 - **Build Time**: 18.92 seconds
 - **Bundle Size**: ~450KB gzipped
 - **Lighthouse Score**: 95+
@@ -549,6 +595,7 @@ npm run test:ui       # Test UI
 ### 8.1 Logging System
 
 #### Winston Logger Configuration
+
 ```javascript
 const logger = winston.createLogger({
   level: 'info',
@@ -556,11 +603,12 @@ const logger = winston.createLogger({
   transports: [
     new winston.transports.Console(),
     // File transports disabled on Railway
-  ]
-});
+  ],
+})
 ```
 
 #### Log Levels
+
 - **error**: System errors, exceptions
 - **warn**: Warnings, degraded performance
 - **info**: General information
@@ -570,6 +618,7 @@ const logger = winston.createLogger({
 ### 8.2 Monitoring
 
 #### Health Checks
+
 - Database connectivity
 - Redis availability
 - External API status
@@ -577,6 +626,7 @@ const logger = winston.createLogger({
 - CPU utilization
 
 #### Performance Metrics
+
 - API response times
 - Database query times
 - Cache hit rates
@@ -586,6 +636,7 @@ const logger = winston.createLogger({
 ### 8.3 Alerting
 
 #### Alert Triggers
+
 - Server down
 - High error rate
 - Memory threshold
@@ -599,6 +650,7 @@ const logger = winston.createLogger({
 ### 9.1 MCP Server Architecture
 
 #### Components
+
 - **AI Central Nervous System**: Multi-LLM orchestration
 - **Unified API Interface**: Service management
 - **Vector Database**: Semantic memory
@@ -608,16 +660,19 @@ const logger = winston.createLogger({
 ### 9.2 LLM Providers
 
 #### Claude 3.5 Sonnet
+
 - Primary for complex reasoning
 - Code analysis
 - Business insights
 
 #### GPT-4 Turbo
+
 - General purpose AI
 - Natural language
 - Creative tasks
 
 #### Gemini Pro
+
 - Multimodal processing
 - Vision tasks
 - Large context
@@ -635,8 +690,8 @@ const mcpTools = [
   'maintenance-scheduling',
   'financial-analysis',
   'anomaly-detection',
-  'report-generation'
-];
+  'report-generation',
+]
 ```
 
 ---
@@ -646,6 +701,7 @@ const mcpTools = [
 ### 10.1 Daily Operations
 
 #### Morning Checks
+
 1. Review overnight alerts
 2. Check system health
 3. Verify integrations
@@ -653,6 +709,7 @@ const mcpTools = [
 5. Check backup status
 
 #### Monitoring Tasks
+
 - API response times
 - Database performance
 - Cache effectiveness
@@ -662,6 +719,7 @@ const mcpTools = [
 ### 10.2 Maintenance Windows
 
 #### Weekly
+
 - Database optimization
 - Cache clearing
 - Log rotation
@@ -669,6 +727,7 @@ const mcpTools = [
 - Performance review
 
 #### Monthly
+
 - Full backup verification
 - Security audit
 - Dependency updates
@@ -678,6 +737,7 @@ const mcpTools = [
 ### 10.3 Troubleshooting
 
 #### Common Issues
+
 1. **502 Bad Gateway**: Check Railway logs, Winston file handlers
 2. **Database timeout**: Check connection pool, query optimization
 3. **Slow API**: Review cache, optimize queries
@@ -691,12 +751,14 @@ const mcpTools = [
 ### 11.1 Key Contacts
 
 #### Development Team
+
 - Frontend Lead: React/TypeScript expert
 - Backend Lead: Node.js/Express expert
 - DevOps Lead: Railway deployment expert
 - AI Lead: MCP/LLM integration expert
 
 #### Support Channels
+
 - GitHub: https://github.com/The-social-drink-company/sentia-manufacturing-dashboard
 - Documentation: /docs
 - Support Email: support@sentia.com
@@ -704,12 +766,14 @@ const mcpTools = [
 ### 11.2 Critical Files
 
 #### Configuration
+
 - `server.js` - Main server file
 - `.env` - Environment variables
 - `package.json` - Dependencies
 - `prisma/schema.prisma` - Database schema
 
 #### Core Logic
+
 - `src/App.jsx` - Main React app
 - `api/routes.js` - API routes
 - `services/integrations.js` - External APIs
@@ -718,6 +782,7 @@ const mcpTools = [
 ### 11.3 Development Workflow
 
 #### Feature Development
+
 1. Create feature branch
 2. Develop locally
 3. Write tests
@@ -731,6 +796,7 @@ const mcpTools = [
 ### 11.4 Best Practices
 
 #### Code Standards
+
 - ES6+ JavaScript
 - TypeScript for types
 - Functional components
@@ -739,6 +805,7 @@ const mcpTools = [
 - Structured logging
 
 #### Git Workflow
+
 - Feature branches
 - Descriptive commits
 - PR templates
@@ -752,6 +819,7 @@ const mcpTools = [
 ### 12.1 Roadmap
 
 #### Q1 2026
+
 - Mobile application
 - Offline capability
 - Advanced AI features
@@ -759,6 +827,7 @@ const mcpTools = [
 - IoT sensor integration
 
 #### Q2 2026
+
 - Multi-tenant support
 - White-label options
 - API marketplace
@@ -768,6 +837,7 @@ const mcpTools = [
 ### 12.2 Scalability Plans
 
 #### Horizontal Scaling
+
 - Kubernetes deployment
 - Microservices architecture
 - Event-driven design
@@ -775,6 +845,7 @@ const mcpTools = [
 - Load balancing
 
 #### Performance Optimization
+
 - Database sharding
 - CDN implementation
 - Image optimization
@@ -851,25 +922,25 @@ npm run format           # Format code
 
 ### C. Error Codes
 
-| Code | Description | Resolution |
-|------|-------------|------------|
-| AUTH001 | Authentication failed | Check Clerk configuration |
-| DB001 | Database connection failed | Verify DATABASE_URL |
-| API001 | External API error | Check API credentials |
-| CACHE001 | Redis connection failed | Verify REDIS_URL |
-| WS001 | WebSocket error | Check connection limits |
-| AI001 | AI service error | Verify AI API keys |
+| Code     | Description                | Resolution                |
+| -------- | -------------------------- | ------------------------- |
+| AUTH001  | Authentication failed      | Check Clerk configuration |
+| DB001    | Database connection failed | Verify DATABASE_URL       |
+| API001   | External API error         | Check API credentials     |
+| CACHE001 | Redis connection failed    | Verify REDIS_URL          |
+| WS001    | WebSocket error            | Check connection limits   |
+| AI001    | AI service error           | Verify AI API keys        |
 
 ### D. Performance Benchmarks
 
-| Metric | Target | Current |
-|--------|--------|---------|
-| API Response Time | <200ms | 150ms |
-| Database Query | <100ms | 75ms |
-| Page Load Time | <3s | 2.5s |
-| Bundle Size | <500KB | 450KB |
-| Build Time | <30s | 18.92s |
-| Test Coverage | >80% | 85% |
+| Metric            | Target | Current |
+| ----------------- | ------ | ------- |
+| API Response Time | <200ms | 150ms   |
+| Database Query    | <100ms | 75ms    |
+| Page Load Time    | <3s    | 2.5s    |
+| Bundle Size       | <500KB | 450KB   |
+| Build Time        | <30s   | 18.92s  |
+| Test Coverage     | >80%   | 85%     |
 
 ---
 
@@ -880,6 +951,7 @@ The Sentia Manufacturing Dashboard represents a state-of-the-art enterprise manu
 The application is **100% production-ready** with all critical features implemented, tested, and documented. The codebase follows enterprise best practices and is designed for scalability, maintainability, and performance.
 
 ### Key Success Factors
+
 ✅ Complete API implementation (123 endpoints)
 ✅ Comprehensive test coverage (58+ tests)
 ✅ Enterprise security (RBAC, encryption)
@@ -888,6 +960,7 @@ The application is **100% production-ready** with all critical features implemen
 ✅ Production deployment ready
 
 ### Transfer Completion Checklist
+
 - [ ] Access to GitHub repository granted
 - [ ] Railway deployment access provided
 - [ ] Database credentials transferred
@@ -906,4 +979,4 @@ The application is **100% production-ready** with all critical features implemen
 
 ---
 
-*This document contains confidential and proprietary information. Distribution is limited to authorized personnel only.*
+_This document contains confidential and proprietary information. Distribution is limited to authorized personnel only._

@@ -29,18 +29,21 @@
 ## Environment Configuration
 
 ### Development Environment
+
 - **URL**: https://sentia-manufacturing-development.onrender.com
 - **Branch**: `development`
 - **Auto-Deploy**: Yes
 - **Purpose**: Active development and feature implementation
 
 ### Testing Environment
+
 - **URL**: https://sentia-manufacturing-testing.onrender.com
 - **Branch**: `test`
 - **Auto-Deploy**: Yes
 - **Purpose**: User Acceptance Testing (UAT)
 
 ### Production Environment
+
 - **URL**: https://sentia-manufacturing-production.onrender.com
 - **Branch**: `production`
 - **Auto-Deploy**: Yes (with approval)
@@ -72,6 +75,7 @@ node scripts/verify-env-vars.js
 ### Phase 2: Development Deployment
 
 1. **Push to development branch**
+
    ```bash
    git checkout development
    git add .
@@ -92,6 +96,7 @@ node scripts/verify-env-vars.js
 ### Phase 3: Testing Deployment
 
 1. **Create PR to test branch**
+
    ```bash
    git checkout test
    git merge development
@@ -107,6 +112,7 @@ node scripts/verify-env-vars.js
 ### Phase 4: Production Deployment
 
 1. **Create PR to production**
+
    ```bash
    git checkout production
    git merge test
@@ -169,13 +175,13 @@ app.get('/health', async (req, res) => {
       database: await checkDatabase(),
       redis: await checkRedis(),
       clerk: await checkClerk(),
-      mcp: await checkMCP()
+      mcp: await checkMCP(),
     },
     metrics: {
       uptime: process.uptime(),
       memory: process.memoryUsage(),
-      cpu: process.cpuUsage()
-    }
+      cpu: process.cpuUsage(),
+    },
   }
 
   res.json(health)
@@ -187,6 +193,7 @@ app.get('/health', async (req, res) => {
 ### Immediate Rollback
 
 1. **Revert to previous deployment**
+
    ```bash
    # In Render Dashboard
    1. Go to service page
@@ -275,17 +282,19 @@ location /api/dashboard/metrics {
 
 ```javascript
 // server.js
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'"],
-      scriptSrc: ["'self'", "https://clerk.financeflo.ai"],
-      imgSrc: ["'self'", "data:", "https:"],
-      connectSrc: ["'self'", "https://api.clerk.com"]
-    }
-  }
-}))
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        scriptSrc: ["'self'", 'https://clerk.financeflo.ai'],
+        imgSrc: ["'self'", 'data:', 'https:'],
+        connectSrc: ["'self'", 'https://api.clerk.com'],
+      },
+    },
+  })
+)
 ```
 
 ## Disaster Recovery
@@ -406,6 +415,6 @@ npm run test:performance
 
 ---
 
-*Last Updated: September 2025*
-*Version: 2.0.0*
-*Status: Production Ready*
+_Last Updated: September 2025_
+_Version: 2.0.0_
+_Status: Production Ready_

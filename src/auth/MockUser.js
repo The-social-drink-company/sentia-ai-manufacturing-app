@@ -44,11 +44,11 @@ export const mockUser = {
       'admin:read',
       'admin:write',
       'data-import:read',
-      'data-import:write'
-    ]
+      'data-import:write',
+    ],
   },
   privateMetadata: {},
-  unsafeMetadata: {}
+  unsafeMetadata: {},
 }
 
 export const mockSession = {
@@ -57,7 +57,7 @@ export const mockSession = {
   lastActiveAt: new Date(),
   expireAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours from now
   abandonAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
-  user: mockUser
+  user: mockUser,
 }
 
 export const mockOrganization = {
@@ -70,10 +70,10 @@ export const mockOrganization = {
   updatedAt: new Date(),
   publicMetadata: {
     industry: 'manufacturing',
-    size: 'enterprise'
+    size: 'enterprise',
   },
   privateMetadata: {},
-  maxAllowedMemberships: 100
+  maxAllowedMemberships: 100,
 }
 
 export const mockAuthState = {
@@ -87,5 +87,5 @@ export const mockAuthState = {
   actor: null,
   user: mockUser,
   session: mockSession,
-  organization: mockOrganization
+  organization: mockOrganization,
 }

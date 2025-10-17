@@ -3,6 +3,7 @@
 ## Pre-Deployment Validation
 
 ### Code Quality & Testing
+
 - [ ] All unit tests passing (`npm test`)
 - [ ] All integration tests passing
 - [ ] ESLint no errors (`npm run lint`)
@@ -12,6 +13,7 @@
 - [ ] Security audit passed (`npm audit`)
 
 ### Performance Validation
+
 - [ ] Lighthouse score > 90
 - [ ] Bundle size < 2MB
 - [ ] First Contentful Paint < 2s
@@ -20,6 +22,7 @@
 - [ ] API response times < 500ms (95th percentile)
 
 ### Feature Verification
+
 - [ ] Authentication flow working (login/logout)
 - [ ] All dashboard widgets loading correctly
 - [ ] Real-time data streaming functional
@@ -29,6 +32,7 @@
 - [ ] Mobile responsive design verified
 
 ### Security Checklist
+
 - [ ] Environment variables properly secured
 - [ ] API keys not exposed in client code
 - [ ] HTTPS enforced
@@ -41,6 +45,7 @@
 ## Environment Configuration
 
 ### Railway Production Environment
+
 - [ ] Production branch up to date with test branch
 - [ ] Environment variables configured in Railway
   - [ ] NODE_ENV=production
@@ -55,6 +60,7 @@
 - [ ] Domain DNS configured correctly
 
 ### External Services
+
 - [ ] Clerk authentication production keys set
 - [ ] Neon database production instance ready
 - [ ] Redis cache configured (optional)
@@ -66,6 +72,7 @@
 ## Deployment Steps
 
 ### 1. Final Code Preparation
+
 ```bash
 # Ensure on production branch
 git checkout production
@@ -84,6 +91,7 @@ npm run preview
 ```
 
 ### 2. Database Preparation
+
 ```bash
 # Run database migrations
 npx prisma migrate deploy
@@ -96,6 +104,7 @@ pg_dump $DATABASE_URL > backup_$(date +%Y%m%d_%H%M%S).sql
 ```
 
 ### 3. Railway Deployment
+
 ```bash
 # Use deployment script
 npm run deploy:production
@@ -108,6 +117,7 @@ railway logs --service=web --environment=production
 ```
 
 ### 4. Health Check Verification
+
 ```bash
 # Check basic health
 curl https://your-production-url.com/health
@@ -125,6 +135,7 @@ curl https://your-production-url.com/metrics
 ## Post-Deployment Verification
 
 ### Immediate Checks (First 5 minutes)
+
 - [ ] Application loads without errors
 - [ ] Login functionality working
 - [ ] Dashboard displays data correctly
@@ -134,6 +145,7 @@ curl https://your-production-url.com/metrics
 - [ ] CPU usage normal
 
 ### Short-term Monitoring (First hour)
+
 - [ ] Error rate < 0.1%
 - [ ] Response times stable
 - [ ] No memory leaks
@@ -143,6 +155,7 @@ curl https://your-production-url.com/metrics
 - [ ] Cache hit rates normal
 
 ### Extended Monitoring (First 24 hours)
+
 - [ ] Daily reports generating
 - [ ] Backup processes running
 - [ ] Log rotation working
@@ -154,6 +167,7 @@ curl https://your-production-url.com/metrics
 ## Rollback Procedure
 
 ### Immediate Rollback Triggers
+
 - [ ] Application fails to start
 - [ ] Database connection failures
 - [ ] Authentication completely broken
@@ -161,19 +175,23 @@ curl https://your-production-url.com/metrics
 - [ ] Critical security vulnerability exposed
 
 ### Rollback Steps
+
 1. **Revert Railway Deployment**
+
    ```bash
    # Rollback to previous deployment
    railway rollback --environment=production
    ```
 
 2. **Revert Database (if needed)**
+
    ```bash
    # Restore from backup
    psql $DATABASE_URL < backup_YYYYMMDD_HHMMSS.sql
    ```
 
 3. **Clear Cache**
+
    ```bash
    # Clear Redis cache
    redis-cli FLUSHALL
@@ -187,18 +205,21 @@ curl https://your-production-url.com/metrics
 ## Communication Plan
 
 ### Pre-Deployment
+
 - [ ] Maintenance window announced (24 hours prior)
 - [ ] Stakeholders notified
 - [ ] Support team briefed
 - [ ] Status page updated
 
 ### During Deployment
+
 - [ ] Status page showing maintenance mode
 - [ ] Real-time updates in deployment channel
 - [ ] Support team on standby
 - [ ] Monitoring dashboard active
 
 ### Post-Deployment
+
 - [ ] Deployment success announcement
 - [ ] Release notes published
 - [ ] Support team debriefed
@@ -208,6 +229,7 @@ curl https://your-production-url.com/metrics
 ## Success Criteria
 
 ### Technical Metrics
+
 - Error rate < 0.1%
 - Uptime > 99.9%
 - Response time < 500ms (p95)
@@ -216,6 +238,7 @@ curl https://your-production-url.com/metrics
 - All health checks passing
 
 ### Business Metrics
+
 - User login success rate > 99%
 - Data accuracy 100%
 - Report generation functional
@@ -226,12 +249,14 @@ curl https://your-production-url.com/metrics
 ## Sign-off Requirements
 
 ### Technical Sign-off
+
 - [ ] DevOps Engineer approval
 - [ ] Security team approval
 - [ ] Database administrator approval
 - [ ] QA team approval
 
 ### Business Sign-off
+
 - [ ] Product Owner approval
 - [ ] Operations Manager approval
 - [ ] Customer Success approval
@@ -240,17 +265,20 @@ curl https://your-production-url.com/metrics
 ## Emergency Contacts
 
 ### Technical Team
+
 - DevOps Lead: [Contact Info]
 - Backend Lead: [Contact Info]
 - Frontend Lead: [Contact Info]
 - Database Admin: [Contact Info]
 
 ### Business Team
+
 - Product Owner: [Contact Info]
 - Operations Manager: [Contact Info]
 - Customer Success: [Contact Info]
 
 ### External Support
+
 - Railway Support: support@railway.app
 - Neon Database: support@neon.tech
 - Clerk Support: support@clerk.dev
@@ -258,6 +286,7 @@ curl https://your-production-url.com/metrics
 ## Appendix
 
 ### Useful Commands
+
 ```bash
 # View logs
 railway logs --service=web --environment=production
@@ -279,6 +308,7 @@ railway restart --service=web --environment=production
 ```
 
 ### Monitoring URLs
+
 - Application: https://your-production-url.com
 - Health Check: https://your-production-url.com/health
 - Metrics: https://your-production-url.com/metrics
@@ -287,6 +317,7 @@ railway restart --service=web --environment=production
 - Status Page: https://status.your-domain.com
 
 ### Documentation References
+
 - Deployment Guide: `/ENTERPRISE_GIT_WORKFLOW.md`
 - API Documentation: `/context/api-documentation/`
 - Environment Variables: `/.env.enterprise.template`

@@ -5,9 +5,9 @@
  * for all data flowing through the system.
  */
 
-import { z } from 'zod';
-import validator from 'validator';
-import DOMPurify from 'isomorphic-dompurify';
+import { z } from 'zod'
+import validator from 'validator'
+import DOMPurify from 'isomorphic-dompurify'
 
 /**
  * Manufacturing Data Schemas
@@ -65,10 +65,16 @@ const schemas = {
 
   // Inventory Item Schema
   inventoryItem: z.object({
-    sku: z.string().min(1).max(50).regex(/^[A-Z0-9-]+$/),
+    sku: z
+      .string()
+      .min(1)
+      .max(50)
+      .regex(/^[A-Z0-9-]+$/),
     name: z.string().min(1).max(200),
     description: z.string().max(1000).optional(),
-    category: z.enum(['Raw Materials', 'Components', 'Finished Goods', 'Packaging', 'Consumables']).optional(),
+    category: z
+      .enum(['Raw Materials', 'Components', 'Finished Goods', 'Packaging', 'Consumables'])
+      .optional(),
     quantity: z.number().int().min(0),
     reorderPoint: z.number().int().min(0),
     reorderQuantity: z.number().int().min(0).optional(),
@@ -114,16 +120,16 @@ const schemas = {
     email: z.string().email().optional(),
     url: z.string().url().optional(),
   }),
-};
+}
 
 /**
  * Data Validator Class
  */
 class DataValidator {
   constructor() {
-    this.schemas = schemas;
-    this.sanitizer = DOMPurify;
-    this.validator = validator;
+    this.schemas = schemas
+    this.sanitizer = DOMPurify
+    this.validator = validator
   }
 
   /**
@@ -131,18 +137,18 @@ class DataValidator {
    */
   validate(schemaName, data) {
     try {
-      const schema = this.schemas[schemaName];
+      const schema = this.schemas[schemaName]
       if (!schema) {
-        throw new Error(`Schema '${schemaName}' not found`);
+        throw new Error(`Schema '${schemaName}' not found`)
       }
 
       // Parse and validate
-      const result = schema.parse(data);
+      const result = schema.parse(data)
       return {
         valid: true,
         data: result,
         errors: null,
-      };
+      }
     } catch (error) {
       if (error instanceof z.ZodError) {
         return {
@@ -153,9 +159,9 @@ class DataValidator {
             message: e.message,
             code: e.code,
           })),
-        };
+        }
       }
-      throw error;
+      throw error
     }
   }
 
@@ -166,114 +172,116 @@ class DataValidator {
     return this.sanitizer.sanitize(html, {
       ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'a', 'p', 'br'],
       ALLOWED_ATTR: ['href', 'target'],
-    });
+    })
   }
 
   /**
    * Sanitize text input
    */
   sanitizeText(text) {
-    if (!text) return '';
+    if (!text) return ''
 
     // Remove HTML tags
-    let sanitized = validator.stripLow(text);
+    let sanitized = validator.stripLow(text)
 
     // Escape special characters
-    sanitized = validator.escape(sanitized);
+    sanitized = validator.escape(sanitized)
 
     // Trim whitespace
-    sanitized = validator.trim(sanitized);
+    sanitized = validator.trim(sanitized)
 
-    return sanitized;
+    return sanitized
   }
 
   /**
    * Validate and sanitize email
    */
   validateEmail(email) {
-    if (!email) return { valid: false, error: 'Email is required' };
+    if (!email) return { valid: false, error: 'Email is required' }
 
-    const normalized = validator.normalizeEmail(email);
+    const normalized = validator.normalizeEmail(email)
     if (!normalized || !validator.isEmail(normalized)) {
-      return { valid: false, error: 'Invalid email format' };
+      return { valid: false, error: 'Invalid email format' }
     }
 
-    return { valid: true, email: normalized };
+    return { valid: true, email: normalized }
   }
 
   /**
    * Validate and sanitize URL
    */
   validateURL(url) {
-    if (!url) return { valid: false, error: 'URL is required' };
+    if (!url) return { valid: false, error: 'URL is required' }
 
-    if (!validator.isURL(url, {
-      protocols: ['http', 'https'],
-      require_protocol: true,
-      require_valid_protocol: true,
-    })) {
-      return { valid: false, error: 'Invalid URL format' };
+    if (
+      !validator.isURL(url, {
+        protocols: ['http', 'https'],
+        require_protocol: true,
+        require_valid_protocol: true,
+      })
+    ) {
+      return { valid: false, error: 'Invalid URL format' }
     }
 
-    return { valid: true, url: validator.trim(url) };
+    return { valid: true, url: validator.trim(url) }
   }
 
   /**
    * Validate numeric range
    */
   validateNumber(value, min, max) {
-    const num = parseFloat(value);
+    const num = parseFloat(value)
 
     if (isNaN(num)) {
-      return { valid: false, error: 'Invalid number' };
+      return { valid: false, error: 'Invalid number' }
     }
 
     if (min !== undefined && num < min) {
-      return { valid: false, error: `Value must be at least ${min}` };
+      return { valid: false, error: `Value must be at least ${min}` }
     }
 
     if (max !== undefined && num > max) {
-      return { valid: false, error: `Value must be at most ${max}` };
+      return { valid: false, error: `Value must be at most ${max}` }
     }
 
-    return { valid: true, value: num };
+    return { valid: true, value: num }
   }
 
   /**
    * Validate date range
    */
   validateDate(date, minDate, maxDate) {
-    const d = new Date(date);
+    const d = new Date(date)
 
     if (isNaN(d.getTime())) {
-      return { valid: false, error: 'Invalid date' };
+      return { valid: false, error: 'Invalid date' }
     }
 
     if (minDate && d < new Date(minDate)) {
-      return { valid: false, error: `Date must be after ${minDate}` };
+      return { valid: false, error: `Date must be after ${minDate}` }
     }
 
     if (maxDate && d > new Date(maxDate)) {
-      return { valid: false, error: `Date must be before ${maxDate}` };
+      return { valid: false, error: `Date must be before ${maxDate}` }
     }
 
-    return { valid: true, date: d };
+    return { valid: true, date: d }
   }
 
   /**
    * Validate SKU format
    */
   validateSKU(sku) {
-    const pattern = /^[A-Z0-9-]{3,50}$/;
+    const pattern = /^[A-Z0-9-]{3,50}$/
 
     if (!pattern.test(sku)) {
       return {
         valid: false,
         error: 'SKU must be 3-50 characters, uppercase letters, numbers, and hyphens only',
-      };
+      }
     }
 
-    return { valid: true, sku };
+    return { valid: true, sku }
   }
 
   /**
@@ -286,24 +294,24 @@ class DataValidator {
       invalid: 0,
       errors: [],
       validData: [],
-    };
+    }
 
     for (let i = 0; i < dataArray.length; i++) {
-      const validation = this.validate(schemaName, dataArray[i]);
+      const validation = this.validate(schemaName, dataArray[i])
 
       if (validation.valid) {
-        results.valid++;
-        results.validData.push(validation.data);
+        results.valid++
+        results.validData.push(validation.data)
       } else {
-        results.invalid++;
+        results.invalid++
         results.errors.push({
           index: i,
           errors: validation.errors,
-        });
+        })
       }
     }
 
-    return results;
+    return results
   }
 
   /**
@@ -312,25 +320,25 @@ class DataValidator {
   validateAPIRequest(request) {
     // Validate endpoint format
     if (!request.endpoint || !request.endpoint.startsWith('/api/')) {
-      return { valid: false, error: 'Invalid API endpoint' };
+      return { valid: false, error: 'Invalid API endpoint' }
     }
 
     // Validate HTTP method
-    const validMethods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'];
+    const validMethods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']
     if (!validMethods.includes(request.method)) {
-      return { valid: false, error: 'Invalid HTTP method' };
+      return { valid: false, error: 'Invalid HTTP method' }
     }
 
     // Validate headers
     if (request.headers) {
       for (const [key, value] of Object.entries(request.headers)) {
         if (typeof key !== 'string' || typeof value !== 'string') {
-          return { valid: false, error: 'Invalid header format' };
+          return { valid: false, error: 'Invalid header format' }
         }
       }
     }
 
-    return { valid: true };
+    return { valid: true }
   }
 
   /**
@@ -343,59 +351,58 @@ class DataValidator {
       /(\b)(UNION|SELECT.*FROM|INSERT.*INTO)(\b)/i,
       /;.*--/,
       /\/\*.*\*\//,
-    ];
+    ]
 
     for (const pattern of dangerousPatterns) {
       if (pattern.test(query)) {
         return {
           valid: false,
           error: 'Potentially dangerous SQL pattern detected',
-        };
+        }
       }
     }
 
-    return { valid: true, query };
+    return { valid: true, query }
   }
 
   /**
    * Validate manufacturing metrics
    */
   validateManufacturingMetrics(metrics) {
-    const errors = [];
+    const errors = []
 
     // OEE components should multiply to OEE score
     if (metrics.availability && metrics.performance && metrics.quality) {
-      const calculatedOEE = (metrics.availability / 100) *
-                           (metrics.performance / 100) *
-                           (metrics.quality / 100) * 100;
+      const calculatedOEE =
+        (metrics.availability / 100) * (metrics.performance / 100) * (metrics.quality / 100) * 100
 
       if (Math.abs(calculatedOEE - metrics.oeeScore) > 1) {
-        errors.push('OEE score does not match component calculation');
+        errors.push('OEE score does not match component calculation')
       }
     }
 
     // Defect rate should align with quality
     if (metrics.defectRate && metrics.quality) {
-      const expectedQuality = 100 - metrics.defectRate;
+      const expectedQuality = 100 - metrics.defectRate
       if (Math.abs(expectedQuality - metrics.quality) > 5) {
-        errors.push('Quality score inconsistent with defect rate');
+        errors.push('Quality score inconsistent with defect rate')
       }
     }
 
     // Good units should not exceed total units
     if (metrics.goodUnits > metrics.totalUnits) {
-      errors.push('Good units exceed total units');
+      errors.push('Good units exceed total units')
     }
 
     return {
       valid: errors.length === 0,
       errors,
-    };
+    }
   }
 }
 
 // Create singleton instance
-const dataValidator = new DataValidator();
+const dataValidator = new DataValidator()
 
-export default dataValidator;
-export { DataValidator, schemas };
+export default dataValidator
+export { DataValidator, schemas }

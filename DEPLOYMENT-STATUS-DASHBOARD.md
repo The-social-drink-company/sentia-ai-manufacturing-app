@@ -6,12 +6,12 @@
 
 ## 🚦 Environment Status
 
-| Environment | Status | URL | Health Check |
-|------------|--------|-----|--------------|
-| **Development** | ✅ OPERATIONAL | [View Site](https://sentia-manufacturing-development.onrender.com) | HTTP 200 |
-| **Testing** | ✅ OPERATIONAL | [View Site](https://sentia-manufacturing-testing.onrender.com) | HTTP 200 |
-| **Production** | 🔴 DOWN | [View Site](https://sentia-manufacturing-production.onrender.com) | HTTP 502 |
-| **MCP Server** | ✅ OPERATIONAL | [View API](https://mcp-server-tkyu.onrender.com) | HTTP 200 |
+| Environment     | Status         | URL                                                                | Health Check |
+| --------------- | -------------- | ------------------------------------------------------------------ | ------------ |
+| **Development** | ✅ OPERATIONAL | [View Site](https://sentia-manufacturing-development.onrender.com) | HTTP 200     |
+| **Testing**     | ✅ OPERATIONAL | [View Site](https://sentia-manufacturing-testing.onrender.com)     | HTTP 200     |
+| **Production**  | 🔴 DOWN        | [View Site](https://sentia-manufacturing-production.onrender.com)  | HTTP 502     |
+| **MCP Server**  | ✅ OPERATIONAL | [View API](https://mcp-server-tkyu.onrender.com)                   | HTTP 200     |
 
 ---
 
@@ -20,6 +20,7 @@
 ### Current Issue: **502 Bad Gateway**
 
 ### Root Cause Identified:
+
 ❌ **Missing Clerk Authentication Environment Variables**
 
 The application cannot start because critical authentication keys are not configured.
@@ -118,6 +119,7 @@ JWT_EXPIRES_IN=24h
 ## 📊 Success Metrics
 
 When production is fixed:
+
 - Health endpoint returns: `{"status":"ok","timestamp":"..."}`
 - Main site loads without 502
 - Login page accessible
@@ -127,5 +129,3 @@ When production is fixed:
 ---
 
 **Status**: ⏳ WAITING FOR ENVIRONMENT VARIABLES TO BE ADDED
-
-

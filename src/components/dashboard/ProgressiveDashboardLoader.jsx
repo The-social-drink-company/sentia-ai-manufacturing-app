@@ -15,7 +15,7 @@ const ProgressiveDashboardLoader = ({ children, onLoadingComplete }) => {
     totalPhases,
     startLoading,
     canStart,
-    isComplete
+    isComplete,
   } = useDashboardLoader()
 
   useEffect(() => {
@@ -35,7 +35,9 @@ const ProgressiveDashboardLoader = ({ children, onLoadingComplete }) => {
       <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
         <div className="text-center">
           <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-2 border-sky-500 border-t-transparent" />
-          <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Initializing Authentication...</p>
+          <p className="text-xs uppercase tracking-[0.3em] text-slate-400">
+            Initializing Authentication...
+          </p>
         </div>
       </div>
     )
@@ -69,18 +71,15 @@ const ProgressiveDashboardLoader = ({ children, onLoadingComplete }) => {
 
           {/* Stage Info */}
           <div className="space-y-4">
-            <div className="text-lg font-medium text-white">
-              {phaseMessage}
-            </div>
+            <div className="text-lg font-medium text-white">{phaseMessage}</div>
 
             {/* Progress Bar */}
             <div className="space-y-2">
-              <Progress
-                value={progress}
-                className="h-2 bg-slate-700"
-              />
+              <Progress value={progress} className="h-2 bg-slate-700" />
               <div className="flex justify-between text-xs text-slate-400">
-                <span>Stage {currentPhaseIndex} of {totalPhases}</span>
+                <span>
+                  Stage {currentPhaseIndex} of {totalPhases}
+                </span>
                 <span>{Math.round(progress)}%</span>
               </div>
             </div>
@@ -94,8 +93,8 @@ const ProgressiveDashboardLoader = ({ children, onLoadingComplete }) => {
                     index < currentPhaseIndex - 1
                       ? 'bg-gradient-to-r from-blue-400 to-cyan-300'
                       : index === currentPhaseIndex - 1
-                      ? 'bg-blue-400 animate-pulse'
-                      : 'bg-slate-600'
+                        ? 'bg-blue-400 animate-pulse'
+                        : 'bg-slate-600'
                   }`}
                 />
               ))}

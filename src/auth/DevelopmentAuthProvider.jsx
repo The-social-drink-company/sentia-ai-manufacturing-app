@@ -22,7 +22,7 @@ export const useUser = () => {
   return {
     isLoaded: true,
     isSignedIn: true,
-    user: useContext(UserContext)
+    user: useContext(UserContext),
   }
 }
 
@@ -30,7 +30,7 @@ export const useUser = () => {
 export const useSession = () => {
   return {
     isLoaded: true,
-    session: useContext(SessionContext)
+    session: useContext(SessionContext),
   }
 }
 
@@ -42,8 +42,8 @@ export const useOrganization = () => {
     membership: {
       id: 'mem_dev_12345',
       role: 'admin',
-      permissions: ['org:sys_memberships:manage', 'org:sys_domains_manage']
-    }
+      permissions: ['org:sys_memberships:manage', 'org:sys_domains_manage'],
+    },
   }
 }
 
@@ -69,9 +69,7 @@ export const SignIn = () => {
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-50">
       <div className="max-w-md w-full bg-white p-8 rounded-lg shadow-lg">
-        <h2 className="text-2xl font-bold text-center text-gray-900 mb-6">
-          Development Mode
-        </h2>
+        <h2 className="text-2xl font-bold text-center text-gray-900 mb-6">Development Mode</h2>
         <p className="text-gray-600 text-center mb-4">
           Authentication is bypassed in development mode.
         </p>
@@ -89,9 +87,7 @@ export const SignUp = () => {
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-50">
       <div className="max-w-md w-full bg-white p-8 rounded-lg shadow-lg">
-        <h2 className="text-2xl font-bold text-center text-gray-900 mb-6">
-          Development Mode
-        </h2>
+        <h2 className="text-2xl font-bold text-center text-gray-900 mb-6">Development Mode</h2>
         <p className="text-gray-600 text-center mb-4">
           User registration is bypassed in development mode.
         </p>
@@ -108,9 +104,7 @@ export const UserButton = () => {
   return (
     <div className="flex items-center space-x-2 bg-blue-100 px-3 py-2 rounded-lg">
       <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-        <span className="text-white text-sm font-medium">
-          {mockUser.firstName?.[0] || 'D'}
-        </span>
+        <span className="text-white text-sm font-medium">{mockUser.firstName?.[0] || 'D'}</span>
       </div>
       <div className="text-sm">
         <div className="font-medium text-gray-900">{mockUser.fullName}</div>
@@ -132,7 +126,7 @@ export const OrganizationSwitcher = () => {
 // Main Development Auth Provider
 export const DevelopmentAuthProvider = ({ children }) => {
   console.log('[Development Mode] Authentication provider initialized with mock data')
-  
+
   return (
     <AuthContext.Provider value={mockAuthState}>
       <UserContext.Provider value={mockUser}>
@@ -165,7 +159,7 @@ export const useClerk = () => ({
   },
   openUserProfile: () => {
     console.warn('[Development Mode] Open user profile called - no action taken')
-  }
+  },
 })
 
 export default DevelopmentAuthProvider

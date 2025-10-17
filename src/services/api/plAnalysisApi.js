@@ -10,8 +10,8 @@ export const plAnalysisApi = {
 
   // Get P&L summary metrics
   async getPLSummary(period = 'year') {
-    const response = await apiClient.get(`/api/financial/pl-summary`, { 
-      params: { period } 
+    const response = await apiClient.get(`/api/financial/pl-summary`, {
+      params: { period },
     })
     return response // API returns object directly, no .data wrapper
   },
@@ -20,7 +20,7 @@ export const plAnalysisApi = {
   async getKPISummary() {
     const response = await apiClient.get('/api/financial/kpi-summary')
     return response // API returns object directly, no .data wrapper
-  }
+  },
 }
 
 export default plAnalysisApi

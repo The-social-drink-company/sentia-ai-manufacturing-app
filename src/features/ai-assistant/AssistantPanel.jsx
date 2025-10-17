@@ -2,9 +2,21 @@
 import { Badge } from '@/components/ui/badge'
 
 const CONVERSATIONS = [
-  { user: 'Finance', prompt: 'Summarise today’s working capital movement', response: 'Net improvement of $320K driven by APAC collections.' },
-  { user: 'Operations', prompt: 'Any risks in production supply?', response: 'Supplier OTH-421 flagged for lead-time variance.' },
-  { user: 'Treasury', prompt: 'What is the 14-day cash outlook?', response: 'Projected closing cash $8.1M with 92% model confidence.' }
+  {
+    user: 'Finance',
+    prompt: 'Summarise today’s working capital movement',
+    response: 'Net improvement of $320K driven by APAC collections.',
+  },
+  {
+    user: 'Operations',
+    prompt: 'Any risks in production supply?',
+    response: 'Supplier OTH-421 flagged for lead-time variance.',
+  },
+  {
+    user: 'Treasury',
+    prompt: 'What is the 14-day cash outlook?',
+    response: 'Projected closing cash $8.1M with 92% model confidence.',
+  },
 ]
 
 const AssistantPanel = () => (

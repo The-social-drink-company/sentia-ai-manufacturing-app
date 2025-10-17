@@ -3,7 +3,6 @@ import { MagnifyingGlassIcon, ChevronUpIcon, ChevronDownIcon } from '@heroicons/
 import { cn } from '@/lib/utils'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
-
 const DataTableWidget = ({
   title = 'Key Items',
   columns = [],
@@ -13,7 +12,7 @@ const DataTableWidget = ({
   pagination = true,
   pageSize = 10,
   loading = false,
-  className = ''
+  className = '',
 }) => {
   const activeColumns = columns
   const activeData = data
@@ -29,10 +28,8 @@ const DataTableWidget = ({
     }
 
     const needle = searchTerm.toLowerCase()
-    return activeData.filter((row) =>
-      Object.values(row).some((value) =>
-        String(value).toLowerCase().includes(needle)
-      )
+    return activeData.filter(row =>
+      Object.values(row).some(value => String(value).toLowerCase().includes(needle))
     )
   }, [activeData, searchable, searchTerm])
 
@@ -65,11 +62,11 @@ const DataTableWidget = ({
     ? sortedData.slice(startIndex, startIndex + pageSize)
     : sortedData
 
-  const handleSort = (columnKey) => {
+  const handleSort = columnKey => {
     if (!sortable) return
 
     if (sortColumn === columnKey) {
-      setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'))
+      setSortDirection(prev => (prev === 'asc' ? 'desc' : 'asc'))
     } else {
       setSortColumn(columnKey)
       setSortDirection('asc')
@@ -111,7 +108,7 @@ const DataTableWidget = ({
               type="text"
               placeholder="Search..."
               value={searchTerm}
-              onChange={(event) => {
+              onChange={event => {
                 setSearchTerm(event.target.value)
                 setCurrentPage(1)
               }}
@@ -126,7 +123,7 @@ const DataTableWidget = ({
           <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
             <thead className="bg-gray-50 dark:bg-gray-900">
               <tr>
-                {activeColumns.map((column) => (
+                {activeColumns.map(column => (
                   <th
                     key={column.key}
                     onClick={() => handleSort(column.key)}
@@ -137,13 +134,13 @@ const DataTableWidget = ({
                   >
                     <div className="flex items-center space-x-1">
                       <span>{column.label}</span>
-                      {sortable && sortColumn === column.key && (
-                        sortDirection === 'asc' ? (
+                      {sortable &&
+                        sortColumn === column.key &&
+                        (sortDirection === 'asc' ? (
                           <ChevronUpIcon className="h-3 w-3" />
                         ) : (
                           <ChevronDownIcon className="h-3 w-3" />
-                        )
-                      )}
+                        ))}
                     </div>
                   </th>
                 ))}
@@ -152,7 +149,7 @@ const DataTableWidget = ({
             <tbody className="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-800">
               {paginatedData.map((row, rowIndex) => (
                 <tr key={rowIndex} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                  {activeColumns.map((column) => (
+                  {activeColumns.map(column => (
                     <td
                       key={column.key}
                       className="px-6 py-4 text-sm text-gray-900 dark:text-gray-300"
@@ -179,18 +176,19 @@ const DataTableWidget = ({
         {pagination && totalPages > 1 && (
           <div className="flex flex-col items-center justify-between gap-3 px-6 py-4 text-sm text-gray-700 dark:text-gray-300 sm:flex-row">
             <span>
-              Showing {startIndex + 1} to {Math.min(startIndex + pageSize, sortedData.length)} of {sortedData.length} results
+              Showing {startIndex + 1} to {Math.min(startIndex + pageSize, sortedData.length)} of{' '}
+              {sortedData.length} results
             </span>
             <div className="flex space-x-2">
               <button
-                onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                 disabled={currentPageSafe === 1}
                 className="rounded-md border border-gray-300 px-3 py-1 font-medium text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
               >
                 Previous
               </button>
               <button
-                onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
+                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                 disabled={currentPageSafe === totalPages}
                 className="rounded-md border border-gray-300 px-3 py-1 font-medium text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
               >

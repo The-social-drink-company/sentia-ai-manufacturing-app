@@ -1,5 +1,5 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React from 'react'
+import { Link } from 'react-router-dom'
 
 const AuthScaffold = ({
   heading = 'Welcome to Sentia',
@@ -7,7 +7,7 @@ const AuthScaffold = ({
   cardClassName = '',
   maxWidth = 'max-w-md',
   footer,
-  children
+  children,
 }) => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -22,18 +22,12 @@ const AuthScaffold = ({
           {subheading && <p className="text-gray-600">{subheading}</p>}
         </div>
 
-        <div className="mt-6">
-          {children}
-        </div>
+        <div className="mt-6">{children}</div>
 
-        {footer && (
-          <div className="mt-6 text-center text-sm text-gray-600">
-            {footer}
-          </div>
-        )}
+        {footer && <div className="mt-6 text-center text-sm text-gray-600">{footer}</div>}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default AuthScaffold;
+export default AuthScaffold

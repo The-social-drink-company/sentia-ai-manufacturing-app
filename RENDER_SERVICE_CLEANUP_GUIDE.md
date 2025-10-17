@@ -3,6 +3,7 @@
 ## Step 1: Remove Duplicate Service
 
 ### Delete `sentia-manufacturing-dashboard`
+
 1. Go to https://dashboard.render.com
 2. Click on `sentia-manufacturing-dashboard` service
 3. Go to **Settings** tab
@@ -22,6 +23,7 @@ All three environment services are failing. Here's how to fix each one:
    - Go to **Settings** tab
 
 2. **Update Build & Start Commands**:
+
    ```
    Build Command: npm ci --legacy-peer-deps && npm run build
    Start Command: node server.js
@@ -30,6 +32,7 @@ All three environment services are failing. Here's how to fix each one:
 3. **Connect to Database**:
    - Go to **Environment** tab
    - Update/Add these variables:
+
    ```
    NODE_ENV=development
    PORT=10000
@@ -45,6 +48,7 @@ All three environment services are failing. Here's how to fix each one:
 ### B. Fix `sentia-manufacturing-testing`
 
 1. **Service Settings**:
+
    ```
    Build Command: npm ci --legacy-peer-deps && npm run build
    Start Command: node server.js
@@ -63,6 +67,7 @@ All three environment services are failing. Here's how to fix each one:
 ### C. Fix `sentia-manufacturing-production`
 
 1. **Service Settings**:
+
    ```
    Build Command: npm ci --legacy-peer-deps && npm run build
    Start Command: node server.js
@@ -136,18 +141,22 @@ After updating settings for each service:
 ## Common Deployment Errors & Fixes
 
 ### "Cannot find module" Error
+
 - Ensure `package.json` has all dependencies
 - Build command includes: `npm ci --legacy-peer-deps`
 
 ### "Port already in use" Error
+
 - Render provides PORT automatically
 - Use: `const PORT = process.env.PORT || 3000`
 
 ### Database Connection Failed
+
 - Use Internal Database URL for same-region connections
 - Ensure `?sslmode=require` in connection string
 
 ### Build Timeout
+
 - Increase build timeout in Settings
 - Optimize build process
 
@@ -160,6 +169,7 @@ After updating settings for each service:
 ## Verification Checklist
 
 For each environment, verify:
+
 - [ ] Service shows "Live" status
 - [ ] `/health` endpoint returns 200
 - [ ] Database connection works

@@ -3,6 +3,7 @@
 ## Required Environment Variables for Render Deployment
 
 Copy and paste these environment variables into your Render dashboard:
+
 1. Go to your Render service dashboard
 2. Navigate to "Environment" tab
 3. Add each variable below
@@ -184,6 +185,7 @@ VECTOR_SIMILARITY_THRESHOLD=0.7
 ## Deployment Instructions
 
 ### Step 1: Add Environment Variables
+
 1. Go to your Render service dashboard
 2. Click on "Environment" in the left sidebar
 3. Click "Add Environment Variable"
@@ -191,20 +193,26 @@ VECTOR_SIMILARITY_THRESHOLD=0.7
 5. Click "Save Changes"
 
 ### Step 2: Update Amazon SP-API Credentials
+
 **IMPORTANT**: The Amazon SP-API variables above are placeholders. You need to:
+
 1. Register your app with Amazon Seller Central
 2. Get your Client ID and Client Secret from the Amazon Developer Console
 3. Generate a refresh token using Amazon's authorization workflow
 4. Replace the placeholder values with your actual credentials
 
 ### Step 3: Verify Shopify Credentials
+
 The Shopify credentials provided appear to be real. Please verify:
+
 1. Access tokens are still valid
 2. API keys match your Shopify app registration
 3. Shop domains are correct
 
 ### Step 4: Restart Service
+
 After adding all environment variables:
+
 1. Click "Manual Deploy" > "Deploy latest commit"
 2. Or wait for automatic deployment (if auto-deploy is enabled)
 3. Monitor the deployment logs for any errors
@@ -247,6 +255,7 @@ curl https://sentia-manufacturing-development.onrender.com/api/health
 ## Security Notes
 
 ⚠️ **IMPORTANT SECURITY REMINDERS**:
+
 - Never commit these environment variables to Git
 - Rotate API keys regularly
 - Use Render's secret management for sensitive values
@@ -256,6 +265,7 @@ curl https://sentia-manufacturing-development.onrender.com/api/health
 ## Support
 
 For issues with specific integrations:
+
 - **Shopify**: Check Shopify Partner Dashboard for API status
 - **Amazon**: Review Amazon SP-API documentation and quotas
 - **Xero**: Verify app permissions in Xero Developer Console

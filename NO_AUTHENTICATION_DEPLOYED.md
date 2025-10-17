@@ -7,6 +7,7 @@ The application now runs completely without any authentication or login requirem
 ## Changes Implemented
 
 ### Frontend Changes
+
 1. **Removed Clerk Dependencies**
    - Deleted @clerk/clerk-react from package.json
    - Deleted @clerk/clerk-sdk-node from package.json
@@ -23,6 +24,7 @@ The application now runs completely without any authentication or login requirem
    - No authentication barriers
 
 ### Backend Changes
+
 1. **Updated server.js**
    - Removed Clerk URLs from Content Security Policy
    - Removed Clerk domains from CORS configuration
@@ -36,11 +38,13 @@ The application now runs completely without any authentication or login requirem
 ## Access Points
 
 ### Live URLs - All Open Access
+
 - **Development**: https://sentia-manufacturing-development.onrender.com
 - **Testing**: https://sentia-manufacturing-testing.onrender.com
 - **Production**: https://sentia-manufacturing-production.onrender.com
 
 ### Available Routes - No Login Required
+
 - `/` - Landing page
 - `/dashboard` - Main dashboard
 - `/working-capital` - Financial management
@@ -51,6 +55,7 @@ The application now runs completely without any authentication or login requirem
 - `/settings` - Settings page
 
 ### API Endpoints - Public Access
+
 - `/api/status` - System status
 - `/api/health` - Health check
 - `/api/*` - All API routes
@@ -74,7 +79,7 @@ export const useAuth = () => ({
   getToken: async () => 'mock-token',
   userId: 'admin',
   signOut: () => {},
-});
+})
 
 export const useUser = () => ({
   user: {
@@ -87,7 +92,7 @@ export const useUser = () => ({
   },
   isLoaded: true,
   isSignedIn: true,
-});
+})
 ```
 
 ## Important Notes
@@ -101,6 +106,7 @@ export const useUser = () => ({
 If you need to re-enable authentication:
 
 1. Reinstall Clerk dependencies:
+
    ```bash
    npm install @clerk/clerk-react @clerk/clerk-sdk-node @clerk/themes
    ```

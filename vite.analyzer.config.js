@@ -1,6 +1,5 @@
-
-import { defineConfig } from 'vite';
-import { visualizer } from 'rollup-plugin-visualizer';
+import { defineConfig } from 'vite'
+import { visualizer } from 'rollup-plugin-visualizer'
 
 export default defineConfig({
   plugins: [
@@ -8,7 +7,7 @@ export default defineConfig({
       filename: 'dist/stats.html',
       open: false,
       gzipSize: true,
-      brotliSize: true
-    })
-  ]
-});
+      brotliSize: true,
+    }),
+  ],
+})

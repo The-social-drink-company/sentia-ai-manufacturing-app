@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { 
   DocumentChartBarIcon, 
@@ -30,7 +30,7 @@ const FinancialReports = () => {
 
   const apiBase = import.meta.env.VITE_API_BASE_URL || '/api'
 
-  const fetchFinancialData = async () => {
+  const fetchFinancialData = useCallback(async () => {
     try {
       setLoading(true)
       setError(null)
@@ -84,7 +84,7 @@ const FinancialReports = () => {
 
   useEffect(() => {
     fetchFinancialData()
-  }, [])
+  }, [fetchFinancialData])
 
   const formatCurrency = (value) => {
     if (typeof value !== 'number') return 'N/A'

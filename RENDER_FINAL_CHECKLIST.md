@@ -1,6 +1,7 @@
 # 🚀 RENDER DEPLOYMENT FINAL CHECKLIST
 
 ## Complete Migration from Neon to Render PostgreSQL
+
 ### All Three Environments Ready for Deployment
 
 ---
@@ -8,6 +9,7 @@
 ## ✅ PRE-DEPLOYMENT CHECKLIST
 
 ### 📁 Files Created/Updated
+
 - [x] `render.yaml` - Main configuration with Render PostgreSQL
 - [x] `render-environments-complete.yaml` - All 3 environments configured
 - [x] `mcp-server/render.yaml` - MCP server updated for Render DB
@@ -17,6 +19,7 @@
 - [x] `package.json` - Added Render commands
 
 ### 🔑 All API Keys Configured
+
 - [x] **Clerk Authentication** - Public & Secret keys
 - [x] **Xero Accounting** - Client ID & Secret
 - [x] **Shopify UK & USA** - API keys & Access tokens
@@ -27,6 +30,7 @@
 - [x] **MCP Server** - Integration URL
 
 ### 💾 Database Configuration
+
 - [x] **Development**: `sentia-db-development` (Free tier)
 - [x] **Testing**: `sentia-db-testing` (Free/Starter)
 - [x] **Production**: `sentia-db-production` (Starter with backups)
@@ -36,6 +40,7 @@
 ## 📋 DEPLOYMENT STEPS
 
 ### Step 1: Git Operations
+
 ```bash
 # Commit all changes
 git add .
@@ -55,6 +60,7 @@ git push origin production
 ```
 
 ### Step 2: Deploy on Render Dashboard
+
 1. [ ] Login to [Render Dashboard](https://dashboard.render.com)
 2. [ ] Click **"New +"** → **"Blueprint"**
 3. [ ] Select repository: `The-social-drink-company/sentia-manufacturing-dashboard`
@@ -63,6 +69,7 @@ git push origin production
 6. [ ] Wait for all services to deploy (10-15 minutes)
 
 ### Step 3: Verify Deployment
+
 ```bash
 # Validate environment variables
 npm run render:validate
@@ -77,13 +84,16 @@ npm run render:health
 ### Step 4: Migrate Data from Neon
 
 #### For Each Environment:
+
 1. [ ] **Development Database**
+
    ```bash
    # Windows
    npm run render:migrate:win
    # Mac/Linux
    npm run render:migrate
    ```
+
    - Get connection string from `sentia-db-development`
    - Run migration script
    - Verify data transfer
@@ -102,6 +112,7 @@ npm run render:health
 ### For Each Environment, Verify:
 
 #### Development (https://sentia-manufacturing-development.onrender.com)
+
 - [ ] Service deployed and running
 - [ ] Database connected
 - [ ] Login works (Clerk)
@@ -110,6 +121,7 @@ npm run render:health
 - [ ] MCP server connected
 
 #### Testing (https://sentia-manufacturing-testing.onrender.com)
+
 - [ ] Service deployed and running
 - [ ] Database connected
 - [ ] Login works (Clerk)
@@ -118,6 +130,7 @@ npm run render:health
 - [ ] MCP server connected
 
 #### Production (https://sentia-manufacturing-production.onrender.com)
+
 - [ ] Service deployed and running
 - [ ] Database connected
 - [ ] Login works (Clerk)
@@ -140,12 +153,14 @@ npm run render:health
 ## 📊 MONITORING SETUP
 
 ### Enable Monitoring
+
 - [ ] Check Render Dashboard metrics
 - [ ] Set up alerting for failures
 - [ ] Monitor database usage
 - [ ] Check application logs
 
 ### Performance Metrics to Watch
+
 - [ ] Response time < 500ms
 - [ ] Database queries < 100ms
 - [ ] Memory usage < 512MB
@@ -156,6 +171,7 @@ npm run render:health
 ## ⚠️ CRITICAL ITEMS
 
 ### Before Going Live
+
 1. [ ] All environments deployed successfully
 2. [ ] Data migration completed for all databases
 3. [ ] All integrations tested (Xero, Shopify, etc.)
@@ -163,6 +179,7 @@ npm run render:health
 5. [ ] Backup of Neon data saved locally
 
 ### After Stabilization (24-48 hours)
+
 1. [ ] Monitor for any issues
 2. [ ] Check error logs
 3. [ ] Verify all scheduled tasks running
@@ -174,6 +191,7 @@ npm run render:health
 ## 🆘 TROUBLESHOOTING
 
 ### If Deployment Fails
+
 ```bash
 # Check logs
 render logs --service sentia-manufacturing-development
@@ -186,12 +204,14 @@ npm run render:validate
 ```
 
 ### If Database Connection Fails
+
 1. Check DATABASE_URL is set correctly
 2. Verify database is in same region as app
 3. Check connection string format
 4. Review Prisma schema
 
 ### If APIs Don't Connect
+
 1. Verify API keys in environment variables
 2. Check CORS settings
 3. Review integration endpoints
@@ -211,6 +231,7 @@ npm run render:validate
 ## ✅ FINAL CONFIRMATION
 
 When all items are checked:
+
 1. All three environments are live on Render
 2. PostgreSQL databases are working
 3. Data has been migrated from Neon
@@ -220,6 +241,7 @@ When all items are checked:
 **🎉 DEPLOYMENT COMPLETE!**
 
 You can now:
+
 - Monitor the application for 24-48 hours
 - Once stable, cancel Neon subscription
 - Enjoy simplified infrastructure on Render!
@@ -230,14 +252,14 @@ You can now:
 
 _Add any deployment-specific notes here:_
 
-- Deployment Date: _______________
-- Deployed By: _______________
-- Neon Cancellation Date: _______________
-- Issues Encountered: _______________
-- Resolution: _______________
+- Deployment Date: ******\_\_\_******
+- Deployed By: ******\_\_\_******
+- Neon Cancellation Date: ******\_\_\_******
+- Issues Encountered: ******\_\_\_******
+- Resolution: ******\_\_\_******
 
 ---
 
-*Last Updated: December 2024*
-*Version: 1.0.0*
-*Status: Ready for Production Deployment*
+_Last Updated: December 2024_
+_Version: 1.0.0_
+_Status: Ready for Production Deployment_

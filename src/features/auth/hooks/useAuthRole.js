@@ -13,22 +13,22 @@ export function useAuthRole() {
     viewer: 0,
     operator: 1,
     manager: 2,
-    admin: 3
+    admin: 3,
   }
 
-  const hasRole = (requiredRole) => {
+  const hasRole = requiredRole => {
     if (!isLoaded || !isSignedIn) return false
     return roleHierarchy[userRole] >= roleHierarchy[requiredRole]
   }
 
-  const hasPermission = (permission) => {
+  const hasPermission = permission => {
     if (!isLoaded || !isSignedIn) return false
 
     const permissions = sessionClaims?.metadata?.permissions || []
     return permissions.includes(permission)
   }
 
-  const canAccess = (resource) => {
+  const canAccess = resource => {
     const accessMap = {
       dashboard: ['viewer', 'operator', 'manager', 'admin'],
       workingCapital: ['manager', 'admin'],
@@ -37,7 +37,7 @@ export function useAuthRole() {
       inventory: ['operator', 'manager', 'admin'],
       admin: ['admin'],
       reports: ['manager', 'admin'],
-      settings: ['admin']
+      settings: ['admin'],
     }
 
     const allowedRoles = accessMap[resource] || []
@@ -52,6 +52,6 @@ export function useAuthRole() {
     isAdmin: userRole === 'admin',
     isManager: userRole === 'manager' || userRole === 'admin',
     isOperator: roleHierarchy[userRole] >= roleHierarchy.operator,
-    isViewer: isSignedIn
+    isViewer: isSignedIn,
   }
 }

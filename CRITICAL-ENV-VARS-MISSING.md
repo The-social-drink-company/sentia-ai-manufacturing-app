@@ -60,6 +60,7 @@ ENABLE_AUTONOMOUS_TESTING=false
 ## Why This Will Fix the 502 Error:
 
 The application is crashing on startup because:
+
 - ❌ Missing `VITE_CLERK_PUBLISHABLE_KEY` causes React app to fail
 - ❌ Missing `CLERK_SECRET_KEY` causes server authentication to fail
 - ❌ Missing API configuration causes routing errors
@@ -79,5 +80,3 @@ With these variables added, the minimal-server.js will start correctly and serve
 ---
 
 **URGENT**: Add the Clerk environment variables NOW to restore production!
-
-

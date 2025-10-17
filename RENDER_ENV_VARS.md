@@ -5,6 +5,7 @@
 These environment variables MUST be set in Render Dashboard for the development branch:
 
 ### Required Clerk Production Keys
+
 ```env
 # Clerk Authentication - PRODUCTION ONLY
 VITE_CLERK_PUBLISHABLE_KEY=pk_live_REDACTED
@@ -18,6 +19,7 @@ VITE_FORCE_MOCK_AUTH=false
 ```
 
 ### Application Settings
+
 ```env
 NODE_ENV=development
 VITE_API_BASE_URL=https://sentia-manufacturing-development.onrender.com/api
@@ -26,11 +28,13 @@ VITE_APP_VERSION=2.0.0
 ```
 
 ### Database (Auto-configured by Render)
+
 ```env
 DATABASE_URL=[Automatically provided by Render PostgreSQL]
 ```
 
 ### CORS Configuration
+
 ```env
 CORS_ORIGINS=https://sentia-manufacturing-development.onrender.com,http://localhost:3000
 ```
@@ -58,6 +62,7 @@ CORS_ORIGINS=https://sentia-manufacturing-development.onrender.com,http://localh
 ## Verification:
 
 After deployment, verify at: https://sentia-manufacturing-development.onrender.com
+
 1. Landing page should show "Sign In" and "Get Started" buttons
 2. Clicking buttons should redirect to Clerk (clerk.financeflo.ai)
 3. After authentication, should redirect to /dashboard

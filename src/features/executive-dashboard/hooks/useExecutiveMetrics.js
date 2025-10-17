@@ -11,7 +11,7 @@ const mockExecutiveData = {
       unit: 'USD',
       trend: 8.2,
       target: 2.5,
-      status: 'warning'
+      status: 'warning',
     },
     {
       id: 'cash-flow',
@@ -20,7 +20,7 @@ const mockExecutiveData = {
       unit: 'USD',
       trend: -3.5,
       target: 500,
-      status: 'critical'
+      status: 'critical',
     },
     {
       id: 'oee',
@@ -29,7 +29,7 @@ const mockExecutiveData = {
       unit: '%',
       trend: 2.1,
       target: 90,
-      status: 'good'
+      status: 'good',
     },
     {
       id: 'customer-satisfaction',
@@ -38,50 +38,50 @@ const mockExecutiveData = {
       unit: '%',
       trend: 1.5,
       target: 95,
-      status: 'good'
-    }
+      status: 'good',
+    },
   ],
   opportunities: [
     {
       title: 'Expand European Market',
-      description: 'Potential 30% growth in Q2 based on current demand trends'
+      description: 'Potential 30% growth in Q2 based on current demand trends',
     },
     {
       title: 'Automation Investment',
-      description: 'ROI projection shows 18-month payback on proposed line upgrade'
+      description: 'ROI projection shows 18-month payback on proposed line upgrade',
     },
     {
       title: 'Strategic Partnership',
-      description: 'Distribution partnership could reduce logistics costs by 15%'
-    }
+      description: 'Distribution partnership could reduce logistics costs by 15%',
+    },
   ],
   risks: [
     {
       title: 'Supply Chain Disruption',
       impact: 'High',
       probability: 'Medium',
-      description: 'Supplier lead times extending by 20%'
+      description: 'Supplier lead times extending by 20%',
     },
     {
       title: 'Currency Fluctuation',
       impact: 'Medium',
       probability: 'High',
-      description: 'USD/EUR volatility affecting margins'
+      description: 'USD/EUR volatility affecting margins',
     },
     {
       title: 'Regulatory Changes',
       impact: 'Medium',
       probability: 'Low',
-      description: 'New compliance requirements in Q3'
-    }
+      description: 'New compliance requirements in Q3',
+    },
   ],
   financialMetrics: {
     grossMargin: { value: 42.3, trend: 0.8, target: 45 },
     operatingMargin: { value: 18.7, trend: -0.5, target: 20 },
     workingCapital: { value: 1.2, trend: 0.1, target: 1.5, unit: 'M USD' },
-    debtToEquity: { value: 0.35, trend: -0.02, target: 0.40 },
+    debtToEquity: { value: 0.35, trend: -0.02, target: 0.4 },
     returnOnAssets: { value: 12.5, trend: 0.3, target: 15, unit: '%' },
-    inventoryTurnover: { value: 8.2, trend: 0.5, target: 10 }
+    inventoryTurnover: { value: 8.2, trend: 0.5, target: 10 },
   },
   operationalMetrics: {
     productionVolume: { value: 125000, trend: 5000, target: 130000, unit: 'units' },
@@ -89,20 +89,21 @@ const mockExecutiveData = {
     defectRate: { value: 0.8, trend: -0.1, target: 0.5, unit: '%' },
     capacityUtilization: { value: 78, trend: 3, target: 85, unit: '%' },
     leadTime: { value: 3.2, trend: -0.2, target: 3, unit: 'days' },
-    supplierPerformance: { value: 91, trend: 2, target: 95, unit: '%' }
-  }
+    supplierPerformance: { value: 91, trend: 2, target: 95, unit: '%' },
+  },
 }
 
-const fetchExecutiveMetrics = async (period) => {
+const fetchExecutiveMetrics = async period => {
   // Simulate API call to MCP server
-  const mcpUrl = import.meta.env?.VITE_MCP_SERVER_URL || 'https://sentia-mcp-production.onrender.com'
+  const mcpUrl =
+    import.meta.env?.VITE_MCP_SERVER_URL || 'https://sentia-mcp-production.onrender.com'
 
   try {
     const response = await fetch(`${mcpUrl}/v1/executive/metrics?period=${period}`, {
       method: 'GET',
       headers: {
-        'Content-Type': 'application/json'
-      }
+        'Content-Type': 'application/json',
+      },
     })
 
     if (!response.ok) {
@@ -117,7 +118,7 @@ const fetchExecutiveMetrics = async (period) => {
     return {
       ...mockExecutiveData,
       period,
-      lastUpdated: new Date().toISOString()
+      lastUpdated: new Date().toISOString(),
     }
   }
 }
@@ -151,13 +152,13 @@ export const useExecutiveMetrics = (period = 'month') => {
             newAlerts.push({
               id: `kpi-${kpi.id}`,
               severity: 'critical',
-              message: `${kpi.name} is below critical threshold (${kpi.value}${kpi.unit} vs target ${kpi.target}${kpi.unit})`
+              message: `${kpi.name} is below critical threshold (${kpi.value}${kpi.unit} vs target ${kpi.target}${kpi.unit})`,
             })
           } else if (kpi.status === 'warning') {
             newAlerts.push({
               id: `kpi-${kpi.id}`,
               severity: 'warning',
-              message: `${kpi.name} needs attention (${kpi.value}${kpi.unit} vs target ${kpi.target}${kpi.unit})`
+              message: `${kpi.name} needs attention (${kpi.value}${kpi.unit} vs target ${kpi.target}${kpi.unit})`,
             })
           }
         })
@@ -168,7 +169,7 @@ export const useExecutiveMetrics = (period = 'month') => {
             newAlerts.push({
               id: `risk-${index}`,
               severity: 'critical',
-              message: risk.title
+              message: risk.title,
             })
           }
         })
@@ -204,13 +205,15 @@ export const useExecutiveMetrics = (period = 'month') => {
     error,
     refresh: () => {
       setLoading(true)
-      fetchExecutiveMetrics(period).then(data => {
-        setMetrics(data)
-        setLoading(false)
-      }).catch(err => {
-        setError(err)
-        setLoading(false)
-      })
-    }
+      fetchExecutiveMetrics(period)
+        .then(data => {
+          setMetrics(data)
+          setLoading(false)
+        })
+        .catch(err => {
+          setError(err)
+          setLoading(false)
+        })
+    },
   }
 }

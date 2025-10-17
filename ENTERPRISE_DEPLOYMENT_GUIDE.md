@@ -3,6 +3,7 @@
 ## Quick Start Commands
 
 ### Daily Development
+
 ```bash
 # Start new feature
 .\scripts\create-feature-branch.ps1 -FeatureName "add-inventory-api" -Description "Add inventory management API"
@@ -19,12 +20,12 @@
 
 ## Environment URLs
 
-| Environment | Purpose | URL | Database |
-|------------|---------|-----|----------|
-| **Development** | Active development | https://sentia-manufacturing-development.onrender.com | PostgreSQL (Dev) |
-| **Testing** | User Acceptance Testing | https://sentia-manufacturing-testing.onrender.com | PostgreSQL (Test) |
-| **Production** | Live operations | https://sentia-manufacturing-production.onrender.com | PostgreSQL (Prod) |
-| **MCP Server** | AI Central Nervous System | https://mcp-server-tkyu.onrender.com | Shared |
+| Environment     | Purpose                   | URL                                                   | Database          |
+| --------------- | ------------------------- | ----------------------------------------------------- | ----------------- |
+| **Development** | Active development        | https://sentia-manufacturing-development.onrender.com | PostgreSQL (Dev)  |
+| **Testing**     | User Acceptance Testing   | https://sentia-manufacturing-testing.onrender.com     | PostgreSQL (Test) |
+| **Production**  | Live operations           | https://sentia-manufacturing-production.onrender.com  | PostgreSQL (Prod) |
+| **MCP Server**  | AI Central Nervous System | https://mcp-server-tkyu.onrender.com                  | Shared            |
 
 ## Workflow Overview
 
@@ -56,6 +57,7 @@ git checkout -b feature/your-feature
 ### 2️⃣ Development Guidelines
 
 #### Commit Standards
+
 ```bash
 # Use conventional commits
 git commit -m "feat: add inventory tracking"
@@ -65,6 +67,7 @@ git commit -m "chore: update dependencies"
 ```
 
 #### Before Committing Checklist
+
 - [ ] Run tests: `npm test`
 - [ ] Run linter: `npm run lint`
 - [ ] Build check: `npm run build`
@@ -74,6 +77,7 @@ git commit -m "chore: update dependencies"
 ### 3️⃣ Code Review Process
 
 1. **Create Pull Request**
+
    ```bash
    gh pr create --base development --title "feat: your feature"
    ```
@@ -93,6 +97,7 @@ git commit -m "chore: update dependencies"
 ### 4️⃣ Testing Environment (UAT)
 
 #### Promoting to Test
+
 ```bash
 # Automated promotion
 .\scripts\promote-to-environment.ps1 -TargetEnvironment test
@@ -105,6 +110,7 @@ git push origin test
 ```
 
 #### UAT Checklist
+
 - [ ] All features working
 - [ ] No regression issues
 - [ ] Performance acceptable
@@ -114,6 +120,7 @@ git push origin test
 ### 5️⃣ Production Deployment
 
 #### Pre-Deployment
+
 ```bash
 # Backup production database
 .\scripts\backup-render-database.ps1 -Environment production
@@ -123,6 +130,7 @@ git push origin test
 ```
 
 #### Post-Deployment
+
 - Monitor health endpoint: https://sentia-manufacturing-production.onrender.com/health
 - Check error logs in Render dashboard
 - Verify critical features
@@ -133,13 +141,15 @@ git push origin test
 ### 🚨 Hotfix Process
 
 #### Severity Levels
-| Severity | Response Time | Approval | Examples |
-|----------|--------------|----------|----------|
-| **Critical** | 1 hour | 1 (emergency) | System down, data loss |
-| **High** | 4 hours | 2 | Major feature broken |
-| **Medium** | Next deployment | 2 | Minor bugs |
+
+| Severity     | Response Time   | Approval      | Examples               |
+| ------------ | --------------- | ------------- | ---------------------- |
+| **Critical** | 1 hour          | 1 (emergency) | System down, data loss |
+| **High**     | 4 hours         | 2             | Major feature broken   |
+| **Medium**   | Next deployment | 2             | Minor bugs             |
 
 #### Creating Hotfix
+
 ```bash
 # Critical hotfix (bypasses normal approval)
 .\scripts\create-hotfix.ps1 -FixDescription "fix-critical-bug" -Severity critical -AutoDeploy
@@ -149,6 +159,7 @@ git push origin test
 ```
 
 #### Hotfix Flow
+
 1. Branch from `production`
 2. Apply and test fix
 3. Merge to `production`
@@ -172,6 +183,7 @@ git push origin production
 ## Monitoring & Health Checks
 
 ### Service Health Endpoints
+
 ```bash
 # Check all environments
 curl https://sentia-manufacturing-development.onrender.com/health
@@ -181,6 +193,7 @@ curl https://mcp-server-tkyu.onrender.com/health
 ```
 
 ### Monitoring Script
+
 ```bash
 # Continuous monitoring
 .\monitor-render-services.ps1
@@ -192,6 +205,7 @@ curl https://mcp-server-tkyu.onrender.com/health
 ## Database Management
 
 ### Migrations
+
 ```bash
 # Development/Test (push schema)
 npx prisma db push --skip-generate
@@ -201,6 +215,7 @@ npx prisma migrate deploy
 ```
 
 ### Backup & Restore
+
 ```bash
 # Backup database
 .\scripts\backup-render-database.ps1 -Environment production
@@ -212,11 +227,13 @@ npx prisma migrate deploy
 ## Environment Variables
 
 ### Adding New Variables
+
 1. Add to `.env.template`
 2. Update Render dashboard for each environment
 3. Document in `RENDER_ENVIRONMENT_VARIABLES_COMPLETE.md`
 
 ### Critical Variables
+
 - `NODE_ENV`: Environment mode
 - `DATABASE_URL`: PostgreSQL connection (auto-configured)
 - `MCP_SERVER_URL`: AI server endpoint
@@ -226,34 +243,40 @@ npx prisma migrate deploy
 ## CI/CD Pipeline
 
 ### GitHub Actions Workflow
+
 - **Trigger**: Push to development/test/production
 - **Stages**: Lint → Test → Build → Security → Deploy
 - **Checks**: ESLint, Unit tests, Build validation, Security scan
 
 ### Pipeline Status
+
 Check at: https://github.com/The-social-drink-company/sentia-manufacturing-dashboard/actions
 
 ## Team Responsibilities
 
 ### Developers
+
 - Follow branch naming conventions
 - Write tests for new features
 - Complete PR template
 - Respond to review comments
 
 ### Code Reviewers
+
 - Review within SLA times
 - Test functionality locally
 - Check security implications
 - Provide constructive feedback
 
 ### DevOps Lead
+
 - Maintain CI/CD pipeline
 - Monitor deployments
 - Handle production issues
 - Manage environment configs
 
 ### Product Owner
+
 - Approve UAT testing
 - Sign-off production deployments
 - Prioritize hotfixes
@@ -262,15 +285,16 @@ Check at: https://github.com/The-social-drink-company/sentia-manufacturing-dashb
 
 ### Common Issues
 
-| Issue | Solution |
-|-------|----------|
-| Build fails | Check `npm run build` locally |
-| Tests fail | Run `npm test` and fix issues |
-| Deployment stuck | Check Render dashboard logs |
+| Issue                     | Solution                      |
+| ------------------------- | ----------------------------- |
+| Build fails               | Check `npm run build` locally |
+| Tests fail                | Run `npm test` and fix issues |
+| Deployment stuck          | Check Render dashboard logs   |
 | Database connection error | Verify DATABASE_URL in Render |
-| MCP server down | Restart service in Render |
+| MCP server down           | Restart service in Render     |
 
 ### Getting Help
+
 - Check logs: https://dashboard.render.com
 - Review documentation: `/docs` folder
 - GitHub Issues: Create issue with `bug` label
@@ -279,6 +303,7 @@ Check at: https://github.com/The-social-drink-company/sentia-manufacturing-dashb
 ## Best Practices
 
 ### Do's ✅
+
 - Always pull latest before branching
 - Test locally before pushing
 - Use conventional commits
@@ -287,6 +312,7 @@ Check at: https://github.com/The-social-drink-company/sentia-manufacturing-dashb
 - Monitor after deployment
 
 ### Don'ts ❌
+
 - Force push to protected branches
 - Skip code reviews
 - Deploy untested code
@@ -297,6 +323,7 @@ Check at: https://github.com/The-social-drink-company/sentia-manufacturing-dashb
 ## Quick Reference
 
 ### Git Commands
+
 ```bash
 # Update branches
 git fetch --all
@@ -316,6 +343,7 @@ git log --oneline --graph
 ```
 
 ### NPM Scripts
+
 ```bash
 # Development
 npm run dev           # Start full stack
@@ -333,6 +361,7 @@ npm start           # Start production server
 ```
 
 ### PowerShell Scripts
+
 ```bash
 # Development workflow
 .\scripts\create-feature-branch.ps1
@@ -355,6 +384,7 @@ npm start           # Start production server
 ## Security Reminders
 
 ⚠️ **NEVER**:
+
 - Commit `.env` files
 - Hardcode API keys
 - Log sensitive data
@@ -362,6 +392,7 @@ npm start           # Start production server
 - Ignore vulnerabilities
 
 ✅ **ALWAYS**:
+
 - Use environment variables
 - Validate user input
 - Sanitize outputs
@@ -371,29 +402,32 @@ npm start           # Start production server
 ## Monthly Tasks
 
 ### First Monday
+
 - Review and update dependencies
 - Run security audit
 - Check performance metrics
 
 ### Mid-Month
+
 - Review deployment metrics
 - Update documentation
 - Team retrospective
 
 ### End of Month
+
 - Backup production database
 - Archive old logs
 - Review incident reports
 
 ## Contact Information
 
-| Role | Contact | Responsibility |
-|------|---------|---------------|
-| DevOps Lead | [Email] | Infrastructure, deployments |
-| Tech Lead | [Email] | Code reviews, architecture |
-| Product Owner | [Email] | Requirements, UAT approval |
-| Security Team | [Email] | Security reviews |
-| On-Call | [Phone] | Emergency support |
+| Role          | Contact | Responsibility              |
+| ------------- | ------- | --------------------------- |
+| DevOps Lead   | [Email] | Infrastructure, deployments |
+| Tech Lead     | [Email] | Code reviews, architecture  |
+| Product Owner | [Email] | Requirements, UAT approval  |
+| Security Team | [Email] | Security reviews            |
+| On-Call       | [Phone] | Emergency support           |
 
 ## Additional Resources
 
@@ -411,4 +445,4 @@ npm start           # Start production server
 **Version**: 1.0.0
 **Platform**: Render with PostgreSQL
 
-*This guide ensures world-class enterprise deployment practices for the Sentia Manufacturing Dashboard.*
+_This guide ensures world-class enterprise deployment practices for the Sentia Manufacturing Dashboard._

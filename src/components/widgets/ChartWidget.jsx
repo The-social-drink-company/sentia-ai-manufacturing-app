@@ -1,14 +1,22 @@
 ﻿import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { ResponsiveContainer, LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts'
+import {
+  ResponsiveContainer,
+  LineChart,
+  Line,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Tooltip,
+} from 'recharts'
 
-const ChartWidget = ({ 
-  title = 'Trend', 
-  data = [], 
+const ChartWidget = ({
+  title = 'Trend',
+  data = [],
   loading = false,
   xDataKey = 'label',
   yDataKey = 'value',
   strokeColor = '#2563eb',
-  className = ''
+  className = '',
 }) => {
   if (loading) {
     return (
@@ -49,15 +57,9 @@ const ChartWidget = ({
           <LineChart data={data}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey={xDataKey} tickLine={false} axisLine={false} />
-            <YAxis tickFormatter={(value) => value.toString()} />
+            <YAxis tickFormatter={value => value.toString()} />
             <Tooltip />
-            <Line 
-              type="monotone" 
-              dataKey={yDataKey} 
-              stroke={strokeColor} 
-              strokeWidth={2} 
-              dot 
-            />
+            <Line type="monotone" dataKey={yDataKey} stroke={strokeColor} strokeWidth={2} dot />
           </LineChart>
         </ResponsiveContainer>
       </CardContent>

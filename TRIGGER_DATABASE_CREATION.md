@@ -7,6 +7,7 @@ Action: Force Render to provision sentia-manufacturing-db PostgreSQL database
 Status: Database configuration updated, waiting for Render provisioning
 
 ## Configuration
+
 - Database name: sentia-manufacturing-db
 - Database: sentia_manufacturing
 - User: sentia_user

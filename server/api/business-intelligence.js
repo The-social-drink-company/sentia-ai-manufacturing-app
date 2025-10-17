@@ -4,13 +4,13 @@
  * Part of Phase 2.3: Advanced Business Intelligence Implementation
  */
 
-import express from 'express';
-import { authenticateToken } from '../middleware/auth.js';
+import express from 'express'
+import { authenticateToken } from '../middleware/auth.js'
 
-const router = express.Router();
+const router = express.Router()
 
 // Apply authentication to all routes
-router.use(authenticateToken);
+router.use(authenticateToken)
 
 /**
  * GET /api/business-intelligence/insights
@@ -23,7 +23,8 @@ router.get('/insights', async (req, res) => {
       {
         id: 1,
         title: 'Revenue Growth Opportunity',
-        description: 'AI analysis indicates 23% revenue increase potential through optimized pricing strategy in Q4.',
+        description:
+          'AI analysis indicates 23% revenue increase potential through optimized pricing strategy in Q4.',
         impact: 'high',
         confidence: 0.89,
         category: 'Revenue',
@@ -33,12 +34,13 @@ router.get('/insights', async (req, res) => {
         potentialValue: 2340000,
         timeframe: '90 days',
         generatedBy: 'Claude 3 Sonnet',
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       },
       {
         id: 2,
         title: 'Inventory Optimization Alert',
-        description: 'Machine learning model predicts excess inventory in Widget A by 15% - recommend production adjustment.',
+        description:
+          'Machine learning model predicts excess inventory in Widget A by 15% - recommend production adjustment.',
         impact: 'medium',
         confidence: 0.92,
         category: 'Operations',
@@ -48,12 +50,13 @@ router.get('/insights', async (req, res) => {
         potentialValue: 450000,
         timeframe: '30 days',
         generatedBy: 'GPT-4 Turbo',
-        timestamp: new Date(Date.now() - 86400000).toISOString()
+        timestamp: new Date(Date.now() - 86400000).toISOString(),
       },
       {
         id: 3,
         title: 'Cash Flow Forecast',
-        description: 'Predictive models show improved cash position expected in next 60 days due to seasonal demand patterns.',
+        description:
+          'Predictive models show improved cash position expected in next 60 days due to seasonal demand patterns.',
         impact: 'high',
         confidence: 0.87,
         category: 'Finance',
@@ -63,12 +66,13 @@ router.get('/insights', async (req, res) => {
         potentialValue: 1200000,
         timeframe: '60 days',
         generatedBy: 'Ensemble Model',
-        timestamp: new Date(Date.now() - 172800000).toISOString()
+        timestamp: new Date(Date.now() - 172800000).toISOString(),
       },
       {
         id: 4,
         title: 'Quality Enhancement Opportunity',
-        description: 'AI quality analysis identifies process improvements that could reduce defect rate by 0.3%.',
+        description:
+          'AI quality analysis identifies process improvements that could reduce defect rate by 0.3%.',
         impact: 'medium',
         confidence: 0.94,
         category: 'Quality',
@@ -78,12 +82,13 @@ router.get('/insights', async (req, res) => {
         potentialValue: 180000,
         timeframe: '45 days',
         generatedBy: 'Claude 3 Sonnet',
-        timestamp: new Date(Date.now() - 259200000).toISOString()
+        timestamp: new Date(Date.now() - 259200000).toISOString(),
       },
       {
         id: 5,
         title: 'Supplier Risk Assessment',
-        description: 'AI risk analysis detects potential supply chain disruption for Material C supplier.',
+        description:
+          'AI risk analysis detects potential supply chain disruption for Material C supplier.',
         impact: 'high',
         confidence: 0.91,
         category: 'Supply Chain',
@@ -93,9 +98,9 @@ router.get('/insights', async (req, res) => {
         potentialValue: 890000,
         timeframe: '14 days',
         generatedBy: 'GPT-4 Turbo',
-        timestamp: new Date(Date.now() - 345600000).toISOString()
-      }
-    ];
+        timestamp: new Date(Date.now() - 345600000).toISOString(),
+      },
+    ]
 
     res.json({
       success: true,
@@ -105,18 +110,18 @@ router.get('/insights', async (req, res) => {
         highImpact: insights.filter(i => i.impact === 'high').length,
         actionable: insights.filter(i => i.actionable).length,
         avgConfidence: insights.reduce((acc, i) => acc + i.confidence, 0) / insights.length,
-        generatedAt: new Date().toISOString()
-      }
-    });
+        generatedAt: new Date().toISOString(),
+      },
+    })
   } catch (error) {
-    console.error('Business Intelligence insights error:', error);
+    console.error('Business Intelligence insights error:', error)
     res.status(500).json({
       success: false,
       error: 'Failed to fetch AI insights',
-      message: error.message
-    });
+      message: error.message,
+    })
   }
-});
+})
 
 /**
  * GET /api/business-intelligence/kpis
@@ -132,7 +137,7 @@ router.get('/kpis', async (req, res) => {
           change: 12.3,
           trend: 'up',
           forecast: 34800000,
-          confidence: 0.91
+          confidence: 0.91,
         },
         grossMargin: {
           value: 42.3,
@@ -140,7 +145,7 @@ router.get('/kpis', async (req, res) => {
           change: 2.1,
           trend: 'up',
           forecast: 43.8,
-          confidence: 0.88
+          confidence: 0.88,
         },
         netMargin: {
           value: 18.7,
@@ -148,7 +153,7 @@ router.get('/kpis', async (req, res) => {
           change: 1.8,
           trend: 'up',
           forecast: 19.5,
-          confidence: 0.85
+          confidence: 0.85,
         },
         roi: {
           value: 23.4,
@@ -156,7 +161,7 @@ router.get('/kpis', async (req, res) => {
           change: 3.2,
           trend: 'up',
           forecast: 24.7,
-          confidence: 0.92
+          confidence: 0.92,
         },
         workingCapital: {
           value: 3080000,
@@ -164,8 +169,8 @@ router.get('/kpis', async (req, res) => {
           change: 8.7,
           trend: 'up',
           forecast: 3420000,
-          confidence: 0.89
-        }
+          confidence: 0.89,
+        },
       },
       operational: {
         efficiency: {
@@ -174,7 +179,7 @@ router.get('/kpis', async (req, res) => {
           change: 2.8,
           trend: 'up',
           forecast: 94.8,
-          confidence: 0.87
+          confidence: 0.87,
         },
         oeeScore: {
           value: 87.5,
@@ -182,7 +187,7 @@ router.get('/kpis', async (req, res) => {
           change: 4.2,
           trend: 'up',
           forecast: 89.2,
-          confidence: 0.93
+          confidence: 0.93,
         },
         defectRate: {
           value: 0.8,
@@ -190,7 +195,7 @@ router.get('/kpis', async (req, res) => {
           change: -0.2,
           trend: 'down',
           forecast: 0.6,
-          confidence: 0.91
+          confidence: 0.91,
         },
         onTimeDelivery: {
           value: 96.8,
@@ -198,7 +203,7 @@ router.get('/kpis', async (req, res) => {
           change: 1.5,
           trend: 'up',
           forecast: 97.6,
-          confidence: 0.88
+          confidence: 0.88,
         },
         energyEfficiency: {
           value: 78.5,
@@ -206,8 +211,8 @@ router.get('/kpis', async (req, res) => {
           change: 3.2,
           trend: 'up',
           forecast: 80.1,
-          confidence: 0.86
-        }
+          confidence: 0.86,
+        },
       },
       customer: {
         satisfaction: {
@@ -216,7 +221,7 @@ router.get('/kpis', async (req, res) => {
           change: 0.1,
           trend: 'up',
           forecast: 4.75,
-          confidence: 0.84
+          confidence: 0.84,
         },
         retention: {
           value: 94.2,
@@ -224,7 +229,7 @@ router.get('/kpis', async (req, res) => {
           change: 0.8,
           trend: 'up',
           forecast: 94.7,
-          confidence: 0.89
+          confidence: 0.89,
         },
         acquisitionCost: {
           value: 125,
@@ -232,7 +237,7 @@ router.get('/kpis', async (req, res) => {
           change: -8.2,
           trend: 'down',
           forecast: 115,
-          confidence: 0.87
+          confidence: 0.87,
         },
         lifetimeValue: {
           value: 2350,
@@ -240,7 +245,7 @@ router.get('/kpis', async (req, res) => {
           change: 12.3,
           trend: 'up',
           forecast: 2480,
-          confidence: 0.92
+          confidence: 0.92,
         },
         nps: {
           value: 67,
@@ -248,8 +253,8 @@ router.get('/kpis', async (req, res) => {
           change: 4.2,
           trend: 'up',
           forecast: 69,
-          confidence: 0.85
-        }
+          confidence: 0.85,
+        },
       },
       innovation: {
         newProductRevenue: {
@@ -258,7 +263,7 @@ router.get('/kpis', async (req, res) => {
           change: 8.9,
           trend: 'up',
           forecast: 18.4,
-          confidence: 0.83
+          confidence: 0.83,
         },
         timeToMarket: {
           value: 127,
@@ -266,7 +271,7 @@ router.get('/kpis', async (req, res) => {
           change: -12.5,
           trend: 'down',
           forecast: 105,
-          confidence: 0.88
+          confidence: 0.88,
         },
         rdIntensity: {
           value: 4.8,
@@ -274,10 +279,10 @@ router.get('/kpis', async (req, res) => {
           change: 0.8,
           trend: 'up',
           forecast: 5.4,
-          confidence: 0.86
-        }
-      }
-    };
+          confidence: 0.86,
+        },
+      },
+    }
 
     res.json({
       success: true,
@@ -286,18 +291,18 @@ router.get('/kpis', async (req, res) => {
         categories: Object.keys(kpis).length,
         totalKPIs: Object.values(kpis).reduce((acc, cat) => acc + Object.keys(cat).length, 0),
         avgConfidence: 0.88,
-        lastUpdated: new Date().toISOString()
-      }
-    });
+        lastUpdated: new Date().toISOString(),
+      },
+    })
   } catch (error) {
-    console.error('Strategic KPIs error:', error);
+    console.error('Strategic KPIs error:', error)
     res.status(500).json({
       success: false,
       error: 'Failed to fetch strategic KPIs',
-      message: error.message
-    });
+      message: error.message,
+    })
   }
-});
+})
 
 /**
  * GET /api/business-intelligence/predictions
@@ -313,11 +318,15 @@ router.get('/predictions', async (req, res) => {
         confidence: 0.91,
         timeline: '90 days',
         impact: 'high',
-        factors: ['Seasonal demand surge', 'New product launch success', 'Market expansion completion'],
+        factors: [
+          'Seasonal demand surge',
+          'New product launch success',
+          'Market expansion completion',
+        ],
         historicalAccuracy: 0.89,
         modelType: 'Ensemble (GPT-4 + Claude)',
         dataPoints: 12540,
-        lastUpdated: new Date().toISOString()
+        lastUpdated: new Date().toISOString(),
       },
       {
         id: 2,
@@ -326,11 +335,15 @@ router.get('/predictions', async (req, res) => {
         confidence: 0.88,
         timeline: '120 days',
         impact: 'high',
-        factors: ['Supplier production constraints', 'Increased market demand', 'Extended lead times'],
+        factors: [
+          'Supplier production constraints',
+          'Increased market demand',
+          'Extended lead times',
+        ],
         historicalAccuracy: 0.92,
         modelType: 'Claude 3 Sonnet',
         dataPoints: 8760,
-        lastUpdated: new Date(Date.now() - 86400000).toISOString()
+        lastUpdated: new Date(Date.now() - 86400000).toISOString(),
       },
       {
         id: 3,
@@ -343,7 +356,7 @@ router.get('/predictions', async (req, res) => {
         historicalAccuracy: 0.87,
         modelType: 'GPT-4 Turbo',
         dataPoints: 15840,
-        lastUpdated: new Date(Date.now() - 172800000).toISOString()
+        lastUpdated: new Date(Date.now() - 172800000).toISOString(),
       },
       {
         id: 4,
@@ -352,11 +365,15 @@ router.get('/predictions', async (req, res) => {
         confidence: 0.93,
         timeline: '45 days',
         impact: 'medium',
-        factors: ['AI-guided process improvement', 'Operator training completion', 'Equipment upgrade'],
+        factors: [
+          'AI-guided process improvement',
+          'Operator training completion',
+          'Equipment upgrade',
+        ],
         historicalAccuracy: 0.94,
         modelType: 'Claude 3 Sonnet',
         dataPoints: 22100,
-        lastUpdated: new Date(Date.now() - 259200000).toISOString()
+        lastUpdated: new Date(Date.now() - 259200000).toISOString(),
       },
       {
         id: 5,
@@ -365,11 +382,15 @@ router.get('/predictions', async (req, res) => {
         confidence: 0.86,
         timeline: '75 days',
         impact: 'medium',
-        factors: ['Enhanced support response times', 'Product quality improvements', 'Digital experience upgrades'],
+        factors: [
+          'Enhanced support response times',
+          'Product quality improvements',
+          'Digital experience upgrades',
+        ],
         historicalAccuracy: 0.85,
         modelType: 'Ensemble Model',
         dataPoints: 9870,
-        lastUpdated: new Date(Date.now() - 345600000).toISOString()
+        lastUpdated: new Date(Date.now() - 345600000).toISOString(),
       },
       {
         id: 6,
@@ -382,9 +403,9 @@ router.get('/predictions', async (req, res) => {
         historicalAccuracy: 0.79,
         modelType: 'GPT-4 Turbo',
         dataPoints: 18920,
-        lastUpdated: new Date(Date.now() - 432000000).toISOString()
-      }
-    ];
+        lastUpdated: new Date(Date.now() - 432000000).toISOString(),
+      },
+    ]
 
     res.json({
       success: true,
@@ -393,19 +414,20 @@ router.get('/predictions', async (req, res) => {
         total: predictions.length,
         highImpact: predictions.filter(p => p.impact === 'high').length,
         avgConfidence: predictions.reduce((acc, p) => acc + p.confidence, 0) / predictions.length,
-        avgAccuracy: predictions.reduce((acc, p) => acc + p.historicalAccuracy, 0) / predictions.length,
-        generatedAt: new Date().toISOString()
-      }
-    });
+        avgAccuracy:
+          predictions.reduce((acc, p) => acc + p.historicalAccuracy, 0) / predictions.length,
+        generatedAt: new Date().toISOString(),
+      },
+    })
   } catch (error) {
-    console.error('Predictive analytics error:', error);
+    console.error('Predictive analytics error:', error)
     res.status(500).json({
       success: false,
       error: 'Failed to fetch predictive analytics',
-      message: error.message
-    });
+      message: error.message,
+    })
   }
-});
+})
 
 /**
  * GET /api/business-intelligence/recommendations
@@ -417,7 +439,8 @@ router.get('/recommendations', async (req, res) => {
       {
         id: 1,
         title: 'Optimize Production Schedule',
-        description: 'AI recommends shifting 15% of production to off-peak hours to reduce energy costs by $12K monthly.',
+        description:
+          'AI recommends shifting 15% of production to off-peak hours to reduce energy costs by $12K monthly.',
         priority: 'high',
         impact: '$144K annually',
         effort: 'medium',
@@ -430,15 +453,16 @@ router.get('/recommendations', async (req, res) => {
         kpiImpact: {
           costs: -12,
           efficiency: 3.2,
-          energyUsage: -18
+          energyUsage: -18,
         },
         generatedBy: 'Claude 3 Sonnet',
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       },
       {
         id: 2,
         title: 'Inventory Rebalancing',
-        description: 'Redistribute excess Widget A inventory to high-demand regions to improve turnover by 18%.',
+        description:
+          'Redistribute excess Widget A inventory to high-demand regions to improve turnover by 18%.',
         priority: 'medium',
         impact: '$67K working capital',
         effort: 'low',
@@ -451,15 +475,16 @@ router.get('/recommendations', async (req, res) => {
         kpiImpact: {
           workingCapital: 67000,
           inventoryTurnover: 18,
-          storageReduction: 12
+          storageReduction: 12,
         },
         generatedBy: 'GPT-4 Turbo',
-        timestamp: new Date(Date.now() - 86400000).toISOString()
+        timestamp: new Date(Date.now() - 86400000).toISOString(),
       },
       {
         id: 3,
         title: 'Supplier Diversification',
-        description: 'Add secondary supplier for Material B to reduce supply chain risk and negotiate 8% cost reduction.',
+        description:
+          'Add secondary supplier for Material B to reduce supply chain risk and negotiate 8% cost reduction.',
         priority: 'high',
         impact: '$89K cost savings',
         effort: 'high',
@@ -472,15 +497,16 @@ router.get('/recommendations', async (req, res) => {
         kpiImpact: {
           supplyCost: -8,
           riskReduction: 35,
-          supplierReliability: 25
+          supplierReliability: 25,
         },
         generatedBy: 'Ensemble Model',
-        timestamp: new Date(Date.now() - 172800000).toISOString()
+        timestamp: new Date(Date.now() - 172800000).toISOString(),
       },
       {
         id: 4,
         title: 'Customer Segment Analysis',
-        description: 'Focus marketing efforts on high-value segment C to increase revenue by $245K with same budget.',
+        description:
+          'Focus marketing efforts on high-value segment C to increase revenue by $245K with same budget.',
         priority: 'medium',
         impact: '$245K revenue',
         effort: 'medium',
@@ -489,19 +515,24 @@ router.get('/recommendations', async (req, res) => {
         potentialSavings: 245000,
         implementationTime: '60 days',
         riskLevel: 'medium',
-        prerequisites: ['Customer data analysis', 'Marketing campaign design', 'Sales team training'],
+        prerequisites: [
+          'Customer data analysis',
+          'Marketing campaign design',
+          'Sales team training',
+        ],
         kpiImpact: {
           revenue: 245000,
           customerAcquisition: 15,
-          marketingROI: 28
+          marketingROI: 28,
         },
         generatedBy: 'Claude 3 Sonnet',
-        timestamp: new Date(Date.now() - 259200000).toISOString()
+        timestamp: new Date(Date.now() - 259200000).toISOString(),
       },
       {
         id: 5,
         title: 'Automated Quality Control',
-        description: 'Implement AI-powered quality inspection system to reduce defects by 45% and save $156K annually.',
+        description:
+          'Implement AI-powered quality inspection system to reduce defects by 45% and save $156K annually.',
         priority: 'high',
         impact: '$156K quality savings',
         effort: 'high',
@@ -514,15 +545,16 @@ router.get('/recommendations', async (req, res) => {
         kpiImpact: {
           defectRate: -45,
           qualityCosts: -156000,
-          customerSatisfaction: 8
+          customerSatisfaction: 8,
         },
         generatedBy: 'GPT-4 Turbo',
-        timestamp: new Date(Date.now() - 345600000).toISOString()
+        timestamp: new Date(Date.now() - 345600000).toISOString(),
       },
       {
         id: 6,
         title: 'Predictive Maintenance',
-        description: 'Deploy IoT sensors and AI analytics to reduce unplanned downtime by 32% and save $98K annually.',
+        description:
+          'Deploy IoT sensors and AI analytics to reduce unplanned downtime by 32% and save $98K annually.',
         priority: 'high',
         impact: '$98K maintenance savings',
         effort: 'high',
@@ -531,16 +563,20 @@ router.get('/recommendations', async (req, res) => {
         potentialSavings: 98000,
         implementationTime: '90 days',
         riskLevel: 'low',
-        prerequisites: ['IoT sensor installation', 'Analytics platform setup', 'Maintenance workflow integration'],
+        prerequisites: [
+          'IoT sensor installation',
+          'Analytics platform setup',
+          'Maintenance workflow integration',
+        ],
         kpiImpact: {
           uptime: 32,
           maintenanceCosts: -98000,
-          productivity: 12
+          productivity: 12,
         },
         generatedBy: 'Ensemble Model',
-        timestamp: new Date(Date.now() - 432000000).toISOString()
-      }
-    ];
+        timestamp: new Date(Date.now() - 432000000).toISOString(),
+      },
+    ]
 
     res.json({
       success: true,
@@ -549,23 +585,26 @@ router.get('/recommendations', async (req, res) => {
         total: recommendations.length,
         highPriority: recommendations.filter(r => r.priority === 'high').length,
         totalPotentialSavings: recommendations.reduce((acc, r) => acc + r.potentialSavings, 0),
-        avgConfidence: recommendations.reduce((acc, r) => acc + r.confidence, 0) / recommendations.length,
-        avgImplementationTime: Math.round(recommendations.reduce((acc, r) => {
-          const days = parseInt(r.implementationTime);
-          return acc + (isNaN(days) ? 0 : days);
-        }, 0) / recommendations.length),
-        generatedAt: new Date().toISOString()
-      }
-    });
+        avgConfidence:
+          recommendations.reduce((acc, r) => acc + r.confidence, 0) / recommendations.length,
+        avgImplementationTime: Math.round(
+          recommendations.reduce((acc, r) => {
+            const days = parseInt(r.implementationTime)
+            return acc + (isNaN(days) ? 0 : days)
+          }, 0) / recommendations.length
+        ),
+        generatedAt: new Date().toISOString(),
+      },
+    })
   } catch (error) {
-    console.error('AI recommendations error:', error);
+    console.error('AI recommendations error:', error)
     res.status(500).json({
       success: false,
       error: 'Failed to fetch AI recommendations',
-      message: error.message
-    });
+      message: error.message,
+    })
   }
-});
+})
 
 /**
  * POST /api/business-intelligence/recommendations/:id/implement
@@ -573,8 +612,8 @@ router.get('/recommendations', async (req, res) => {
  */
 router.post('/recommendations/:id/implement', async (req, res) => {
   try {
-    const { id } = req.params;
-    const { implementationNotes, expectedCompletion } = req.body;
+    const { id } = req.params
+    const { implementationNotes, expectedCompletion } = req.body
 
     // In production, this would update the recommendation status in the database
     res.json({
@@ -586,18 +625,18 @@ router.post('/recommendations/:id/implement', async (req, res) => {
         implementationNotes,
         expectedCompletion,
         implementedBy: req.user.id,
-        implementedAt: new Date().toISOString()
-      }
-    });
+        implementedAt: new Date().toISOString(),
+      },
+    })
   } catch (error) {
-    console.error('Recommendation implementation error:', error);
+    console.error('Recommendation implementation error:', error)
     res.status(500).json({
       success: false,
       error: 'Failed to implement recommendation',
-      message: error.message
-    });
+      message: error.message,
+    })
   }
-});
+})
 
 /**
  * GET /api/business-intelligence/summary
@@ -614,8 +653,8 @@ router.get('/summary', async (req, res) => {
           financial: 8.9,
           operational: 8.5,
           customer: 8.8,
-          innovation: 8.4
-        }
+          innovation: 8.4,
+        },
       },
       keyAlerts: [
         {
@@ -623,50 +662,50 @@ router.get('/summary', async (req, res) => {
           title: 'Inventory Optimization Required',
           description: 'Widget A excess inventory detected',
           urgency: 'medium',
-          eta: '30 days'
+          eta: '30 days',
         },
         {
           type: 'opportunity',
           title: 'Revenue Growth Potential',
           description: '23% revenue increase opportunity identified',
           urgency: 'high',
-          eta: '90 days'
+          eta: '90 days',
         },
         {
           type: 'risk',
           title: 'Supply Chain Risk',
           description: 'Material B supplier vulnerability detected',
           urgency: 'high',
-          eta: '14 days'
-        }
+          eta: '14 days',
+        },
       ],
       topRecommendations: [
         {
           title: 'Optimize Production Schedule',
           impact: '$144K annually',
           effort: 'medium',
-          roi: 4.8
+          roi: 4.8,
         },
         {
           title: 'Customer Segment Analysis',
           impact: '$245K revenue',
           effort: 'medium',
-          roi: 3.2
+          roi: 3.2,
         },
         {
           title: 'Automated Quality Control',
           impact: '$156K savings',
           effort: 'high',
-          roi: 2.1
-        }
+          roi: 2.1,
+        },
       ],
       aiModelPerformance: {
         claude: { accuracy: 0.92, uptime: 0.998, responseTime: 1.2 },
         gpt4: { accuracy: 0.89, uptime: 0.995, responseTime: 1.8 },
-        ensemble: { accuracy: 0.94, uptime: 0.997, responseTime: 2.1 }
+        ensemble: { accuracy: 0.94, uptime: 0.997, responseTime: 2.1 },
       },
-      lastUpdated: new Date().toISOString()
-    };
+      lastUpdated: new Date().toISOString(),
+    }
 
     res.json({
       success: true,
@@ -674,17 +713,17 @@ router.get('/summary', async (req, res) => {
       meta: {
         generatedAt: new Date().toISOString(),
         version: '2.0.0',
-        dataFreshness: 'real-time'
-      }
-    });
+        dataFreshness: 'real-time',
+      },
+    })
   } catch (error) {
-    console.error('Business intelligence summary error:', error);
+    console.error('Business intelligence summary error:', error)
     res.status(500).json({
       success: false,
       error: 'Failed to fetch business intelligence summary',
-      message: error.message
-    });
+      message: error.message,
+    })
   }
-});
+})
 
-export default router;
+export default router

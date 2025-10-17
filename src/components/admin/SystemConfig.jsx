@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import React, { useState } from 'react'
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
 
 const SystemConfig = () => {
   const [config, setConfig] = useState({
@@ -9,12 +9,12 @@ const SystemConfig = () => {
     enableAI: true,
     enableSSE: true,
     dataRetention: 90,
-  });
+  })
 
   const handleSave = () => {
-    localStorage.setItem('systemConfig', JSON.stringify(config));
-    alert('Configuration saved successfully!');
-  };
+    localStorage.setItem('systemConfig', JSON.stringify(config))
+    alert('Configuration saved successfully!')
+  }
 
   return (
     <div className="space-y-6">
@@ -27,13 +27,11 @@ const SystemConfig = () => {
         <CardContent>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                MCP Server URL
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">MCP Server URL</label>
               <input
                 type="text"
                 value={config.mcpServer}
-                onChange={(e) => setConfig({...config, mcpServer: e.target.value})}
+                onChange={e => setConfig({ ...config, mcpServer: e.target.value })}
                 className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
@@ -46,7 +44,7 @@ const SystemConfig = () => {
                 <input
                   type="number"
                   value={config.apiTimeout}
-                  onChange={(e) => setConfig({...config, apiTimeout: parseInt(e.target.value)})}
+                  onChange={e => setConfig({ ...config, apiTimeout: parseInt(e.target.value) })}
                   className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
@@ -58,7 +56,9 @@ const SystemConfig = () => {
                 <input
                   type="number"
                   value={config.refreshInterval}
-                  onChange={(e) => setConfig({...config, refreshInterval: parseInt(e.target.value)})}
+                  onChange={e =>
+                    setConfig({ ...config, refreshInterval: parseInt(e.target.value) })
+                  }
                   className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
@@ -71,7 +71,7 @@ const SystemConfig = () => {
               <input
                 type="number"
                 value={config.dataRetention}
-                onChange={(e) => setConfig({...config, dataRetention: parseInt(e.target.value)})}
+                onChange={e => setConfig({ ...config, dataRetention: parseInt(e.target.value) })}
                 className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
@@ -89,7 +89,7 @@ const SystemConfig = () => {
               <input
                 type="checkbox"
                 checked={config.enableAI}
-                onChange={(e) => setConfig({...config, enableAI: e.target.checked})}
+                onChange={e => setConfig({ ...config, enableAI: e.target.checked })}
                 className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
               />
               <span className="text-sm font-medium text-gray-700">Enable AI Features</span>
@@ -99,10 +99,12 @@ const SystemConfig = () => {
               <input
                 type="checkbox"
                 checked={config.enableSSE}
-                onChange={(e) => setConfig({...config, enableSSE: e.target.checked})}
+                onChange={e => setConfig({ ...config, enableSSE: e.target.checked })}
                 className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
               />
-              <span className="text-sm font-medium text-gray-700">Enable Real-time Updates (SSE)</span>
+              <span className="text-sm font-medium text-gray-700">
+                Enable Real-time Updates (SSE)
+              </span>
             </label>
           </div>
         </CardContent>
@@ -149,7 +151,7 @@ const SystemConfig = () => {
         </button>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default SystemConfig;
+export default SystemConfig

@@ -1,51 +1,51 @@
-import axios from 'axios';
-import crypto from 'crypto';
+import axios from 'axios'
+import crypto from 'crypto'
 
 class UnleashedIntegration {
   constructor(config = {}) {
-    this.apiId = config.apiId || process.env.UNLEASHED_API_ID;
-    this.apiKey = config.apiKey || process.env.UNLEASHED_API_KEY;
-    this.baseUrl = 'https://api.unleashedsoftware.com';
-    this.isConfigured = !!(this.apiId && this.apiKey);
-    this.mockMode = !this.isConfigured;
+    this.apiId = config.apiId || process.env.UNLEASHED_API_ID
+    this.apiKey = config.apiKey || process.env.UNLEASHED_API_KEY
+    this.baseUrl = 'https://api.unleashedsoftware.com'
+    this.isConfigured = !!(this.apiId && this.apiKey)
+    this.mockMode = !this.isConfigured
 
     this.rateLimit = {
       maxRequests: 200,
       perHour: 3600000,
-      requests: []
-    };
+      requests: [],
+    }
   }
 
   generateSignature(query) {
-    const hmac = crypto.createHmac('sha256', this.apiKey);
-    hmac.update(query);
-    return hmac.digest('base64');
+    const hmac = crypto.createHmac('sha256', this.apiKey)
+    hmac.update(query)
+    return hmac.digest('base64')
   }
 
   async checkRateLimit() {
-    const now = Date.now();
+    const now = Date.now()
     this.rateLimit.requests = this.rateLimit.requests.filter(
       time => now - time < this.rateLimit.perHour
-    );
+    )
 
     if (this.rateLimit.requests.length >= this.rateLimit.maxRequests) {
-      const waitTime = this.rateLimit.perHour - (now - this.rateLimit.requests[0]);
-      throw new Error(`Rate limit exceeded. Try again in ${Math.ceil(waitTime / 60000)} minutes`);
+      const waitTime = this.rateLimit.perHour - (now - this.rateLimit.requests[0])
+      throw new Error(`Rate limit exceeded. Try again in ${Math.ceil(waitTime / 60000)} minutes`)
     }
 
-    this.rateLimit.requests.push(now);
+    this.rateLimit.requests.push(now)
   }
 
   async makeRequest(endpoint, params = {}) {
     if (this.mockMode) {
-      return this.getMockData(endpoint);
+      return this.getMockData(endpoint)
     }
 
     try {
-      await this.checkRateLimit();
+      await this.checkRateLimit()
 
-      const queryString = new URLSearchParams(params).toString();
-      const signature = this.generateSignature(queryString);
+      const queryString = new URLSearchParams(params).toString()
+      const signature = this.generateSignature(queryString)
 
       const response = await axios({
         method: 'GET',
@@ -54,15 +54,15 @@ class UnleashedIntegration {
         headers: {
           'api-auth-id': this.apiId,
           'api-auth-signature': signature,
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        }
-      });
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+      })
 
-      return response.data;
+      return response.data
     } catch (error) {
-      console.error('Unleashed API error:', error.message);
-      return this.getMockData(endpoint);
+      console.error('Unleashed API error:', error.message)
+      return this.getMockData(endpoint)
     }
   }
 
@@ -72,179 +72,189 @@ class UnleashedIntegration {
         connected: false,
         message: 'Running in mock mode - Unleashed credentials not configured',
         mockMode: true,
-        lastSync: null
-      };
+        lastSync: null,
+      }
     }
 
     try {
-      const result = await this.makeRequest('/StockOnHand');
+      const result = await this.makeRequest('/StockOnHand')
       return {
         connected: true,
         apiId: this.apiId,
         lastSync: new Date().toISOString(),
-        itemsCount: result?.Items?.length || 0
-      };
+        itemsCount: result?.Items?.length || 0,
+      }
     } catch (error) {
       return {
         connected: false,
         error: error.message,
-        lastSync: null
-      };
+        lastSync: null,
+      }
     }
   }
 
   async getStockOnHand(warehouseCode = null) {
-    const endpoint = '/StockOnHand';
-    const params = warehouseCode ? { warehouseCode } : {};
+    const endpoint = '/StockOnHand'
+    const params = warehouseCode ? { warehouseCode } : {}
 
     if (this.mockMode) {
-      return this.getMockStockOnHand();
+      return this.getMockStockOnHand()
     }
 
-    const result = await this.makeRequest(endpoint, params);
+    const result = await this.makeRequest(endpoint, params)
 
-    return result.Items?.map(item => ({
-      productCode: item.ProductCode,
-      productDescription: item.ProductDescription,
-      warehouse: item.WarehouseCode,
-      quantityOnHand: item.QtyOnHand,
-      allocatedQuantity: item.AllocatedQty,
-      availableQuantity: item.AvailableQty,
-      averageCost: item.AvgCost,
-      totalValue: item.TotalCost,
-      lastModified: item.LastModifiedOn
-    })) || this.getMockStockOnHand();
+    return (
+      result.Items?.map(item => ({
+        productCode: item.ProductCode,
+        productDescription: item.ProductDescription,
+        warehouse: item.WarehouseCode,
+        quantityOnHand: item.QtyOnHand,
+        allocatedQuantity: item.AllocatedQty,
+        availableQuantity: item.AvailableQty,
+        averageCost: item.AvgCost,
+        totalValue: item.TotalCost,
+        lastModified: item.LastModifiedOn,
+      })) || this.getMockStockOnHand()
+    )
   }
 
   async getProducts(pageSize = 200, pageNumber = 1) {
-    const endpoint = '/Products';
-    const params = { pageSize, pageNumber };
+    const endpoint = '/Products'
+    const params = { pageSize, pageNumber }
 
     if (this.mockMode) {
-      return this.getMockProducts();
+      return this.getMockProducts()
     }
 
-    const result = await this.makeRequest(endpoint, params);
+    const result = await this.makeRequest(endpoint, params)
 
-    return result.Items?.map(product => ({
-      id: product.Guid,
-      code: product.ProductCode,
-      description: product.ProductDescription,
-      barcode: product.Barcode,
-      unitOfMeasure: product.UnitOfMeasure,
-      averageLandedCost: product.AverageLandPrice,
-      category: product.ProductGroup?.GroupName,
-      supplier: product.Supplier?.SupplierName,
-      isActive: !product.Obsolete,
-      lastCost: product.LastCost,
-      sellPrice: product.DefaultSellPrice
-    })) || this.getMockProducts();
+    return (
+      result.Items?.map(product => ({
+        id: product.Guid,
+        code: product.ProductCode,
+        description: product.ProductDescription,
+        barcode: product.Barcode,
+        unitOfMeasure: product.UnitOfMeasure,
+        averageLandedCost: product.AverageLandPrice,
+        category: product.ProductGroup?.GroupName,
+        supplier: product.Supplier?.SupplierName,
+        isActive: !product.Obsolete,
+        lastCost: product.LastCost,
+        sellPrice: product.DefaultSellPrice,
+      })) || this.getMockProducts()
+    )
   }
 
   async getSalesOrders(status = null, pageSize = 100, pageNumber = 1) {
-    const endpoint = '/SalesOrders';
-    const params = { pageSize, pageNumber };
-    if (status) params.orderStatus = status;
+    const endpoint = '/SalesOrders'
+    const params = { pageSize, pageNumber }
+    if (status) params.orderStatus = status
 
     if (this.mockMode) {
-      return this.getMockSalesOrders(status);
+      return this.getMockSalesOrders(status)
     }
 
-    const result = await this.makeRequest(endpoint, params);
+    const result = await this.makeRequest(endpoint, params)
 
-    return result.Items?.map(order => ({
-      orderNumber: order.OrderNumber,
-      orderDate: order.OrderDate,
-      requiredDate: order.RequiredDate,
-      customer: order.Customer?.CustomerName,
-      status: order.OrderStatus,
-      subTotal: order.SubTotal,
-      tax: order.TaxTotal,
-      total: order.Total,
-      lines: order.SalesOrderLines?.map(line => ({
-        productCode: line.Product?.ProductCode,
-        description: line.Product?.ProductDescription,
-        quantity: line.OrderQuantity,
-        unitPrice: line.UnitPrice,
-        lineTotal: line.LineTotal,
-        discountRate: line.DiscountRate
-      }))
-    })) || this.getMockSalesOrders(status);
+    return (
+      result.Items?.map(order => ({
+        orderNumber: order.OrderNumber,
+        orderDate: order.OrderDate,
+        requiredDate: order.RequiredDate,
+        customer: order.Customer?.CustomerName,
+        status: order.OrderStatus,
+        subTotal: order.SubTotal,
+        tax: order.TaxTotal,
+        total: order.Total,
+        lines: order.SalesOrderLines?.map(line => ({
+          productCode: line.Product?.ProductCode,
+          description: line.Product?.ProductDescription,
+          quantity: line.OrderQuantity,
+          unitPrice: line.UnitPrice,
+          lineTotal: line.LineTotal,
+          discountRate: line.DiscountRate,
+        })),
+      })) || this.getMockSalesOrders(status)
+    )
   }
 
   async getPurchaseOrders(status = null, pageSize = 100, pageNumber = 1) {
-    const endpoint = '/PurchaseOrders';
-    const params = { pageSize, pageNumber };
-    if (status) params.orderStatus = status;
+    const endpoint = '/PurchaseOrders'
+    const params = { pageSize, pageNumber }
+    if (status) params.orderStatus = status
 
     if (this.mockMode) {
-      return this.getMockPurchaseOrders(status);
+      return this.getMockPurchaseOrders(status)
     }
 
-    const result = await this.makeRequest(endpoint, params);
+    const result = await this.makeRequest(endpoint, params)
 
-    return result.Items?.map(order => ({
-      orderNumber: order.OrderNumber,
-      orderDate: order.OrderDate,
-      requiredDate: order.RequiredDate,
-      supplier: order.Supplier?.SupplierName,
-      status: order.OrderStatus,
-      subTotal: order.SubTotal,
-      tax: order.TaxTotal,
-      total: order.Total,
-      lines: order.PurchaseOrderLines?.map(line => ({
-        productCode: line.Product?.ProductCode,
-        description: line.Product?.ProductDescription,
-        quantity: line.OrderQuantity,
-        unitPrice: line.UnitPrice,
-        lineTotal: line.LineTotal,
-        receivedQuantity: line.ReceivedQuantity
-      }))
-    })) || this.getMockPurchaseOrders(status);
+    return (
+      result.Items?.map(order => ({
+        orderNumber: order.OrderNumber,
+        orderDate: order.OrderDate,
+        requiredDate: order.RequiredDate,
+        supplier: order.Supplier?.SupplierName,
+        status: order.OrderStatus,
+        subTotal: order.SubTotal,
+        tax: order.TaxTotal,
+        total: order.Total,
+        lines: order.PurchaseOrderLines?.map(line => ({
+          productCode: line.Product?.ProductCode,
+          description: line.Product?.ProductDescription,
+          quantity: line.OrderQuantity,
+          unitPrice: line.UnitPrice,
+          lineTotal: line.LineTotal,
+          receivedQuantity: line.ReceivedQuantity,
+        })),
+      })) || this.getMockPurchaseOrders(status)
+    )
   }
 
   async getWarehouses() {
-    const endpoint = '/Warehouses';
+    const endpoint = '/Warehouses'
 
     if (this.mockMode) {
-      return this.getMockWarehouses();
+      return this.getMockWarehouses()
     }
 
-    const result = await this.makeRequest(endpoint);
+    const result = await this.makeRequest(endpoint)
 
-    return result.Items?.map(warehouse => ({
-      code: warehouse.WarehouseCode,
-      name: warehouse.WarehouseName,
-      isDefault: warehouse.IsDefault,
-      address: {
-        street: warehouse.StreetNo,
-        suburb: warehouse.Suburb,
-        city: warehouse.City,
-        region: warehouse.Region,
-        country: warehouse.Country,
-        postalCode: warehouse.PostCode
-      },
-      contactName: warehouse.ContactName,
-      phoneNumber: warehouse.PhoneNumber,
-      obsolete: warehouse.Obsolete
-    })) || this.getMockWarehouses();
+    return (
+      result.Items?.map(warehouse => ({
+        code: warehouse.WarehouseCode,
+        name: warehouse.WarehouseName,
+        isDefault: warehouse.IsDefault,
+        address: {
+          street: warehouse.StreetNo,
+          suburb: warehouse.Suburb,
+          city: warehouse.City,
+          region: warehouse.Region,
+          country: warehouse.Country,
+          postalCode: warehouse.PostCode,
+        },
+        contactName: warehouse.ContactName,
+        phoneNumber: warehouse.PhoneNumber,
+        obsolete: warehouse.Obsolete,
+      })) || this.getMockWarehouses()
+    )
   }
 
   // Mock data methods
   getMockData(endpoint) {
     switch (endpoint) {
       case '/StockOnHand':
-        return { Items: this.getMockStockOnHand() };
+        return { Items: this.getMockStockOnHand() }
       case '/Products':
-        return { Items: this.getMockProducts() };
+        return { Items: this.getMockProducts() }
       case '/SalesOrders':
-        return { Items: this.getMockSalesOrders() };
+        return { Items: this.getMockSalesOrders() }
       case '/PurchaseOrders':
-        return { Items: this.getMockPurchaseOrders() };
+        return { Items: this.getMockPurchaseOrders() }
       case '/Warehouses':
-        return { Items: this.getMockWarehouses() };
+        return { Items: this.getMockWarehouses() }
       default:
-        return { Items: [] };
+        return { Items: [] }
     }
   }
 
@@ -257,9 +267,9 @@ class UnleashedIntegration {
         quantityOnHand: 1250,
         allocatedQuantity: 300,
         availableQuantity: 950,
-        averageCost: 45.50,
-        totalValue: 56875.00,
-        lastModified: new Date().toISOString()
+        averageCost: 45.5,
+        totalValue: 56875.0,
+        lastModified: new Date().toISOString(),
       },
       {
         productCode: 'WIDGET-B',
@@ -269,8 +279,8 @@ class UnleashedIntegration {
         allocatedQuantity: 450,
         availableQuantity: 1650,
         averageCost: 32.25,
-        totalValue: 67725.00,
-        lastModified: new Date().toISOString()
+        totalValue: 67725.0,
+        lastModified: new Date().toISOString(),
       },
       {
         productCode: 'COMPONENT-X',
@@ -280,10 +290,10 @@ class UnleashedIntegration {
         allocatedQuantity: 1200,
         availableQuantity: 3800,
         averageCost: 8.75,
-        totalValue: 43750.00,
-        lastModified: new Date().toISOString()
-      }
-    ];
+        totalValue: 43750.0,
+        lastModified: new Date().toISOString(),
+      },
+    ]
   }
 
   getMockProducts() {
@@ -294,12 +304,12 @@ class UnleashedIntegration {
         description: 'Premium Widget Type A',
         barcode: '1234567890123',
         unitOfMeasure: 'EA',
-        averageLandedCost: 45.50,
+        averageLandedCost: 45.5,
         category: 'Widgets',
         supplier: 'Acme Supplies',
         isActive: true,
-        lastCost: 44.00,
-        sellPrice: 89.99
+        lastCost: 44.0,
+        sellPrice: 89.99,
       },
       {
         id: 'prod-002',
@@ -311,10 +321,10 @@ class UnleashedIntegration {
         category: 'Widgets',
         supplier: 'Global Parts Co',
         isActive: true,
-        lastCost: 31.50,
-        sellPrice: 64.99
-      }
-    ];
+        lastCost: 31.5,
+        sellPrice: 64.99,
+      },
+    ]
   }
 
   getMockSalesOrders(status) {
@@ -325,19 +335,19 @@ class UnleashedIntegration {
         requiredDate: '2025-01-22',
         customer: 'Retail Chain Inc',
         status: 'Open',
-        subTotal: 4500.00,
-        tax: 450.00,
-        total: 4950.00,
+        subTotal: 4500.0,
+        tax: 450.0,
+        total: 4950.0,
         lines: [
           {
             productCode: 'WIDGET-A',
             description: 'Premium Widget Type A',
             quantity: 50,
-            unitPrice: 90.00,
-            lineTotal: 4500.00,
-            discountRate: 0
-          }
-        ]
+            unitPrice: 90.0,
+            lineTotal: 4500.0,
+            discountRate: 0,
+          },
+        ],
       },
       {
         orderNumber: 'SO-2025-002',
@@ -345,23 +355,23 @@ class UnleashedIntegration {
         requiredDate: '2025-01-25',
         customer: 'Online Retailer Ltd',
         status: 'Dispatched',
-        subTotal: 3250.00,
-        tax: 325.00,
-        total: 3575.00,
+        subTotal: 3250.0,
+        tax: 325.0,
+        total: 3575.0,
         lines: [
           {
             productCode: 'WIDGET-B',
             description: 'Standard Widget Type B',
             quantity: 50,
-            unitPrice: 65.00,
-            lineTotal: 3250.00,
-            discountRate: 0
-          }
-        ]
-      }
-    ];
+            unitPrice: 65.0,
+            lineTotal: 3250.0,
+            discountRate: 0,
+          },
+        ],
+      },
+    ]
 
-    return status ? orders.filter(o => o.status === status) : orders;
+    return status ? orders.filter(o => o.status === status) : orders
   }
 
   getMockPurchaseOrders(status) {
@@ -372,19 +382,19 @@ class UnleashedIntegration {
         requiredDate: '2025-01-20',
         supplier: 'Acme Supplies',
         status: 'Open',
-        subTotal: 22000.00,
-        tax: 2200.00,
-        total: 24200.00,
+        subTotal: 22000.0,
+        tax: 2200.0,
+        total: 24200.0,
         lines: [
           {
             productCode: 'WIDGET-A',
             description: 'Premium Widget Type A',
             quantity: 500,
-            unitPrice: 44.00,
-            lineTotal: 22000.00,
-            receivedQuantity: 0
-          }
-        ]
+            unitPrice: 44.0,
+            lineTotal: 22000.0,
+            receivedQuantity: 0,
+          },
+        ],
       },
       {
         orderNumber: 'PO-2025-002',
@@ -392,23 +402,23 @@ class UnleashedIntegration {
         requiredDate: '2025-01-22',
         supplier: 'Global Parts Co',
         status: 'Received',
-        subTotal: 15750.00,
-        tax: 1575.00,
-        total: 17325.00,
+        subTotal: 15750.0,
+        tax: 1575.0,
+        total: 17325.0,
         lines: [
           {
             productCode: 'WIDGET-B',
             description: 'Standard Widget Type B',
             quantity: 500,
-            unitPrice: 31.50,
-            lineTotal: 15750.00,
-            receivedQuantity: 500
-          }
-        ]
-      }
-    ];
+            unitPrice: 31.5,
+            lineTotal: 15750.0,
+            receivedQuantity: 500,
+          },
+        ],
+      },
+    ]
 
-    return status ? orders.filter(o => o.status === status) : orders;
+    return status ? orders.filter(o => o.status === status) : orders
   }
 
   getMockWarehouses() {
@@ -423,11 +433,11 @@ class UnleashedIntegration {
           city: 'London',
           region: 'Greater London',
           country: 'United Kingdom',
-          postalCode: 'SW1A 1AA'
+          postalCode: 'SW1A 1AA',
         },
         contactName: 'John Smith',
         phoneNumber: '+44 20 7946 0958',
-        obsolete: false
+        obsolete: false,
       },
       {
         code: 'SECONDARY',
@@ -439,14 +449,14 @@ class UnleashedIntegration {
           city: 'Manchester',
           region: 'Greater Manchester',
           country: 'United Kingdom',
-          postalCode: 'M1 1AE'
+          postalCode: 'M1 1AE',
         },
         contactName: 'Jane Doe',
         phoneNumber: '+44 161 234 5678',
-        obsolete: false
-      }
-    ];
+        obsolete: false,
+      },
+    ]
   }
 }
 
-export default UnleashedIntegration;
+export default UnleashedIntegration

@@ -7,12 +7,14 @@ Your application has been fully migrated from Railway to Render. All Railway-spe
 ## ✅ What's Been Done
 
 ### 1. Removed Railway Dependencies
+
 - ✅ Deleted all Railway configuration files (40+ files)
 - ✅ Removed Railway-specific code from server.js
 - ✅ Cleaned up Railway scripts from scripts/ directory
 - ✅ Updated package.json with Render commands
 
 ### 2. Created Render Configuration
+
 - ✅ **render.yaml** - Complete service configuration
 - ✅ **server-render.js** - Clean server without Railway code
 - ✅ **Render deployment scripts** - Automated deployment tools
@@ -34,21 +36,25 @@ Databases (PostgreSQL):
 ## 🚀 Quick Start Commands
 
 ### Deploy to Development
+
 ```bash
 npm run deploy:dev
 ```
 
 ### Deploy to Testing
+
 ```bash
 npm run deploy:test
 ```
 
 ### Deploy to Production
+
 ```bash
 npm run deploy:prod
 ```
 
 ### Verify Deployments
+
 ```bash
 npm run render:verify
 ```
@@ -88,6 +94,7 @@ Your development server is showing the emergency page. Here's how to fix it:
 ## 📋 Environment Variables Required
 
 ### Minimum Required Variables
+
 ```bash
 NODE_ENV=development
 PORT=10000
@@ -108,7 +115,9 @@ JWT_SECRET=sentia-jwt-secret-dev-2025
 ```
 
 ### API Integrations (Optional)
+
 Add these if you need external service integrations:
+
 - Xero, Shopify, Unleashed API credentials
 - OpenAI/Anthropic API keys
 - Microsoft Graph API credentials
@@ -116,18 +125,22 @@ Add these if you need external service integrations:
 ## 🔍 Troubleshooting
 
 ### "Emergency Server" Page Shows
+
 - **Cause**: Wrong start command or missing build
 - **Fix**: Ensure start command is `node server-render.js` and build includes React
 
 ### "Database Connection Failed"
+
 - **Cause**: Missing or incorrect DATABASE_URL
 - **Fix**: Use Internal Database URL from your Render database service
 
 ### "Build Failed"
+
 - **Cause**: Missing dependencies or build command issue
 - **Fix**: Use `npm ci --legacy-peer-deps && npm run build`
 
 ### "Port Issues"
+
 - **Cause**: Hardcoded port
 - **Fix**: Render provides PORT automatically (usually 10000)
 

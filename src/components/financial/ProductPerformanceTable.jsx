@@ -1,30 +1,30 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { 
-  ArrowUpIcon, 
-  ArrowDownIcon, 
+import {
+  ArrowUpIcon,
+  ArrowDownIcon,
   MinusIcon,
   FunnelIcon,
-  ArrowsUpDownIcon
+  ArrowsUpDownIcon,
 } from '@heroicons/react/24/outline'
 import { useState } from 'react'
 import { cn } from '@/utils/cn'
 
-const formatCurrency = (value) => {
+const formatCurrency = value => {
   if (typeof value !== 'number') return '—'
   return new Intl.NumberFormat('en-GB', {
     style: 'currency',
     currency: 'GBP',
     minimumFractionDigits: 0,
-    maximumFractionDigits: 0
+    maximumFractionDigits: 0,
   }).format(value)
 }
 
-const formatNumber = (value) => {
+const formatNumber = value => {
   if (typeof value !== 'number') return '—'
   return new Intl.NumberFormat('en-GB').format(value)
 }
 
-const formatPercentage = (value) => {
+const formatPercentage = value => {
   if (typeof value !== 'number') return '—'
   return `${value.toFixed(1)}%`
 }
@@ -46,26 +46,29 @@ const TrendIndicator = ({ value, showIcon = true, className }) => {
   const colorClass = isPositive ? 'text-green-600' : 'text-red-600'
 
   return (
-    <div className={cn("flex items-center space-x-1", colorClass, className)}>
+    <div className={cn('flex items-center space-x-1', colorClass, className)}>
       {showIcon && <Icon className="w-4 h-4" />}
-      <span>{isPositive ? '+' : ''}{value.toFixed(1)}%</span>
+      <span>
+        {isPositive ? '+' : ''}
+        {value.toFixed(1)}%
+      </span>
     </div>
   )
 }
 
 const ProductRow = ({ product, rank }) => {
-  const getRankDisplay = (rank) => {
+  const getRankDisplay = rank => {
     if (rank === 1) return '🥇'
     if (rank === 2) return '🥈'
     if (rank === 3) return '🥉'
     return rank
   }
 
-  const getProductColor = (name) => {
+  const getProductColor = name => {
     const colors = {
       'GABA Red': 'bg-red-100 text-red-800 border-red-200',
-      'GABA Black': 'bg-gray-100 text-gray-800 border-gray-200', 
-      'GABA Gold': 'bg-yellow-100 text-yellow-800 border-yellow-200'
+      'GABA Black': 'bg-gray-100 text-gray-800 border-gray-200',
+      'GABA Gold': 'bg-yellow-100 text-yellow-800 border-yellow-200',
     }
     return colors[name] || 'bg-blue-100 text-blue-800 border-blue-200'
   }
@@ -74,66 +77,44 @@ const ProductRow = ({ product, rank }) => {
     <tr className="border-b border-border hover:bg-muted/50 transition-colors">
       <td className="px-4 py-3">
         <div className="flex items-center space-x-3">
-          <div className="text-sm font-medium text-muted-foreground">
-            {getRankDisplay(rank)}
-          </div>
-          <div className={cn(
-            "px-2 py-1 rounded-full text-sm font-medium border",
-            getProductColor(product.name)
-          )}>
+          <div className="text-sm font-medium text-muted-foreground">{getRankDisplay(rank)}</div>
+          <div
+            className={cn(
+              'px-2 py-1 rounded-full text-sm font-medium border',
+              getProductColor(product.name)
+            )}
+          >
             {product.name}
           </div>
         </div>
       </td>
       <td className="px-4 py-3 text-right">
         <div className="space-y-1">
-          <div className="font-semibold text-foreground">
-            {formatCurrency(product.revenue)}
-          </div>
-          <TrendIndicator 
-            value={product.revenueGrowth} 
-            showIcon={false}
-            className="text-xs"
-          />
+          <div className="font-semibold text-foreground">{formatCurrency(product.revenue)}</div>
+          <TrendIndicator value={product.revenueGrowth} showIcon={false} className="text-xs" />
         </div>
       </td>
       <td className="px-4 py-3 text-right">
         <div className="space-y-1">
-          <div className="font-medium text-foreground">
-            {formatNumber(product.unitsSold)}
-          </div>
-          <TrendIndicator 
-            value={product.unitsSoldGrowth} 
-            showIcon={false}
-            className="text-xs"
-          />
+          <div className="font-medium text-foreground">{formatNumber(product.unitsSold)}</div>
+          <TrendIndicator value={product.unitsSoldGrowth} showIcon={false} className="text-xs" />
         </div>
       </td>
       <td className="px-4 py-3 text-right">
         <div className="space-y-1">
-          <div className="font-medium text-foreground">
-            {formatPercentage(product.marketShare)}
-          </div>
-          <TrendIndicator 
-            value={product.marketShareChange} 
-            showIcon={false}
-            className="text-xs"
-          />
+          <div className="font-medium text-foreground">{formatPercentage(product.marketShare)}</div>
+          <TrendIndicator value={product.marketShareChange} showIcon={false} className="text-xs" />
         </div>
       </td>
       <td className="px-4 py-3 text-right">
-        <div className="font-medium text-foreground">
-          {formatCurrency(product.avgOrderValue)}
-        </div>
+        <div className="font-medium text-foreground">{formatCurrency(product.avgOrderValue)}</div>
       </td>
       <td className="px-4 py-3 text-right">
         <div className="space-y-1">
           <div className="font-medium text-foreground">
             {formatPercentage(product.profitMargin)}
           </div>
-          <div className="text-xs text-muted-foreground">
-            {formatCurrency(product.totalProfit)}
-          </div>
+          <div className="text-xs text-muted-foreground">{formatCurrency(product.totalProfit)}</div>
         </div>
       </td>
     </tr>
@@ -143,16 +124,15 @@ const ProductRow = ({ product, rank }) => {
 const SortButton = ({ column, currentSort, onSort }) => {
   const isActive = currentSort.column === column
   const isAsc = isActive && currentSort.direction === 'asc'
-  
+
   return (
     <button
       onClick={() => onSort(column)}
       className="flex items-center space-x-1 hover:text-primary transition-colors"
     >
-      <ArrowsUpDownIcon className={cn(
-        "w-4 h-4",
-        isActive ? 'text-primary' : 'text-muted-foreground'
-      )} />
+      <ArrowsUpDownIcon
+        className={cn('w-4 h-4', isActive ? 'text-primary' : 'text-muted-foreground')}
+      />
     </button>
   )
 }
@@ -166,9 +146,9 @@ const defaultProducts = [
     unitsSoldGrowth: 8.2,
     marketShare: 34.5,
     marketShareChange: 2.1,
-    avgOrderValue: 16.90,
+    avgOrderValue: 16.9,
     profitMargin: 28.5,
-    totalProfit: 698250
+    totalProfit: 698250,
   },
   {
     name: 'GABA Black',
@@ -180,7 +160,7 @@ const defaultProducts = [
     marketShareChange: -0.5,
     avgOrderValue: 19.28,
     profitMargin: 31.2,
-    totalProfit: 589680
+    totalProfit: 589680,
   },
   {
     name: 'GABA Gold',
@@ -192,39 +172,38 @@ const defaultProducts = [
     marketShareChange: 3.2,
     avgOrderValue: 20.11,
     profitMargin: 35.8,
-    totalProfit: 626500
-  }
+    totalProfit: 626500,
+  },
 ]
 
-const ProductPerformanceTable = ({ 
-  data = defaultProducts, 
-  loading = false, 
-  error = null, 
-  className 
+const ProductPerformanceTable = ({
+  data = defaultProducts,
+  loading = false,
+  error = null,
+  className,
 }) => {
   const [sortConfig, setSortConfig] = useState({ column: 'revenue', direction: 'desc' })
   const [filterTerm, setFilterTerm] = useState('')
 
-  const handleSort = (column) => {
+  const handleSort = column => {
     setSortConfig(prevSort => ({
       column,
-      direction: prevSort.column === column && prevSort.direction === 'desc' ? 'asc' : 'desc'
+      direction: prevSort.column === column && prevSort.direction === 'desc' ? 'asc' : 'desc',
     }))
   }
 
-  const sortedAndFilteredData = data
-    ?.filter(product => 
-      product.name.toLowerCase().includes(filterTerm.toLowerCase())
-    )
-    .sort((a, b) => {
-      const aValue = a[sortConfig.column]
-      const bValue = b[sortConfig.column]
-      
-      if (sortConfig.direction === 'asc') {
-        return aValue > bValue ? 1 : -1
-      }
-      return aValue < bValue ? 1 : -1
-    }) || []
+  const sortedAndFilteredData =
+    data
+      ?.filter(product => product.name.toLowerCase().includes(filterTerm.toLowerCase()))
+      .sort((a, b) => {
+        const aValue = a[sortConfig.column]
+        const bValue = b[sortConfig.column]
+
+        if (sortConfig.direction === 'asc') {
+          return aValue > bValue ? 1 : -1
+        }
+        return aValue < bValue ? 1 : -1
+      }) || []
 
   if (loading) {
     return (
@@ -272,7 +251,7 @@ const ProductPerformanceTable = ({
                 type="text"
                 placeholder="Filter products..."
                 value={filterTerm}
-                onChange={(e) => setFilterTerm(e.target.value)}
+                onChange={e => setFilterTerm(e.target.value)}
                 className="pl-10 pr-4 py-2 text-sm border border-border rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
               />
             </div>
@@ -291,9 +270,7 @@ const ProductPerformanceTable = ({
             <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
               Total Units
             </div>
-            <div className="text-lg font-semibold text-foreground">
-              {formatNumber(totalUnits)}
-            </div>
+            <div className="text-lg font-semibold text-foreground">{formatNumber(totalUnits)}</div>
           </div>
         </div>
       </CardHeader>
@@ -302,9 +279,7 @@ const ProductPerformanceTable = ({
           <table className="w-full">
             <thead>
               <tr className="border-b border-border">
-                <th className="text-left py-3 px-4 font-medium text-foreground">
-                  Product
-                </th>
+                <th className="text-left py-3 px-4 font-medium text-foreground">Product</th>
                 <th className="text-right py-3 px-4 font-medium text-foreground">
                   <div className="flex items-center justify-end space-x-1">
                     <span>Revenue</span>
@@ -326,33 +301,35 @@ const ProductPerformanceTable = ({
                 <th className="text-right py-3 px-4 font-medium text-foreground">
                   <div className="flex items-center justify-end space-x-1">
                     <span>Avg Order</span>
-                    <SortButton column="avgOrderValue" currentSort={sortConfig} onSort={handleSort} />
+                    <SortButton
+                      column="avgOrderValue"
+                      currentSort={sortConfig}
+                      onSort={handleSort}
+                    />
                   </div>
                 </th>
                 <th className="text-right py-3 px-4 font-medium text-foreground">
                   <div className="flex items-center justify-end space-x-1">
                     <span>Profit</span>
-                    <SortButton column="profitMargin" currentSort={sortConfig} onSort={handleSort} />
+                    <SortButton
+                      column="profitMargin"
+                      currentSort={sortConfig}
+                      onSort={handleSort}
+                    />
                   </div>
                 </th>
               </tr>
             </thead>
             <tbody>
               {sortedAndFilteredData.map((product, index) => (
-                <ProductRow 
-                  key={product.name} 
-                  product={product} 
-                  rank={index + 1}
-                />
+                <ProductRow key={product.name} product={product} rank={index + 1} />
               ))}
             </tbody>
           </table>
         </div>
         {sortedAndFilteredData.length === 0 && (
           <div className="text-center py-8">
-            <p className="text-sm text-muted-foreground">
-              No products match your filter criteria.
-            </p>
+            <p className="text-sm text-muted-foreground">No products match your filter criteria.</p>
           </div>
         )}
       </CardContent>

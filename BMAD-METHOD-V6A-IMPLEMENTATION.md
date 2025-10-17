@@ -1,4 +1,5 @@
 # BMAD-METHOD v6a Implementation Plan
+
 ## Sentia Manufacturing AI Dashboard
 
 **Date**: 2025-10-17
@@ -17,6 +18,7 @@ This document outlines the complete implementation of BMAD-METHOD v6a (Agentic A
 ## 1. BMAD-METHOD v6a Overview
 
 ### Core Philosophy
+
 - **Human Amplification, Not Replacement**: AI agents coach, mentor, and collaborate rather than replace human thinking
 - **Context-Engineered Development**: Hyper-detailed stories contain full implementation context
 - **Scale-Adaptive Planning**: Automatic routing through workflows based on project complexity (Level 0-4)
@@ -54,6 +56,7 @@ Phase 4: IMPLEMENTATION (Iterative)
 **Scale Level**: **Level 4** (40+ stories, 5+ epics, complex enterprise system)
 
 **Rationale**:
+
 - Existing codebase: 2,000+ files
 - Production deployments: Development, Testing, Production environments
 - Complex integrations: Xero, Shopify, Amazon SP-API, Unleashed ERP
@@ -70,6 +73,7 @@ Phase 4: IMPLEMENTATION (Iterative)
 **Reason**: Product brief and requirements already established through previous work
 
 **Existing Artifacts**:
+
 - context/business-requirements/sentia_business_model.md
 - context/business-requirements/acceptance_criteria.md
 - context/business-requirements/user_workflows.md
@@ -80,6 +84,7 @@ Phase 4: IMPLEMENTATION (Iterative)
 **Entry Point**: `bmad analyst workflow-status`
 
 **Actions**:
+
 1. Initialize BMAD workflow-status
 2. Run `bmad pm plan-project`
 3. System will determine Level 4 (complex enterprise)
@@ -93,6 +98,7 @@ Phase 4: IMPLEMENTATION (Iterative)
 ### Phase 3: SOLUTIONING (Required for Level 4)
 
 **Actions**:
+
 1. Run `bmad architect 3-solutioning`
 2. Generate solution-architecture.md
 3. Create tech-specs per epic (JIT during Phase 4)
@@ -102,6 +108,7 @@ Phase 4: IMPLEMENTATION (Iterative)
 ### Phase 4: IMPLEMENTATION (Current Phase)
 
 **Iterative Cycle**:
+
 ```
 FOR EACH EPIC:
   1. bmad sm create-story       # Scrum Master creates user story
@@ -122,16 +129,19 @@ NEXT EPIC
 ### Planning Agents
 
 **Analyst Agent** (`bmad analyst`)
+
 - Responsible for: Requirements gathering, research, analysis
 - Key workflows: brainstorm-project, research, product-brief
 - Current status: Not needed (brownfield project)
 
 **Product Manager Agent** (`bmad pm`)
+
 - Responsible for: Project planning, epic creation, roadmap
 - Key workflows: plan-project, workflow-status
 - **Next action**: Initialize planning for Sentia project
 
 **Architect Agent** (`bmad architect`)
+
 - Responsible for: Solution architecture, technical specifications
 - Key workflows: 3-solutioning, solution-architecture, tech-spec, story-context
 - **Next action**: Create solution architecture
@@ -139,16 +149,19 @@ NEXT EPIC
 ### Development Agents
 
 **Scrum Master Agent** (`bmad sm`)
+
 - Responsible for: Story creation, sprint coordination, retrospectives
 - Key workflows: create-story, retrospective, correct-course
 - **Next action**: Create story backlog from existing requirements
 
 **Developer Agent** (`bmad dev`)
+
 - Responsible for: Code implementation, technical delivery
 - Key workflows: dev-story
 - **Next action**: Implement stories with full context
 
 **QA Agent** (`bmad qa`)
+
 - Responsible for: Quality assurance, testing, review
 - Key workflows: review-story
 - **Next action**: Review and validate implementations
@@ -158,6 +171,7 @@ NEXT EPIC
 ## 5. Migration from SpecKit to BMAD
 
 ### Removed (Completed)
+
 - ✅ `.specify/` directory (deleted)
 - ✅ `spec-kit/` directory (deleted)
 - ✅ `speckit.config.js` (deleted)
@@ -165,6 +179,7 @@ NEXT EPIC
 - ✅ `docs/bmad-measurement-mock-data.md` (deleted - was misleading, not BMAD framework)
 
 ### Added
+
 - ✅ `bmad/` directory (framework copied from v6-alpha)
 - ✅ BMAD-METHOD-V6A-IMPLEMENTATION.md (this document)
 - ⏳ BMAD configuration files (pending)
@@ -180,6 +195,7 @@ NEXT EPIC
 **Location**: `bmad/expansion-packs/manufacturing-intelligence/`
 
 **Specialized Agents**:
+
 1. **Demand Forecasting Specialist** - AI-powered demand prediction
 2. **Inventory Optimization Expert** - Stock level optimization
 3. **Financial Planning Analyst** - Working capital, cash flow
@@ -188,6 +204,7 @@ NEXT EPIC
 6. **Quality Control Expert** - QC workflows and metrics
 
 **Custom Workflows**:
+
 - `manufacturing-epic-creation` - Domain-specific epic templates
 - `api-integration-story` - Integration story patterns
 - `financial-feature-context` - Financial domain expertise injection
@@ -200,6 +217,7 @@ NEXT EPIC
 ### Current Mock Data Locations (from deleted bmad-measurement-mock-data.md)
 
 **Server API Routes**:
+
 - server/index.js - Hard-coded KPI, cash flow, sales data
 - server/api/working-capital.js - Fabricated AR/AP topDebtors/topCreditors
 - server/api/enhanced-forecasting.js - Mock demand data
@@ -207,22 +225,25 @@ NEXT EPIC
 - server/routes/data.js - Mock analytics payloads
 
 **Backend Services**:
+
 - src/services/DemandForecastingEngine.js - Simulated forecasts
 - src/services/FinancialAlgorithms.js - Synthetic baselines
 - src/services/WorkingCapitalEngine.js - Estimated multipliers
 - src/services/api/APIIntegration.js - Mocked status messages
 
 **Client Components**:
+
 - src/components/DemandForecasting.jsx - Expects synthetic data
 - src/components/FinancialReports.jsx - Renders randomized figures
 - src/components/InventoryManagement.jsx - Mock inventory data
-- src/components/widgets/* - Various mock data consumers
+- src/components/widgets/\* - Various mock data consumers
 
 ### BMAD Story Creation for Real API Integration
 
 **Epic**: "Eliminate All Mock Data with Live API Integration"
 
 **Stories to Create**:
+
 1. **Connect Xero Financial Data** - Replace mock financial KPIs with Xero API
 2. **Connect Shopify Sales Data** - Replace mock sales metrics with Shopify API
 3. **Connect Amazon SP-API Orders** - Replace mock order data with Amazon API
@@ -232,6 +253,7 @@ NEXT EPIC
 7. **Update UI for Empty States** - Handle missing/loading data properly
 
 **BMAD Workflow**:
+
 ```bash
 # For each story above:
 bmad sm create-story --epic "eliminate-mock-data" --story "connect-xero-financial-data"
@@ -245,6 +267,7 @@ bmad qa review-story --story "connect-xero-financial-data"
 ## 8. Next Immediate Actions
 
 ### Step 1: Initialize BMAD Workflow (TODAY)
+
 ```bash
 cd /c/Projects/The-social-drink-companysentia-ai-manufacturing-app/sentia-ai-manufacturing-app
 bmad pm workflow-status
@@ -255,6 +278,7 @@ bmad pm workflow-status
 ```
 
 ### Step 2: Create Project Planning Artifacts (TODAY)
+
 ```bash
 bmad pm plan-project
 # Input:
@@ -270,6 +294,7 @@ bmad pm plan-project
 ```
 
 ### Step 3: Solution Architecture (TOMORROW)
+
 ```bash
 bmad architect 3-solutioning
 # Review existing architecture and create:
@@ -278,6 +303,7 @@ bmad architect 3-solutioning
 ```
 
 ### Step 4: Story Creation and Implementation (ONGOING)
+
 ```bash
 # Create story backlog
 bmad sm create-story --from-requirements context/business-requirements/
@@ -292,6 +318,7 @@ bmad qa review-story --latest
 ## 9. Success Criteria
 
 ### BMAD Implementation Complete When:
+
 - ✅ BMAD framework installed and configured
 - ⏳ Workflow-status initialized and tracking project state
 - ⏳ PRD generated with full product requirements
@@ -302,6 +329,7 @@ bmad qa review-story --latest
 - ⏳ First complete story cycle executed (create → context → dev → review → retrospective)
 
 ### Mock Data Elimination Complete When:
+
 - ⏳ All server API routes return real data or 503 errors
 - ⏳ All backend services connect to live APIs
 - ⏳ All client components handle real data and empty states
@@ -314,6 +342,7 @@ bmad qa review-story --latest
 ## 10. Documentation Updates Required
 
 ### Files to Update:
+
 1. **CLAUDE.md** - Replace SpecKit references with BMAD-METHOD v6a
 2. **README.md** - Update development methodology section
 3. **context/development-methodology/** - Replace vibe_coding_guide.md with BMAD workflows
@@ -321,6 +350,7 @@ bmad qa review-story --latest
 5. **DEVELOPER_ONBOARDING.md** - Add BMAD workflow training
 
 ### New Files to Create:
+
 1. **BMAD-AGENT-GUIDE.md** - How to use each BMAD agent
 2. **BMAD-WORKFLOW-REFERENCE.md** - Quick reference for all workflows
 3. **MANUFACTURING-EXPANSION-PACK.md** - Custom domain agents and workflows
@@ -330,24 +360,28 @@ bmad qa review-story --latest
 ## 11. Rollout Timeline
 
 ### Week 1 (Current): Foundation
+
 - [x] Remove SpecKit methodology
 - [ ] Initialize BMAD framework
 - [ ] Create PRD and epic breakdown
 - [ ] Generate solution architecture
 
 ### Week 2: Story Creation
+
 - [ ] Create story backlog from existing requirements
 - [ ] Prioritize stories for sprint 1
 - [ ] Execute first story cycle
 - [ ] Refine workflows based on retrospective
 
 ### Week 3-4: Mock Data Elimination
+
 - [ ] Implement real API integration stories
 - [ ] Test and validate live data flows
 - [ ] Update documentation
 - [ ] Train team on BMAD workflows
 
 ### Week 5: Production Readiness
+
 - [ ] Complete all high-priority stories
 - [ ] Comprehensive QA and testing
 - [ ] Deploy to production
@@ -358,6 +392,7 @@ bmad qa review-story --latest
 ## 12. Team Training Requirements
 
 ### Required Knowledge:
+
 1. **BMAD-METHOD v6a Philosophy** - Understanding Agentic Agile
 2. **Four-Phase Workflow** - Analysis, Planning, Solutioning, Implementation
 3. **Agent Roles** - When to use each specialized agent
@@ -365,6 +400,7 @@ bmad qa review-story --latest
 5. **Retrospective Process** - Continuous improvement cycle
 
 ### Training Resources:
+
 - BMAD-METHOD GitHub: https://github.com/bmad-code-org/BMAD-METHOD
 - BMAD YouTube Channel: https://www.youtube.com/@BMadCode
 - BMAD Discord Community: https://discord.gg/gk8jAdXWmj
@@ -375,6 +411,7 @@ bmad qa review-story --latest
 ## 13. Monitoring and Metrics
 
 ### BMAD Workflow Metrics:
+
 - Story cycle time (create → complete)
 - Context injection effectiveness
 - Retrospective insights per epic
@@ -382,6 +419,7 @@ bmad qa review-story --latest
 - Team velocity and throughput
 
 ### Mock Data Elimination Metrics:
+
 - Percentage of endpoints using real data
 - API integration test coverage
 - Error handling robustness

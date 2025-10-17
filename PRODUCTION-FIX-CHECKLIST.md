@@ -9,11 +9,13 @@
 ## ✅ Step-by-Step Fix Process:
 
 ### 1️⃣ Access Render Dashboard
+
 - [ ] Go to: https://dashboard.render.com
 - [ ] Login with your credentials
 - [ ] Select: `sentia-manufacturing-production` service
 
 ### 2️⃣ Navigate to Environment Variables
+
 - [ ] Click on the `Environment` tab
 - [ ] You should see existing variables like:
   - DATABASE_URL
@@ -22,6 +24,7 @@
   - CORS_ORIGINS
 
 ### 3️⃣ Add Critical Clerk Variables (MOST IMPORTANT)
+
 Add these variables ONE BY ONE:
 
 - [ ] `VITE_CLERK_PUBLISHABLE_KEY` = `pk_live_REDACTED`
@@ -31,6 +34,7 @@ Add these variables ONE BY ONE:
 - [ ] `CLERK_WEBHOOK_SECRET` = `whsec_REDACTED`
 
 ### 4️⃣ Add API Configuration Variables
+
 - [ ] `VITE_API_BASE_URL` = `/api`
 - [ ] `API_BASE_URL` = `/api`
 - [ ] `VITE_CLERK_SIGN_IN_URL` = `/sign-in`
@@ -39,27 +43,32 @@ Add these variables ONE BY ONE:
 - [ ] `VITE_CLERK_AFTER_SIGN_UP_URL` = `/dashboard`
 
 ### 5️⃣ Add MCP Server Variables
+
 - [ ] `MCP_SERVER_URL` = `https://mcp-server-tkyu.onrender.com`
 - [ ] `VITE_MCP_SERVER_URL` = `https://mcp-server-tkyu.onrender.com`
 - [ ] `MCP_JWT_SECRET` = `production-mcp-jwt-secret-2025`
 
 ### 6️⃣ Add Security Variables
+
 - [ ] `SESSION_SECRET` = `production-session-secret-2025-sentia`
 - [ ] `JWT_SECRET` = `production-jwt-secret-2025-sentia`
 - [ ] `JWT_EXPIRES_IN` = `24h`
 
 ### 7️⃣ Save and Deploy
+
 - [ ] Click the `Save Changes` button
 - [ ] Render will show "Environment variables updated"
 - [ ] Automatic deployment will start (check Events tab)
 
 ### 8️⃣ Monitor Deployment
+
 - [ ] Go to the `Events` tab
 - [ ] Look for "Deploy live" status
 - [ ] Deployment takes 2-5 minutes
 - [ ] Wait for "Deploy succeeded" message
 
 ### 9️⃣ Verify Fix
+
 - [ ] Run: `./verify-production-fix.sh`
 - [ ] Or manually check: https://sentia-manufacturing-production.onrender.com/health
 - [ ] Should return JSON: `{"status":"ok","timestamp":"..."}`
@@ -98,6 +107,7 @@ Add these variables ONE BY ONE:
 When production is fixed, you'll see:
 
 1. **Health endpoint returns JSON**:
+
 ```json
 {
   "status": "ok",
@@ -110,6 +120,7 @@ When production is fixed, you'll see:
 3. **No more 502 errors** in browser
 
 4. **Verification script shows all green**:
+
 ```
 ✓ SUCCESS Health Check
 ✓ SUCCESS Main Application
@@ -130,10 +141,9 @@ If the above steps don't resolve the issue:
 ---
 
 **Time Estimate**: 10-15 minutes total
+
 - Adding variables: 5 minutes
 - Deployment: 2-5 minutes
 - Verification: 1 minute
 
 **Current Time**: Please start the fix process now to restore production!
-
-

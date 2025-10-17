@@ -43,10 +43,12 @@ After services are created, you need to add environment variables to EACH servic
 4. Copy ALL variables from `render-env-complete.json` under "development" section
 
 **Quick Copy Method:**
+
 - Open `render-env-complete.json` in this folder
 - Copy all key-value pairs from the "development" section
 - In Render, click "Bulk Edit"
 - Paste in this format:
+
 ```
 NODE_ENV=development
 PORT=5000
@@ -55,18 +57,22 @@ DATABASE_URL=postgresql://neondb_owner:npg_2wXVD9gdintm@ep-aged-dust-abpyip0r-po
 VITE_CLERK_PUBLISHABLE_KEY=pk_test_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk
 CLERK_SECRET_KEY=sk_test_EP6iF7prGbq73CscUPCOW8PAKol4pPaBG5iYdsDodq
 ```
+
 (Continue with all variables from the JSON file)
 
 5. Click "Save Changes"
 6. Service will auto-redeploy with new variables
 
 #### Repeat for Testing Service:
+
 - Use variables from "testing" section in `render-env-complete.json`
 
 #### Repeat for Production Service:
+
 - Use variables from "production" section in `render-env-complete.json`
 
 #### For MCP Server (sentia-mcp-server):
+
 - Use variables from "mcp_server" section in `render-env-complete.json`
 
 ---
@@ -76,15 +82,18 @@ CLERK_SECRET_KEY=sk_test_EP6iF7prGbq73CscUPCOW8PAKol4pPaBG5iYdsDodq
 Render creates its own PostgreSQL databases. You have two options:
 
 #### Option A: Use Existing Neon Database (Recommended for now)
+
 - Keep the DATABASE_URL as provided in the JSON file
 - This uses your existing Neon PostgreSQL database
 - No migration needed
 
 #### Option B: Use Render's Database (Later)
+
 1. Go to each database service in Render
 2. Copy the "Internal Database URL"
 3. Update the DATABASE_URL in each environment
 4. Run migrations:
+
 ```bash
 DATABASE_URL=your-render-database-url npx prisma migrate deploy
 ```
@@ -121,6 +130,7 @@ Render automatically sets up deployments from your GitHub branches:
 - `production` branch → Production environment (manual deploy)
 
 To change auto-deploy settings:
+
 1. Go to service → Settings
 2. Find "Build & Deploy" section
 3. Toggle "Auto-Deploy" on/off
@@ -130,6 +140,7 @@ To change auto-deploy settings:
 ## TROUBLESHOOTING
 
 ### If Services Show "Deploy Failed":
+
 1. Check Logs tab for specific error
 2. Common issues:
    - Missing environment variables (especially Clerk keys)
@@ -137,16 +148,19 @@ To change auto-deploy settings:
    - Build command errors
 
 ### If Site Shows 502 Bad Gateway:
+
 1. Service is still starting (wait 2-3 minutes)
 2. Check environment variables are set
 3. Check logs for crash errors
 
 ### If Database Connection Fails:
+
 1. Verify DATABASE_URL is correct
 2. For Neon: Ensure SSL mode is set
 3. For Render DB: Use internal URL for same-region connection
 
 ### Build Taking Too Long:
+
 - First build takes 5-10 minutes
 - Subsequent builds are faster (2-3 minutes)
 - Starter plan has 0.5 CPU, so builds are slower than local
@@ -166,6 +180,7 @@ With Starter plan ($7/month per service):
 - **Total After 90 days**: ~$35/month (with 3 databases)
 
 To reduce costs:
+
 - Use single database with different schemas
 - Keep testing on free tier
 - Upgrade only production to Starter

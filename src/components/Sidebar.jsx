@@ -9,14 +9,14 @@
   BarChart,
   Upload,
   Settings,
-  Brain
+  Brain,
 } from 'lucide-react'
 
 const Sidebar = ({ activeSection, setActiveSection }) => {
   const menuSections = [
     {
       title: 'OVERVIEW',
-      items: [{ id: 'executive-dashboard', label: 'Executive Dashboard', icon: BarChart3 }]
+      items: [{ id: 'executive-dashboard', label: 'Executive Dashboard', icon: BarChart3 }],
     },
     {
       title: 'PLANNING & ANALYTICS',
@@ -25,24 +25,24 @@ const Sidebar = ({ activeSection, setActiveSection }) => {
         { id: 'inventory-management', label: 'Inventory Management', icon: Package },
         { id: 'production-tracking', label: 'Production Tracking', icon: ClipboardCheck },
         { id: 'quality-control', label: 'Quality Control', icon: Shield },
-        { id: 'business-intelligence', label: 'Business Intelligence', icon: Brain }
-      ]
+        { id: 'business-intelligence', label: 'Business Intelligence', icon: Brain },
+      ],
     },
     {
       title: 'FINANCIAL MANAGEMENT',
       items: [
         { id: 'working-capital', label: 'Working Capital', icon: DollarSign },
         { id: 'what-if-analysis', label: 'What-If Analysis', icon: BarChart },
-        { id: 'financial-reports', label: 'Financial Reports', icon: FileText }
-      ]
+        { id: 'financial-reports', label: 'Financial Reports', icon: FileText },
+      ],
     },
     {
       title: 'OPERATIONS',
       items: [
         { id: 'data-import', label: 'Data Import', icon: Upload },
-        { id: 'admin-panel', label: 'Admin Panel', icon: Settings }
-      ]
-    }
+        { id: 'admin-panel', label: 'Admin Panel', icon: Settings },
+      ],
+    },
   ]
 
   return (
@@ -61,13 +61,13 @@ const Sidebar = ({ activeSection, setActiveSection }) => {
       </div>
 
       <div className="flex-1 overflow-y-auto">
-        {menuSections.map((section) => (
+        {menuSections.map(section => (
           <div key={section.title} className="py-4">
             <h3 className="mb-3 px-6 text-xs font-semibold uppercase tracking-wider text-slate-400">
               {section.title}
             </h3>
             <nav className="space-y-1">
-              {section.items.map((item) => {
+              {section.items.map(item => {
                 const Icon = item.icon
                 const isActive = activeSection === item.id
 

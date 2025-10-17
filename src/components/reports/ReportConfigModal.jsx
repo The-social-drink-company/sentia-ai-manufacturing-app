@@ -1,5 +1,11 @@
 import { useState } from 'react'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
@@ -19,11 +25,11 @@ const ReportConfigModal = ({ open, onClose }) => {
   const lastMonth = subMonths(new Date(), 1)
   const [dateRange, setDateRange] = useState({
     from: startOfMonth(lastMonth),
-    to: endOfMonth(lastMonth)
+    to: endOfMonth(lastMonth),
   })
   const [calendarOpen, setCalendarOpen] = useState(false)
   const [generating, setGenerating] = useState(false)
-  
+
   // Default report sections - most important KPIs selected by default
   const [selectedSections, setSelectedSections] = useState({
     capitalKpis: true,
@@ -31,7 +37,7 @@ const ReportConfigModal = ({ open, onClose }) => {
     plAnalysis: true,
     regionalContribution: true,
     stockLevels: false,
-    productSales: false
+    productSales: false,
   })
 
   const reportSections = [
@@ -39,44 +45,44 @@ const ReportConfigModal = ({ open, onClose }) => {
       id: 'capitalKpis',
       label: 'Capital Position',
       description: 'Working capital, cash coverage, intercompany exposure',
-      recommended: true
+      recommended: true,
     },
     {
       id: 'performanceKpis',
       label: 'Performance Metrics',
       description: 'Revenue, units sold, gross margin',
-      recommended: true
+      recommended: true,
     },
     {
       id: 'plAnalysis',
       label: 'P&L Analysis',
       description: 'Monthly profit and loss trends chart',
-      recommended: true
+      recommended: true,
     },
     {
       id: 'regionalContribution',
       label: 'Regional Performance',
       description: 'Revenue and EBITDA by region',
-      recommended: true
+      recommended: true,
     },
     {
       id: 'stockLevels',
       label: 'Stock Levels',
       description: 'Current inventory status and levels',
-      recommended: false
+      recommended: false,
     },
     {
       id: 'productSales',
       label: 'Product Sales',
       description: 'Sales performance by product line',
-      recommended: false
-    }
+      recommended: false,
+    },
   ]
 
   const handleSectionToggle = (sectionId, checked) => {
     setSelectedSections(prev => ({
       ...prev,
-      [sectionId]: checked
+      [sectionId]: checked,
     }))
   }
 
@@ -118,10 +124,10 @@ const ReportConfigModal = ({ open, onClose }) => {
     try {
       // Generate report data
       const reportData = await generateReport(selectedSections, dateRange)
-      
+
       // Generate and download PDF
       await generatePDF(reportData, dateRange)
-      
+
       toast.success('Report generated successfully!')
       onClose()
     } catch (error) {
@@ -163,19 +169,19 @@ const ReportConfigModal = ({ open, onClose }) => {
                   <Button
                     variant="outline"
                     className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !dateRange && "text-muted-foreground"
+                      'w-full justify-start text-left font-normal',
+                      !dateRange && 'text-muted-foreground'
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {dateRange?.from ? (
                       dateRange.to ? (
                         <>
-                          {format(dateRange.from, "LLL dd, y")} -{" "}
-                          {format(dateRange.to, "LLL dd, y")}
+                          {format(dateRange.from, 'LLL dd, y')} -{' '}
+                          {format(dateRange.to, 'LLL dd, y')}
                         </>
                       ) : (
-                        format(dateRange.from, "LLL dd, y")
+                        format(dateRange.from, 'LLL dd, y')
                       )
                     ) : (
                       <span>Pick a date range</span>
@@ -205,55 +211,41 @@ const ReportConfigModal = ({ open, onClose }) => {
                   Report Sections ({selectedCount} selected)
                 </div>
                 <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleSelectAll(true)}
-                  >
+                  <Button variant="outline" size="sm" onClick={() => handleSelectAll(true)}>
                     Recommended
                   </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleSelectAll(false)}
-                  >
+                  <Button variant="outline" size="sm" onClick={() => handleSelectAll(false)}>
                     Select All
                   </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleDeselectAll}
-                  >
+                  <Button variant="outline" size="sm" onClick={handleDeselectAll}>
                     Clear All
                   </Button>
                 </div>
               </CardTitle>
-              <CardDescription>
-                Choose which sections to include in your report
-              </CardDescription>
+              <CardDescription>Choose which sections to include in your report</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid gap-4 md:grid-cols-2">
-                {reportSections.map((section) => (
+                {reportSections.map(section => (
                   <div
                     key={section.id}
                     className={cn(
-                      "rounded-lg border p-4 transition-colors",
-                      selectedSections[section.id] 
-                        ? "border-blue-200 bg-blue-50" 
-                        : "border-gray-200 hover:border-gray-300",
-                      section.recommended && "ring-1 ring-orange-200"
+                      'rounded-lg border p-4 transition-colors',
+                      selectedSections[section.id]
+                        ? 'border-blue-200 bg-blue-50'
+                        : 'border-gray-200 hover:border-gray-300',
+                      section.recommended && 'ring-1 ring-orange-200'
                     )}
                   >
                     <div className="flex items-start space-x-3">
                       <Checkbox
                         id={section.id}
                         checked={selectedSections[section.id]}
-                        onCheckedChange={(checked) => handleSectionToggle(section.id, checked)}
+                        onCheckedChange={checked => handleSectionToggle(section.id, checked)}
                         className="mt-1"
                       />
                       <div className="flex-1 min-w-0">
-                        <Label 
+                        <Label
                           htmlFor={section.id}
                           className="text-sm font-medium cursor-pointer flex items-center gap-2"
                         >
@@ -264,9 +256,7 @@ const ReportConfigModal = ({ open, onClose }) => {
                             </span>
                           )}
                         </Label>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {section.description}
-                        </p>
+                        <p className="text-xs text-muted-foreground mt-1">{section.description}</p>
                       </div>
                     </div>
                   </div>
@@ -280,14 +270,13 @@ const ReportConfigModal = ({ open, onClose }) => {
             <Card>
               <CardHeader>
                 <CardTitle className="text-lg">Report Preview</CardTitle>
-                <CardDescription>
-                  Your report will include the following sections
-                </CardDescription>
+                <CardDescription>Your report will include the following sections</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="text-sm space-y-2">
                   <p className="font-medium">
-                    Report Period: {dateRange?.from && format(dateRange.from, "MMMM d, yyyy")} - {dateRange?.to && format(dateRange.to, "MMMM d, yyyy")}
+                    Report Period: {dateRange?.from && format(dateRange.from, 'MMMM d, yyyy')} -{' '}
+                    {dateRange?.to && format(dateRange.to, 'MMMM d, yyyy')}
                   </p>
                   <p className="font-medium">Included Sections:</p>
                   <ul className="list-disc list-inside space-y-1 ml-4">
@@ -311,7 +300,7 @@ const ReportConfigModal = ({ open, onClose }) => {
           <Button variant="outline" onClick={onClose}>
             Cancel
           </Button>
-          
+
           <Button
             onClick={handleGenerateReport}
             disabled={selectedCount === 0 || generating}

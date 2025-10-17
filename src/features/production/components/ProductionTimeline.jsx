@@ -4,18 +4,24 @@ import {
   ExclamationTriangleIcon,
   XCircleIcon,
   PlayIcon,
-  PauseIcon
+  PauseIcon,
 } from '@heroicons/react/24/outline'
 import { useState, useMemo } from 'react'
 
-import { Card, CardContent, CardHeader, CardTitle , Badge } from '../../../components/ui'
+import { Card, CardContent, CardHeader, CardTitle, Badge } from '../../../components/ui'
 import { cn } from '../../../utils/cn'
 
-export function ProductionTimeline({ jobs, onJobClick, view = 'timeline', loading = false, error = null }) {
+export function ProductionTimeline({
+  jobs,
+  onJobClick,
+  view = 'timeline',
+  loading = false,
+  error = null,
+}) {
   const [selectedJob, setSelectedJob] = useState(null)
-  const productionJobs = useMemo(() => Array.isArray(jobs) ? jobs : [], [jobs])
+  const productionJobs = useMemo(() => (Array.isArray(jobs) ? jobs : []), [jobs])
 
-  const getStatusIcon = (status) => {
+  const getStatusIcon = status => {
     switch (status) {
       case 'completed':
         return <CheckCircleIcon className="h-5 w-5 text-green-600" />
@@ -32,30 +38,30 @@ export function ProductionTimeline({ jobs, onJobClick, view = 'timeline', loadin
     }
   }
 
-  const getStatusBadge = (status) => {
+  const getStatusBadge = status => {
     const variants = {
-      'completed': 'success',
+      completed: 'success',
       'in-progress': 'info',
-      'scheduled': 'default',
-      'delayed': 'warning',
-      'failed': 'destructive'
+      scheduled: 'default',
+      delayed: 'warning',
+      failed: 'destructive',
     }
     return variants[status] || 'default'
   }
 
-  const formatTime = (_dateString) => {
+  const formatTime = _dateString => {
     const date = new Date(dateString)
     return date.toLocaleTimeString('en-US', {
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     })
   }
 
-  const formatDate = (_dateString) => {
+  const formatDate = _dateString => {
     const date = new Date(dateString)
     return date.toLocaleDateString('en-US', {
       month: 'short',
-      day: 'numeric'
+      day: 'numeric',
     })
   }
 
@@ -71,13 +77,11 @@ export function ProductionTimeline({ jobs, onJobClick, view = 'timeline', loadin
       <div className="space-y-6">
         {Object.entries(groupedJobs).map(([date, dateJobs]) => (
           <div key={date}>
-            <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-3">
-              {date}
-            </h3>
+            <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-3">{date}</h3>
             <div className="relative">
               <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-gray-200 dark:bg-gray-700" />
 
-              {dateJobs.map((job) => (
+              {dateJobs.map(job => (
                 <div
                   key={job.id}
                   className="relative flex items-start mb-6"
@@ -96,13 +100,9 @@ export function ProductionTimeline({ jobs, onJobClick, view = 'timeline', loadin
                         <div className="flex items-center justify-between mb-2">
                           <div className="flex items-center gap-3">
                             <h4 className="font-semibold">{job.id}</h4>
-                            <Badge variant={getStatusBadge(job.status)}>
-                              {job.status}
-                            </Badge>
+                            <Badge variant={getStatusBadge(job.status)}>{job.status}</Badge>
                           </div>
-                          <span className="text-sm text-gray-600">
-                            {formatTime(job.startTime)}
-                          </span>
+                          <span className="text-sm text-gray-600">{formatTime(job.startTime)}</span>
                         </div>
 
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
@@ -180,7 +180,7 @@ export function ProductionTimeline({ jobs, onJobClick, view = 'timeline', loadin
             </tr>
           </thead>
           <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
-            {productionJobs.map((job) => (
+            {productionJobs.map(job => (
               <tr
                 key={job.id}
                 className="hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer"
@@ -189,23 +189,15 @@ export function ProductionTimeline({ jobs, onJobClick, view = 'timeline', loadin
                   onJobClick && onJobClick(job)
                 }}
               >
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  {job.id}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm">
-                  {job.product}
-                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">{job.id}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm">{job.product}</td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <Badge variant={getStatusBadge(job.status)}>
-                    {job.status}
-                  </Badge>
+                  <Badge variant={getStatusBadge(job.status)}>{job.status}</Badge>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm">
                   {job.quantity.toLocaleString()}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm">
-                  {job.machine}
-                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm">{job.machine}</td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center">
                     <div className="w-20 bg-gray-200 rounded-full h-2 mr-2">
@@ -218,12 +210,14 @@ export function ProductionTimeline({ jobs, onJobClick, view = 'timeline', loadin
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm">
-                  <span className={cn(
-                    'font-medium',
-                    job.efficiency >= 90 && 'text-green-600',
-                    job.efficiency >= 70 && job.efficiency < 90 && 'text-blue-600',
-                    job.efficiency < 70 && 'text-red-600'
-                  )}>
+                  <span
+                    className={cn(
+                      'font-medium',
+                      job.efficiency >= 90 && 'text-green-600',
+                      job.efficiency >= 70 && job.efficiency < 90 && 'text-blue-600',
+                      job.efficiency < 70 && 'text-red-600'
+                    )}
+                  >
                     {job.efficiency}%
                   </span>
                 </td>
@@ -244,7 +238,7 @@ export function ProductionTimeline({ jobs, onJobClick, view = 'timeline', loadin
             <button
               onClick={() => setSelectedJob(null)}
               className={cn(
-                "px-3 py-1 text-sm rounded",
+                'px-3 py-1 text-sm rounded',
                 view === 'timeline'
                   ? 'bg-blue-600 text-white'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -254,7 +248,7 @@ export function ProductionTimeline({ jobs, onJobClick, view = 'timeline', loadin
             </button>
             <button
               className={cn(
-                "px-3 py-1 text-sm rounded",
+                'px-3 py-1 text-sm rounded',
                 view === 'list'
                   ? 'bg-blue-600 text-white'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -287,8 +281,10 @@ export function ProductionTimeline({ jobs, onJobClick, view = 'timeline', loadin
               <p className="text-xs text-muted-foreground">Check API configuration</p>
             </div>
           </div>
+        ) : view === 'timeline' ? (
+          renderTimelineView()
         ) : (
-          view === 'timeline' ? renderTimelineView() : renderListView()
+          renderListView()
         )}
       </CardContent>
     </Card>

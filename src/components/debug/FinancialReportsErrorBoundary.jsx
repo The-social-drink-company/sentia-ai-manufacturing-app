@@ -16,12 +16,12 @@ class FinancialReportsErrorBoundary extends React.Component {
       error: error,
       errorInfo: errorInfo,
       componentStack: errorInfo.componentStack,
-      errorBoundary: 'FinancialReportsErrorBoundary'
+      errorBoundary: 'FinancialReportsErrorBoundary',
     })
-    
+
     this.setState({
       error: error,
-      errorInfo: errorInfo
+      errorInfo: errorInfo,
     })
 
     // Log additional context
@@ -32,26 +32,34 @@ class FinancialReportsErrorBoundary extends React.Component {
   render() {
     if (this.state.hasError) {
       console.log('[Navigation Debug] FinancialReportsErrorBoundary rendering error UI')
-      
+
       return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50">
           <div className="max-w-md w-full bg-white shadow-lg rounded-lg p-6">
             <div className="flex items-center mb-4">
               <div className="flex-shrink-0">
-                <svg className="h-8 w-8 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.804-.833-2.574 0L3.232 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                <svg
+                  className="h-8 w-8 text-red-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.804-.833-2.574 0L3.232 16.5c-.77.833.192 2.5 1.732 2.5z"
+                  />
                 </svg>
               </div>
               <div className="ml-3">
-                <h3 className="text-sm font-medium text-gray-800">
-                  Financial Reports Error
-                </h3>
+                <h3 className="text-sm font-medium text-gray-800">Financial Reports Error</h3>
                 <div className="mt-2 text-sm text-gray-500">
                   There was an error loading the Financial Reports page.
                 </div>
               </div>
             </div>
-            
+
             <div className="bg-red-50 border border-red-200 rounded p-4 mb-4">
               <div className="text-sm">
                 <strong>Error:</strong> {this.state.error && this.state.error.toString()}
@@ -67,7 +75,7 @@ class FinancialReportsErrorBoundary extends React.Component {
                 </details>
               )}
             </div>
-            
+
             <div className="flex space-x-3">
               <button
                 onClick={() => {
@@ -88,7 +96,7 @@ class FinancialReportsErrorBoundary extends React.Component {
                 Go to Dashboard
               </button>
             </div>
-            
+
             <div className="mt-4 text-xs text-gray-500">
               Check the browser console for detailed debugging information.
             </div>

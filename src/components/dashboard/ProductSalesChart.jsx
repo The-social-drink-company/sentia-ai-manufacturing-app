@@ -7,15 +7,15 @@ import {
   XAxis,
   YAxis,
   Tooltip,
-  Cell
+  Cell,
 } from 'recharts'
 
 const ProductSalesChart = ({ data }) => {
   // Ensure data is an array to prevent map errors
   const chartData = Array.isArray(data) ? data : []
-  
+
   // Product-specific colors
-  const getProductColor = (productName) => {
+  const getProductColor = productName => {
     switch (productName) {
       case 'GABA Red':
         return '#ef4444'
@@ -60,24 +60,26 @@ const ProductSalesChart = ({ data }) => {
           left: 20,
         }}
       >
-        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" className="dark:stroke-gray-600" />
-        <XAxis 
-          dataKey="product" 
-          tickLine={false} 
+        <CartesianGrid
+          strokeDasharray="3 3"
+          vertical={false}
+          stroke="#e5e7eb"
+          className="dark:stroke-gray-600"
+        />
+        <XAxis
+          dataKey="product"
+          tickLine={false}
           axisLine={false}
           className="text-xs text-gray-500 dark:text-gray-400"
         />
-        <YAxis 
-          tickFormatter={(value) => `$${Math.round(value / 1000000)}M`}
+        <YAxis
+          tickFormatter={value => `$${Math.round(value / 1000000)}M`}
           axisLine={false}
           tickLine={false}
           className="text-xs text-gray-500 dark:text-gray-400"
         />
         <Tooltip content={<CustomTooltip />} />
-        <Bar 
-          dataKey="revenue" 
-          radius={[6, 6, 0, 0]}
-        >
+        <Bar dataKey="revenue" radius={[6, 6, 0, 0]}>
           {chartData.map((entry, index) => (
             <Cell key={`cell-${index}`} fill={getProductColor(entry.product)} />
           ))}

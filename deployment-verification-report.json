@@ -5,10 +5,6 @@
   "passedTests": 10,
   "failedTests": 6,
   "successRate": "62.5",
-  "environments": [
-    "development",
-    "testing",
-    "production"
-  ],
+  "environments": ["development", "testing", "production"],
   "status": "PARTIAL_SUCCESS"
 }

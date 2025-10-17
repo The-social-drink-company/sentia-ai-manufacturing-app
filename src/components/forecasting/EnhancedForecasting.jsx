@@ -4,43 +4,64 @@
  * Target: 88%+ accuracy with advanced business intelligence
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
-import { Button } from '../ui/button';
-import { Badge } from '../ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, AreaChart, Area } from 'recharts';
-import { TrendingUp, TrendingDown, BarChart3, Brain, Zap, Target, AlertTriangle, CheckCircle2, Clock, Calendar } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'
+import { Button } from '../ui/button'
+import { Badge } from '../ui/badge'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs'
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  AreaChart,
+  Area,
+} from 'recharts'
+import {
+  TrendingUp,
+  TrendingDown,
+  BarChart3,
+  Brain,
+  Zap,
+  Target,
+  AlertTriangle,
+  CheckCircle2,
+  Clock,
+  Calendar,
+} from 'lucide-react'
 
 const EnhancedForecasting = () => {
-  const [forecastData, setForecastData] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [forecastHorizon, setForecastHorizon] = useState(90);
-  const [selectedScenario, setSelectedScenario] = useState('realistic');
-  const [aiModelsStatus, setAiModelsStatus] = useState({ openai: false, claude: false });
+  const [forecastData, setForecastData] = useState(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const [forecastHorizon, setForecastHorizon] = useState(90)
+  const [selectedScenario, setSelectedScenario] = useState('realistic')
+  const [aiModelsStatus, setAiModelsStatus] = useState({ openai: false, claude: false })
 
   // Forecast configuration options
   const horizonOptions = [
     { value: 30, label: '30 Days', icon: Calendar },
     { value: 90, label: '90 Days', icon: Calendar },
     { value: 180, label: '180 Days', icon: Calendar },
-    { value: 365, label: '365 Days', icon: Calendar }
-  ];
+    { value: 365, label: '365 Days', icon: Calendar },
+  ]
 
   const scenarioOptions = [
     { value: 'pessimistic', label: 'Conservative', color: 'orange', probability: '20%' },
     { value: 'realistic', label: 'Realistic', color: 'blue', probability: '60%' },
-    { value: 'optimistic', label: 'Optimistic', color: 'green', probability: '20%' }
-  ];
-
+    { value: 'optimistic', label: 'Optimistic', color: 'green', probability: '20%' },
+  ]
 
   // Generate enhanced forecast using dual AI models
   const generateEnhancedForecast = useCallback(async () => {
-    setIsLoading(true);
+    setIsLoading(true)
     try {
       // Check AI models availability
-      const aiStatus = await fetch('/api/ai/status').then(r => r.json());
-      setAiModelsStatus(aiStatus.models || { openai: false, claude: false });
+      const aiStatus = await fetch('/api/ai/status').then(r => r.json())
+      setAiModelsStatus(aiStatus.models || { openai: false, claude: false })
 
       // Generate forecast with current parameters
       const response = await fetch('/api/forecasting/enhanced', {
@@ -55,57 +76,58 @@ const EnhancedForecasting = () => {
             currentInventory: 12500,
             productionCapacity: 15000,
             marketConditions: 'stable',
-            economicIndicators: 'positive'
-          }
-        })
-      });
+            economicIndicators: 'positive',
+          },
+        }),
+      })
 
       if (!response.ok) {
-        throw new Error(`Forecast generation failed: ${response.statusText}`);
+        throw new Error(`Forecast generation failed: ${response.statusText}`)
       }
 
-      const data = await response.json();
-      setForecastData(data);
-
+      const data = await response.json()
+      setForecastData(data)
     } catch (error) {
-      console.error('Enhanced forecast generation failed:', error);
-      setForecastData(null); // Set null on error
+      console.error('Enhanced forecast generation failed:', error)
+      setForecastData(null) // Set null on error
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  }, [forecastHorizon]);
+  }, [forecastHorizon])
 
   // Auto-generate forecast on component mount and horizon change
   useEffect(() => {
-    generateEnhancedForecast();
-  }, [generateEnhancedForecast]);
+    generateEnhancedForecast()
+  }, [generateEnhancedForecast])
 
   // Format chart data based on selected scenario
   const getChartData = () => {
-    if (!forecastData?.analytics?.scenarios?.scenarios) return [];
+    if (!forecastData?.analytics?.scenarios?.scenarios) return []
 
-    const scenarioData = forecastData.analytics.scenarios.scenarios[selectedScenario];
-    return scenarioData?.slice(0, Math.min(90, scenarioData.length)).map(point => ({
-      day: point.day,
-      date: point.date,
-      value: point.value,
-      confidence: point.confidence * 100
-    })) || [];
-  };
+    const scenarioData = forecastData.analytics.scenarios.scenarios[selectedScenario]
+    return (
+      scenarioData?.slice(0, Math.min(90, scenarioData.length)).map(point => ({
+        day: point.day,
+        date: point.date,
+        value: point.value,
+        confidence: point.confidence * 100,
+      })) || []
+    )
+  }
 
   // Get confidence color based on value
-  const getConfidenceColor = (confidence) => {
-    if (confidence >= 0.85) return 'text-green-600';
-    if (confidence >= 0.75) return 'text-yellow-600';
-    return 'text-red-600';
-  };
+  const getConfidenceColor = confidence => {
+    if (confidence >= 0.85) return 'text-green-600'
+    if (confidence >= 0.75) return 'text-yellow-600'
+    return 'text-red-600'
+  }
 
   // Format large numbers
-  const formatNumber = (num) => {
-    if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
-    if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
-    return num?.toLocaleString() || '0';
-  };
+  const formatNumber = num => {
+    if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`
+    if (num >= 1000) return `${(num / 1000).toFixed(1)}K`
+    return num?.toLocaleString() || '0'
+  }
 
   if (isLoading) {
     return (
@@ -115,7 +137,7 @@ const EnhancedForecasting = () => {
           <p className="text-gray-600">Generating enhanced AI forecast...</p>
         </div>
       </div>
-    );
+    )
   }
 
   return (
@@ -129,11 +151,17 @@ const EnhancedForecasting = () => {
 
         {/* AI Models Status */}
         <div className="flex gap-2">
-          <Badge variant={aiModelsStatus.openai ? "success" : "secondary"} className="flex items-center gap-1">
+          <Badge
+            variant={aiModelsStatus.openai ? 'success' : 'secondary'}
+            className="flex items-center gap-1"
+          >
             <Brain className="w-3 h-3" />
             OpenAI {aiModelsStatus.openai ? 'Online' : 'Offline'}
           </Badge>
-          <Badge variant={aiModelsStatus.claude ? "success" : "secondary"} className="flex items-center gap-1">
+          <Badge
+            variant={aiModelsStatus.claude ? 'success' : 'secondary'}
+            className="flex items-center gap-1"
+          >
             <Zap className="w-3 h-3" />
             Claude {aiModelsStatus.claude ? 'Online' : 'Offline'}
           </Badge>
@@ -156,7 +184,7 @@ const EnhancedForecasting = () => {
               {horizonOptions.map(option => (
                 <Button
                   key={option.value}
-                  variant={forecastHorizon === option.value ? "default" : "outline"}
+                  variant={forecastHorizon === option.value ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => setForecastHorizon(option.value)}
                   className="flex items-center gap-1"
@@ -192,8 +220,12 @@ const EnhancedForecasting = () => {
                   <Target className="w-5 h-5 text-green-600" />
                   <div>
                     <p className="text-sm text-gray-600">Accuracy</p>
-                    <p className={`text-xl font-bold ${getConfidenceColor(forecastData.forecast.confidence)}`}>
-                      {forecastData.forecast.accuracy || Math.round(forecastData.forecast.confidence * 100)}%
+                    <p
+                      className={`text-xl font-bold ${getConfidenceColor(forecastData.forecast.confidence)}`}
+                    >
+                      {forecastData.forecast.accuracy ||
+                        Math.round(forecastData.forecast.confidence * 100)}
+                      %
                     </p>
                   </div>
                 </div>
@@ -224,10 +256,15 @@ const EnhancedForecasting = () => {
                   )}
                   <div>
                     <p className="text-sm text-gray-600">Trend</p>
-                    <p className={`text-xl font-bold ${
-                      forecastData.analytics.trendAnalysis.direction === 'growth' ? 'text-green-600' : 'text-red-600'
-                    }`}>
-                      {forecastData.analytics.trendAnalysis.rate > 0 ? '+' : ''}{forecastData.analytics.trendAnalysis.rate}%
+                    <p
+                      className={`text-xl font-bold ${
+                        forecastData.analytics.trendAnalysis.direction === 'growth'
+                          ? 'text-green-600'
+                          : 'text-red-600'
+                      }`}
+                    >
+                      {forecastData.analytics.trendAnalysis.rate > 0 ? '+' : ''}
+                      {forecastData.analytics.trendAnalysis.rate}%
                     </p>
                   </div>
                 </div>
@@ -256,7 +293,7 @@ const EnhancedForecasting = () => {
                   {scenarioOptions.map(scenario => (
                     <Button
                       key={scenario.value}
-                      variant={selectedScenario === scenario.value ? "default" : "outline"}
+                      variant={selectedScenario === scenario.value ? 'default' : 'outline'}
                       size="sm"
                       onClick={() => setSelectedScenario(scenario.value)}
                       className="flex items-center gap-1"
@@ -272,17 +309,11 @@ const EnhancedForecasting = () => {
               <ResponsiveContainer width="100%" height={400}>
                 <AreaChart data={getChartData()}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis
-                    dataKey="day"
-                    tick={{ fontSize: 12 }}
-                  />
-                  <YAxis
-                    tick={{ fontSize: 12 }}
-                    tickFormatter={(value) => formatNumber(value)}
-                  />
+                  <XAxis dataKey="day" tick={{ fontSize: 12 }} />
+                  <YAxis tick={{ fontSize: 12 }} tickFormatter={value => formatNumber(value)} />
                   <Tooltip
                     formatter={(value, name) => [formatNumber(value), name]}
-                    labelFormatter={(label) => `Day ${label}`}
+                    labelFormatter={label => `Day ${label}`}
                   />
                   <Area
                     type="monotone"
@@ -293,8 +324,8 @@ const EnhancedForecasting = () => {
                   />
                   <defs>
                     <linearGradient id="colorGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.3}/>
-                      <stop offset="95%" stopColor="#3B82F6" stopOpacity={0.1}/>
+                      <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#3B82F6" stopOpacity={0.1} />
                     </linearGradient>
                   </defs>
                 </AreaChart>
@@ -316,13 +347,23 @@ const EnhancedForecasting = () => {
                 <div className="space-y-3">
                   {forecastData.analytics.insights?.map((insight, index) => (
                     <div key={index} className="flex gap-3 p-3 bg-gray-50 rounded-lg">
-                      {insight.type === 'opportunity' && <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5" />}
-                      {insight.type === 'risk' && <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5" />}
-                      {insight.type === 'pattern' && <BarChart3 className="w-5 h-5 text-blue-600 mt-0.5" />}
+                      {insight.type === 'opportunity' && (
+                        <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5" />
+                      )}
+                      {insight.type === 'risk' && (
+                        <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5" />
+                      )}
+                      {insight.type === 'pattern' && (
+                        <BarChart3 className="w-5 h-5 text-blue-600 mt-0.5" />
+                      )}
                       <div>
                         <p className="font-medium text-sm">{insight.message}</p>
                         <p className="text-xs text-gray-600 mt-1">{insight.action}</p>
-                        <Badge size="sm" variant={insight.priority === 'high' ? 'destructive' : 'secondary'} className="mt-1">
+                        <Badge
+                          size="sm"
+                          variant={insight.priority === 'high' ? 'destructive' : 'secondary'}
+                          className="mt-1"
+                        >
                           {insight.priority} priority
                         </Badge>
                       </div>
@@ -346,7 +387,10 @@ const EnhancedForecasting = () => {
                     <div key={index} className="p-3 border rounded-lg">
                       <div className="flex items-center justify-between mb-2">
                         <h4 className="font-medium text-sm">{rec.title}</h4>
-                        <Badge variant={rec.priority === 'high' ? 'destructive' : 'secondary'} size="sm">
+                        <Badge
+                          variant={rec.priority === 'high' ? 'destructive' : 'secondary'}
+                          size="sm"
+                        >
                           {rec.impact} impact
                         </Badge>
                       </div>
@@ -389,7 +433,9 @@ const EnhancedForecasting = () => {
                 <div className="text-center p-4 bg-green-50 rounded-lg">
                   <h4 className="font-medium text-green-900">Ensemble Accuracy</h4>
                   <p className="text-2xl font-bold text-green-600">
-                    {forecastData.forecast.accuracy || Math.round(forecastData.forecast.confidence * 100)}%
+                    {forecastData.forecast.accuracy ||
+                      Math.round(forecastData.forecast.confidence * 100)}
+                    %
                   </p>
                   <p className="text-sm text-green-700">Target: 88%+</p>
                 </div>
@@ -399,8 +445,7 @@ const EnhancedForecasting = () => {
         </>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default EnhancedForecasting;
-
+export default EnhancedForecasting

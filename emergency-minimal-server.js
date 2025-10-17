@@ -1,31 +1,31 @@
 /**
  * ULTRA-MINIMAL EMERGENCY SERVER
- * 
+ *
  * This server bypasses ALL complex dependencies and serves a working
  * authentication interface immediately for client demonstration.
- * 
+ *
  * NO CLERK, NO COMPLEX DEPENDENCIES - JUST WORKING AUTH
  */
 
-const express = require('express');
-const path = require('path');
-const fs = require('fs');
+const express = require('express')
+const path = require('path')
+const fs = require('fs')
 
-const app = express();
-const PORT = process.env.PORT || 3000;
+const app = express()
+const PORT = process.env.PORT || 3000
 
 // Middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(express.static('dist'));
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+app.use(express.static('dist'))
 
 // In-memory user store for demo
-const users = new Map();
-const sessions = new Map();
+const users = new Map()
+const sessions = new Map()
 
 // Generate simple session token
 function generateToken() {
-  return Math.random().toString(36).substring(2) + Date.now().toString(36);
+  return Math.random().toString(36).substring(2) + Date.now().toString(36)
 }
 
 // Simple HTML templates
@@ -112,7 +112,7 @@ const loginHTML = `
     </script>
 </body>
 </html>
-`;
+`
 
 const dashboardHTML = `
 <!DOCTYPE html>
@@ -258,24 +258,24 @@ const dashboardHTML = `
     </script>
 </body>
 </html>
-`;
+`
 
 // Routes
 app.get('/', (req, res) => {
-  res.redirect('/login');
-});
+  res.redirect('/login')
+})
 
 app.get('/login', (req, res) => {
-  res.send(loginHTML);
-});
+  res.send(loginHTML)
+})
 
 app.get('/signup', (req, res) => {
-  res.send(loginHTML.replace('Sign In', 'Sign Up').replace('/api/auth/login', '/api/auth/signup'));
-});
+  res.send(loginHTML.replace('Sign In', 'Sign Up').replace('/api/auth/login', '/api/auth/signup'))
+})
 
 app.get('/dashboard', (req, res) => {
-  res.send(dashboardHTML);
-});
+  res.send(dashboardHTML)
+})
 
 app.get('/health', (req, res) => {
   res.json({
@@ -284,74 +284,74 @@ app.get('/health', (req, res) => {
     server: 'sentia-manufacturing-emergency',
     environment: process.env.NODE_ENV || 'emergency',
     render: true,
-    version: '1.0.0-emergency'
-  });
-});
+    version: '1.0.0-emergency',
+  })
+})
 
 // Auth API
 app.post('/api/auth/login', (req, res) => {
-  const { email, password } = req.body;
-  
+  const { email, password } = req.body
+
   // Demo authentication
   if (email === 'admin@sentia.com' && password === 'admin123') {
-    const token = generateToken();
-    sessions.set(token, { email, loginTime: Date.now() });
-    
+    const token = generateToken()
+    sessions.set(token, { email, loginTime: Date.now() })
+
     res.json({
       success: true,
       token,
-      user: { email, name: 'Admin User' }
-    });
+      user: { email, name: 'Admin User' },
+    })
   } else {
     res.status(401).json({
       success: false,
-      message: 'Invalid credentials. Use admin@sentia.com / admin123'
-    });
+      message: 'Invalid credentials. Use admin@sentia.com / admin123',
+    })
   }
-});
+})
 
 app.post('/api/auth/signup', (req, res) => {
-  const { email, password } = req.body;
-  
+  const { email, password } = req.body
+
   if (users.has(email)) {
     return res.status(400).json({
       success: false,
-      message: 'User already exists'
-    });
+      message: 'User already exists',
+    })
   }
-  
-  users.set(email, { password, createdAt: Date.now() });
-  const token = generateToken();
-  sessions.set(token, { email, loginTime: Date.now() });
-  
+
+  users.set(email, { password, createdAt: Date.now() })
+  const token = generateToken()
+  sessions.set(token, { email, loginTime: Date.now() })
+
   res.json({
     success: true,
     token,
-    user: { email, name: 'New User' }
-  });
-});
+    user: { email, name: 'New User' },
+  })
+})
 
 // Catch all route
 app.get('*', (req, res) => {
-  res.redirect('/dashboard');
-});
+  res.redirect('/dashboard')
+})
 
 // Error handling
 app.use((err, req, res, next) => {
-  console.error('Server error:', err);
+  console.error('Server error:', err)
   res.status(500).json({
     error: 'Internal server error',
-    message: err.message
-  });
-});
+    message: err.message,
+  })
+})
 
 // Start server
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`🚀 EMERGENCY SERVER RUNNING ON PORT ${PORT}`);
-  console.log(`🔗 Access at: http://localhost:${PORT}`);
-  console.log(`📊 Health check: http://localhost:${PORT}/health`);
-  console.log(`🔐 Demo login: admin@sentia.com / admin123`);
-  console.log(`⚡ Emergency mode - bypassing all complex dependencies`);
-});
+  console.log(`🚀 EMERGENCY SERVER RUNNING ON PORT ${PORT}`)
+  console.log(`🔗 Access at: http://localhost:${PORT}`)
+  console.log(`📊 Health check: http://localhost:${PORT}/health`)
+  console.log(`🔐 Demo login: admin@sentia.com / admin123`)
+  console.log(`⚡ Emergency mode - bypassing all complex dependencies`)
+})
 
-module.exports = app;
+module.exports = app

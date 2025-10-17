@@ -6,10 +6,10 @@ export function useAuth() {
   // Simply redirect to the environment-aware hook
   const auth = useEnvironmentAuth()
   const { user } = useEnvironmentUser()
-  
+
   return {
     ...auth,
     user,
-    mode: import.meta.env.VITE_DEVELOPMENT_MODE === 'true' ? 'development' : 'clerk'
+    mode: import.meta.env.VITE_DEVELOPMENT_MODE === 'true' ? 'development' : 'clerk',
   }
 }

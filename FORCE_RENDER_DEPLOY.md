@@ -1,11 +1,13 @@
 # 🔥 FORCE RENDER TO USE CORRECT CODE
 
 ## The Problem
+
 You're seeing an OLD cached "Railway Deployment Working!" page that doesn't exist in current code.
 
 ## IMMEDIATE ACTIONS IN RENDER DASHBOARD:
 
 ### Step 1: Clear Everything
+
 1. Go to your service `sentia-manufacturing-development`
 2. Go to **Settings** tab
 3. Scroll down to **Build & Deploy** section
@@ -13,9 +15,11 @@ You're seeing an OLD cached "Railway Deployment Working!" page that doesn't exis
 5. Wait for it to rebuild completely
 
 ### Step 2: Verify Correct Settings
+
 While it's rebuilding, check these settings:
 
 #### In Settings Tab:
+
 - **Build Command**:
   ```
   npm ci --legacy-peer-deps && npm run build && npx prisma generate && npx prisma migrate deploy || npx prisma db push
@@ -27,12 +31,15 @@ While it's rebuilding, check these settings:
   ⚠️ NOT `node app.js` or `node index.js` or anything else!
 
 #### In Environment Tab:
+
 - **DATABASE_URL**: Must be set to your Render PostgreSQL Internal URL
 - **PORT**: Should be 3000 (or not set, it will default to 3000)
 - **NODE_ENV**: development
 
 ### Step 3: Manual Override (if needed)
+
 If the start command shows something else:
+
 1. In **Settings** tab
 2. Find **Start Command** field
 3. Click **Edit**
@@ -40,6 +47,7 @@ If the start command shows something else:
 5. Click **Save Changes**
 
 ### Step 4: Force Redeploy
+
 1. Go to **Events** tab
 2. Click **"Trigger Deploy"**
 3. Select **"Clear build cache"** option
@@ -48,6 +56,7 @@ If the start command shows something else:
 ## What Should Happen:
 
 ### In the Build Logs:
+
 ```
 Building from GitHub commit...
 Running build command: npm ci --legacy-peer-deps && npm run build...
@@ -56,6 +65,7 @@ Running build command: npm ci --legacy-peer-deps && npm run build...
 ```
 
 ### In the Deploy Logs:
+
 ```
 ==> Running 'node server.js'
 [ROOT PRIORITY] Handling root request
@@ -64,6 +74,7 @@ Running build command: npm ci --legacy-peer-deps && npm run build...
 ```
 
 ### In Browser:
+
 - Your React app with Clerk login
 - NO "Railway Deployment Working!" message
 - NO port 5000 references
@@ -71,6 +82,7 @@ Running build command: npm ci --legacy-peer-deps && npm run build...
 ## If Still Not Working:
 
 ### Nuclear Option - Recreate Service:
+
 1. Note down all environment variables
 2. Delete the service
 3. Create new web service
@@ -79,9 +91,12 @@ Running build command: npm ci --legacy-peer-deps && npm run build...
 6. Deploy
 
 ## Verification URL:
+
 Once deployed, check:
+
 - https://sentia-manufacturing-development.onrender.com/ (should show React app)
 - https://sentia-manufacturing-development.onrender.com/health (should return JSON)
 
 ---
+
 **The old "Railway" message is cached - clearing cache is essential!**

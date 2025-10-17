@@ -5,17 +5,17 @@ import { Badge } from '@/components/ui/badge'
 const fetchSystemAlerts = async () => {
   const response = await fetch('/api/system/alerts', {
     headers: { 'Content-Type': 'application/json' },
-    credentials: 'include'
+    credentials: 'include',
   })
-  
+
   if (!response.ok) {
     throw new Error(`Failed to fetch alerts: ${response.status}`)
   }
-  
+
   return response.json()
 }
 
-const getSeverityVariant = (severity) => {
+const getSeverityVariant = severity => {
   switch (severity?.toLowerCase()) {
     case 'critical':
     case 'high':
@@ -31,7 +31,11 @@ const getSeverityVariant = (severity) => {
 }
 
 const AlertWidget = ({ limit = 5 }) => {
-  const { data: alerts, isLoading, error } = useQuery({
+  const {
+    data: alerts,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ['system-alerts', limit],
     queryFn: fetchSystemAlerts,
     staleTime: 1 * 60 * 1000, // 1 minute
@@ -46,7 +50,10 @@ const AlertWidget = ({ limit = 5 }) => {
         </CardHeader>
         <CardContent className="space-y-3 text-sm">
           {[...Array(3)].map((_, index) => (
-            <div key={index} className="animate-pulse rounded-lg border border-border bg-muted/30 p-3">
+            <div
+              key={index}
+              className="animate-pulse rounded-lg border border-border bg-muted/30 p-3"
+            >
               <div className="flex items-center justify-between mb-2">
                 <div className="h-4 w-3/4 bg-gray-300 rounded"></div>
                 <div className="h-5 w-16 bg-gray-300 rounded"></div>
@@ -73,8 +80,8 @@ const AlertWidget = ({ limit = 5 }) => {
     )
   }
 
-  const activeAlerts = alerts?.filter(alert => alert.isActive && !alert.isDismissed)
-                             ?.slice(0, limit) || []
+  const activeAlerts =
+    alerts?.filter(alert => alert.isActive && !alert.isDismissed)?.slice(0, limit) || []
 
   return (
     <Card>
@@ -83,13 +90,11 @@ const AlertWidget = ({ limit = 5 }) => {
       </CardHeader>
       <CardContent className="space-y-3 text-sm">
         {activeAlerts.length > 0 ? (
-          activeAlerts.map((alert) => (
+          activeAlerts.map(alert => (
             <div key={alert.id} className="rounded-lg border border-border bg-muted/30 p-3">
               <div className="flex items-center justify-between">
                 <p className="font-semibold text-foreground">{alert.title}</p>
-                <Badge variant={getSeverityVariant(alert.severity)}>
-                  {alert.severity}
-                </Badge>
+                <Badge variant={getSeverityVariant(alert.severity)}>{alert.severity}</Badge>
               </div>
               <p className="text-xs text-muted-foreground mt-1">{alert.description}</p>
               <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
@@ -98,11 +103,11 @@ const AlertWidget = ({ limit = 5 }) => {
                 <span>Category: {alert.category}</span>
                 <span>•</span>
                 <span>
-                  {new Date(alert.createdAt).toLocaleDateString('en-US', { 
-                    month: 'short', 
+                  {new Date(alert.createdAt).toLocaleDateString('en-US', {
+                    month: 'short',
                     day: 'numeric',
                     hour: '2-digit',
-                    minute: '2-digit'
+                    minute: '2-digit',
                   })}
                 </span>
               </div>

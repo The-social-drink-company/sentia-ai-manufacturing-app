@@ -5,6 +5,7 @@ Welcome to the Sentia Manufacturing Dashboard development team! This guide will 
 ## Day 1: Environment Setup
 
 ### Prerequisites Installation
+
 - [ ] Install Node.js v18+ (https://nodejs.org)
 - [ ] Install Git (https://git-scm.com)
 - [ ] Install VS Code (https://code.visualstudio.com)
@@ -12,6 +13,7 @@ Welcome to the Sentia Manufacturing Dashboard development team! This guide will 
 - [ ] Install PostgreSQL client tools
 
 ### Repository Access
+
 - [ ] GitHub repository access granted
 - [ ] Clone repository:
   ```bash
@@ -25,6 +27,7 @@ Welcome to the Sentia Manufacturing Dashboard development team! This guide will 
   ```
 
 ### Local Development Setup
+
 - [ ] Install dependencies:
   ```bash
   npm install --legacy-peer-deps
@@ -37,6 +40,7 @@ Welcome to the Sentia Manufacturing Dashboard development team! This guide will 
 - [ ] Configure `.env` file with provided credentials
 
 ### Verify Setup
+
 - [ ] Run development server:
   ```bash
   npm run dev
@@ -51,12 +55,14 @@ Welcome to the Sentia Manufacturing Dashboard development team! This guide will 
 ## Day 2: Codebase Familiarization
 
 ### Documentation Review
+
 - [ ] Read [ENTERPRISE_DEPLOYMENT_GUIDE.md](./ENTERPRISE_DEPLOYMENT_GUIDE.md)
 - [ ] Review [ENTERPRISE_GIT_WORKFLOW.md](./ENTERPRISE_GIT_WORKFLOW.md)
 - [ ] Study [CODE_REVIEW_GUIDELINES.md](./CODE_REVIEW_GUIDELINES.md)
 - [ ] Understand [CLAUDE.md](./CLAUDE.md) for AI assistant usage
 
 ### Architecture Understanding
+
 - [ ] Review project structure:
   ```
   src/           - Frontend React code
@@ -74,6 +80,7 @@ Welcome to the Sentia Manufacturing Dashboard development team! This guide will 
   - Deployment: Render platform
 
 ### Key Components
+
 - [ ] Dashboard system (`src/pages/Dashboard.jsx`)
 - [ ] Authentication (`src/components/auth/`)
 - [ ] API integration (`services/api/`)
@@ -82,6 +89,7 @@ Welcome to the Sentia Manufacturing Dashboard development team! This guide will 
 ## Day 3: Development Workflow
 
 ### Branch Management
+
 - [ ] Understand branch structure:
   - `development` - Active development
   - `test` - UAT environment
@@ -92,6 +100,7 @@ Welcome to the Sentia Manufacturing Dashboard development team! This guide will 
   ```
 
 ### Commit Standards
+
 - [ ] Learn conventional commits:
   ```bash
   feat: new feature
@@ -105,6 +114,7 @@ Welcome to the Sentia Manufacturing Dashboard development team! This guide will 
   ```
 
 ### Code Review Process
+
 - [ ] Review PR template (`.github/pull_request_template.md`)
 - [ ] Understand approval requirements:
   - Dev→Dev: 1 approval
@@ -114,6 +124,7 @@ Welcome to the Sentia Manufacturing Dashboard development team! This guide will 
 ## Day 4: Tools & Services
 
 ### Render Platform
+
 - [ ] Get Render dashboard access
 - [ ] Understand services:
   - Development environment
@@ -123,6 +134,7 @@ Welcome to the Sentia Manufacturing Dashboard development team! This guide will 
 - [ ] Learn to check logs and metrics
 
 ### External Services
+
 - [ ] Understand API integrations:
   - Clerk (Authentication)
   - Xero (Accounting)
@@ -131,6 +143,7 @@ Welcome to the Sentia Manufacturing Dashboard development team! This guide will 
 - [ ] Review API documentation in `context/api-documentation/`
 
 ### Monitoring Tools
+
 - [ ] Learn health check endpoints
 - [ ] Practice using monitoring scripts:
   ```bash
@@ -140,6 +153,7 @@ Welcome to the Sentia Manufacturing Dashboard development team! This guide will 
 ## Day 5: First Contribution
 
 ### Starter Task
+
 - [ ] Assigned first "good first issue"
 - [ ] Create feature branch
 - [ ] Implement solution
@@ -147,12 +161,14 @@ Welcome to the Sentia Manufacturing Dashboard development team! This guide will 
 - [ ] Update documentation
 
 ### First Pull Request
+
 - [ ] Complete PR template
 - [ ] Request code review
 - [ ] Address review feedback
 - [ ] Get approval and merge
 
 ### Deployment Process
+
 - [ ] Watch promotion to test environment
 - [ ] Participate in UAT verification
 - [ ] Observe production deployment
@@ -160,6 +176,7 @@ Welcome to the Sentia Manufacturing Dashboard development team! This guide will 
 ## Week 2: Advanced Topics
 
 ### Database Operations
+
 - [ ] Understand Prisma schema
 - [ ] Learn migration process:
   ```bash
@@ -169,16 +186,19 @@ Welcome to the Sentia Manufacturing Dashboard development team! This guide will 
 - [ ] Practice database queries
 
 ### AI Integration
+
 - [ ] Understand MCP server architecture
 - [ ] Review AI tools and capabilities
 - [ ] Test AI features locally
 
 ### Performance Optimization
+
 - [ ] Learn React performance patterns
 - [ ] Understand database indexing
 - [ ] Review bundle optimization
 
 ### Security Practices
+
 - [ ] Complete security training
 - [ ] Run security audit:
   ```bash
@@ -189,6 +209,7 @@ Welcome to the Sentia Manufacturing Dashboard development team! This guide will 
 ## Week 3: Emergency Procedures
 
 ### Hotfix Process
+
 - [ ] Review hotfix workflow
 - [ ] Practice creating hotfix:
   ```bash
@@ -197,6 +218,7 @@ Welcome to the Sentia Manufacturing Dashboard development team! This guide will 
 - [ ] Understand rollback procedures
 
 ### Incident Response
+
 - [ ] Learn incident severity levels
 - [ ] Review escalation process
 - [ ] Understand on-call responsibilities
@@ -204,6 +226,7 @@ Welcome to the Sentia Manufacturing Dashboard development team! This guide will 
 ## Week 4: Full Cycle
 
 ### Complete Feature Development
+
 - [ ] Take ownership of a feature
 - [ ] Design and implement solution
 - [ ] Write comprehensive tests
@@ -211,6 +234,7 @@ Welcome to the Sentia Manufacturing Dashboard development team! This guide will 
 - [ ] Deploy through all environments
 
 ### Code Review Participation
+
 - [ ] Review other developers' PRs
 - [ ] Provide constructive feedback
 - [ ] Learn from review comments
@@ -218,12 +242,14 @@ Welcome to the Sentia Manufacturing Dashboard development team! This guide will 
 ## Resources & Support
 
 ### Documentation
+
 - [Technical Specifications](./context/technical-specifications/)
 - [Business Requirements](./context/business-requirements/)
 - [API Documentation](./context/api-documentation/)
 - [UI Components Guide](./context/ui-components/)
 
 ### Communication Channels
+
 - **Slack Channels**:
   - #dev-general - General development
   - #dev-help - Get help
@@ -231,28 +257,32 @@ Welcome to the Sentia Manufacturing Dashboard development team! This guide will 
   - #incidents - Production issues
 
 ### Key Contacts
-| Role | Name | Contact | For |
-|------|------|---------|-----|
-| Tech Lead | [Name] | [Email] | Architecture, code reviews |
-| DevOps Lead | [Name] | [Email] | Infrastructure, deployments |
-| Product Owner | [Name] | [Email] | Requirements, priorities |
-| Mentor | [Assigned] | [Email] | Daily guidance |
+
+| Role          | Name       | Contact | For                         |
+| ------------- | ---------- | ------- | --------------------------- |
+| Tech Lead     | [Name]     | [Email] | Architecture, code reviews  |
+| DevOps Lead   | [Name]     | [Email] | Infrastructure, deployments |
+| Product Owner | [Name]     | [Email] | Requirements, priorities    |
+| Mentor        | [Assigned] | [Email] | Daily guidance              |
 
 ## Learning Path
 
 ### Month 1: Foundation
+
 - Master development workflow
 - Understand codebase structure
 - Complete first features
 - Participate in code reviews
 
 ### Month 2: Proficiency
+
 - Lead feature development
 - Handle complex bugs
 - Optimize performance
 - Contribute to architecture
 
 ### Month 3: Expertise
+
 - Mentor new developers
 - Lead technical initiatives
 - Handle production issues
@@ -261,28 +291,31 @@ Welcome to the Sentia Manufacturing Dashboard development team! This guide will 
 ## Checklist Sign-off
 
 ### Developer
+
 - [ ] All Day 1-5 tasks completed
 - [ ] Environment fully functional
 - [ ] First PR merged
 - [ ] Access to all required services
 
-**Name**: _______________
-**Date**: _______________
-**Signature**: _______________
+**Name**: ******\_\_\_******
+**Date**: ******\_\_\_******
+**Signature**: ******\_\_\_******
 
 ### Mentor/Manager
+
 - [ ] Developer properly onboarded
 - [ ] All access granted
 - [ ] First tasks assigned
 - [ ] Ready for independent work
 
-**Name**: _______________
-**Date**: _______________
-**Signature**: _______________
+**Name**: ******\_\_\_******
+**Date**: ******\_\_\_******
+**Signature**: ******\_\_\_******
 
 ## Feedback
 
 Please provide feedback on this onboarding process:
+
 - What was helpful?
 - What was missing?
 - What could be improved?
@@ -293,4 +326,4 @@ Submit feedback to: [DevOps Lead Email]
 
 **Welcome to the team! We're excited to have you contribute to the Sentia Manufacturing Dashboard.**
 
-*Remember: Don't hesitate to ask questions. We're here to help you succeed!*
+_Remember: Don't hesitate to ask questions. We're here to help you succeed!_

@@ -1,6 +1,7 @@
 # Clerk Webhook Configuration Guide
 
 ## Overview
+
 Clerk webhooks allow your application to receive real-time notifications about authentication events (user created, updated, deleted, etc.).
 
 ---
@@ -11,11 +12,11 @@ Your application needs an endpoint to receive Clerk webhook events. Here's the w
 
 ### Webhook URLs for Clerk Dashboard
 
-| Environment | Webhook URL to Enter in Clerk |
-|------------|-------------------------------|
+| Environment     | Webhook URL to Enter in Clerk                                                         |
+| --------------- | ------------------------------------------------------------------------------------- |
 | **Development** | `https://sentia-manufacturing-dashboard-development.up.railway.app/api/clerk/webhook` |
-| **Testing** | `https://sentiatest.financeflo.ai/api/clerk/webhook` |
-| **Production** | `https://sentia-manufacturing-production.up.railway.app/api/clerk/webhook` |
+| **Testing**     | `https://sentiatest.financeflo.ai/api/clerk/webhook`                                  |
+| **Production**  | `https://sentia-manufacturing-production.up.railway.app/api/clerk/webhook`            |
 
 ---
 
@@ -27,10 +28,13 @@ Your application needs an endpoint to receive Clerk webhook events. Here's the w
 2. **Select your application**
 3. **Navigate to**: Webhooks → Create Endpoint
 4. **Enter the webhook URL**:
+
    ```
    https://sentia-manufacturing-dashboard-development.up.railway.app/api/clerk/webhook
    ```
+
    Or for testing:
+
    ```
    https://sentiatest.financeflo.ai/api/clerk/webhook
    ```
@@ -56,6 +60,7 @@ Your application needs an endpoint to receive Clerk webhook events. Here's the w
 1. **Switch to Production in Clerk Dashboard**
 2. **Navigate to**: Webhooks → Create Endpoint
 3. **Enter the production webhook URL**:
+
    ```
    https://sentia-manufacturing-production.up.railway.app/api/clerk/webhook
    ```
@@ -74,16 +79,19 @@ Your application needs an endpoint to receive Clerk webhook events. Here's the w
 ## Step 3: Add Webhook Secret to Railway Environment Variables
 
 ### Development Environment:
+
 ```env
 CLERK_WEBHOOK_SECRET=whsec_test_YOUR_ACTUAL_SECRET_FROM_CLERK
 ```
 
 ### Testing Environment:
+
 ```env
 CLERK_WEBHOOK_SECRET=whsec_test_YOUR_ACTUAL_SECRET_FROM_CLERK
 ```
 
 ### Production Environment:
+
 ```env
 CLERK_WEBHOOK_SECRET=whsec_live_YOUR_ACTUAL_PRODUCTION_SECRET_FROM_CLERK
 ```
@@ -96,81 +104,81 @@ Add this endpoint to your `server.js` or create a new file `api/clerk-webhook.js
 
 ```javascript
 // api/clerk-webhook.js
-import express from 'express';
-import { Webhook } from 'svix';
+import express from 'express'
+import { Webhook } from 'svix'
 
-const router = express.Router();
+const router = express.Router()
 
 // Clerk webhook handler
 router.post('/api/clerk/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
-  const webhookSecret = process.env.CLERK_WEBHOOK_SECRET;
+  const webhookSecret = process.env.CLERK_WEBHOOK_SECRET
 
   if (!webhookSecret) {
-    console.error('CLERK_WEBHOOK_SECRET not configured');
-    return res.status(500).json({ error: 'Webhook secret not configured' });
+    console.error('CLERK_WEBHOOK_SECRET not configured')
+    return res.status(500).json({ error: 'Webhook secret not configured' })
   }
 
   // Get headers
-  const svix_id = req.headers['svix-id'];
-  const svix_timestamp = req.headers['svix-timestamp'];
-  const svix_signature = req.headers['svix-signature'];
+  const svix_id = req.headers['svix-id']
+  const svix_timestamp = req.headers['svix-timestamp']
+  const svix_signature = req.headers['svix-signature']
 
   // Verify the webhook
-  const wh = new Webhook(webhookSecret);
-  let evt;
+  const wh = new Webhook(webhookSecret)
+  let evt
 
   try {
     evt = wh.verify(req.body, {
       'svix-id': svix_id,
       'svix-timestamp': svix_timestamp,
       'svix-signature': svix_signature,
-    });
+    })
   } catch (err) {
-    console.error('Webhook verification failed:', err);
-    return res.status(400).json({ error: 'Invalid signature' });
+    console.error('Webhook verification failed:', err)
+    return res.status(400).json({ error: 'Invalid signature' })
   }
 
   // Handle the webhook event
-  const eventType = evt.type;
-  console.log(`Received Clerk webhook: ${eventType}`);
+  const eventType = evt.type
+  console.log(`Received Clerk webhook: ${eventType}`)
 
   switch (eventType) {
     case 'user.created':
-      console.log('New user created:', evt.data.id);
+      console.log('New user created:', evt.data.id)
       // Add user to your database
       // await handleUserCreated(evt.data);
-      break;
+      break
 
     case 'user.updated':
-      console.log('User updated:', evt.data.id);
+      console.log('User updated:', evt.data.id)
       // Update user in your database
       // await handleUserUpdated(evt.data);
-      break;
+      break
 
     case 'user.deleted':
-      console.log('User deleted:', evt.data.id);
+      console.log('User deleted:', evt.data.id)
       // Remove user from your database
       // await handleUserDeleted(evt.data.id);
-      break;
+      break
 
     case 'session.created':
-      console.log('Session created for user:', evt.data.user_id);
+      console.log('Session created for user:', evt.data.user_id)
       // Log session creation
-      break;
+      break
 
     case 'session.ended':
-      console.log('Session ended for user:', evt.data.user_id);
+      console.log('Session ended for user:', evt.data.user_id)
       // Log session end
-      break;
+      break
 
     default:
-      console.log(`Unhandled webhook event: ${eventType}`);
+      console.log(`Unhandled webhook event: ${eventType}`)
   }
 
-  res.status(200).json({ received: true });
-});
+  res.status(200).json({ received: true })
+})
 
-export default router;
+export default router
 ```
 
 ---
@@ -188,6 +196,7 @@ npm install svix
 ## Step 6: Test the Webhook
 
 ### In Clerk Dashboard:
+
 1. Go to your webhook endpoint
 2. Click on "Test"
 3. Select an event type
@@ -195,6 +204,7 @@ npm install svix
 5. Check your Railway logs to see if the webhook was received
 
 ### Check Railway Logs:
+
 ```bash
 railway logs --service [your-service-id] | grep -i webhook
 ```
@@ -204,6 +214,7 @@ railway logs --service [your-service-id] | grep -i webhook
 ## Complete Environment Variable Example
 
 ### For Development/Testing:
+
 ```env
 # Clerk Authentication
 VITE_CLERK_PUBLISHABLE_KEY=pk_test_cHJvdWQtcGFuZ29saW4tNjcuY2xlcmsuYWNjb3VudHMuZGV2JA
@@ -212,6 +223,7 @@ CLERK_WEBHOOK_SECRET=whsec_test_1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6p
 ```
 
 ### For Production:
+
 ```env
 # Clerk Authentication
 VITE_CLERK_PUBLISHABLE_KEY=pk_live_your_production_publishable_key
@@ -224,18 +236,22 @@ CLERK_WEBHOOK_SECRET=whsec_live_your_production_webhook_secret
 ## Troubleshooting
 
 ### Issue: "Invalid signature" error
+
 - **Cause**: Webhook secret doesn't match
 - **Fix**: Copy the exact secret from Clerk dashboard, including the `whsec_` prefix
 
 ### Issue: 404 Not Found
+
 - **Cause**: Webhook endpoint not implemented
 - **Fix**: Add the webhook handler code to your application
 
 ### Issue: No events received
+
 - **Cause**: Webhook URL incorrect or service not deployed
 - **Fix**: Verify the URL is accessible and the service is running
 
 ### Issue: CLERK_WEBHOOK_SECRET not defined
+
 - **Cause**: Environment variable not set in Railway
 - **Fix**: Add the variable in Railway dashboard and redeploy
 
@@ -254,16 +270,19 @@ CLERK_WEBHOOK_SECRET=whsec_live_your_production_webhook_secret
 ## Quick Reference
 
 ### What You Need From Clerk:
+
 1. Create webhook endpoint in Clerk dashboard
 2. Copy the signing secret (starts with `whsec_`)
 3. Add it to Railway environment variables
 
 ### Webhook URL Format:
+
 ```
 https://[your-domain]/api/clerk/webhook
 ```
 
 ### Environment Variable Name:
+
 ```
 CLERK_WEBHOOK_SECRET=whsec_[test|live]_[your_secret]
 ```

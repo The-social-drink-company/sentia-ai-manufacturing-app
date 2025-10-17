@@ -1,4 +1,5 @@
 # Render Database Migration Guide
+
 ## Complete Migration from Neon to Render PostgreSQL
 
 ---
@@ -7,11 +8,11 @@
 
 You now have **THREE SEPARATE DATABASES** on Render:
 
-| Environment | Database Name | Service Name | Plan | Purpose |
-|------------|--------------|--------------|------|---------|
-| Development | `sentia-db-development` | `sentia-manufacturing-development` | Free | Active development |
-| Testing | `sentia-db-testing` | `sentia-manufacturing-testing` | Free | UAT testing |
-| Production | `sentia-db-production` | `sentia-manufacturing-production` | Starter ($7/mo) | Live operations |
+| Environment | Database Name           | Service Name                       | Plan            | Purpose            |
+| ----------- | ----------------------- | ---------------------------------- | --------------- | ------------------ |
+| Development | `sentia-db-development` | `sentia-manufacturing-development` | Free            | Active development |
+| Testing     | `sentia-db-testing`     | `sentia-manufacturing-testing`     | Free            | UAT testing        |
+| Production  | `sentia-db-production`  | `sentia-manufacturing-production`  | Starter ($7/mo) | Live operations    |
 
 ---
 
@@ -29,6 +30,7 @@ git push origin development
 ```
 
 Or create manually in Render Dashboard:
+
 1. Go to https://dashboard.render.com
 2. Click **New +** → **PostgreSQL**
 3. Create three databases with these exact names:
@@ -136,16 +138,19 @@ postgresql://user:password@dpg-xxxxx.oregon-postgres.render.com/database
 ### 1. Update `.env` Files
 
 **.env.development**
+
 ```env
 DATABASE_URL=postgresql://[from sentia-db-development external URL]
 ```
 
 **.env.test**
+
 ```env
 DATABASE_URL=postgresql://[from sentia-db-testing external URL]
 ```
 
 **.env.production**
+
 ```env
 DATABASE_URL=postgresql://[from sentia-db-production external URL]
 ```
@@ -153,6 +158,7 @@ DATABASE_URL=postgresql://[from sentia-db-production external URL]
 ### 2. Update Prisma Configuration
 
 **prisma/schema.prisma**
+
 ```prisma
 datasource db {
   provider = "postgresql"
@@ -164,6 +170,7 @@ datasource db {
 ### 3. Remove Neon References
 
 Remove from your code:
+
 - Any `@neondatabase` packages
 - Neon-specific connection pooling
 - References to `neon.tech` endpoints
@@ -175,6 +182,7 @@ Remove from your code:
 Create and run this script to set up all databases:
 
 **setup-render-databases.ps1**
+
 ```powershell
 # Setup all Render databases
 Write-Host "Setting up Render databases..." -ForegroundColor Cyan
@@ -203,18 +211,21 @@ foreach ($env in $environments) {
 ### For Each Environment, Verify:
 
 #### Development
+
 - [ ] `sentia-db-development` shows as "Available" in Render
 - [ ] Service connected to database (check Environment tab)
 - [ ] Tables created (run `npx prisma studio`)
 - [ ] Application connects successfully
 
 #### Testing
+
 - [ ] `sentia-db-testing` shows as "Available"
 - [ ] Service connected to database
 - [ ] Schema synchronized
 - [ ] Test data loaded (if needed)
 
 #### Production
+
 - [ ] `sentia-db-production` shows as "Available"
 - [ ] Using Starter plan (for backups)
 - [ ] Service connected to database
@@ -229,30 +240,30 @@ foreach ($env in $environments) {
 
 ```javascript
 // test-db-connection.js
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@prisma/client'
 
 const testConnection = async (envName, dbUrl) => {
-  process.env.DATABASE_URL = dbUrl;
-  const prisma = new PrismaClient();
+  process.env.DATABASE_URL = dbUrl
+  const prisma = new PrismaClient()
 
   try {
-    await prisma.$connect();
-    console.log(`✅ ${envName} database connected`);
+    await prisma.$connect()
+    console.log(`✅ ${envName} database connected`)
 
     // Test query
-    const userCount = await prisma.user.count();
-    console.log(`   Users: ${userCount}`);
+    const userCount = await prisma.user.count()
+    console.log(`   Users: ${userCount}`)
 
-    await prisma.$disconnect();
+    await prisma.$disconnect()
   } catch (error) {
-    console.error(`❌ ${envName} connection failed:`, error.message);
+    console.error(`❌ ${envName} connection failed:`, error.message)
   }
-};
+}
 
 // Test all environments
-testConnection('Development', 'your-dev-db-url');
-testConnection('Testing', 'your-test-db-url');
-testConnection('Production', 'your-prod-db-url');
+testConnection('Development', 'your-dev-db-url')
+testConnection('Testing', 'your-test-db-url')
+testConnection('Production', 'your-prod-db-url')
 ```
 
 ---
@@ -262,12 +273,14 @@ testConnection('Production', 'your-prod-db-url');
 ### Render Database Features
 
 #### Free Plan (Dev/Test)
+
 - 100MB storage
 - 1GB RAM
 - No backups
 - 90-day retention
 
 #### Starter Plan (Production)
+
 - 1GB storage
 - 256MB RAM
 - Daily backups
@@ -277,11 +290,13 @@ testConnection('Production', 'your-prod-db-url');
 ### Access Databases
 
 #### Via Render Dashboard
+
 1. Click on database service
 2. Go to **Info** tab
 3. Use **PSQL Command** to connect
 
 #### Via CLI
+
 ```bash
 # Connect to database
 psql "[External Database URL]"
@@ -298,21 +313,25 @@ SELECT * FROM pg_stat_activity;
 ## 🚨 IMPORTANT NOTES
 
 ### 1. Connection Strings
+
 - **Internal URLs**: Use for service-to-database connections (same region)
 - **External URLs**: Use for local development and external tools
 - Internal connections are faster and don't count against connection limits
 
 ### 2. Migration Timing
+
 - Migrate development first and test thoroughly
 - Then migrate testing environment
 - Finally migrate production during maintenance window
 
 ### 3. Connection Limits
+
 - Free plan: 97 connections
 - Starter plan: 97 connections
 - Use connection pooling in production
 
 ### 4. Backups
+
 - Free plan: No automatic backups
 - Starter plan: Daily automatic backups
 - Always backup before major changes
@@ -347,11 +366,13 @@ If issues occur:
 ## 📞 SUPPORT
 
 ### Render Database Issues
+
 - Check: https://status.render.com
 - Docs: https://render.com/docs/databases
 - Support: Dashboard → Help → Support
 
 ### Connection Issues
+
 1. Verify database is "Available" status
 2. Check region matches (must be same)
 3. Use Internal URL for services

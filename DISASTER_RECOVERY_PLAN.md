@@ -1,4 +1,5 @@
 # DISASTER RECOVERY & BUSINESS CONTINUITY PLAN
+
 ## Sentia Manufacturing Dashboard
 
 Version: 1.0.0
@@ -10,15 +11,18 @@ Classification: **CRITICAL**
 ## 1. EXECUTIVE SUMMARY
 
 ### Purpose
+
 This Disaster Recovery (DR) and Business Continuity Plan (BCP) ensures the Sentia Manufacturing Dashboard can recover from catastrophic events and maintain critical business operations within defined time objectives.
 
 ### Key Objectives
+
 - **Recovery Time Objective (RTO)**: < 4 hours for critical systems
 - **Recovery Point Objective (RPO)**: < 1 hour for data recovery
 - **Maximum Tolerable Downtime (MTD)**: 8 hours
 - **Work Recovery Time (WRT)**: 2 hours post-restoration
 
 ### Critical Success Factors
+
 - Automated backup validation every 6 hours
 - Multi-region failover capability
 - Real-time replication for critical data
@@ -30,26 +34,26 @@ This Disaster Recovery (DR) and Business Continuity Plan (BCP) ensures the Senti
 
 ### System Criticality Matrix
 
-| Component | Criticality | RTO | RPO | Business Impact |
-|-----------|------------|-----|-----|-----------------|
-| Production Database | Critical | 1 hour | 15 min | Complete operational halt |
-| Authentication Service | Critical | 30 min | Real-time | No user access |
-| API Gateway | Critical | 1 hour | N/A | No system functionality |
-| AI Forecasting Engine | High | 2 hours | 1 hour | Degraded analytics |
-| Frontend Application | High | 2 hours | N/A | No user interface |
-| Integration Services | Medium | 4 hours | 2 hours | Limited external data |
-| Reporting System | Medium | 6 hours | 4 hours | No reports generated |
-| Monitoring Services | Low | 8 hours | 6 hours | Reduced visibility |
+| Component              | Criticality | RTO     | RPO       | Business Impact           |
+| ---------------------- | ----------- | ------- | --------- | ------------------------- |
+| Production Database    | Critical    | 1 hour  | 15 min    | Complete operational halt |
+| Authentication Service | Critical    | 30 min  | Real-time | No user access            |
+| API Gateway            | Critical    | 1 hour  | N/A       | No system functionality   |
+| AI Forecasting Engine  | High        | 2 hours | 1 hour    | Degraded analytics        |
+| Frontend Application   | High        | 2 hours | N/A       | No user interface         |
+| Integration Services   | Medium      | 4 hours | 2 hours   | Limited external data     |
+| Reporting System       | Medium      | 6 hours | 4 hours   | No reports generated      |
+| Monitoring Services    | Low         | 8 hours | 6 hours   | Reduced visibility        |
 
 ### Financial Impact Assessment
 
 | Downtime Duration | Revenue Loss | Productivity Loss | Brand Impact | Total Impact |
-|------------------|--------------|-------------------|--------------|--------------|
-| 0-1 hour | $5,000 | $2,000 | Minimal | $7,000 |
-| 1-4 hours | $25,000 | $10,000 | Low | $35,000 |
-| 4-8 hours | $75,000 | $30,000 | Medium | $105,000 |
-| 8-24 hours | $200,000 | $100,000 | High | $300,000 |
-| >24 hours | $500,000+ | $250,000+ | Severe | $750,000+ |
+| ----------------- | ------------ | ----------------- | ------------ | ------------ |
+| 0-1 hour          | $5,000       | $2,000            | Minimal      | $7,000       |
+| 1-4 hours         | $25,000      | $10,000           | Low          | $35,000      |
+| 4-8 hours         | $75,000      | $30,000           | Medium       | $105,000     |
+| 8-24 hours        | $200,000     | $100,000          | High         | $300,000     |
+| >24 hours         | $500,000+    | $250,000+         | Severe       | $750,000+    |
 
 ---
 
@@ -58,6 +62,7 @@ This Disaster Recovery (DR) and Business Continuity Plan (BCP) ensures the Senti
 ### 3.1 Database Recovery
 
 #### Primary Strategy: Point-in-Time Recovery
+
 ```sql
 -- Neon PostgreSQL Recovery Commands
 -- 1. Identify recovery point
@@ -75,12 +80,14 @@ SELECT MAX(created_at) FROM audit_logs;
 ```
 
 #### Backup Schedule
+
 - **Continuous**: Transaction log streaming to S3
 - **Hourly**: Incremental backups
 - **Daily**: Full database snapshot at 02:00 UTC
 - **Weekly**: Archived backup to cold storage
 
 #### Backup Validation Script
+
 ```bash
 #!/bin/bash
 # backup-validation.sh
@@ -107,6 +114,7 @@ echo "Backup validation complete"
 ### 3.2 Application Recovery
 
 #### Railway Platform Recovery
+
 ```bash
 # 1. Check deployment status
 railway status --environment production
@@ -123,6 +131,7 @@ railway scale --replicas 5 --environment production
 ```
 
 #### Docker Container Recovery (Alternative)
+
 ```yaml
 # docker-compose.recovery.yml
 version: '3.8'
@@ -139,7 +148,7 @@ services:
       - NODE_ENV=recovery
       - DATABASE_URL=${BACKUP_DATABASE_URL}
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      test: ['CMD', 'curl', '-f', 'http://localhost:3000/health']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -148,6 +157,7 @@ services:
 ### 3.3 Data Recovery Procedures
 
 #### Critical Data Recovery Priority
+
 1. **User Authentication Data** (5 minutes)
 2. **Financial Transactions** (15 minutes)
 3. **Inventory Data** (30 minutes)
@@ -156,6 +166,7 @@ services:
 6. **Audit Logs** (90 minutes)
 
 #### Recovery Validation Checklist
+
 - [ ] Database connectivity verified
 - [ ] User authentication working
 - [ ] API endpoints responding
@@ -177,25 +188,26 @@ export const failoverConfig = {
     region: 'us-east-1',
     endpoint: 'https://sentiaprod.financeflo.ai',
     healthCheck: '/health',
-    threshold: 3 // failed checks before failover
+    threshold: 3, // failed checks before failover
   },
   secondary: {
     region: 'eu-west-1',
     endpoint: 'https://sentia-dr.financeflo.ai',
     healthCheck: '/health',
-    warmStandby: true
+    warmStandby: true,
   },
   monitoring: {
     interval: 30, // seconds
     timeout: 5, // seconds
-    alertChannels: ['slack', 'email', 'pagerduty']
-  }
-};
+    alertChannels: ['slack', 'email', 'pagerduty'],
+  },
+}
 ```
 
 ### 4.2 Manual Failover Process
 
 1. **Detection Phase** (0-5 minutes)
+
    ```bash
    # Check primary health
    curl -f https://sentiaprod.financeflo.ai/health || echo "Primary is down"
@@ -210,6 +222,7 @@ export const failoverConfig = {
    - Authorize failover
 
 3. **Execution Phase** (10-20 minutes)
+
    ```bash
    # Update DNS to point to secondary
    aws route53 change-resource-record-sets \
@@ -253,15 +266,16 @@ railway scale --replicas 2 --environment dr
 ### 5.1 Incident Communication Matrix
 
 | Severity | Internal Notification | Customer Notification | Public Statement |
-|----------|----------------------|----------------------|------------------|
-| Critical | Immediate | Within 15 minutes | Within 1 hour |
-| High | Within 15 minutes | Within 30 minutes | Within 2 hours |
-| Medium | Within 30 minutes | Within 1 hour | As needed |
-| Low | Within 1 hour | Next business day | Not required |
+| -------- | --------------------- | --------------------- | ---------------- |
+| Critical | Immediate             | Within 15 minutes     | Within 1 hour    |
+| High     | Within 15 minutes     | Within 30 minutes     | Within 2 hours   |
+| Medium   | Within 30 minutes     | Within 1 hour         | As needed        |
+| Low      | Within 1 hour         | Next business day     | Not required     |
 
 ### 5.2 Communication Templates
 
 #### Initial Incident Notification
+
 ```
 SUBJECT: [CRITICAL] System Incident - Sentia Manufacturing Dashboard
 
@@ -278,6 +292,7 @@ War Room: [Link/Location]
 ```
 
 #### Customer Communication
+
 ```
 Dear Valued Customer,
 
@@ -315,6 +330,7 @@ graph TD
 ### 6.1 Backup Strategy
 
 #### Multi-Tier Backup Architecture
+
 ```yaml
 backup_tiers:
   tier_1_hot:
@@ -391,6 +407,7 @@ curl -X POST $SLACK_WEBHOOK \
 ### 6.3 Restore Procedures
 
 #### Database Restore
+
 ```bash
 #!/bin/bash
 # restore-database.sh
@@ -428,16 +445,17 @@ echo "Restoration completed. Please verify application functionality."
 
 ### 7.1 DR Testing Schedule
 
-| Test Type | Frequency | Duration | Participants | Success Criteria |
-|-----------|-----------|----------|--------------|------------------|
-| Backup Validation | Daily | 30 min | Automated | 100% successful restoration |
-| Failover Test | Monthly | 2 hours | DevOps Team | RTO < 4 hours achieved |
-| Full DR Drill | Quarterly | 8 hours | All Teams | All objectives met |
-| Table-Top Exercise | Semi-Annual | 4 hours | Leadership | Process validation |
+| Test Type          | Frequency   | Duration | Participants | Success Criteria            |
+| ------------------ | ----------- | -------- | ------------ | --------------------------- |
+| Backup Validation  | Daily       | 30 min   | Automated    | 100% successful restoration |
+| Failover Test      | Monthly     | 2 hours  | DevOps Team  | RTO < 4 hours achieved      |
+| Full DR Drill      | Quarterly   | 8 hours  | All Teams    | All objectives met          |
+| Table-Top Exercise | Semi-Annual | 4 hours  | Leadership   | Process validation          |
 
 ### 7.2 Test Scenarios
 
 #### Scenario 1: Database Corruption
+
 ```bash
 # Simulate database corruption
 ./simulate-corruption.sh
@@ -450,6 +468,7 @@ echo "Restoration completed. Please verify application functionality."
 ```
 
 #### Scenario 2: Regional Outage
+
 ```bash
 # Simulate regional failure
 ./simulate-region-failure.sh us-east-1
@@ -462,6 +481,7 @@ echo "Restoration completed. Please verify application functionality."
 ```
 
 #### Scenario 3: Cyber Attack
+
 ```bash
 # Simulate ransomware
 ./simulate-ransomware.sh
@@ -479,18 +499,21 @@ echo "Restoration completed. Please verify application functionality."
 ### 7.3 Maintenance Procedures
 
 #### Weekly Maintenance
+
 - [ ] Verify backup completion
 - [ ] Test restore of random backup
 - [ ] Review monitoring alerts
 - [ ] Update contact information
 
 #### Monthly Maintenance
+
 - [ ] Full backup restoration test
 - [ ] Failover mechanism test
 - [ ] Update recovery documentation
 - [ ] Review and update RTO/RPO metrics
 
 #### Quarterly Maintenance
+
 - [ ] Complete DR drill
 - [ ] Update BIA (Business Impact Analysis)
 - [ ] Review vendor contracts
@@ -502,13 +525,13 @@ echo "Restoration completed. Please verify application functionality."
 
 ### 8.1 Critical Vendor Matrix
 
-| Vendor | Service | RTO SLA | Support Tier | Escalation Contact |
-|--------|---------|---------|--------------|-------------------|
-| Railway | Hosting Platform | 99.95% | Enterprise | support@railway.app |
-| Neon | PostgreSQL Database | 99.99% | Premium | enterprise@neon.tech |
-| AWS | S3 Backup Storage | 99.999% | Business | AWS Support Portal |
-| Cloudflare | CDN/DDoS Protection | 100% | Enterprise | enterprise@cloudflare.com |
-| PagerDuty | Incident Management | 99.99% | Business | support@pagerduty.com |
+| Vendor     | Service             | RTO SLA | Support Tier | Escalation Contact        |
+| ---------- | ------------------- | ------- | ------------ | ------------------------- |
+| Railway    | Hosting Platform    | 99.95%  | Enterprise   | support@railway.app       |
+| Neon       | PostgreSQL Database | 99.99%  | Premium      | enterprise@neon.tech      |
+| AWS        | S3 Backup Storage   | 99.999% | Business     | AWS Support Portal        |
+| Cloudflare | CDN/DDoS Protection | 100%    | Enterprise   | enterprise@cloudflare.com |
+| PagerDuty  | Incident Management | 99.99%  | Business     | support@pagerduty.com     |
 
 ### 8.2 Vendor Failure Contingencies
 
@@ -519,21 +542,21 @@ const vendorFallbacks = {
     primary: 'railway.app',
     fallback: 'aws-ecs',
     switchTime: '30 minutes',
-    dataSync: 'automatic'
+    dataSync: 'automatic',
   },
   neon: {
     primary: 'neon.tech',
     fallback: 'aws-rds',
     switchTime: '1 hour',
-    dataSync: 'replication'
+    dataSync: 'replication',
   },
   cloudflare: {
     primary: 'cloudflare.com',
     fallback: 'aws-cloudfront',
     switchTime: '15 minutes',
-    dataSync: 'not-required'
-  }
-};
+    dataSync: 'not-required',
+  },
+}
 ```
 
 ---
@@ -543,6 +566,7 @@ const vendorFallbacks = {
 ### 9.1 Security During Recovery
 
 #### Access Control During DR
+
 ```yaml
 dr_access_control:
   emergency_access:
@@ -595,13 +619,13 @@ iptables -L -n -v
 
 ### 10.1 Key Performance Indicators
 
-| Metric | Target | Current | Status |
-|--------|--------|---------|--------|
-| Mean Time to Detect (MTTD) | < 5 min | 3 min | ✅ |
-| Mean Time to Respond (MTTR) | < 30 min | 25 min | ✅ |
-| Recovery Success Rate | > 95% | 98% | ✅ |
-| Backup Success Rate | 100% | 99.9% | ⚠️ |
-| DR Test Success Rate | > 90% | 95% | ✅ |
+| Metric                      | Target   | Current | Status |
+| --------------------------- | -------- | ------- | ------ |
+| Mean Time to Detect (MTTD)  | < 5 min  | 3 min   | ✅     |
+| Mean Time to Respond (MTTR) | < 30 min | 25 min  | ✅     |
+| Recovery Success Rate       | > 95%    | 98%     | ✅     |
+| Backup Success Rate         | 100%     | 99.9%   | ⚠️     |
+| DR Test Success Rate        | > 90%    | 95%     | ✅     |
 
 ### 10.2 Recovery Dashboard
 
@@ -613,21 +637,21 @@ const RecoveryDashboard = {
     lastBackup: '2025-09-14T10:00:00Z',
     nextBackup: '2025-09-14T11:00:00Z',
     replicationLag: '0.5 seconds',
-    failoverReady: true
+    failoverReady: true,
   },
 
   historicalMetrics: {
     incidentsThisMonth: 2,
     averageRecoveryTime: '45 minutes',
     dataLossIncidents: 0,
-    successfulTests: 12
+    successfulTests: 12,
   },
 
   upcomingTests: [
-    {date: '2025-09-21', type: 'Failover Test'},
-    {date: '2025-10-01', type: 'Full DR Drill'}
-  ]
-};
+    { date: '2025-09-21', type: 'Failover Test' },
+    { date: '2025-10-01', type: 'Full DR Drill' },
+  ],
+}
 ```
 
 ---
@@ -636,16 +660,17 @@ const RecoveryDashboard = {
 
 ### Appendix A: Contact Information
 
-| Role | Name | Phone | Email | Backup Contact |
-|------|------|-------|-------|----------------|
-| Incident Commander | John Smith | +1-555-0100 | john@sentia.com | Sarah Jones |
-| CTO | Michael Brown | +1-555-0101 | cto@sentia.com | VP Engineering |
-| Security Lead | Emily Davis | +1-555-0102 | security@sentia.com | Security Team |
-| Database Admin | Robert Wilson | +1-555-0103 | dba@sentia.com | DevOps Team |
+| Role               | Name          | Phone       | Email               | Backup Contact |
+| ------------------ | ------------- | ----------- | ------------------- | -------------- |
+| Incident Commander | John Smith    | +1-555-0100 | john@sentia.com     | Sarah Jones    |
+| CTO                | Michael Brown | +1-555-0101 | cto@sentia.com      | VP Engineering |
+| Security Lead      | Emily Davis   | +1-555-0102 | security@sentia.com | Security Team  |
+| Database Admin     | Robert Wilson | +1-555-0103 | dba@sentia.com      | DevOps Team    |
 
 ### Appendix B: Recovery Checklists
 
 #### Pre-Recovery Checklist
+
 - [ ] Incident confirmed and classified
 - [ ] Stakeholders notified
 - [ ] War room established
@@ -653,6 +678,7 @@ const RecoveryDashboard = {
 - [ ] Backup availability verified
 
 #### During Recovery Checklist
+
 - [ ] Following documented procedures
 - [ ] Maintaining communication cadence
 - [ ] Documenting all actions
@@ -660,6 +686,7 @@ const RecoveryDashboard = {
 - [ ] Validating recovered data
 
 #### Post-Recovery Checklist
+
 - [ ] All services operational
 - [ ] Data integrity verified
 - [ ] Performance normal
@@ -669,6 +696,7 @@ const RecoveryDashboard = {
 ### Appendix C: Automation Scripts
 
 All DR automation scripts are available in the `/scripts/disaster-recovery/` directory:
+
 - `backup-automation.sh`
 - `failover-execution.sh`
 - `health-monitoring.sh`
@@ -678,6 +706,7 @@ All DR automation scripts are available in the `/scripts/disaster-recovery/` dir
 ### Appendix D: Regulatory Compliance
 
 This DR plan complies with:
+
 - ISO 22301 (Business Continuity Management)
 - SOC 2 Type II requirements
 - GDPR Article 32 (Security of Processing)
@@ -686,6 +715,7 @@ This DR plan complies with:
 ---
 
 **Document Control**:
+
 - **Version**: 1.0.0
 - **Classification**: Critical
 - **Last Updated**: 2025-09-14
@@ -695,4 +725,4 @@ This DR plan complies with:
 
 ---
 
-*This Disaster Recovery Plan is a living document and will be updated based on lessons learned from incidents and testing.*
+_This Disaster Recovery Plan is a living document and will be updated based on lessons learned from incidents and testing._

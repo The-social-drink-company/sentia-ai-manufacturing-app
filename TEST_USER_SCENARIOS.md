@@ -5,6 +5,7 @@
 ### Development Environment Users
 
 #### User 1: Admin User
+
 - **Email**: admin.dev@sentia-test.com
 - **Password**: AdminDev2025$ecure!
 - **Role**: Admin
@@ -17,6 +18,7 @@
   - All financial reports access
 
 #### User 2: Manager User
+
 - **Email**: manager.dev@sentia-test.com
 - **Password**: ManagerDev2025$ecure!
 - **Role**: Manager
@@ -29,6 +31,7 @@
   - Inventory optimization
 
 #### User 3: Operator User
+
 - **Email**: operator.dev@sentia-test.com
 - **Password**: OperatorDev2025$ecure!
 - **Role**: Operator
@@ -41,6 +44,7 @@
   - Downtime reporting
 
 #### User 4: Viewer User
+
 - **Email**: viewer.dev@sentia-test.com
 - **Password**: ViewerDev2025$ecure!
 - **Role**: Viewer (default)
@@ -54,12 +58,14 @@
 ### Production Environment Users
 
 #### User 1: Production Admin
+
 - **Email**: admin.prod@sentia-test.com
 - **Password**: AdminProd2025$ecure!
 - **Role**: Admin
 - **Purpose**: Production admin testing
 
 #### User 2: Production Manager
+
 - **Email**: manager.prod@sentia-test.com
 - **Password**: ManagerProd2025$ecure!
 - **Role**: Manager
@@ -68,6 +74,7 @@
 ## User Journey Test Scenarios
 
 ### Scenario 1: First-Time User Onboarding
+
 **User**: New Viewer
 **Duration**: 15 minutes
 
@@ -92,12 +99,14 @@
    - Export data (if permitted)
 
 **Success Criteria**:
+
 - Sign-up completed < 2 minutes
 - Dashboard loads < 3 seconds
 - All widgets display data
 - Navigation intuitive
 
 ### Scenario 2: Manager Daily Operations
+
 **User**: Manager Role
 **Duration**: 30 minutes
 
@@ -127,12 +136,14 @@
    - Approve schedule changes
 
 **Success Criteria**:
+
 - All financial data current
 - What-if calculations < 2 seconds
 - Changes persist after save
 - Reports export successfully
 
 ### Scenario 3: Operator Shift Activities
+
 **User**: Operator Role
 **Duration**: 20 minutes
 
@@ -161,12 +172,14 @@
    - Alert maintenance team
 
 **Success Criteria**:
+
 - Data entry < 30 seconds per item
 - Real-time updates visible
 - Validation prevents errors
 - Notifications sent immediately
 
 ### Scenario 4: Admin System Management
+
 **User**: Admin Role
 **Duration**: 45 minutes
 
@@ -197,12 +210,14 @@
    - Export compliance docs
 
 **Success Criteria**:
+
 - User creation < 1 minute
 - Import handles 10k+ records
 - All APIs show connected
 - Audit trail complete
 
 ### Scenario 5: Mobile User Access
+
 **User**: Any Role
 **Duration**: 10 minutes
 **Device**: Mobile Phone/Tablet
@@ -226,12 +241,14 @@
    - Emergency alerts
 
 **Success Criteria**:
+
 - Mobile layout responsive
 - Touch targets > 44px
 - Gestures work smoothly
 - Performance acceptable
 
 ### Scenario 6: Cross-Department Collaboration
+
 **Users**: Multiple Roles
 **Duration**: 60 minutes
 
@@ -260,6 +277,7 @@
    - Communicate decisions
 
 **Success Criteria**:
+
 - Real-time data sync
 - Notifications work
 - Version control maintained
@@ -268,18 +286,21 @@
 ## Performance Test Scenarios
 
 ### Load Testing
+
 - **Concurrent Users**: 50
 - **Actions per User**: 20
 - **Duration**: 30 minutes
 - **Success Metric**: <2s response time
 
 ### Stress Testing
+
 - **Concurrent Users**: 100+
 - **Heavy Operations**: Data imports, reports
 - **Duration**: 15 minutes
 - **Success Metric**: No crashes
 
 ### Endurance Testing
+
 - **Concurrent Users**: 25
 - **Duration**: 8 hours
 - **Success Metric**: No memory leaks
@@ -287,6 +308,7 @@
 ## Edge Case Scenarios
 
 ### Scenario A: Session Recovery
+
 1. User working on what-if analysis
 2. Browser crashes/network fails
 3. User returns to application
@@ -294,6 +316,7 @@
 5. Session should resume
 
 ### Scenario B: Concurrent Editing
+
 1. Two managers edit same data
 2. System detects conflict
 3. Shows merge options
@@ -301,6 +324,7 @@
 5. Logs conflict resolution
 
 ### Scenario C: API Failure Handling
+
 1. External service (Xero) fails
 2. System shows cached data
 3. Displays sync error badge
@@ -308,6 +332,7 @@
 5. Notifies when restored
 
 ### Scenario D: Large Data Operations
+
 1. Import 50,000+ records
 2. System chunks processing
 3. Shows progress indicator
@@ -317,6 +342,7 @@
 ## Authentication Edge Cases
 
 ### Password Reset Flow
+
 1. Click "Forgot Password"
 2. Enter email address
 3. Receive reset email
@@ -325,6 +351,7 @@
 6. Auto-login with new password
 
 ### Multi-Factor Authentication
+
 1. Enable MFA in settings
 2. Scan QR code
 3. Enter verification code
@@ -332,6 +359,7 @@
 5. Test login with MFA
 
 ### Single Sign-On (SSO)
+
 1. Click "Sign in with Google/Microsoft"
 2. Authenticate with provider
 3. Auto-create account if new
@@ -341,6 +369,7 @@
 ## Acceptance Criteria
 
 ### Must Pass
+
 - [ ] All user roles can sign in
 - [ ] Dashboard loads for all users
 - [ ] Role permissions enforced
@@ -349,6 +378,7 @@
 - [ ] Responsive on all devices
 
 ### Should Pass
+
 - [ ] Performance targets met
 - [ ] Error handling graceful
 - [ ] Offline mode works
@@ -356,6 +386,7 @@
 - [ ] Notifications delivered
 
 ### Nice to Have
+
 - [ ] Keyboard shortcuts work
 - [ ] Animations smooth
 - [ ] Tutorial helpful
@@ -365,24 +396,28 @@
 ## Test Data Requirements
 
 ### Financial Data
+
 - 12 months historical data
 - Current month transactions
 - Forecast next 6 months
 - Multiple currencies
 
 ### Inventory Data
+
 - 500+ SKUs
 - Multiple warehouses
 - Various stock levels
 - Movement history
 
 ### Production Data
+
 - 5 production lines
 - 100+ batches
 - Quality metrics
 - Downtime records
 
 ### User Data
+
 - 20+ test users
 - All role types
 - Various permissions

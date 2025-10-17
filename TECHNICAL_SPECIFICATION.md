@@ -1,5 +1,7 @@
 # SENTIA MANUFACTURING DASHBOARD - TECHNICAL SPECIFICATION
+
 ## Complete System Architecture & Implementation Details
+
 ### Version 1.0.10 | September 24, 2025
 
 ---
@@ -7,6 +9,7 @@
 ## QUICK START GUIDE FOR DEVELOPERS
 
 ### Local Development Setup
+
 ```bash
 # 1. Clone repository
 git clone https://github.com/The-social-drink-company/sentia-manufacturing-dashboard.git
@@ -33,37 +36,39 @@ npm run dev
 ## COMPLETE FEATURE INVENTORY
 
 ### 📊 DASHBOARDS (5 Variations)
+
 ```javascript
 const dashboards = {
   '/dashboard': {
     name: 'Main Dashboard',
     components: ['KPIStrip', 'GridLayout', 'Charts', 'Widgets'],
-    features: ['Real-time updates', 'Drag-drop layout', 'Export data']
+    features: ['Real-time updates', 'Drag-drop layout', 'Export data'],
   },
   '/dashboard/enhanced': {
     name: 'Enhanced Dashboard',
     components: ['AdvancedGrid', 'SSEIntegration', 'CustomWidgets'],
-    features: ['Server-sent events', 'Advanced filtering', 'Custom KPIs']
+    features: ['Server-sent events', 'Advanced filtering', 'Custom KPIs'],
   },
   '/dashboard/enterprise': {
     name: 'Enterprise Dashboard',
     components: ['RoleBasedWidgets', 'MultiTenant', 'Analytics'],
-    features: ['Role-based access', 'Department views', 'Drill-down']
+    features: ['Role-based access', 'Department views', 'Drill-down'],
   },
   '/dashboard/world-class': {
     name: 'World-Class Dashboard',
     components: ['AI_Insights', '3D_Visualizations', 'Predictive'],
-    features: ['AI recommendations', '3D charts', 'Forecasting']
+    features: ['AI recommendations', '3D charts', 'Forecasting'],
   },
   '/dashboard/simple': {
     name: 'Simple Dashboard',
     components: ['BasicKPIs', 'SimpleCharts'],
-    features: ['Lightweight', 'Mobile-optimized', 'Fast loading']
-  }
+    features: ['Lightweight', 'Mobile-optimized', 'Fast loading'],
+  },
 }
 ```
 
 ### 💰 FINANCIAL MANAGEMENT (7 Pages)
+
 ```javascript
 const financialPages = {
   '/working-capital': {
@@ -71,64 +76,68 @@ const financialPages = {
       'Current working capital metrics',
       'Cash Conversion Cycle tracking',
       'Accounts receivable/payable',
-      'Inventory turnover analysis'
-    ]
+      'Inventory turnover analysis',
+    ],
   },
-  '/cash-runway': {  // NEW
+  '/cash-runway': {
+    // NEW
     features: [
       'Visual cash depletion timeline',
       '30/60/90/120/180 day coverage',
       'Burn rate calculator',
       'Expense breakdown',
-      'Scenario modeling with sliders'
-    ]
+      'Scenario modeling with sliders',
+    ],
   },
-  '/funding-calculator': {  // NEW
+  '/funding-calculator': {
+    // NEW
     features: [
       'Sustain/Growth/Aggressive scenarios',
       'Unit economics (LTV/CAC)',
       'Growth funding requirements',
       'Funding mix optimization',
-      '24-month projections'
-    ]
+      '24-month projections',
+    ],
   },
-  '/working-capital-optimizer': {  // NEW
+  '/working-capital-optimizer': {
+    // NEW
     features: [
       'Interactive DSO/DPO/DIO controls',
       'Industry benchmarking',
       'Cash impact visualization',
       'Optimization recommendations',
-      'Action items by priority'
-    ]
+      'Action items by priority',
+    ],
   },
   '/what-if': {
     features: [
       'Scenario planning',
       'Sensitivity analysis',
       'Monte Carlo simulation',
-      'Risk assessment'
-    ]
+      'Risk assessment',
+    ],
   },
   '/analytics': {
     features: [
       'Financial reports',
       'Custom report builder',
       'Export to Excel/PDF',
-      'Scheduled reports'
-    ]
+      'Scheduled reports',
+    ],
   },
   '/ai-insights': {
     features: [
       'AI-powered recommendations',
       'Anomaly detection',
       'Predictive analytics',
-      'Natural language queries'
-    ]
-  }
+      'Natural language queries',
+    ],
+  },
 }
 ```
 
 ### 🏭 MANUFACTURING OPERATIONS (6 Pages)
+
 ```javascript
 const manufacturingPages = {
   '/production': {
@@ -137,8 +146,8 @@ const manufacturingPages = {
       'Job scheduling',
       'Resource allocation',
       'OEE monitoring',
-      'Downtime analysis'
-    ]
+      'Downtime analysis',
+    ],
   },
   '/quality': {
     features: [
@@ -146,8 +155,8 @@ const manufacturingPages = {
       'Defect tracking',
       'SPC charts',
       'Root cause analysis',
-      'Compliance reporting'
-    ]
+      'Compliance reporting',
+    ],
   },
   '/inventory': {
     features: [
@@ -155,8 +164,8 @@ const manufacturingPages = {
       'Reorder point optimization',
       'ABC analysis',
       'Stock movements',
-      'Warehouse visualization'
-    ]
+      'Warehouse visualization',
+    ],
   },
   '/supply-chain': {
     features: [
@@ -164,8 +173,8 @@ const manufacturingPages = {
       'Lead time tracking',
       'Risk assessment',
       'Order management',
-      'Logistics monitoring'
-    ]
+      'Logistics monitoring',
+    ],
   },
   '/forecasting': {
     features: [
@@ -173,21 +182,22 @@ const manufacturingPages = {
       'Seasonal analysis',
       'ML-based predictions',
       'Forecast accuracy',
-      'Collaborative planning'
-    ]
+      'Collaborative planning',
+    ],
   },
   '/analytics/real-time': {
     features: [
       'Live production metrics',
       'Real-time alerts',
       'Performance monitoring',
-      'Bottleneck detection'
-    ]
-  }
+      'Bottleneck detection',
+    ],
+  },
 }
 ```
 
 ### 📱 MOBILE & SPECIALIZED (3 Pages)
+
 ```javascript
 const mobilePages = {
   '/mobile': {
@@ -195,8 +205,8 @@ const mobilePages = {
       'Touch-optimized interface',
       'Responsive design',
       'Offline capability',
-      'Progressive Web App'
-    ]
+      'Progressive Web App',
+    ],
   },
   '/mobile-floor': {
     features: [
@@ -204,21 +214,17 @@ const mobilePages = {
       'Task management',
       'Quality reporting',
       'QR code scanning',
-      'Voice commands'
-    ]
+      'Voice commands',
+    ],
   },
   '/landing': {
-    features: [
-      '3D animated hero',
-      'Feature showcase',
-      'Interactive demos',
-      'CTA buttons'
-    ]
-  }
+    features: ['3D animated hero', 'Feature showcase', 'Interactive demos', 'CTA buttons'],
+  },
 }
 ```
 
 ### ⚙️ ADMINISTRATION (3 Pages)
+
 ```javascript
 const adminPages = {
   '/admin': {
@@ -227,25 +233,20 @@ const adminPages = {
       'Role assignment',
       'Permissions control',
       'Activity logs',
-      'System configuration'
-    ]
+      'System configuration',
+    ],
   },
   '/admin/enhanced': {
-    features: [
-      'Advanced RBAC',
-      'Audit trails',
-      'Batch operations',
-      'API key management'
-    ]
+    features: ['Advanced RBAC', 'Audit trails', 'Batch operations', 'API key management'],
   },
   '/settings': {
     features: [
       'Profile settings',
       'Notification preferences',
       'Theme customization',
-      'Export preferences'
-    ]
-  }
+      'Export preferences',
+    ],
+  },
 }
 ```
 
@@ -254,6 +255,7 @@ const adminPages = {
 ## API ENDPOINT SPECIFICATION
 
 ### Complete API Routes
+
 ```javascript
 // Health & Monitoring
 GET  /health                          → System health status
@@ -357,6 +359,7 @@ PUT  /api/admin/config               → Update config
 ## COMPONENT ARCHITECTURE
 
 ### Core Component Structure
+
 ```
 src/components/
 ├── AI/
@@ -397,6 +400,7 @@ src/components/
 ```
 
 ### State Management Architecture
+
 ```javascript
 // Zustand Store Structure
 stores/
@@ -445,6 +449,7 @@ export const useWorkingCapitalStore = create(
 ## DATABASE SCHEMA
 
 ### Complete Prisma Schema
+
 ```prisma
 // prisma/schema.prisma
 
@@ -719,6 +724,7 @@ model UserPreference {
 ## DEPLOYMENT ARCHITECTURE
 
 ### Production Infrastructure
+
 ```yaml
 # Complete deployment configuration
 
@@ -752,12 +758,12 @@ databases:
 redis:
   - name: sentia-redis
     plan: starter
-
 # Backup: Railway
 # railway.json configuration available
 ```
 
 ### Environment Configuration
+
 ```bash
 # Complete .env.template
 
@@ -817,6 +823,7 @@ ENABLE_ADVANCED_ANALYTICS=true
 ## TESTING SPECIFICATIONS
 
 ### Test Suite Structure
+
 ```javascript
 // Complete test configuration
 
@@ -862,6 +869,7 @@ tests/
 ## CRITICAL FILES & LOCATIONS
 
 ### Essential Files for Development
+
 ```
 Root Files:
 - package.json           # Dependencies and scripts
@@ -892,12 +900,14 @@ MCP Server:
 ## CONTACT & SUPPORT
 
 ### Development Team Resources
+
 - **GitHub Repository**: https://github.com/The-social-drink-company/sentia-manufacturing-dashboard
 - **Render Dashboard**: https://dashboard.render.com
 - **Railway Dashboard**: https://railway.app
 - **Documentation**: See `/context` folder for detailed specs
 
 ### Key Contacts
+
 - **Technical Issues**: Create GitHub Issue
 - **Security Concerns**: See SECURITY.md
 - **Deployment Support**: DevOps team

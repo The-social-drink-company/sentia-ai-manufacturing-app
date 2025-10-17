@@ -1,11 +1,11 @@
 /**
  * Enterprise Error Handling Utilities
- * 
+ *
  * Comprehensive error handling, classification, and recovery mechanisms
  * for the MCP server and manufacturing applications.
  */
 
-import { createLogger } from './logger.js';
+import { createLogger } from './logger.js'
 
 /**
  * Error classifications for proper handling and reporting
@@ -23,8 +23,8 @@ export const ERROR_TYPES = {
   CONFIGURATION: 'ConfigurationError',
   TIMEOUT: 'TimeoutError',
   NETWORK: 'NetworkError',
-  INTERNAL: 'InternalError'
-};
+  INTERNAL: 'InternalError',
+}
 
 /**
  * Error severity levels for monitoring and alerting
@@ -33,29 +33,29 @@ export const ERROR_SEVERITY = {
   LOW: 'low',
   MEDIUM: 'medium',
   HIGH: 'high',
-  CRITICAL: 'critical'
-};
+  CRITICAL: 'critical',
+}
 
 /**
  * Base error class with enhanced metadata
  */
 export class MCPError extends Error {
   constructor(message, type = ERROR_TYPES.INTERNAL, options = {}) {
-    super(message);
-    
-    this.name = this.constructor.name;
-    this.type = type;
-    this.severity = options.severity || ERROR_SEVERITY.MEDIUM;
-    this.correlationId = options.correlationId;
-    this.code = options.code;
-    this.details = options.details || {};
-    this.timestamp = new Date().toISOString();
-    this.retryable = options.retryable || false;
-    this.statusCode = options.statusCode || 500;
-    
+    super(message)
+
+    this.name = this.constructor.name
+    this.type = type
+    this.severity = options.severity || ERROR_SEVERITY.MEDIUM
+    this.correlationId = options.correlationId
+    this.code = options.code
+    this.details = options.details || {}
+    this.timestamp = new Date().toISOString()
+    this.retryable = options.retryable || false
+    this.statusCode = options.statusCode || 500
+
     // Capture stack trace
     if (Error.captureStackTrace) {
-      Error.captureStackTrace(this, this.constructor);
+      Error.captureStackTrace(this, this.constructor)
     }
   }
 
@@ -74,8 +74,8 @@ export class MCPError extends Error {
       timestamp: this.timestamp,
       retryable: this.retryable,
       statusCode: this.statusCode,
-      stack: this.stack
-    };
+      stack: this.stack,
+    }
   }
 
   /**
@@ -88,8 +88,8 @@ export class MCPError extends Error {
       code: this.code,
       correlationId: this.correlationId,
       retryable: this.retryable,
-      timestamp: this.timestamp
-    };
+      timestamp: this.timestamp,
+    }
   }
 }
 
@@ -101,8 +101,8 @@ export class ValidationError extends MCPError {
     super(message, ERROR_TYPES.VALIDATION, {
       ...options,
       statusCode: 400,
-      severity: ERROR_SEVERITY.LOW
-    });
+      severity: ERROR_SEVERITY.LOW,
+    })
   }
 }
 
@@ -111,8 +111,8 @@ export class AuthenticationError extends MCPError {
     super(message, ERROR_TYPES.AUTHENTICATION, {
       ...options,
       statusCode: 401,
-      severity: ERROR_SEVERITY.MEDIUM
-    });
+      severity: ERROR_SEVERITY.MEDIUM,
+    })
   }
 }
 
@@ -121,8 +121,8 @@ export class AuthorizationError extends MCPError {
     super(message, ERROR_TYPES.AUTHORIZATION, {
       ...options,
       statusCode: 403,
-      severity: ERROR_SEVERITY.MEDIUM
-    });
+      severity: ERROR_SEVERITY.MEDIUM,
+    })
   }
 }
 
@@ -131,8 +131,8 @@ export class NotFoundError extends MCPError {
     super(`${resource} not found`, ERROR_TYPES.NOT_FOUND, {
       ...options,
       statusCode: 404,
-      severity: ERROR_SEVERITY.LOW
-    });
+      severity: ERROR_SEVERITY.LOW,
+    })
   }
 }
 
@@ -141,8 +141,8 @@ export class ConflictError extends MCPError {
     super(message, ERROR_TYPES.CONFLICT, {
       ...options,
       statusCode: 409,
-      severity: ERROR_SEVERITY.MEDIUM
-    });
+      severity: ERROR_SEVERITY.MEDIUM,
+    })
   }
 }
 
@@ -152,8 +152,8 @@ export class RateLimitError extends MCPError {
       ...options,
       statusCode: 429,
       severity: ERROR_SEVERITY.MEDIUM,
-      retryable: true
-    });
+      retryable: true,
+    })
   }
 }
 
@@ -163,8 +163,8 @@ export class DatabaseError extends MCPError {
       ...options,
       statusCode: 500,
       severity: ERROR_SEVERITY.HIGH,
-      retryable: options.retryable || false
-    });
+      retryable: options.retryable || false,
+    })
   }
 }
 
@@ -175,8 +175,8 @@ export class ExternalAPIError extends MCPError {
       statusCode: options.statusCode || 503,
       severity: ERROR_SEVERITY.MEDIUM,
       retryable: true,
-      details: { service, ...options.details }
-    });
+      details: { service, ...options.details },
+    })
   }
 }
 
@@ -186,8 +186,8 @@ export class ToolExecutionError extends MCPError {
       ...options,
       statusCode: 500,
       severity: ERROR_SEVERITY.MEDIUM,
-      details: { toolName, ...options.details }
-    });
+      details: { toolName, ...options.details },
+    })
   }
 }
 
@@ -198,8 +198,8 @@ export class TimeoutError extends MCPError {
       statusCode: 408,
       severity: ERROR_SEVERITY.MEDIUM,
       retryable: true,
-      details: { operation, timeout, ...options.details }
-    });
+      details: { operation, timeout, ...options.details },
+    })
   }
 }
 
@@ -208,100 +208,110 @@ export class TimeoutError extends MCPError {
  */
 export class ErrorHandler {
   constructor(options = {}) {
-    this.logger = createLogger();
-    this.enableStackTrace = options.enableStackTrace !== false;
-    this.enableErrorMetrics = options.enableErrorMetrics !== false;
-    this.errorMetrics = new Map();
+    this.logger = createLogger()
+    this.enableStackTrace = options.enableStackTrace !== false
+    this.enableErrorMetrics = options.enableErrorMetrics !== false
+    this.errorMetrics = new Map()
   }
 
   /**
    * Handle and log errors with proper classification
    */
   handle(error, context = {}) {
-    const correlationId = context.correlationId || error.correlationId;
-    const logger = createLogger(correlationId);
+    const correlationId = context.correlationId || error.correlationId
+    const logger = createLogger(correlationId)
 
     // Convert to MCPError if it's a regular Error
-    const mcpError = error instanceof MCPError ? error : this.classifyError(error, context);
+    const mcpError = error instanceof MCPError ? error : this.classifyError(error, context)
 
     // Log the error with appropriate level
-    const logLevel = this.getLogLevel(mcpError.severity);
+    const logLevel = this.getLogLevel(mcpError.severity)
     logger[logLevel]('Error handled', {
       error: mcpError.toJSON(),
-      context
-    });
+      context,
+    })
 
     // Update error metrics
     if (this.enableErrorMetrics) {
-      this.updateErrorMetrics(mcpError);
+      this.updateErrorMetrics(mcpError)
     }
 
-    return mcpError;
+    return mcpError
   }
 
   /**
    * Classify generic errors into MCPError types
    */
   classifyError(error, context = {}) {
-    const message = error.message || 'Unknown error';
-    const correlationId = context.correlationId;
+    const message = error.message || 'Unknown error'
+    const correlationId = context.correlationId
 
     // Database-related errors
     if (this.isDatabaseError(error)) {
-      return new DatabaseError(message, { correlationId, details: { originalError: error.name } });
+      return new DatabaseError(message, { correlationId, details: { originalError: error.name } })
     }
 
     // Network/timeout errors
     if (this.isTimeoutError(error)) {
-      return new TimeoutError(context.operation || 'unknown', context.timeout || 0, { correlationId });
+      return new TimeoutError(context.operation || 'unknown', context.timeout || 0, {
+        correlationId,
+      })
     }
 
     // Validation errors
     if (this.isValidationError(error)) {
-      return new ValidationError(message, { correlationId });
+      return new ValidationError(message, { correlationId })
     }
 
     // Authentication errors
     if (this.isAuthenticationError(error)) {
-      return new AuthenticationError(message, { correlationId });
+      return new AuthenticationError(message, { correlationId })
     }
 
     // Default to internal error
     return new MCPError(message, ERROR_TYPES.INTERNAL, {
       correlationId,
       severity: ERROR_SEVERITY.HIGH,
-      details: { originalError: error.name, stack: error.stack }
-    });
+      details: { originalError: error.name, stack: error.stack },
+    })
   }
 
   /**
    * Error classification helpers
    */
   isDatabaseError(error) {
-    const dbErrorCodes = ['ECONNREFUSED', 'ENOTFOUND', 'ETIMEDOUT'];
-    const dbErrorNames = ['PostgresError', 'SequelizeError', 'MongoError'];
-    
-    return dbErrorCodes.includes(error.code) || 
-           dbErrorNames.some(name => error.name.includes(name)) ||
-           (error.message && error.message.toLowerCase().includes('database'));
+    const dbErrorCodes = ['ECONNREFUSED', 'ENOTFOUND', 'ETIMEDOUT']
+    const dbErrorNames = ['PostgresError', 'SequelizeError', 'MongoError']
+
+    return (
+      dbErrorCodes.includes(error.code) ||
+      dbErrorNames.some(name => error.name.includes(name)) ||
+      (error.message && error.message.toLowerCase().includes('database'))
+    )
   }
 
   isTimeoutError(error) {
-    return error.code === 'ETIMEDOUT' || 
-           error.name === 'TimeoutError' ||
-           (error.message && error.message.toLowerCase().includes('timeout'));
+    return (
+      error.code === 'ETIMEDOUT' ||
+      error.name === 'TimeoutError' ||
+      (error.message && error.message.toLowerCase().includes('timeout'))
+    )
   }
 
   isValidationError(error) {
-    return error.name === 'ValidationError' ||
-           error.name === 'CastError' ||
-           (error.message && error.message.toLowerCase().includes('validation'));
+    return (
+      error.name === 'ValidationError' ||
+      error.name === 'CastError' ||
+      (error.message && error.message.toLowerCase().includes('validation'))
+    )
   }
 
   isAuthenticationError(error) {
-    return error.name === 'UnauthorizedError' ||
-           error.name === 'JsonWebTokenError' ||
-           (error.message && error.message.toLowerCase().includes('unauthorized'));
+    return (
+      error.name === 'UnauthorizedError' ||
+      error.name === 'JsonWebTokenError' ||
+      (error.message && error.message.toLowerCase().includes('unauthorized'))
+    )
   }
 
   /**
@@ -311,12 +321,12 @@ export class ErrorHandler {
     switch (severity) {
       case ERROR_SEVERITY.CRITICAL:
       case ERROR_SEVERITY.HIGH:
-        return 'error';
+        return 'error'
       case ERROR_SEVERITY.MEDIUM:
-        return 'warn';
+        return 'warn'
       case ERROR_SEVERITY.LOW:
       default:
-        return 'info';
+        return 'info'
     }
   }
 
@@ -324,37 +334,40 @@ export class ErrorHandler {
    * Update error metrics for monitoring
    */
   updateErrorMetrics(error) {
-    const key = `${error.type}:${error.severity}`;
-    const current = this.errorMetrics.get(key) || { count: 0, lastOccurrence: null };
-    
+    const key = `${error.type}:${error.severity}`
+    const current = this.errorMetrics.get(key) || { count: 0, lastOccurrence: null }
+
     this.errorMetrics.set(key, {
       count: current.count + 1,
       lastOccurrence: error.timestamp,
       type: error.type,
-      severity: error.severity
-    });
+      severity: error.severity,
+    })
   }
 
   /**
    * Get error metrics for monitoring dashboards
    */
   getErrorMetrics() {
-    const metrics = {};
-    
+    const metrics = {}
+
     for (const [key, data] of this.errorMetrics) {
-      metrics[key] = data;
+      metrics[key] = data
     }
-    
+
     return {
       errors: metrics,
       summary: {
-        totalErrors: Array.from(this.errorMetrics.values()).reduce((sum, data) => sum + data.count, 0),
+        totalErrors: Array.from(this.errorMetrics.values()).reduce(
+          (sum, data) => sum + data.count,
+          0
+        ),
         errorTypes: new Set(Array.from(this.errorMetrics.values()).map(data => data.type)).size,
         criticalErrors: Array.from(this.errorMetrics.values())
           .filter(data => data.severity === ERROR_SEVERITY.CRITICAL)
-          .reduce((sum, data) => sum + data.count, 0)
-      }
-    };
+          .reduce((sum, data) => sum + data.count, 0),
+      },
+    }
   }
 
   /**
@@ -362,22 +375,22 @@ export class ErrorHandler {
    */
   expressMiddleware() {
     return (error, req, res, next) => {
-      const mcpError = this.handle(error, { 
+      const mcpError = this.handle(error, {
         correlationId: req.correlationId,
         operation: `${req.method} ${req.path}`,
         userAgent: req.headers['user-agent'],
-        ip: req.ip
-      });
+        ip: req.ip,
+      })
 
       // Set appropriate status code
-      res.status(mcpError.statusCode);
+      res.status(mcpError.statusCode)
 
       // Send client-safe error response
       res.json({
         error: mcpError.toClientError(),
-        success: false
-      });
-    };
+        success: false,
+      })
+    }
   }
 
   /**
@@ -386,11 +399,11 @@ export class ErrorHandler {
   wrapAsync(fn) {
     return async (...args) => {
       try {
-        return await fn(...args);
+        return await fn(...args)
       } catch (error) {
-        throw this.handle(error, { operation: fn.name });
+        throw this.handle(error, { operation: fn.name })
       }
-    };
+    }
   }
 
   /**
@@ -401,32 +414,28 @@ export class ErrorHandler {
       promise,
       new Promise((_, reject) => {
         setTimeout(() => {
-          reject(new TimeoutError(operation, timeout));
-        }, timeout);
-      })
+          reject(new TimeoutError(operation, timeout))
+        }, timeout)
+      }),
     ]).catch(error => {
-      throw this.handle(error, { operation, timeout });
-    });
+      throw this.handle(error, { operation, timeout })
+    })
   }
 
   /**
    * Circuit breaker pattern implementation
    */
   createCircuitBreaker(operation, options = {}) {
-    const {
-      failureThreshold = 5,
-      resetTimeout = 60000,
-      monitoringPeriod = 10000
-    } = options;
+    const { failureThreshold = 5, resetTimeout = 60000, monitoringPeriod = 10000 } = options
 
-    let failures = 0;
-    let lastFailureTime = null;
-    let state = 'CLOSED'; // CLOSED, OPEN, HALF_OPEN
+    let failures = 0
+    let lastFailureTime = null
+    let state = 'CLOSED' // CLOSED, OPEN, HALF_OPEN
 
     return async (...args) => {
       // Check if circuit should be reset
       if (state === 'OPEN' && Date.now() - lastFailureTime > resetTimeout) {
-        state = 'HALF_OPEN';
+        state = 'HALF_OPEN'
       }
 
       // Reject if circuit is open
@@ -434,36 +443,36 @@ export class ErrorHandler {
         throw new MCPError('Circuit breaker is OPEN', ERROR_TYPES.INTERNAL, {
           severity: ERROR_SEVERITY.MEDIUM,
           retryable: true,
-          details: { circuitState: state, failures }
-        });
+          details: { circuitState: state, failures },
+        })
       }
 
       try {
-        const result = await operation(...args);
-        
+        const result = await operation(...args)
+
         // Reset on success
         if (state === 'HALF_OPEN') {
-          state = 'CLOSED';
-          failures = 0;
+          state = 'CLOSED'
+          failures = 0
         }
-        
-        return result;
+
+        return result
       } catch (error) {
-        failures++;
-        lastFailureTime = Date.now();
-        
+        failures++
+        lastFailureTime = Date.now()
+
         // Open circuit if threshold reached
         if (failures >= failureThreshold) {
-          state = 'OPEN';
+          state = 'OPEN'
         }
-        
-        throw this.handle(error, { 
+
+        throw this.handle(error, {
           operation: operation.name,
           circuitState: state,
-          failures
-        });
+          failures,
+        })
       }
-    };
+    }
   }
 
   /**
@@ -475,46 +484,47 @@ export class ErrorHandler {
       baseDelay = 1000,
       maxDelay = 10000,
       backoffFactor = 2,
-      retryCondition = (error) => error.retryable
-    } = options;
+      retryCondition = error => error.retryable,
+    } = options
 
-    let lastError;
-    
+    let lastError
+
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
       try {
-        return await operation();
+        return await operation()
       } catch (error) {
-        lastError = this.handle(error, { attempt, maxRetries });
-        
+        lastError = this.handle(error, { attempt, maxRetries })
+
         // Don't retry if not retryable or max attempts reached
         if (!retryCondition(lastError) || attempt === maxRetries) {
-          throw lastError;
+          throw lastError
         }
-        
+
         // Calculate delay with exponential backoff
-        const delay = Math.min(baseDelay * Math.pow(backoffFactor, attempt), maxDelay);
-        
+        const delay = Math.min(baseDelay * Math.pow(backoffFactor, attempt), maxDelay)
+
         this.logger.warn('Retrying operation', {
           attempt: attempt + 1,
           maxRetries,
           delay,
-          error: lastError.message
-        });
-        
+          error: lastError.message,
+        })
+
         // Wait before retry
-        await new Promise(resolve => setTimeout(resolve, delay));
+        await new Promise(resolve => setTimeout(resolve, delay))
       }
     }
-    
-    throw lastError;
+
+    throw lastError
   }
 }
 
 // Global error handler instance
-export const globalErrorHandler = new ErrorHandler();
+export const globalErrorHandler = new ErrorHandler()
 
 // Convenience functions
-export const handleError = (error, context) => globalErrorHandler.handle(error, context);
-export const wrapAsync = (fn) => globalErrorHandler.wrapAsync(fn);
-export const withRetry = (operation, options) => globalErrorHandler.withRetry(operation, options);
-export const createCircuitBreaker = (operation, options) => globalErrorHandler.createCircuitBreaker(operation, options);
+export const handleError = (error, context) => globalErrorHandler.handle(error, context)
+export const wrapAsync = fn => globalErrorHandler.wrapAsync(fn)
+export const withRetry = (operation, options) => globalErrorHandler.withRetry(operation, options)
+export const createCircuitBreaker = (operation, options) =>
+  globalErrorHandler.createCircuitBreaker(operation, options)

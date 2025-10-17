@@ -3,6 +3,7 @@
 ## Step 1: Add Environment Variables to Development Service
 
 ### Access Render Dashboard
+
 1. Navigate to **https://dashboard.render.com**
 2. Find your **sentia-manufacturing-development** service
 3. Click on the service to open details
@@ -13,72 +14,84 @@
 Click "Add Environment Variable" for each entry below. Copy and paste exactly as shown:
 
 #### 1. Frontend Publishable Key
+
 ```
 Name: VITE_CLERK_PUBLISHABLE_KEY
 Value: pk_live_REDACTED
 ```
 
 #### 2. Backend Secret Key
+
 ```
 Name: CLERK_SECRET_KEY
 Value: sk_live_REDACTED
 ```
 
 #### 3. Next.js Compatibility Key
+
 ```
 Name: NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
 Value: pk_live_REDACTED
 ```
 
 #### 4. Sign In URL
+
 ```
 Name: VITE_CLERK_SIGN_IN_URL
 Value: /sign-in
 ```
 
 #### 5. Sign Up URL
+
 ```
 Name: VITE_CLERK_SIGN_UP_URL
 Value: /sign-up
 ```
 
 #### 6. After Sign In URL
+
 ```
 Name: VITE_CLERK_AFTER_SIGN_IN_URL
 Value: /dashboard
 ```
 
 #### 7. After Sign Up URL
+
 ```
 Name: VITE_CLERK_AFTER_SIGN_UP_URL
 Value: /dashboard
 ```
 
 #### 8. Clerk Environment
+
 ```
 Name: CLERK_ENVIRONMENT
 Value: production
 ```
 
 #### 9. Clerk Domain
+
 ```
 Name: VITE_CLERK_DOMAIN
 Value: clerk.financeflo.ai
 ```
 
 #### 10. Force Clerk Authentication
+
 ```
 Name: VITE_FORCE_CLERK_AUTH
 Value: true
 ```
 
 #### 11. Disable Authentication Fallback
+
 ```
 Name: VITE_DISABLE_AUTH_FALLBACK
 Value: true
 ```
 
 ### Save and Deploy
+
 - After adding all 11 variables, click **"Save Changes"**
 - Service will automatically redeploy (takes 5-10 minutes)
 - Monitor the deployment in the "Events" tab
@@ -88,12 +101,14 @@ Value: true
 ## Step 2: Add Environment Variables to Production Service
 
 ### Access Production Service
+
 1. Go back to Render Dashboard
 2. Find your **sentia-manufacturing-production** service
 3. Click on the service
 4. Click on the **"Environment"** tab
 
 ### Add Same Variables
+
 Add the exact same 11 environment variables as above:
 
 1. `VITE_CLERK_PUBLISHABLE_KEY` = `pk_live_REDACTED`
@@ -109,6 +124,7 @@ Add the exact same 11 environment variables as above:
 11. `VITE_DISABLE_AUTH_FALLBACK` = `true`
 
 ### Additional Production Variables (if needed)
+
 ```
 Name: NODE_ENV
 Value: production
@@ -129,6 +145,7 @@ Value: https://mcp-server-tkyu.onrender.com
 ## Quick Copy-Paste Reference
 
 ### All Variables in One Block
+
 ```env
 VITE_CLERK_PUBLISHABLE_KEY=pk_live_REDACTED
 CLERK_SECRET_KEY=sk_live_REDACTED
@@ -148,17 +165,21 @@ VITE_DISABLE_AUTH_FALLBACK=true
 ## Verification Steps
 
 ### 1. Check Deployment Status
+
 - Go to the **"Events"** tab
 - Look for "Deploy live" status
 - Should show green checkmark when complete
 
 ### 2. Verify Environment Variables
+
 - In the **"Environment"** tab
 - All 11 Clerk variables should be visible
 - Values should match exactly (no extra spaces)
 
 ### 3. Test the Service
+
 Once deployed, test with:
+
 ```bash
 # Check health
 curl https://sentia-manufacturing-development.onrender.com/health
@@ -168,6 +189,7 @@ curl -s https://sentia-manufacturing-development.onrender.com | grep "pk_live_"
 ```
 
 ### 4. Browser Test
+
 1. Navigate to https://sentia-manufacturing-development.onrender.com
 2. Open browser console (F12)
 3. Look for: "Initializing with Clerk key: Present"
@@ -179,20 +201,24 @@ curl -s https://sentia-manufacturing-development.onrender.com | grep "pk_live_"
 ## Troubleshooting
 
 ### Issue: Service won't redeploy
+
 - Click **"Manual Deploy"** button
 - Select **"Clear build cache & deploy"**
 
 ### Issue: Variables not loading
+
 - Check for trailing spaces in values
 - Ensure no quotes around values
 - Verify variable names are exact (case-sensitive)
 
 ### Issue: 502 Bad Gateway
+
 - Service is still deploying (wait 5-10 minutes)
 - Check **"Logs"** tab for errors
 - Verify all required variables are set
 
 ### Issue: Authentication not working
+
 - Clear browser cache
 - Try incognito/private browsing
 - Check browser console for errors
@@ -203,6 +229,7 @@ curl -s https://sentia-manufacturing-development.onrender.com | grep "pk_live_"
 ## Expected Results After Setup
 
 ### Development Service
+
 ✅ Service redeploys automatically
 ✅ Health endpoint returns 200 OK
 ✅ Homepage loads without errors
@@ -211,6 +238,7 @@ curl -s https://sentia-manufacturing-development.onrender.com | grep "pk_live_"
 ✅ Dashboard is accessible after login
 
 ### Production Service
+
 ✅ All features from development
 ✅ Production database connected
 ✅ External APIs integrated
@@ -222,6 +250,7 @@ curl -s https://sentia-manufacturing-development.onrender.com | grep "pk_live_"
 ## Security Notes
 
 ⚠️ **IMPORTANT**: These are production keys. Handle with care:
+
 - Never commit them to public repositories
 - Only share with authorized team members
 - Rotate keys periodically
@@ -258,4 +287,3 @@ After both services are configured and deployed:
 **Document Version**: 1.0
 **Last Updated**: September 2025
 **Keys Valid Until**: Check Clerk Dashboard
-

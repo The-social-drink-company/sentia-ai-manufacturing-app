@@ -3,7 +3,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { useXero } from '@/contexts/XeroContext'
 
-const RegionalContributionChart = lazy(() => import('@/components/dashboard/RegionalContributionChart'))
+const RegionalContributionChart = lazy(
+  () => import('@/components/dashboard/RegionalContributionChart')
+)
 const PLAnalysisChart = lazy(() => import('@/components/dashboard/PLAnalysisChart'))
 const ProductSalesChart = lazy(() => import('@/components/dashboard/ProductSalesChart'))
 const StockLevelsWidget = lazy(() => import('@/components/widgets/StockLevelsWidget'))
@@ -18,7 +20,7 @@ import { ApiError } from '@/services/api/baseApi'
 
 const DashboardEnterprise = () => {
   const { isConnected: xeroConnected } = useXero()
-  
+
   const [plData, setPLData] = useState([])
   const [plLoading, setPLLoading] = useState(true)
   const [plError, setPLError] = useState(null)
@@ -42,7 +44,7 @@ const DashboardEnterprise = () => {
       try {
         setPLLoading(true)
         setPLError(null)
-        
+
         const response = await plAnalysisApi.getPLAnalysis()
         if (response && response.success && response.data) {
           setPLData(response.data)
@@ -54,22 +56,21 @@ const DashboardEnterprise = () => {
         }
       } catch (error) {
         console.error('[DashboardEnterprise] Error fetching P&L data:', error)
-        
+
         // Check for Xero connection requirement in multiple ways
         const errorMessage = error.message || ''
-        const requiresXero = (
+        const requiresXero =
           (error instanceof ApiError && error.data && error.data.requiresXeroConnection) ||
           errorMessage.includes('Xero connection') ||
           errorMessage.includes('requires Xero') ||
           errorMessage.includes('financial data')
-        )
-        
+
         if (requiresXero) {
           console.log('[DashboardEnterprise] P&L API indicates Xero connection required')
           setRequiresXeroConnection(true)
           setPLData([])
         }
-        
+
         setPLError(error.message)
         setPLData([]) // Set empty array on error
       } finally {
@@ -86,23 +87,35 @@ const DashboardEnterprise = () => {
       try {
         setKpiLoading(true)
         setKpiError(null)
-        
+
         const response = await plAnalysisApi.getKPISummary()
-        
+
         // Check if Xero connection is required
         if (response && response.requiresXeroConnection) {
           setRequiresXeroConnection(true)
           setPerformanceKpis([])
           return
         }
-        
+
         // Handle direct response object (no .data wrapper)
         if (response && response.success && response.data) {
           const kpiData = response.data
           setPerformanceKpis([
-            { label: 'Annual revenue', value: kpiData.annualRevenue?.value || 'N/A', helper: kpiData.annualRevenue?.helper || '' },
-            { label: 'Units sold', value: kpiData.unitsSold?.value || 'N/A', helper: kpiData.unitsSold?.helper || '' },
-            { label: 'Gross margin', value: kpiData.grossMargin?.value || 'N/A', helper: kpiData.grossMargin?.helper || '' }
+            {
+              label: 'Annual revenue',
+              value: kpiData.annualRevenue?.value || 'N/A',
+              helper: kpiData.annualRevenue?.helper || '',
+            },
+            {
+              label: 'Units sold',
+              value: kpiData.unitsSold?.value || 'N/A',
+              helper: kpiData.unitsSold?.helper || '',
+            },
+            {
+              label: 'Gross margin',
+              value: kpiData.grossMargin?.value || 'N/A',
+              helper: kpiData.grossMargin?.helper || '',
+            },
           ])
         } else if (response && !response.success) {
           // API returned error response, might need Xero connection
@@ -115,72 +128,73 @@ const DashboardEnterprise = () => {
         }
       } catch (error) {
         console.error('[DashboardEnterprise] Error fetching KPI data:', error)
-        
+
         // Enhanced error information for development
         const isDevelopment = import.meta.env.MODE === 'development'
         const errorMessage = error.message || 'Unknown error'
         const errorData = error.data || {}
-        
+
         // Extract detailed error information from server response
         const serverErrorDetails = errorData.details || {}
         const serverErrors = serverErrorDetails.errors || []
-        
-        const errorDetails = isDevelopment ? {
-          message: errorMessage,
-          status: error.status || error.response?.status,
-          type: error.constructor.name,
-          serverDetails: serverErrorDetails,
-          serverErrors: serverErrors,
-          stack: error.stack?.split('\n')[0],
-          url: error.config?.url,
-          timestamp: new Date().toISOString()
-        } : { message: errorMessage }
-        
+
+        const errorDetails = isDevelopment
+          ? {
+              message: errorMessage,
+              status: error.status || error.response?.status,
+              type: error.constructor.name,
+              serverDetails: serverErrorDetails,
+              serverErrors: serverErrors,
+              stack: error.stack?.split('\n')[0],
+              url: error.config?.url,
+              timestamp: new Date().toISOString(),
+            }
+          : { message: errorMessage }
+
         // Check for Xero connection issues based on detailed server response
-        const requiresXero = (
+        const requiresXero =
           errorMessage.includes('Xero') ||
           errorMessage.includes('financial data') ||
           !serverErrorDetails.xeroServiceInitialized ||
           !serverErrorDetails.xeroServiceConnected ||
           serverErrors.some(err => err.source?.includes('xero'))
-        )
-        
+
         if (requiresXero) {
           console.log('[DashboardEnterprise] KPI API indicates Xero connection issues')
           setRequiresXeroConnection(true)
           setPerformanceKpis([])
         }
-        
+
         // Create detailed error message with server diagnostics
         let displayError = 'Unable to load performance metrics'
-        
+
         if (isDevelopment && serverErrorDetails) {
           const diagnostics = []
-          
+
           if (!serverErrorDetails.xeroServiceInitialized) {
             diagnostics.push('Xero service failed to initialize')
           }
-          
+
           if (!serverErrorDetails.xeroServiceConnected) {
             diagnostics.push('Xero service not connected')
           }
-          
+
           if (serverErrors.length > 0) {
             serverErrors.forEach(err => {
               diagnostics.push(`${err.source}: ${err.error}`)
             })
           }
-          
+
           if (diagnostics.length > 0) {
             displayError += ` (${diagnostics.join(', ')})`
           } else {
             displayError += ` (${error.status || 'unknown status'}) - Check console for details`
           }
         }
-        
+
         setKpiError(displayError)
         setPerformanceKpis([]) // Set empty array on error
-        
+
         // Log additional debugging information in development
         if (isDevelopment) {
           console.group('🔍 KPI Error Debug Information')
@@ -204,7 +218,7 @@ const DashboardEnterprise = () => {
       try {
         setSalesLoading(true)
         setSalesError(null)
-        
+
         const response = await productSalesApi.getProductSalesData()
         if (response && response.success && response.data) {
           setProductSalesData(response.data)
@@ -216,22 +230,21 @@ const DashboardEnterprise = () => {
         }
       } catch (error) {
         console.error('[DashboardEnterprise] Error fetching product sales data:', error)
-        
+
         // Check for Xero connection requirement in multiple ways
         const errorMessage = error.message || ''
-        const requiresXero = (
+        const requiresXero =
           (error instanceof ApiError && error.data && error.data.requiresXeroConnection) ||
           errorMessage.includes('Xero connection') ||
           errorMessage.includes('requires Xero') ||
           errorMessage.includes('financial data')
-        )
-        
+
         if (requiresXero) {
           console.log('[DashboardEnterprise] Product sales API indicates Xero connection required')
           setRequiresXeroConnection(true)
           setProductSalesData([])
         }
-        
+
         setSalesError(error.message)
         setProductSalesData([]) // Set empty array on error
       } finally {
@@ -248,7 +261,7 @@ const DashboardEnterprise = () => {
       try {
         setRegionalLoading(true)
         setRegionalError(null)
-        
+
         const response = await regionalPerformanceApi.getRegionalPerformance()
         if (response.success) {
           setRegionalData(response.data)
@@ -273,53 +286,57 @@ const DashboardEnterprise = () => {
       try {
         setCapitalLoading(true)
         setCapitalError(null)
-        
+
         const response = await workingCapitalApi.getWorkingCapitalSummary()
-        
+
         // Check if integration is required (working capital needs multiple systems)
-        if (response && (response.requiresXeroConnection || response.error === 'Financial system integration required')) {
+        if (
+          response &&
+          (response.requiresXeroConnection ||
+            response.error === 'Financial system integration required')
+        ) {
           setRequiresXeroConnection(true)
           setCapitalKpis([])
           return
         }
-        
+
         if (response && response.success && response.data) {
           // Transform working capital data into KPI format
           const data = response.data
-          
+
           // Format working capital as currency
-          const formatCurrency = (amount) => {
+          const formatCurrency = amount => {
             if (amount === 0 || amount === null || amount === undefined) return '£0'
             const absAmount = Math.abs(amount)
             const formatted = new Intl.NumberFormat('en-GB', {
               style: 'currency',
               currency: 'GBP',
-              minimumFractionDigits: 0
+              minimumFractionDigits: 0,
             }).format(absAmount)
             return amount < 0 ? `-${formatted}` : formatted
           }
-          
+
           setCapitalKpis([
-            { 
-              label: 'Global working capital', 
-              value: formatCurrency(data.workingCapital), 
-              helper: 'Across all subsidiaries' 
+            {
+              label: 'Global working capital',
+              value: formatCurrency(data.workingCapital),
+              helper: 'Across all subsidiaries',
             },
-            { 
-              label: 'Cash coverage', 
-              value: data.cashConversionCycle ? `${data.cashConversionCycle} days` : '0 days', 
-              helper: 'Cash conversion cycle' 
+            {
+              label: 'Cash coverage',
+              value: data.cashConversionCycle ? `${data.cashConversionCycle} days` : '0 days',
+              helper: 'Cash conversion cycle',
             },
-            { 
-              label: 'Current ratio', 
-              value: data.currentRatio ? data.currentRatio.toFixed(2) : '0.00', 
-              helper: 'Current assets / Current liabilities' 
+            {
+              label: 'Current ratio',
+              value: data.currentRatio ? data.currentRatio.toFixed(2) : '0.00',
+              helper: 'Current assets / Current liabilities',
             },
-            { 
-              label: 'Quick ratio', 
-              value: data.quickRatio ? data.quickRatio.toFixed(2) : '0.00', 
-              helper: 'Liquid assets / Current liabilities' 
-            }
+            {
+              label: 'Quick ratio',
+              value: data.quickRatio ? data.quickRatio.toFixed(2) : '0.00',
+              helper: 'Liquid assets / Current liabilities',
+            },
           ])
         } else {
           // Show integration required message for working capital
@@ -328,23 +345,25 @@ const DashboardEnterprise = () => {
         }
       } catch (error) {
         console.error('[DashboardEnterprise] Error fetching capital KPIs:', error)
-        
+
         // Check for Xero connection requirement in multiple ways
         const errorMessage = error.message || ''
-        const requiresXero = (
+        const requiresXero =
           (error instanceof ApiError && error.data && error.data.requiresXeroConnection) ||
           errorMessage.includes('Xero connection') ||
           errorMessage.includes('requires Xero') ||
           errorMessage.includes('financial data') ||
           errorMessage.includes('Working capital analysis requires')
-        )
-        
+
         if (requiresXero) {
-          console.log('[DashboardEnterprise] Working capital API indicates Xero connection required:', errorMessage)
+          console.log(
+            '[DashboardEnterprise] Working capital API indicates Xero connection required:',
+            errorMessage
+          )
           setRequiresXeroConnection(true)
           setCapitalKpis([])
         }
-        
+
         setCapitalError(error.message)
         setCapitalKpis([]) // Set empty array on error
       } finally {
@@ -362,7 +381,9 @@ const DashboardEnterprise = () => {
       <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-3xl font-semibold tracking-tight">Enterprise dashboard</h1>
-          <p className="text-sm text-muted-foreground">Consolidated liquidity and performance outlook across all regions.</p>
+          <p className="text-sm text-muted-foreground">
+            Consolidated liquidity and performance outlook across all regions.
+          </p>
         </div>
         <Badge variant="outline">Global view</Badge>
       </header>
@@ -388,7 +409,7 @@ const DashboardEnterprise = () => {
                 <p className="text-xs text-muted-foreground">{capitalError}</p>
               </div>
             </div>
-          ) : (!capitalKpis || capitalKpis.length === 0) ? (
+          ) : !capitalKpis || capitalKpis.length === 0 ? (
             <div className="col-span-full flex items-center justify-center p-8">
               <div className="text-center">
                 <p className="text-sm text-muted-foreground">No capital metrics available</p>
@@ -396,9 +417,11 @@ const DashboardEnterprise = () => {
               </div>
             </div>
           ) : (
-            (capitalKpis || []).map((item) => (
+            (capitalKpis || []).map(item => (
               <div key={item.label} className="rounded-lg border border-border bg-muted/30 p-4">
-                <p className="text-xs text-muted-foreground uppercase tracking-wide font-medium">{item.label}</p>
+                <p className="text-xs text-muted-foreground uppercase tracking-wide font-medium">
+                  {item.label}
+                </p>
                 <p className="text-2xl font-bold text-foreground">{item.value}</p>
                 <p className="text-xs text-muted-foreground">{item.helper}</p>
               </div>
@@ -410,7 +433,9 @@ const DashboardEnterprise = () => {
       <Card>
         <CardHeader>
           <CardTitle>Performance metrics</CardTitle>
-          <CardDescription>Key business performance indicators tracked for operational excellence.</CardDescription>
+          <CardDescription>
+            Key business performance indicators tracked for operational excellence.
+          </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {kpiLoading ? (
@@ -430,18 +455,28 @@ const DashboardEnterprise = () => {
                   <div className="mt-3 p-3 bg-muted rounded text-left space-y-2">
                     <p className="text-xs font-medium">Development Debug Info:</p>
                     <div className="space-y-1">
-                      <p className="text-xs text-muted-foreground">• Endpoint: /api/financial/kpi-summary</p>
-                      <p className="text-xs text-muted-foreground">• Status: {kpiError.includes('503') ? '503 Service Unavailable' : 'Error'}</p>
-                      <p className="text-xs text-muted-foreground">• No fallback data shown (compliant with data integrity rule)</p>
+                      <p className="text-xs text-muted-foreground">
+                        • Endpoint: /api/financial/kpi-summary
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        • Status: {kpiError.includes('503') ? '503 Service Unavailable' : 'Error'}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        • No fallback data shown (compliant with data integrity rule)
+                      </p>
                     </div>
                     {kpiError.includes('Xero') && (
                       <div className="mt-2 p-2 bg-yellow-50 border-l-2 border-yellow-400 rounded">
-                        <p className="text-xs font-medium text-yellow-800">Xero Integration Issues:</p>
-                        <p className="text-xs text-yellow-700">Check Xero API credentials and connection status in server logs</p>
+                        <p className="text-xs font-medium text-yellow-800">
+                          Xero Integration Issues:
+                        </p>
+                        <p className="text-xs text-yellow-700">
+                          Check Xero API credentials and connection status in server logs
+                        </p>
                       </div>
                     )}
-                    <button 
-                      onClick={() => window.location.reload()} 
+                    <button
+                      onClick={() => window.location.reload()}
                       className="mt-2 px-2 py-1 text-xs bg-primary text-primary-foreground rounded hover:bg-primary/90"
                     >
                       Retry Connection
@@ -450,7 +485,7 @@ const DashboardEnterprise = () => {
                 )}
               </div>
             </div>
-          ) : (!performanceKpis || performanceKpis.length === 0) ? (
+          ) : !performanceKpis || performanceKpis.length === 0 ? (
             <div className="col-span-full flex items-center justify-center p-8">
               <div className="text-center space-y-2">
                 <p className="text-sm text-muted-foreground">No performance metrics available</p>
@@ -458,17 +493,23 @@ const DashboardEnterprise = () => {
                 {import.meta.env.MODE === 'development' && (
                   <div className="mt-3 p-3 bg-muted rounded text-left">
                     <p className="text-xs font-medium mb-1">Development Status:</p>
-                    <p className="text-xs text-muted-foreground">• API endpoint responding but no data</p>
+                    <p className="text-xs text-muted-foreground">
+                      • API endpoint responding but no data
+                    </p>
                     <p className="text-xs text-muted-foreground">• Check Xero integration status</p>
-                    <p className="text-xs text-muted-foreground">• Fallback data should appear soon</p>
+                    <p className="text-xs text-muted-foreground">
+                      • Fallback data should appear soon
+                    </p>
                   </div>
                 )}
               </div>
             </div>
           ) : (
-            (performanceKpis || []).map((item) => (
+            (performanceKpis || []).map(item => (
               <div key={item.label} className="rounded-lg border border-border bg-muted/30 p-4">
-                <p className="text-xs text-muted-foreground uppercase tracking-wide font-medium">{item.label}</p>
+                <p className="text-xs text-muted-foreground uppercase tracking-wide font-medium">
+                  {item.label}
+                </p>
                 <p className="text-2xl font-bold text-foreground">{item.value}</p>
                 <p className="text-xs text-muted-foreground">{item.helper}</p>
               </div>
@@ -500,7 +541,11 @@ const DashboardEnterprise = () => {
                 </div>
               </div>
             ) : (
-              <Suspense fallback={<div className="flex h-full items-center justify-center">Loading chart...</div>}>
+              <Suspense
+                fallback={
+                  <div className="flex h-full items-center justify-center">Loading chart...</div>
+                }
+              >
                 <ProductSalesChart data={productSalesData} />
               </Suspense>
             )}
@@ -528,7 +573,11 @@ const DashboardEnterprise = () => {
                 </div>
               </div>
             ) : (
-              <Suspense fallback={<div className="flex h-full items-center justify-center">Loading chart...</div>}>
+              <Suspense
+                fallback={
+                  <div className="flex h-full items-center justify-center">Loading chart...</div>
+                }
+              >
                 <PLAnalysisChart data={plData} />
               </Suspense>
             )}
@@ -555,7 +604,7 @@ const DashboardEnterprise = () => {
                   <p className="text-xs text-muted-foreground">{regionalError}</p>
                 </div>
               </div>
-            ) : (!regionalData || regionalData.length === 0) ? (
+            ) : !regionalData || regionalData.length === 0 ? (
               <div className="flex h-full items-center justify-center">
                 <div className="text-center">
                   <p className="text-sm text-muted-foreground">No regional data available</p>
@@ -563,7 +612,11 @@ const DashboardEnterprise = () => {
                 </div>
               </div>
             ) : (
-              <Suspense fallback={<div className="flex h-full items-center justify-center">Loading chart...</div>}>
+              <Suspense
+                fallback={
+                  <div className="flex h-full items-center justify-center">Loading chart...</div>
+                }
+              >
                 <RegionalContributionChart data={regionalData} />
               </Suspense>
             )}
@@ -572,36 +625,40 @@ const DashboardEnterprise = () => {
       </div>
 
       {/* Second row - Stock Levels (single chart) */}
-      <Suspense fallback={
-        <Card>
-          <CardHeader>
-            <CardTitle>Current Stock Levels</CardTitle>
-            <CardDescription>Loading inventory data...</CardDescription>
-          </CardHeader>
-          <CardContent className="h-64">
-            <div className="flex h-full items-center justify-center">
-              <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-            </div>
-          </CardContent>
-        </Card>
-      }>
+      <Suspense
+        fallback={
+          <Card>
+            <CardHeader>
+              <CardTitle>Current Stock Levels</CardTitle>
+              <CardDescription>Loading inventory data...</CardDescription>
+            </CardHeader>
+            <CardContent className="h-64">
+              <div className="flex h-full items-center justify-center">
+                <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+              </div>
+            </CardContent>
+          </Card>
+        }
+      >
         <StockLevelsWidget />
       </Suspense>
 
       {/* Quick Actions Section */}
-      <Suspense fallback={
-        <Card className="mt-8">
-          <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
-            <CardDescription>Loading quick actions...</CardDescription>
-          </CardHeader>
-          <CardContent className="h-32">
-            <div className="flex h-full items-center justify-center">
-              <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-            </div>
-          </CardContent>
-        </Card>
-      }>
+      <Suspense
+        fallback={
+          <Card className="mt-8">
+            <CardHeader>
+              <CardTitle>Quick Actions</CardTitle>
+              <CardDescription>Loading quick actions...</CardDescription>
+            </CardHeader>
+            <CardContent className="h-32">
+              <div className="flex h-full items-center justify-center">
+                <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+              </div>
+            </CardContent>
+          </Card>
+        }
+      >
         <QuickActions />
       </Suspense>
     </section>

@@ -8,7 +8,7 @@ import {
   ExclamationTriangleIcon,
   LightBulbIcon,
   GlobeAltIcon,
-  BuildingStorefrontIcon
+  BuildingStorefrontIcon,
 } from '@heroicons/react/24/outline'
 import DemandForecastingEngine from '@/services/DemandForecastingEngine'
 
@@ -37,35 +37,35 @@ const DemandForecasting = () => {
 
   useEffect(() => {
     fetchForecastData()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [timeHorizon])
 
-  const formatNumber = (value) => {
+  const formatNumber = value => {
     if (typeof value !== 'number') return 'N/A'
     return value.toLocaleString()
   }
 
-  const getConfidenceColor = (confidence) => {
+  const getConfidenceColor = confidence => {
     if (confidence >= 0.8) return 'text-green-600 bg-green-100'
     if (confidence >= 0.7) return 'text-yellow-600 bg-yellow-100'
     return 'text-red-600 bg-red-100'
   }
 
-  const getPriorityColor = (priority) => {
+  const getPriorityColor = priority => {
     const colors = {
       high: 'border-red-500 bg-red-50',
       medium: 'border-yellow-500 bg-yellow-50',
-      low: 'border-blue-500 bg-blue-50'
+      low: 'border-blue-500 bg-blue-50',
     }
     return colors[priority] || 'border-gray-300 bg-gray-50'
   }
 
-  const getImpactColor = (impact) => {
+  const getImpactColor = impact => {
     const colors = {
       high: 'text-red-600',
       positive: 'text-green-600',
       negative: 'text-red-600',
-      medium: 'text-yellow-600'
+      medium: 'text-yellow-600',
     }
     return colors[impact] || 'text-gray-600'
   }
@@ -79,12 +79,16 @@ const DemandForecasting = () => {
               <ChartBarIcon className="w-6 h-6 text-green-600 dark:text-green-400" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Demand Forecasting</h1>
-              <p className="text-slate-600 dark:text-slate-400">AI-powered demand prediction for Sentia Manufacturing</p>
+              <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
+                Demand Forecasting
+              </h1>
+              <p className="text-slate-600 dark:text-slate-400">
+                AI-powered demand prediction for Sentia Manufacturing
+              </p>
             </div>
           </div>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {Array.from({ length: 4 }).map((_, i) => (
             <Card key={i} className="animate-pulse">
@@ -109,11 +113,15 @@ const DemandForecasting = () => {
             <ChartBarIcon className="w-6 h-6 text-green-600 dark:text-green-400" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Demand Forecasting</h1>
-            <p className="text-slate-600 dark:text-slate-400">AI-powered demand prediction for Sentia Manufacturing</p>
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
+              Demand Forecasting
+            </h1>
+            <p className="text-slate-600 dark:text-slate-400">
+              AI-powered demand prediction for Sentia Manufacturing
+            </p>
           </div>
         </div>
-        
+
         <Card className="border-red-200 bg-red-50">
           <CardContent className="p-6">
             <div className="flex items-center space-x-3">
@@ -144,24 +152,26 @@ const DemandForecasting = () => {
             <ChartBarIcon className="w-6 h-6 text-green-600 dark:text-green-400" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Demand Forecasting</h1>
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
+              Demand Forecasting
+            </h1>
             <p className="text-slate-600 dark:text-slate-400">
               AI-powered demand prediction using statistical models and pattern analysis
             </p>
           </div>
         </div>
-        
+
         <div className="flex items-center gap-3">
           <select
             value={timeHorizon}
-            onChange={(e) => setTimeHorizon(e.target.value)}
+            onChange={e => setTimeHorizon(e.target.value)}
             className="px-3 py-2 border border-gray-300 rounded-md text-sm"
           >
             <option value="6months">6 Months</option>
             <option value="12months">12 Months</option>
             <option value="18months">18 Months</option>
           </select>
-          
+
           <button
             onClick={fetchForecastData}
             disabled={loading}
@@ -182,7 +192,7 @@ const DemandForecasting = () => {
           color="green"
           description="Total units predicted for next 12 months"
         />
-        
+
         <MetricCard
           title="Peak Month"
           value={forecastData?.forecast?.peakMonth?.monthName || 'N/A'}
@@ -190,7 +200,7 @@ const DemandForecasting = () => {
           color="blue"
           description={`${formatNumber(forecastData?.forecast?.peakMonth?.demandForecast || 0)} units expected`}
         />
-        
+
         <MetricCard
           title="Forecast Confidence"
           value={`${Math.round((forecastData?.confidence?.overall || 0) * 100)}%`}
@@ -198,7 +208,7 @@ const DemandForecasting = () => {
           color="purple"
           description="Overall model confidence level"
         />
-        
+
         <MetricCard
           title="Models Used"
           value="4"
@@ -225,11 +235,11 @@ const DemandForecasting = () => {
               {forecastData?.forecast?.data?.map((month, index) => (
                 <div key={index} className="text-center">
                   <div className="bg-green-100 rounded-lg p-3 mb-2">
-                    <div 
+                    <div
                       className="bg-green-600 rounded-sm mx-auto"
-                      style={{ 
+                      style={{
                         height: `${Math.max(20, (month.demandForecast / Math.max(...forecastData.forecast.data.map(m => m.demandForecast))) * 80)}px`,
-                        width: '100%'
+                        width: '100%',
                       }}
                     ></div>
                   </div>
@@ -258,12 +268,18 @@ const DemandForecasting = () => {
           </CardHeader>
           <CardContent className="space-y-4">
             {forecastData.insights.map((insight, index) => (
-              <div key={index} className={`border-l-4 pl-4 py-3 ${
-                insight.impact === 'high' ? 'border-red-500 bg-red-50' :
-                insight.impact === 'positive' ? 'border-green-500 bg-green-50' :
-                insight.impact === 'negative' ? 'border-red-500 bg-red-50' :
-                'border-yellow-500 bg-yellow-50'
-              }`}>
+              <div
+                key={index}
+                className={`border-l-4 pl-4 py-3 ${
+                  insight.impact === 'high'
+                    ? 'border-red-500 bg-red-50'
+                    : insight.impact === 'positive'
+                      ? 'border-green-500 bg-green-50'
+                      : insight.impact === 'negative'
+                        ? 'border-red-500 bg-red-50'
+                        : 'border-yellow-500 bg-yellow-50'
+                }`}
+              >
                 <div className="flex justify-between items-start">
                   <div>
                     <h4 className="font-semibold text-lg">{insight.title}</h4>
@@ -275,12 +291,17 @@ const DemandForecasting = () => {
                     )}
                   </div>
                   <div className="flex flex-col items-end gap-2">
-                    <span className={`px-2 py-1 rounded text-xs font-medium ${getImpactColor(insight.impact)} ${
-                      insight.impact === 'high' ? 'bg-red-100' :
-                      insight.impact === 'positive' ? 'bg-green-100' :
-                      insight.impact === 'negative' ? 'bg-red-100' :
-                      'bg-yellow-100'
-                    }`}>
+                    <span
+                      className={`px-2 py-1 rounded text-xs font-medium ${getImpactColor(insight.impact)} ${
+                        insight.impact === 'high'
+                          ? 'bg-red-100'
+                          : insight.impact === 'positive'
+                            ? 'bg-green-100'
+                            : insight.impact === 'negative'
+                              ? 'bg-red-100'
+                              : 'bg-yellow-100'
+                      }`}
+                    >
                       {insight.impact} impact
                     </span>
                     {insight.actionRequired && (
@@ -314,21 +335,41 @@ const DemandForecasting = () => {
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2">
                       <h4 className="font-semibold">{rec.title}</h4>
-                      <span className={`px-2 py-1 rounded text-xs font-medium ${
-                        rec.priority === 'high' ? 'bg-red-100 text-red-800' :
-                        rec.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' :
-                        'bg-blue-100 text-blue-800'
-                      }`}>
+                      <span
+                        className={`px-2 py-1 rounded text-xs font-medium ${
+                          rec.priority === 'high'
+                            ? 'bg-red-100 text-red-800'
+                            : rec.priority === 'medium'
+                              ? 'bg-yellow-100 text-yellow-800'
+                              : 'bg-blue-100 text-blue-800'
+                        }`}
+                      >
                         {rec.priority} priority
                       </span>
                     </div>
                     <p className="text-sm text-gray-600 mb-2">{rec.description}</p>
-                    <p className="text-xs text-gray-500 mb-2"><strong>Rationale:</strong> {rec.rationale}</p>
+                    <p className="text-xs text-gray-500 mb-2">
+                      <strong>Rationale:</strong> {rec.rationale}
+                    </p>
                     <div className="flex gap-4 text-xs">
-                      <span><strong>Timeline:</strong> {rec.timeline}</span>
-                      {rec.estimatedCost && <span><strong>Cost:</strong> {rec.estimatedCost}</span>}
-                      {rec.estimatedSavings && <span className="text-green-600"><strong>Savings:</strong> {rec.estimatedSavings}</span>}
-                      {rec.estimatedImpact && <span className="text-blue-600"><strong>Impact:</strong> {rec.estimatedImpact}</span>}
+                      <span>
+                        <strong>Timeline:</strong> {rec.timeline}
+                      </span>
+                      {rec.estimatedCost && (
+                        <span>
+                          <strong>Cost:</strong> {rec.estimatedCost}
+                        </span>
+                      )}
+                      {rec.estimatedSavings && (
+                        <span className="text-green-600">
+                          <strong>Savings:</strong> {rec.estimatedSavings}
+                        </span>
+                      )}
+                      {rec.estimatedImpact && (
+                        <span className="text-blue-600">
+                          <strong>Impact:</strong> {rec.estimatedImpact}
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -342,37 +383,38 @@ const DemandForecasting = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              🔬 Model Performance
-            </CardTitle>
+            <CardTitle className="flex items-center gap-2">🔬 Model Performance</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {forecastData?.confidence?.byModel && Object.entries(forecastData.confidence.byModel).map(([model, confidence]) => (
-                <div key={model} className="flex justify-between items-center">
-                  <span className="font-medium capitalize">{model.replace(/([A-Z])/g, ' $1').trim()}</span>
-                  <div className="flex items-center gap-2">
-                    <div className="w-24 bg-gray-200 rounded-full h-2">
-                      <div 
-                        className="bg-green-600 h-2 rounded-full"
-                        style={{ width: `${confidence * 100}%` }}
-                      ></div>
-                    </div>
-                    <span className={`text-xs px-2 py-1 rounded ${getConfidenceColor(confidence)}`}>
-                      {Math.round(confidence * 100)}%
+              {forecastData?.confidence?.byModel &&
+                Object.entries(forecastData.confidence.byModel).map(([model, confidence]) => (
+                  <div key={model} className="flex justify-between items-center">
+                    <span className="font-medium capitalize">
+                      {model.replace(/([A-Z])/g, ' $1').trim()}
                     </span>
+                    <div className="flex items-center gap-2">
+                      <div className="w-24 bg-gray-200 rounded-full h-2">
+                        <div
+                          className="bg-green-600 h-2 rounded-full"
+                          style={{ width: `${confidence * 100}%` }}
+                        ></div>
+                      </div>
+                      <span
+                        className={`text-xs px-2 py-1 rounded ${getConfidenceColor(confidence)}`}
+                      >
+                        {Math.round(confidence * 100)}%
+                      </span>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
             </div>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              📊 Forecast Composition
-            </CardTitle>
+            <CardTitle className="flex items-center gap-2">📊 Forecast Composition</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
@@ -395,7 +437,8 @@ const DemandForecasting = () => {
             </div>
             <div className="mt-4 p-3 bg-blue-50 rounded-lg">
               <p className="text-sm text-blue-800">
-                <strong>Ensemble Method:</strong> Combines multiple forecasting approaches for improved accuracy and robustness.
+                <strong>Ensemble Method:</strong> Combines multiple forecasting approaches for
+                improved accuracy and robustness.
               </p>
             </div>
           </CardContent>
@@ -417,7 +460,8 @@ const DemandForecasting = () => {
             )}
           </div>
           <div className="mt-2 text-xs text-green-700 dark:text-green-300">
-            Incorporates seasonal trends, channel behaviors, and regional market dynamics for Sentia's 9-SKU operation
+            Incorporates seasonal trends, channel behaviors, and regional market dynamics for
+            Sentia's 9-SKU operation
           </div>
         </CardContent>
       </Card>
@@ -430,7 +474,7 @@ const MetricCard = ({ title, value, icon, color, description }) => {
     green: 'bg-green-50 text-green-900 border-green-200',
     blue: 'bg-blue-50 text-blue-900 border-blue-200',
     purple: 'bg-purple-50 text-purple-900 border-purple-200',
-    yellow: 'bg-yellow-50 text-yellow-900 border-yellow-200'
+    yellow: 'bg-yellow-50 text-yellow-900 border-yellow-200',
   }
 
   const Icon = icon

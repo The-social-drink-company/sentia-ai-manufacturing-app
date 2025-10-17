@@ -1,6 +1,7 @@
 # Render Final Setup Steps - Complete Your Deployment
 
 ## ✅ Completed
+
 - Deleted duplicate `sentia-manufacturing-dashboard` service
 - Server is running at https://sentia-manufacturing-development.onrender.com/
 - Emergency server confirmed working
@@ -27,6 +28,7 @@
 ### Step 2: Run Environment Variables Setup Script
 
 **Option A - Windows PowerShell:**
+
 ```powershell
 # Run this in your project directory
 .\render-env-setup.ps1
@@ -58,6 +60,7 @@ VITE_APP_TITLE=Sentia Manufacturing Dashboard
 ### Step 3: Trigger New Deployment
 
 After adding environment variables:
+
 1. Go to your service dashboard
 2. Click **"Manual Deploy"**
 3. Select **"Clear build cache & deploy"**
@@ -72,6 +75,7 @@ Once deployed, test these endpoints:
 3. **API Status**: https://sentia-manufacturing-development.onrender.com/api/health
 
 Expected results:
+
 - Main app shows login page (Clerk authentication)
 - Health check returns JSON with status "healthy"
 - API returns service information
@@ -81,12 +85,14 @@ Expected results:
 Repeat the same process for:
 
 #### Testing Environment:
+
 - Service: `sentia-manufacturing-testing`
 - Database: `sentia-db-testing`
 - URL: https://sentia-manufacturing-testing.onrender.com
 - Set `NODE_ENV=test`
 
 #### Production Environment:
+
 - Service: `sentia-manufacturing-production`
 - Database: `sentia-db-production`
 - URL: https://sentia-manufacturing-production.onrender.com
@@ -101,6 +107,7 @@ Repeat the same process for:
 ## 🚀 Quick Checklist
 
 ### Development Environment
+
 - [ ] Database URL configured
 - [ ] Environment variables added
 - [ ] Manual deployment triggered
@@ -109,12 +116,14 @@ Repeat the same process for:
 - [ ] API endpoints working
 
 ### Testing Environment
+
 - [ ] Service configured
 - [ ] Database connected
 - [ ] Environment variables set
 - [ ] Deployment successful
 
 ### Production Environment
+
 - [ ] Service configured
 - [ ] Database connected
 - [ ] Environment variables set
@@ -124,21 +133,25 @@ Repeat the same process for:
 ## 🔍 Troubleshooting
 
 ### "Database connection failed"
+
 - Verify DATABASE_URL is using Internal URL (not External)
 - Check database service is running
 - Ensure SSL mode: `?sslmode=require`
 
 ### "Build failed"
+
 - Check build logs for missing dependencies
 - Ensure build command: `npm ci --legacy-peer-deps && npm run build`
 - Try "Clear build cache & deploy"
 
 ### "Application not loading"
+
 - Check environment variables are set
 - Verify VITE variables are present
 - Check browser console for errors
 
 ### "Port issues"
+
 - Render provides PORT automatically
 - Don't hardcode port numbers
 - Use: `process.env.PORT || 3000`
@@ -153,6 +166,7 @@ Repeat the same process for:
 ## ✨ Success Indicators
 
 When everything is working:
+
 - ✅ Service shows "Live" status
 - ✅ No errors in deployment logs
 - ✅ Health check returns 200 OK
@@ -177,6 +191,7 @@ Your Render Services:
 ---
 
 **Support**: If you encounter issues, check:
+
 - Service Logs: Dashboard → Service → Logs
 - Build Logs: Dashboard → Service → Events
 - Health Status: https://[service-name].onrender.com/health

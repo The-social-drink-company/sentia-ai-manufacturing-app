@@ -1,4 +1,5 @@
 # Render Quick Environment Reference
+
 ## Copy-Paste Ready Variables for All Environments
 
 ---
@@ -20,6 +21,7 @@
 ## 📋 COPY-PASTE VARIABLES BY ENVIRONMENT
 
 ### DEVELOPMENT
+
 ```
 NODE_ENV=development
 PORT=10000
@@ -86,6 +88,7 @@ SHOPIFY_SYNC_INTERVAL=*/15 * * * *
 ```
 
 ### TESTING
+
 ```
 NODE_ENV=test
 PORT=10000
@@ -108,6 +111,7 @@ LOG_LEVEL=info
 ```
 
 ### PRODUCTION
+
 ```
 NODE_ENV=production
 PORT=10000
@@ -139,6 +143,7 @@ SENTRY_DSN=[Your Sentry DSN]
 These need to be obtained and added manually:
 
 ### Amazon SP-API (If using Amazon integration)
+
 ```
 AMAZON_SP_API_CLIENT_ID=
 AMAZON_SP_API_CLIENT_SECRET=
@@ -147,11 +152,13 @@ AMAZON_SELLER_ID=
 ```
 
 ### Xero (After first connection)
+
 ```
 XERO_TENANT_ID=
 ```
 
 ### Optional Services
+
 ```
 REDIS_URL=
 STRIPE_SECRET_KEY=
@@ -186,6 +193,7 @@ curl https://sentia-manufacturing-production.onrender.com/health
 ---
 
 **Quick Help**: If something's not working, check:
+
 1. Database URL is correct (Internal URL)
 2. All required variables are set
 3. Service has been deployed after changes

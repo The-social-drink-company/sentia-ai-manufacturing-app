@@ -7,7 +7,8 @@ import { getApiBaseUrl } from '../api/baseApi.js'
 
 class AIInferenceService {
   constructor() {
-    this.mcpServerUrl = import.meta.env.VITE_MCP_SERVER_URL || 'https://sentia-mcp-production.onrender.com'
+    this.mcpServerUrl =
+      import.meta.env.VITE_MCP_SERVER_URL || 'https://sentia-mcp-production.onrender.com'
     this.apiBaseUrl = getApiBaseUrl()
   }
 
@@ -34,7 +35,6 @@ class AIInferenceService {
       // Fallback to local API
       console.log('[AI Service] Falling back to local API')
       return await this.queryLocalAPI({ message, context, conversationId })
-
     } catch (error) {
       console.error('[AI Service] Query failed:', error)
 
@@ -44,7 +44,7 @@ class AIInferenceService {
         conversationId: conversationId || this.generateId(),
         content: `I understand you're asking about "${message}". While I'm currently working on connecting to our AI systems, I can help you navigate the dashboard or explain our manufacturing analytics features. Try asking about production metrics, working capital analysis, or demand forecasting.`,
         citations: [],
-        chartSpec: null
+        chartSpec: null,
       }
     }
   }
@@ -64,10 +64,10 @@ class AIInferenceService {
           context: {
             ...context,
             dashboard: 'manufacturing',
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
           },
-          conversationId
-        })
+          conversationId,
+        }),
       })
 
       if (!response.ok) {
@@ -80,9 +80,8 @@ class AIInferenceService {
         conversationId: data.conversationId || conversationId || this.generateId(),
         content: data.content || data.response,
         citations: data.citations || [],
-        chartSpec: data.chartSpec || null
+        chartSpec: data.chartSpec || null,
       }
-
     } catch (error) {
       console.warn('[AI Service] MCP server unavailable:', error.message)
       return null
@@ -102,8 +101,8 @@ class AIInferenceService {
         body: JSON.stringify({
           message,
           context,
-          conversationId
-        })
+          conversationId,
+        }),
       })
 
       if (!response.ok) {
@@ -116,9 +115,8 @@ class AIInferenceService {
         conversationId: data.conversationId || conversationId || this.generateId(),
         content: data.content || data.response,
         citations: data.citations || [],
-        chartSpec: data.chartSpec || null
+        chartSpec: data.chartSpec || null,
       }
-
     } catch (error) {
       console.warn('[AI Service] Local API unavailable:', error.message)
       throw error
@@ -143,8 +141,8 @@ class AIInferenceService {
       context: {
         ...context,
         type: 'manufacturing_insights',
-        timestamp: new Date().toISOString()
-      }
+        timestamp: new Date().toISOString(),
+      },
     })
   }
 
@@ -157,8 +155,8 @@ class AIInferenceService {
       context: {
         type: 'production_analysis',
         timeRange,
-        timestamp: new Date().toISOString()
-      }
+        timestamp: new Date().toISOString(),
+      },
     })
   }
 
@@ -171,8 +169,8 @@ class AIInferenceService {
       context: {
         type: 'financial_analysis',
         data: financialData,
-        timestamp: new Date().toISOString()
-      }
+        timestamp: new Date().toISOString(),
+      },
     })
   }
 }

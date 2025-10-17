@@ -1,5 +1,10 @@
 import { useState, useEffect } from 'react'
-import { ChevronDownIcon, UserIcon, CogIcon, ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline'
+import {
+  ChevronDownIcon,
+  UserIcon,
+  CogIcon,
+  ArrowRightOnRectangleIcon,
+} from '@heroicons/react/24/outline'
 import { mockUser } from '../../auth/MockUser.js'
 
 const isDevelopmentMode = import.meta.env.VITE_DEVELOPMENT_MODE === 'true'
@@ -36,9 +41,7 @@ const UserButtonEnvironmentAware = ({ afterSignOutUrl, ...props }) => {
   }, [])
 
   if (loading) {
-    return (
-      <div className="w-8 h-8 rounded-full bg-gray-300 animate-pulse" />
-    )
+    return <div className="w-8 h-8 rounded-full bg-gray-300 animate-pulse" />
   }
 
   if (isDevelopmentMode || !UserButton) {
@@ -51,9 +54,7 @@ const UserButtonEnvironmentAware = ({ afterSignOutUrl, ...props }) => {
           {...props}
         >
           <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-            <span className="text-white text-sm font-medium">
-              {mockUser.firstName?.[0] || 'D'}
-            </span>
+            <span className="text-white text-sm font-medium">{mockUser.firstName?.[0] || 'D'}</span>
           </div>
           <div className="hidden sm:block text-left">
             <div className="text-sm font-medium text-gray-900">{mockUser.fullName}</div>
@@ -69,19 +70,19 @@ const UserButtonEnvironmentAware = ({ afterSignOutUrl, ...props }) => {
               <div className="text-sm text-gray-500">{mockUser.emailAddress}</div>
               <div className="text-xs text-blue-600 mt-1">Admin • Development Mode</div>
             </div>
-            
+
             <button className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2">
               <UserIcon className="w-4 h-4" />
               <span>Manage Account</span>
             </button>
-            
+
             <button className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2">
               <CogIcon className="w-4 h-4" />
               <span>Settings</span>
             </button>
-            
+
             <div className="border-t border-gray-100 mt-1 pt-1">
-              <button 
+              <button
                 onClick={() => {
                   console.log('[UserButtonEnvironmentAware] Sign out called in development mode')
                   setDropdownOpen(false)

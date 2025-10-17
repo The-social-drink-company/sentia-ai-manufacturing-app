@@ -28,11 +28,13 @@
 ## 🔴 WHAT YOU MUST DO NOW
 
 ### STEP 1: Open Render Dashboard
+
 ```
 https://dashboard.render.com
 ```
 
 ### STEP 2: Navigate to Production Service
+
 - Click on: `sentia-manufacturing-production`
 - Go to: `Environment` tab
 
@@ -62,6 +64,7 @@ JWT_EXPIRES_IN=24h
 ```
 
 ### STEP 4: Save Changes
+
 - Click: `Save Changes`
 - Render will automatically redeploy
 - Wait: 2-5 minutes
@@ -71,11 +74,13 @@ JWT_EXPIRES_IN=24h
 ## 📊 HOW TO VERIFY IT'S WORKING
 
 ### Test 1: Health Check
+
 ```bash
 curl https://sentia-manufacturing-production.onrender.com/health
 ```
 
 **Expected Response:**
+
 ```json
 {
   "status": "healthy",
@@ -84,6 +89,7 @@ curl https://sentia-manufacturing-production.onrender.com/health
 ```
 
 ### Test 2: Main Website
+
 - Visit: https://sentia-manufacturing-production.onrender.com
 - Should see: Login page (not 502 error)
 
@@ -128,21 +134,25 @@ Without these, the server cannot start, causing the 502 error.
 ## 📱 QUICK REFERENCE
 
 ### Render Dashboard
+
 ```
 https://dashboard.render.com
 ```
 
 ### Production Service
+
 ```
 sentia-manufacturing-production
 ```
 
 ### Test URL
+
 ```
 https://sentia-manufacturing-production.onrender.com/health
 ```
 
 ### Monitor Script
+
 ```bash
 ./verify-production-fix.sh
 ```
@@ -152,6 +162,7 @@ https://sentia-manufacturing-production.onrender.com/health
 ## ✅ SUCCESS CRITERIA
 
 Production is fixed when:
+
 - Health check returns JSON (not 502)
 - Main site loads without error
 - Authentication works
@@ -161,5 +172,3 @@ Production is fixed when:
 **THIS IS THE ONLY REMAINING STEP TO FIX PRODUCTION**
 
 The code is deployed. The server is ready. It just needs the environment variables!
-
-

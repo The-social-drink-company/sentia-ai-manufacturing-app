@@ -3,11 +3,13 @@
 ## Pre-Deployment Verification
 
 ### Environment URLs
+
 - [ ] Development: https://sentia-manufacturing-development.onrender.com
 - [ ] Production: https://sentia-manufacturing-production.onrender.com
 - [ ] MCP Server: https://mcp-server-tkyu.onrender.com
 
 ### Deployment Status Check
+
 ```bash
 # Check if services are live (should return 200 OK)
 curl -I https://sentia-manufacturing-development.onrender.com/health
@@ -18,12 +20,14 @@ curl -I https://mcp-server-tkyu.onrender.com/health
 ## Phase 1: Basic Health Checks (5 minutes)
 
 ### Development Environment
+
 - [ ] Navigate to https://sentia-manufacturing-development.onrender.com
 - [ ] Verify page loads without errors
 - [ ] Check browser console for any critical errors
 - [ ] Verify Clerk production key is loaded (check console logs)
 
 ### Production Environment
+
 - [ ] Navigate to https://sentia-manufacturing-production.onrender.com
 - [ ] Verify page loads without errors
 - [ ] Check browser console for any critical errors
@@ -32,6 +36,7 @@ curl -I https://mcp-server-tkyu.onrender.com/health
 ## Phase 2: Authentication Flow Testing (10 minutes)
 
 ### Sign Up Flow
+
 1. **Development Environment**
    - [ ] Click "Sign Up" button
    - [ ] Verify redirect to Clerk sign-up page
@@ -53,6 +58,7 @@ curl -I https://mcp-server-tkyu.onrender.com/health
    - [ ] Check user role assignment
 
 ### Sign In Flow
+
 1. **Development Environment**
    - [ ] Sign out if logged in
    - [ ] Click "Sign In" button
@@ -72,6 +78,7 @@ curl -I https://mcp-server-tkyu.onrender.com/health
 ## Phase 3: Dashboard Access & Permissions (15 minutes)
 
 ### Navigation Testing
+
 - [ ] **Sidebar Navigation**
   - [ ] Dashboard (Overview)
   - [ ] Demand Forecasting
@@ -84,6 +91,7 @@ curl -I https://mcp-server-tkyu.onrender.com/health
   - [ ] Data Import
 
 ### Widget Functionality
+
 - [ ] **KPI Strip**: Verify metrics load
 - [ ] **Demand Forecast Chart**: Check data visualization
 - [ ] **Inventory Levels**: Confirm real-time updates
@@ -92,6 +100,7 @@ curl -I https://mcp-server-tkyu.onrender.com/health
 - [ ] **Financial Overview**: Check currency formatting
 
 ### Button Actions
+
 - [ ] **Export Button**: Download JSON data
 - [ ] **Save Layout**: Persist dashboard configuration
 - [ ] **Share Button**: Copy shareable link
@@ -106,43 +115,56 @@ curl -I https://mcp-server-tkyu.onrender.com/health
 ### API Integration Tests
 
 #### Financial Data
+
 ```javascript
 // Check in browser console
 fetch('/api/financial/working-capital', {
   headers: {
-    'Authorization': 'Bearer ' + localStorage.getItem('clerk-token')
-  }
-}).then(r => r.json()).then(console.log)
+    Authorization: 'Bearer ' + localStorage.getItem('clerk-token'),
+  },
+})
+  .then(r => r.json())
+  .then(console.log)
 ```
+
 - [ ] Verify response contains real financial metrics
 - [ ] Check for current assets/liabilities data
 - [ ] Confirm cash flow calculations
 
 #### Inventory Data
+
 ```javascript
 fetch('/api/inventory/levels', {
   headers: {
-    'Authorization': 'Bearer ' + localStorage.getItem('clerk-token')
-  }
-}).then(r => r.json()).then(console.log)
+    Authorization: 'Bearer ' + localStorage.getItem('clerk-token'),
+  },
+})
+  .then(r => r.json())
+  .then(console.log)
 ```
+
 - [ ] Verify real inventory items returned
 - [ ] Check stock levels are current
 - [ ] Confirm SKU information accurate
 
 #### Production Data
+
 ```javascript
 fetch('/api/production/metrics', {
   headers: {
-    'Authorization': 'Bearer ' + localStorage.getItem('clerk-token')
-  }
-}).then(r => r.json()).then(console.log)
+    Authorization: 'Bearer ' + localStorage.getItem('clerk-token'),
+  },
+})
+  .then(r => r.json())
+  .then(console.log)
 ```
+
 - [ ] Verify production metrics loaded
 - [ ] Check OEE calculations
 - [ ] Confirm batch information
 
 ### External Service Connections
+
 - [ ] **Xero**: Check financial sync status
 - [ ] **Shopify UK**: Verify order data
 - [ ] **Shopify USA**: Confirm inventory sync
@@ -152,12 +174,14 @@ fetch('/api/production/metrics', {
 ## Phase 5: Role-Based Access Testing (10 minutes)
 
 ### Viewer Role (Default)
+
 - [ ] Can view all dashboards
 - [ ] Cannot modify settings
 - [ ] No access to admin panel
 - [ ] Read-only widget interactions
 
 ### Admin Role Testing
+
 - [ ] Request admin role assignment in Clerk dashboard
 - [ ] Verify admin panel access
 - [ ] Test user management features
@@ -166,18 +190,21 @@ fetch('/api/production/metrics', {
 ## Phase 6: Error Handling & Edge Cases (10 minutes)
 
 ### Session Management
+
 - [ ] Test session timeout (wait 24 hours or modify token)
 - [ ] Verify graceful redirect to sign-in
 - [ ] Check "Remember me" functionality
 - [ ] Test multiple browser tabs
 
 ### Network Scenarios
+
 - [ ] Slow connection (throttle to 3G)
 - [ ] Offline mode (disconnect network)
 - [ ] API timeout handling
 - [ ] Retry mechanisms
 
 ### Browser Compatibility
+
 - [ ] Chrome (latest)
 - [ ] Firefox (latest)
 - [ ] Safari (latest)
@@ -187,12 +214,14 @@ fetch('/api/production/metrics', {
 ## Phase 7: Performance Metrics (5 minutes)
 
 ### Page Load Times
+
 - [ ] Initial load < 3 seconds
 - [ ] Dashboard render < 2 seconds
 - [ ] API responses < 1 second
 - [ ] Widget updates < 500ms
 
 ### Resource Usage
+
 - [ ] Check browser memory usage
 - [ ] Monitor network requests
 - [ ] Verify no memory leaks
@@ -201,6 +230,7 @@ fetch('/api/production/metrics', {
 ## Post-Testing Verification
 
 ### Success Criteria
+
 - [ ] All authentication flows work
 - [ ] Dashboard loads with real data
 - [ ] No console errors in production
@@ -209,15 +239,17 @@ fetch('/api/production/metrics', {
 - [ ] External services connected
 
 ### Issue Tracking
+
 Document any issues found:
 
 | Issue | Environment | Severity | Status |
-|-------|-------------|----------|--------|
-| | | | |
-| | | | |
-| | | | |
+| ----- | ----------- | -------- | ------ |
+|       |             |          |        |
+|       |             |          |        |
+|       |             |          |        |
 
 ### Sign-Off
+
 - [ ] Development environment approved
 - [ ] Production environment approved
 - [ ] Authentication system validated
@@ -256,7 +288,7 @@ done
 
 ---
 
-**Testing Started**: _______________  
-**Testing Completed**: _______________  
-**Tested By**: _______________  
-**Approved By**: _______________
+**Testing Started**: ******\_\_\_******  
+**Testing Completed**: ******\_\_\_******  
+**Tested By**: ******\_\_\_******  
+**Approved By**: ******\_\_\_******

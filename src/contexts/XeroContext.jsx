@@ -1,6 +1,6 @@
 /**
  * Global Xero Context for App-Wide Connection Management
- * 
+ *
  * Provides centralized Xero connection state and OAuth flow management
  * across all components that need financial data.
  */
@@ -30,46 +30,46 @@ export const XeroProvider = ({ children }) => {
     try {
       setIsLoading(true)
       setLastError(null)
-      
+
       logInfo('[XeroContext] Checking Xero connection status...')
-      
+
       const response = await fetch('/api/xero/status')
       const data = await response.json()
-      
+
       logInfo('[XeroContext] Xero status API response:', data)
-      
+
       if (data.success && data.status) {
         const wasConnected = isConnected
         setIsConnected(data.status.connected)
         setConnectionStatus(data.status)
-        
+
         // Log state changes
         if (wasConnected !== data.status.connected) {
-          logInfo('[XeroContext] Connection state changed:', { 
-            from: wasConnected, 
-            to: data.status.connected 
+          logInfo('[XeroContext] Connection state changed:', {
+            from: wasConnected,
+            to: data.status.connected,
           })
         }
-        
+
         if (data.status.connected && data.status.organizationId) {
           setOrganizationInfo({
             id: data.status.organizationId,
             name: data.status.organizationName || 'Connected Organization',
             lastSync: data.status.lastSync,
-            tokenExpiry: data.status.tokenExpiry
+            tokenExpiry: data.status.tokenExpiry,
           })
           logInfo('[XeroContext] Organization info updated:', {
             id: data.status.organizationId,
-            name: data.status.organizationName
+            name: data.status.organizationName,
           })
         } else {
           setOrganizationInfo(null)
         }
-        
-        logInfo('[XeroContext] Final state:', { 
+
+        logInfo('[XeroContext] Final state:', {
           connected: data.status.connected,
           hasTokens: data.status.hasTokens,
-          organizationId: data.status.organizationId 
+          organizationId: data.status.organizationId,
         })
       } else {
         logWarn('[XeroContext] Invalid API response, setting disconnected state')
@@ -90,13 +90,16 @@ export const XeroProvider = ({ children }) => {
   useEffect(() => {
     logInfo('[XeroContext] Initializing XeroContext, checking connection status...')
     checkConnectionStatus()
-    
+
     // Check connection status every 5 minutes
-    const interval = setInterval(() => {
-      logInfo('[XeroContext] Periodic connection check (5min interval)')
-      checkConnectionStatus()
-    }, 5 * 60 * 1000)
-    
+    const interval = setInterval(
+      () => {
+        logInfo('[XeroContext] Periodic connection check (5min interval)')
+        checkConnectionStatus()
+      },
+      5 * 60 * 1000
+    )
+
     return () => {
       logInfo('[XeroContext] Cleaning up XeroContext interval')
       clearInterval(interval)
@@ -122,15 +125,11 @@ export const XeroProvider = ({ children }) => {
     connectionStatus,
     organizationInfo,
     lastError,
-    
+
     // Actions
     retry,
-    checkConnectionStatus
+    checkConnectionStatus,
   }
 
-  return (
-    <XeroContext.Provider value={value}>
-      {children}
-    </XeroContext.Provider>
-  )
+  return <XeroContext.Provider value={value}>{children}</XeroContext.Provider>
 }

@@ -12,68 +12,71 @@ export const useWorkingCapitalLiveData = () => {
   const [retryCount, setRetryCount] = useState(0)
   const [isRetrying, setIsRetrying] = useState(false)
 
-  const fetchWorkingCapitalData = useCallback(async (isRetry = false) => {
-    try {
-      if (isRetry) {
-        setIsRetrying(true)
-      } else {
-        setLoading(true)
-      }
-      setError(null)
-      
-      console.log('🔄 Fetching live working capital data from MCP server...')
-      const response = await fetch('/api/working-capital')
-      const result = await response.json()
-      
-      if (!response.ok || !result.success) {
-        const errorDetails = {
-          type: result.error || 'API Error',
-          message: result.message || 'Failed to fetch working capital data',
-          userAction: result.userAction || 'Please try again',
-          retryIn: result.retryIn,
-          timestamp: result.timestamp,
-          httpStatus: response.status
+  const fetchWorkingCapitalData = useCallback(
+    async (isRetry = false) => {
+      try {
+        if (isRetry) {
+          setIsRetrying(true)
+        } else {
+          setLoading(true)
         }
-        
-        console.error('❌ Working capital API error:', errorDetails)
-        setError(errorDetails)
+        setError(null)
+
+        console.log('🔄 Fetching live working capital data from MCP server...')
+        const response = await fetch('/api/working-capital')
+        const result = await response.json()
+
+        if (!response.ok || !result.success) {
+          const errorDetails = {
+            type: result.error || 'API Error',
+            message: result.message || 'Failed to fetch working capital data',
+            userAction: result.userAction || 'Please try again',
+            retryIn: result.retryIn,
+            timestamp: result.timestamp,
+            httpStatus: response.status,
+          }
+
+          console.error('❌ Working capital API error:', errorDetails)
+          setError(errorDetails)
+          setData(null)
+          setMetadata(null)
+
+          if (isRetry) {
+            setRetryCount(prev => prev + 1)
+            console.log(`🔄 Retry attempt ${retryCount + 1} failed`)
+          }
+        } else {
+          console.log('✅ Live working capital data fetched successfully from MCP server')
+          setData(result.data)
+          setMetadata(result.metadata)
+          setError(null)
+          setRetryCount(0)
+        }
+      } catch (fetchError) {
+        const networkError = {
+          type: 'Network Error',
+          message: 'Unable to connect to the server. Check your internet connection.',
+          userAction: 'Please check your connection and try again',
+          retryIn: '30 seconds',
+          timestamp: new Date().toISOString(),
+          originalError: fetchError.message,
+        }
+
+        console.error('❌ Network error fetching working capital data:', networkError)
+        setError(networkError)
         setData(null)
         setMetadata(null)
-        
+
         if (isRetry) {
           setRetryCount(prev => prev + 1)
-          console.log(`🔄 Retry attempt ${retryCount + 1} failed`)
         }
-      } else {
-        console.log('✅ Live working capital data fetched successfully from MCP server')
-        setData(result.data)
-        setMetadata(result.metadata)
-        setError(null)
-        setRetryCount(0)
+      } finally {
+        setLoading(false)
+        setIsRetrying(false)
       }
-    } catch (fetchError) {
-      const networkError = {
-        type: 'Network Error',
-        message: 'Unable to connect to the server. Check your internet connection.',
-        userAction: 'Please check your connection and try again',
-        retryIn: '30 seconds',
-        timestamp: new Date().toISOString(),
-        originalError: fetchError.message
-      }
-      
-      console.error('❌ Network error fetching working capital data:', networkError)
-      setError(networkError)
-      setData(null)
-      setMetadata(null)
-      
-      if (isRetry) {
-        setRetryCount(prev => prev + 1)
-      }
-    } finally {
-      setLoading(false)
-      setIsRetrying(false)
-    }
-  }, [retryCount])
+    },
+    [retryCount]
+  )
 
   // Manual retry function for user-triggered retries
   const retryConnection = useCallback(() => {
@@ -86,7 +89,7 @@ export const useWorkingCapitalLiveData = () => {
     if (error && error.type === 'Network Error' && retryCount < 3) {
       const retryDelay = Math.min(1000 * Math.pow(2, retryCount), 30000) // Max 30 seconds
       console.log(`⏱️ Scheduling automatic retry in ${retryDelay}ms (attempt ${retryCount + 1}/3)`)
-      
+
       setTimeout(() => {
         fetchWorkingCapitalData(true)
       }, retryDelay)
@@ -104,11 +107,14 @@ export const useWorkingCapitalLiveData = () => {
   useEffect(() => {
     if (!error && data && metadata && metadata.dataSource === 'live') {
       console.log('🔄 Setting up auto-refresh interval for live data (5 minutes)')
-      const interval = setInterval(() => {
-        console.log('🔄 Auto-refreshing live working capital data')
-        fetchWorkingCapitalData()
-      }, 5 * 60 * 1000)
-      
+      const interval = setInterval(
+        () => {
+          console.log('🔄 Auto-refreshing live working capital data')
+          fetchWorkingCapitalData()
+        },
+        5 * 60 * 1000
+      )
+
       return () => {
         console.log('🛑 Clearing auto-refresh interval')
         clearInterval(interval)
@@ -131,7 +137,7 @@ export const useWorkingCapitalLiveData = () => {
     isRetrying,
     retryCount,
     retryConnection,
-    refresh: fetchWorkingCapitalData
+    refresh: fetchWorkingCapitalData,
   }
 }
 

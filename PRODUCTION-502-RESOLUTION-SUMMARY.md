@@ -12,6 +12,7 @@
 ## What We've Already Done ✅
 
 ### 1. Code Fixes Applied
+
 - ✅ Fixed query-optimizer.js undefined model error
 - ✅ Created minimal-server.js for fast startup
 - ✅ Updated package.json to use minimal server
@@ -19,6 +20,7 @@
 - ✅ Pushed all changes to production branch on GitHub
 
 ### 2. Server Configuration
+
 - ✅ Minimal server configured for port 5000
 - ✅ Static file serving configured
 - ✅ Health endpoints implemented
@@ -26,6 +28,7 @@
 - ✅ Tested locally - works perfectly
 
 ### 3. Git Repository Status
+
 - ✅ All fixes committed and pushed
 - ✅ Production branch up to date
 - ✅ Render should auto-deploy on push
@@ -41,6 +44,7 @@ The production server is trying to start but crashing because it cannot find the
 ### Step-by-Step Fix (10 minutes):
 
 #### 1. Open Render Dashboard
+
 - URL: https://dashboard.render.com
 - Service: sentia-manufacturing-production
 - Go to: Environment tab
@@ -48,6 +52,7 @@ The production server is trying to start but crashing because it cannot find the
 #### 2. Add These Critical Variables (Copy & Paste)
 
 **Clerk Authentication (MOST CRITICAL):**
+
 ```
 VITE_CLERK_PUBLISHABLE_KEY=pk_live_REDACTED
 CLERK_SECRET_KEY=sk_live_REDACTED
@@ -57,6 +62,7 @@ CLERK_WEBHOOK_SECRET=whsec_REDACTED
 ```
 
 **API Configuration:**
+
 ```
 VITE_API_BASE_URL=/api
 API_BASE_URL=/api
@@ -67,6 +73,7 @@ VITE_CLERK_AFTER_SIGN_UP_URL=/dashboard
 ```
 
 **MCP Server:**
+
 ```
 MCP_SERVER_URL=https://mcp-server-tkyu.onrender.com
 VITE_MCP_SERVER_URL=https://mcp-server-tkyu.onrender.com
@@ -74,6 +81,7 @@ MCP_JWT_SECRET=production-mcp-jwt-secret-2025
 ```
 
 **Security:**
+
 ```
 SESSION_SECRET=production-session-secret-2025-sentia
 JWT_SECRET=production-jwt-secret-2025-sentia
@@ -81,27 +89,33 @@ JWT_EXPIRES_IN=24h
 ```
 
 #### 3. Save Changes
+
 - Click "Save Changes" button
 - Render will automatically trigger a new deployment
 
 #### 4. Wait for Deployment (2-5 minutes)
+
 - Monitor in the Events tab
 - Look for "Deploy succeeded"
 
 #### 5. Verify Success
+
 Run the verification script:
+
 ```bash
 ./verify-production-fix.sh
 ```
 
 Or check manually:
+
 ```bash
 curl https://sentia-manufacturing-production.onrender.com/health
 ```
 
 Expected response:
+
 ```json
-{"status":"ok","timestamp":"2025-09-20T..."}
+{ "status": "ok", "timestamp": "2025-09-20T..." }
 ```
 
 ---
@@ -109,12 +123,14 @@ Expected response:
 ## Why This Will Work 💡
 
 ### Current Situation:
+
 1. **Code**: ✅ Fixed and deployed
 2. **Server**: ✅ Minimal server ready
 3. **Database**: ✅ Connected and working
 4. **Environment Variables**: ❌ MISSING (causing 502)
 
 ### After Adding Variables:
+
 1. Server will start successfully
 2. Clerk authentication will initialize
 3. React app will load properly
@@ -136,23 +152,30 @@ Expected response:
 ## Alternative Solutions (If Needed)
 
 ### Option 1: Manual Deployment
+
 If auto-deploy doesn't trigger:
+
 1. Go to Settings tab in Render
 2. Click "Manual Deploy"
 3. Select "production" branch
 4. Click "Deploy"
 
 ### Option 2: Emergency Server
+
 If minimal server still fails:
+
 1. Update package.json to use emergency-server.js
 2. Push to production branch
 3. This runs ultra-minimal server (no dependencies)
 
 ### Option 3: Bypass Authentication (Temporary)
+
 Add this variable to get site running:
+
 ```
 BYPASS_AUTH=true
 ```
+
 ⚠️ Warning: This disables all authentication - use only for testing
 
 ---
@@ -160,6 +183,7 @@ BYPASS_AUTH=true
 ## Success Metrics 📊
 
 When fixed, you'll see:
+
 - ✅ Health endpoint returns JSON
 - ✅ Main site loads without 502
 - ✅ Login page appears
@@ -187,5 +211,3 @@ When fixed, you'll see:
 ---
 
 **NEXT ACTION**: Open Render Dashboard and add the missing environment variables NOW!
-
-

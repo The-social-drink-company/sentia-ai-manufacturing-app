@@ -1,17 +1,20 @@
 # Render MCP Server Migration Guide
 
 ## Overview
+
 This guide walks through migrating your MCP Server from Railway (ID: 99691282-de66-45b2-98cf-317083dd11ba) to Render.
 
 ## Key Differences: Railway vs Render
 
 ### Railway
+
 - Single project with multiple services
 - Environment-based deployments
 - Built-in Nixpacks builder
 - Railway-specific configuration (railway.json/toml)
 
 ### Render
+
 - Each service is deployed separately
 - Blueprint-based deployments (render.yaml)
 - Native Node.js runtime
@@ -24,6 +27,7 @@ This guide walks through migrating your MCP Server from Railway (ID: 99691282-de
 The MCP server already has a `render.yaml` configuration in `mcp-server/render.yaml`.
 
 #### Option A: Deploy via Render Dashboard (Recommended)
+
 1. Go to [Render Dashboard](https://dashboard.render.com)
 2. Click "New +" → "Web Service"
 3. Connect your GitHub repository: `The-social-drink-company/sentia-manufacturing-dashboard`
@@ -36,6 +40,7 @@ The MCP server already has a `render.yaml` configuration in `mcp-server/render.y
    - **Plan**: Start with Free, upgrade to Standard for production
 
 #### Option B: Deploy via Blueprint
+
 1. Copy the `mcp-server/render.yaml` to root directory
 2. Push to GitHub
 3. In Render Dashboard: "New +" → "Blueprint"
@@ -63,7 +68,7 @@ Update your main app's environment variables to point to the new Render MCP serv
 ```yaml
 # In main app's render.yaml:
 - key: MCP_SERVER_URL
-  value: https://sentia-mcp-server.onrender.com  # Your Render MCP URL
+  value: https://sentia-mcp-server.onrender.com # Your Render MCP URL
 ```
 
 ### Step 4: Verify Deployment
@@ -97,6 +102,7 @@ Ensure the MCP server allows your Render app domains:
 ## Environment-Specific Deployments
 
 ### Development Environment
+
 ```yaml
 # mcp-server-dev
 - Branch: development
@@ -105,6 +111,7 @@ Ensure the MCP server allows your Render app domains:
 ```
 
 ### Testing Environment
+
 ```yaml
 # mcp-server-test
 - Branch: test
@@ -113,6 +120,7 @@ Ensure the MCP server allows your Render app domains:
 ```
 
 ### Production Environment
+
 ```yaml
 # mcp-server-prod
 - Branch: production
@@ -123,6 +131,7 @@ Ensure the MCP server allows your Render app domains:
 ## MCP Server Features on Render
 
 Your MCP server includes:
+
 - **AI Orchestration**: Multi-LLM management (Claude, GPT-4, Gemini)
 - **Unified API Interface**: All external service integrations
 - **WebSocket Support**: Real-time AI responses
@@ -146,12 +155,14 @@ Your MCP server includes:
 ## Monitoring
 
 ### Render Dashboard
+
 - View logs in real-time
 - Monitor CPU and memory usage
 - Set up alerts for failures
 - Configure auto-deploy from GitHub
 
 ### Health Monitoring
+
 ```bash
 # Simple health check script
 while true; do
@@ -163,6 +174,7 @@ done
 ## Rollback Plan
 
 If issues arise:
+
 1. Railway MCP server remains at: web-production-99691282.up.railway.app
 2. Update MCP_SERVER_URL back to Railway endpoint
 3. Investigate Render deployment issues
@@ -171,10 +183,12 @@ If issues arise:
 ## Cost Comparison
 
 ### Railway
+
 - Usage-based pricing
 - ~$5-20/month for MCP server
 
 ### Render
+
 - **Free Tier**: 750 hours/month (sufficient for development)
 - **Starter**: $7/month (for testing)
 - **Standard**: $25/month (recommended for production)

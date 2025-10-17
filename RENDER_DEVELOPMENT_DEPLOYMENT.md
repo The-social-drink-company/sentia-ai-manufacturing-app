@@ -3,6 +3,7 @@
 ## Quick Start - Deploy to sentia-manufacturing-development.onrender.com
 
 ### Prerequisites
+
 - GitHub repository connected
 - Render account with API key: `rnd_mYUAytWRkb2Pj5GJROqNYubYt25J`
 - Node.js application ready for deployment
@@ -18,6 +19,7 @@
    - Branch: `development`
 
 4. Configure the service:
+
    ```
    Name: sentia-manufacturing-development
    Region: Oregon (US West)
@@ -37,17 +39,20 @@
 ## Step 2: Environment Variables Configuration
 
 ### Option A: Manual Dashboard Setup
+
 1. Go to your service in Render Dashboard
 2. Navigate to **Environment** tab
 3. Add each variable from `render-vars-DEVELOPMENT.txt`
 
 ### Option B: Using PowerShell Script (Windows)
+
 ```powershell
 # Run the deployment script
 .\render-deploy-development.ps1
 ```
 
 ### Option C: Using Bash Script (Mac/Linux)
+
 ```bash
 # Make script executable
 chmod +x render-setup-development.sh
@@ -59,14 +64,17 @@ chmod +x render-setup-development.sh
 ## Step 3: Deploy Your Application
 
 ### Automatic Deployment (Recommended)
+
 - Any push to the `development` branch will automatically trigger a deployment
 - This is enabled by default when you connect your GitHub repository
 
 ### Manual Deployment via Dashboard
+
 1. Go to your service in [Render Dashboard](https://dashboard.render.com)
 2. Click **"Manual Deploy"** → **"Deploy latest commit"**
 
 ### Manual Deployment via Script
+
 ```powershell
 # Windows
 .\render-deploy-development.ps1
@@ -78,11 +86,13 @@ chmod +x render-setup-development.sh
 ## Step 4: Monitor Deployment
 
 ### Check Deployment Status
+
 1. Dashboard: https://dashboard.render.com
 2. Look for your service: `sentia-manufacturing-development`
 3. Check the **Events** tab for deployment progress
 
 ### Verify Deployment
+
 Once deployed, verify your application is running:
 
 - **Application URL**: https://sentia-manufacturing-development.onrender.com
@@ -92,6 +102,7 @@ Once deployed, verify your application is running:
 ## Environment Variables Reference
 
 ### Core Configuration
+
 ```
 NODE_ENV=development
 PORT=3000
@@ -99,17 +110,20 @@ CORS_ORIGINS=https://sentia-manufacturing-development.onrender.com
 ```
 
 ### Database (Neon PostgreSQL)
+
 ```
 DATABASE_URL=postgresql://neondb_owner:npg_2wXVD9gdintm@ep-aged-dust-abpyip0r-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require
 ```
 
 ### Authentication (Clerk)
+
 ```
 VITE_CLERK_PUBLISHABLE_KEY=pk_test_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk
 CLERK_SECRET_KEY=sk_test_EP6iF7prGbq73CscUPCOW8PAKol4pPaBG5iYdsDodq
 ```
 
 ### Feature Flags (Development)
+
 ```
 ENABLE_AUTONOMOUS_TESTING=true
 AUTO_FIX_ENABLED=true
@@ -119,22 +133,27 @@ AUTO_DEPLOY_ENABLED=true
 ## Troubleshooting
 
 ### Build Failures
+
 If the build fails, check:
+
 1. **Logs** in Render Dashboard → Events
 2. Ensure all dependencies are in `package.json`
 3. Verify build command: `npm ci --legacy-peer-deps && npm run build`
 
 ### Application Not Starting
+
 1. Check start command: `node server.js`
 2. Verify PORT environment variable is set
 3. Check application logs in Dashboard
 
 ### Database Connection Issues
+
 1. Verify DATABASE_URL is correctly formatted
 2. Ensure SSL mode is set: `?sslmode=require`
 3. Check Neon database is accessible
 
 ### Health Check Failing
+
 1. Ensure `/health` endpoint returns 200 status
 2. Check server.js implements health endpoint
 3. Verify application is listening on correct PORT
@@ -142,6 +161,7 @@ If the build fails, check:
 ## Deployment Workflow
 
 ### Development Branch Workflow
+
 ```
 1. Make changes locally
 2. Test locally: npm run dev

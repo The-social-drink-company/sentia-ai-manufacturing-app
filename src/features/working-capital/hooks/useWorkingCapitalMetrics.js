@@ -16,7 +16,7 @@ const formatCurrency = (value, currency = 'USD') => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency,
-      maximumFractionDigits: 0
+      maximumFractionDigits: 0,
     }).format(value)
   } catch (error) {
     return value.toString()
@@ -53,7 +53,7 @@ const buildSummary = (latest, previous) => {
     currentRatio: latest.workingCapitalRatio,
     currentRatioChange: percentChange(latest.workingCapitalRatio, previous?.workingCapitalRatio),
     quickRatio: latest.quickRatio,
-    quickRatioChange: percentChange(latest.quickRatio, previous?.quickRatio)
+    quickRatioChange: percentChange(latest.quickRatio, previous?.quickRatio),
   }
 }
 
@@ -66,7 +66,7 @@ const buildReceivables = latest => {
     total: latest.accountsReceivable ?? null,
     dso: latest.dso ?? null,
     overdue: null,
-    aging: null
+    aging: null,
   }
 }
 
@@ -79,7 +79,7 @@ const buildPayables = latest => {
     total: latest.accountsPayable ?? null,
     dpo: latest.dpo ?? null,
     discountsAvailable: null,
-    aging: null
+    aging: null,
   }
 }
 
@@ -91,7 +91,7 @@ const buildInventory = (latest, inventorySummary) => {
   return {
     total: inventorySummary?.totalValue ?? latest?.inventory ?? null,
     dio: latest?.dio ?? null,
-    turnoverRatio: inventorySummary?.turnover ?? null
+    turnoverRatio: inventorySummary?.turnover ?? null,
   }
 }
 
@@ -108,7 +108,7 @@ const buildCccHistory = entries => {
       ccc: entry.cashConversionCycle,
       dso: entry.dso,
       dio: entry.dio,
-      dpo: entry.dpo
+      dpo: entry.dpo,
     }))
 }
 
@@ -136,7 +136,7 @@ const buildCashFlowSeries = (rows, openingBalance) => {
       inflow,
       outflow: Math.abs(outflow),
       netFlow: row.netCashFlow ?? inflow + outflow,
-      runningBalance
+      runningBalance,
     }
   })
 }
@@ -150,7 +150,7 @@ const buildAlerts = (summary, receivables, payables, inventory) => {
       severity: 'warning',
       title: 'Cash conversion cycle deteriorating',
       description: `CCC is ${formatDaysLabel(summary.cashConversionCycle)}. Target is < 45 days.`,
-      action: 'Review receivable collections and inventory turns'
+      action: 'Review receivable collections and inventory turns',
     })
   }
 
@@ -160,7 +160,7 @@ const buildAlerts = (summary, receivables, payables, inventory) => {
       severity: 'warning',
       title: 'Days sales outstanding elevated',
       description: `Current DSO is ${formatDaysLabel(receivables.dso)}. Typical SaaS benchmark is 35-40 days.`,
-      action: 'Prioritise collections for invoices older than 30 days'
+      action: 'Prioritise collections for invoices older than 30 days',
     })
   }
 
@@ -170,7 +170,7 @@ const buildAlerts = (summary, receivables, payables, inventory) => {
       severity: 'info',
       title: 'Supplier payments being settled early',
       description: `DPO is ${formatDaysLabel(payables.dpo)}. Consider negotiating extended terms.`,
-      action: 'Engage top suppliers regarding 45-day terms'
+      action: 'Engage top suppliers regarding 45-day terms',
     })
   }
 
@@ -180,7 +180,7 @@ const buildAlerts = (summary, receivables, payables, inventory) => {
       severity: 'warning',
       title: 'Inventory days on hand above target',
       description: `Inventory is sitting ${formatDaysLabel(inventory.dio)} on average.`,
-      action: 'Reduce purchase orders for slow-moving SKUs'
+      action: 'Reduce purchase orders for slow-moving SKUs',
     })
   }
 
@@ -201,7 +201,7 @@ const buildRecommendations = (summary, receivables, payables, inventory) => {
         ? `Potential cash unlock: ${formatCurrency(receivables.total * 0.1)}`
         : 'Potential cash unlock: pending data',
       effort: 'medium',
-      timeframe: '2-3 weeks'
+      timeframe: '2-3 weeks',
     })
   }
 
@@ -216,7 +216,7 @@ const buildRecommendations = (summary, receivables, payables, inventory) => {
         ? `Potential cash preservation: ${formatCurrency(payables.total * 0.05)}`
         : 'Potential cash preservation: pending data',
       effort: 'low',
-      timeframe: '1-2 weeks'
+      timeframe: '1-2 weeks',
     })
   }
 
@@ -226,12 +226,13 @@ const buildRecommendations = (summary, receivables, payables, inventory) => {
       type: 'inventory',
       priority: 'high',
       title: 'Reduce excess inventory',
-      description: 'Slow-moving items are tying up cash. Prioritise liquidation or production rescheduling.',
+      description:
+        'Slow-moving items are tying up cash. Prioritise liquidation or production rescheduling.',
       impact: inventory.total
         ? `Potential free cash: ${formatCurrency(inventory.total * 0.08)}`
         : 'Potential free cash: pending data',
       effort: 'high',
-      timeframe: '4-6 weeks'
+      timeframe: '4-6 weeks',
     })
   }
 
@@ -306,10 +307,13 @@ export function useWorkingCapitalMetrics(period = 'current') {
         workingCapitalApi.getWorkingCapital(period),
         workingCapitalApi.getCashFlow(),
         workingCapitalApi.getFinancialMetrics(),
-        workingCapitalApi.getDashboardSummary().then(summary => summary?.inventory ?? null).catch(error => {
-          logWarn('Failed to load dashboard summary', error)
-          return null
-        })
+        workingCapitalApi
+          .getDashboardSummary()
+          .then(summary => summary?.inventory ?? null)
+          .catch(error => {
+            logWarn('Failed to load dashboard summary', error)
+            return null
+          }),
       ])
 
       const entries = workingCapital?.data ?? []
@@ -336,7 +340,7 @@ export function useWorkingCapitalMetrics(period = 'current') {
         inventory: inventoryMetrics,
         cashFlow: {
           series: cashFlowSeries,
-          latest: cashFlow?.latest ?? null
+          latest: cashFlow?.latest ?? null,
         },
         recommendations,
         alerts,
@@ -344,8 +348,8 @@ export function useWorkingCapitalMetrics(period = 'current') {
         source: {
           workingCapital: workingCapital?.dataSource ?? null,
           cashFlow: cashFlow?.dataSource ?? null,
-          metrics: financialMetrics?.dataSource ?? null
-        }
+          metrics: financialMetrics?.dataSource ?? null,
+        },
       })
     } catch (err) {
       logError('Failed to load working capital metrics', err)
@@ -371,6 +375,6 @@ export function useWorkingCapitalMetrics(period = 'current') {
     exportData,
     isXeroConnected: false,
     xeroStatus: null,
-    isUsingRealData
+    isUsingRealData,
   }
 }

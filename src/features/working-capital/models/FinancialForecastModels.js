@@ -25,7 +25,7 @@ export class TimeSeriesForecaster {
         forecast.push({
           ...this.data[i],
           value: sum / periods,
-          method: 'SMA'
+          method: 'SMA',
         })
       }
     }
@@ -39,13 +39,14 @@ export class TimeSeriesForecaster {
     const forecast = [{ ...this.data[0], method: 'ES' }]
 
     for (let i = 1; i < this.data.length; i++) {
-      const smoothed = (this.smoothingFactor * this.data[i].value) +
-                      ((1 - this.smoothingFactor) * forecast[i - 1].value)
+      const smoothed =
+        this.smoothingFactor * this.data[i].value +
+        (1 - this.smoothingFactor) * forecast[i - 1].value
 
       forecast.push({
         ...this.data[i],
         value: smoothed,
-        method: 'ES'
+        method: 'ES',
       })
     }
     return forecast
@@ -57,10 +58,10 @@ export class TimeSeriesForecaster {
 
     // Calculate linear regression
     const n = this.data.length
-    const sumX = n * (n - 1) / 2 // 0 + 1 + 2 + ... + (n-1)
+    const sumX = (n * (n - 1)) / 2 // 0 + 1 + 2 + ... + (n-1)
     const sumY = this.data.reduce((sum, point) => sum + point.value, 0)
-    const sumXY = this.data.reduce((sum, point, index) => sum + (index * point.value), 0)
-    const sumX2 = n * (n - 1) * (2 * n - 1) / 6 // 0² + 1² + 2² + ... + (n-1)²
+    const sumXY = this.data.reduce((sum, point, index) => sum + index * point.value, 0)
+    const sumX2 = (n * (n - 1) * (2 * n - 1)) / 6 // 0² + 1² + 2² + ... + (n-1)²
 
     const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX)
     const intercept = (sumY - slope * sumX) / n
@@ -80,7 +81,7 @@ export class TimeSeriesForecaster {
         period: `Forecast ${i + 1}`,
         isForecast: true,
         method: 'Linear Trend',
-        confidence: Math.max(0.5, 0.9 - (i * 0.1)) // Decreasing confidence
+        confidence: Math.max(0.5, 0.9 - i * 0.1), // Decreasing confidence
       })
     }
 
@@ -99,7 +100,7 @@ export class TimeSeriesForecaster {
     // Deseasonalize data and apply trend
     const deseasonalized = this.data.map((point, index) => ({
       ...point,
-      value: point.value / seasonalIndices[index % this.seasonalityPeriod]
+      value: point.value / seasonalIndices[index % this.seasonalityPeriod],
     }))
 
     // Apply linear trend to deseasonalized data
@@ -112,7 +113,7 @@ export class TimeSeriesForecaster {
       return {
         ...point,
         value: point.value * seasonalIndex,
-        method: 'Seasonal'
+        method: 'Seasonal',
       }
     })
   }
@@ -147,7 +148,7 @@ export class CashFlowForecaster {
     this.options = {
       forecastPeriods: options.forecastPeriods || 12,
       confidenceLevel: options.confidenceLevel || 0.95,
-      scenarios: options.scenarios || ['base', 'optimistic', 'pessimistic']
+      scenarios: options.scenarios || ['base', 'optimistic', 'pessimistic'],
     }
   }
 
@@ -161,8 +162,8 @@ export class CashFlowForecaster {
         mean: [],
         median: [],
         confidence95: [],
-        confidence75: []
-      }
+        confidence75: [],
+      },
     }
 
     for (let period = 0; period < this.options.forecastPeriods; period++) {
@@ -177,24 +178,24 @@ export class CashFlowForecaster {
 
       results.statistics.mean.push({
         period: period + 1,
-        value: simulations.reduce((a, b) => a + b, 0) / iterations
+        value: simulations.reduce((a, b) => a + b, 0) / iterations,
       })
 
       results.statistics.median.push({
         period: period + 1,
-        value: simulations[Math.floor(iterations / 2)]
+        value: simulations[Math.floor(iterations / 2)],
       })
 
       results.statistics.confidence95.push({
         period: period + 1,
         lower: simulations[Math.floor(iterations * 0.025)],
-        upper: simulations[Math.floor(iterations * 0.975)]
+        upper: simulations[Math.floor(iterations * 0.975)],
       })
 
       results.statistics.confidence75.push({
         period: period + 1,
         lower: simulations[Math.floor(iterations * 0.125)],
-        upper: simulations[Math.floor(iterations * 0.875)]
+        upper: simulations[Math.floor(iterations * 0.875)],
       })
     }
 
@@ -219,9 +220,9 @@ export class CashFlowForecaster {
       case 'monte_carlo':
         // Random multipliers for Monte Carlo
         multipliers = {
-          inflow: 0.8 + (Math.random() * 0.4), // 0.8 to 1.2
-          outflow: 0.9 + (Math.random() * 0.2), // 0.9 to 1.1
-          volatility: 0.7 + (Math.random() * 0.6) // 0.7 to 1.3
+          inflow: 0.8 + Math.random() * 0.4, // 0.8 to 1.2
+          outflow: 0.9 + Math.random() * 0.2, // 0.9 to 1.1
+          volatility: 0.7 + Math.random() * 0.6, // 0.7 to 1.3
         }
         break
     }
@@ -234,8 +235,10 @@ export class CashFlowForecaster {
     const baseOutflow = baseMetrics.avgOutflow * multipliers.outflow
 
     // Add volatility
-    const inflowVariance = baseInflow * baseMetrics.inflowVolatility * multipliers.volatility * (Math.random() - 0.5)
-    const outflowVariance = baseOutflow * baseMetrics.outflowVolatility * multipliers.volatility * (Math.random() - 0.5)
+    const inflowVariance =
+      baseInflow * baseMetrics.inflowVolatility * multipliers.volatility * (Math.random() - 0.5)
+    const outflowVariance =
+      baseOutflow * baseMetrics.outflowVolatility * multipliers.volatility * (Math.random() - 0.5)
 
     const cashInflow = Math.max(0, baseInflow + inflowVariance)
     const cashOutflow = Math.max(0, baseOutflow + outflowVariance)
@@ -246,7 +249,7 @@ export class CashFlowForecaster {
       cashOutflow: Math.round(cashOutflow),
       netCashFlow: Math.round(cashInflow - cashOutflow),
       scenario,
-      confidence: Math.max(0.5, 0.95 - (period * 0.05))
+      confidence: Math.max(0.5, 0.95 - period * 0.05),
     }
   }
 
@@ -258,13 +261,14 @@ export class CashFlowForecaster {
       avgInflow: inflows.reduce((a, b) => a + b, 0) / inflows.length,
       avgOutflow: outflows.reduce((a, b) => a + b, 0) / outflows.length,
       inflowVolatility: this.calculateVolatility(inflows),
-      outflowVolatility: this.calculateVolatility(outflows)
+      outflowVolatility: this.calculateVolatility(outflows),
     }
   }
 
   calculateVolatility(values) {
     const mean = values.reduce((a, b) => a + b, 0) / values.length
-    const variance = values.reduce((sum, value) => sum + Math.pow(value - mean, 2), 0) / values.length
+    const variance =
+      values.reduce((sum, value) => sum + Math.pow(value - mean, 2), 0) / values.length
     return Math.sqrt(variance) / mean // Coefficient of variation
   }
 
@@ -285,7 +289,7 @@ export class WorkingCapitalOptimizer {
       dpo: industryBenchmarks.dpo || 40,
       currentRatio: industryBenchmarks.currentRatio || 2.0,
       quickRatio: industryBenchmarks.quickRatio || 1.5,
-      ...industryBenchmarks
+      ...industryBenchmarks,
     }
   }
 
@@ -305,7 +309,7 @@ export class WorkingCapitalOptimizer {
         improvement: dsoImprovement,
         potentialImpact: potentialCashRelease,
         priority: potentialCashRelease > 100000 ? 'High' : 'Medium',
-        recommendations: this.getDSORecommendations(dsoImprovement)
+        recommendations: this.getDSORecommendations(dsoImprovement),
       })
     }
 
@@ -321,7 +325,7 @@ export class WorkingCapitalOptimizer {
         improvement: dioImprovement,
         potentialImpact: potentialCashRelease,
         priority: potentialCashRelease > 150000 ? 'High' : 'Medium',
-        recommendations: this.getDIORecommendations(dioImprovement)
+        recommendations: this.getDIORecommendations(dioImprovement),
       })
     }
 
@@ -337,7 +341,7 @@ export class WorkingCapitalOptimizer {
         improvement: dpoImprovement,
         potentialImpact: potentialCashRelease,
         priority: potentialCashRelease > 100000 ? 'High' : 'Medium',
-        recommendations: this.getDPORecommendations(dpoImprovement)
+        recommendations: this.getDPORecommendations(dpoImprovement),
       })
     }
 
@@ -421,8 +425,8 @@ export class WorkingCapitalOptimizer {
       totalCashRelease,
       currentCCC: this.current.dso + this.current.dio - this.current.dpo,
       optimizedCCC: newCCC,
-      cccImprovement: (this.current.dso + this.current.dio - this.current.dpo) - newCCC,
-      roi: totalCashRelease > 0 ? (totalCashRelease * 0.05) : 0 // Assuming 5% cost of capital
+      cccImprovement: this.current.dso + this.current.dio - this.current.dpo - newCCC,
+      roi: totalCashRelease > 0 ? totalCashRelease * 0.05 : 0, // Assuming 5% cost of capital
     }
   }
 }

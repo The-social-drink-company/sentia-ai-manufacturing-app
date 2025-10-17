@@ -3,6 +3,7 @@
 ## Quick Diagnostics
 
 Run this command to check overall system health:
+
 ```bash
 .\scripts\test-mcp-integration.ps1 -Environment production
 ```
@@ -14,12 +15,15 @@ Run this command to check overall system health:
 ### 1. MCP Server Connection Issues
 
 #### Problem: "MCP Server unreachable"
+
 **Symptoms:**
+
 - Dashboard shows "Disconnected"
 - API calls return 503 errors
 - No real-time updates
 
 **Diagnosis:**
+
 ```bash
 # Check MCP Server health
 curl https://web-production-99691282.up.railway.app/health
@@ -29,12 +33,14 @@ curl https://sentia-manufacturing-production.up.railway.app/api/mcp/health
 ```
 
 **Solutions:**
+
 1. **Verify MCP Server is deployed:**
    - Check Railway project: https://railway.app/project/3adb1ac4-84d8-473b-885f-3a9790fe6140
    - Ensure service is running
    - Check deployment logs
 
 2. **Check environment variables:**
+
    ```powershell
    .\scripts\configure-api-keys.ps1 -Environment production -CheckOnly
    ```
@@ -49,12 +55,15 @@ curl https://sentia-manufacturing-production.up.railway.app/api/mcp/health
 ### 2. WebSocket Connection Drops
 
 #### Problem: Frequent disconnections
+
 **Symptoms:**
+
 - "WebSocket disconnected" messages
 - Missed real-time updates
 - Auto-reconnect failures
 
 **Diagnosis:**
+
 ```javascript
 // Check in browser console
 fetch('/api/mcp/websocket/stats')
@@ -63,11 +72,13 @@ fetch('/api/mcp/websocket/stats')
 ```
 
 **Solutions:**
+
 1. **Enable auto-reconnect:**
    - Set `MCP_ENABLE_WEBSOCKET=true` in environment
    - Increase reconnect attempts in configuration
 
 2. **Check network stability:**
+
    ```bash
    # Monitor connection
    .\scripts\health-monitor.ps1 -Mode continuous
@@ -83,12 +94,15 @@ fetch('/api/mcp/websocket/stats')
 ### 3. API Synchronization Failures
 
 #### Problem: Data not syncing
+
 **Symptoms:**
+
 - Old data displayed
 - "Last sync: Never" in dashboard
 - Sync errors in logs
 
 **Diagnosis:**
+
 ```bash
 # Check sync status
 curl https://[domain]/api/mcp/sync/status
@@ -100,6 +114,7 @@ railway logs --service [service-id] | grep -i sync
 **Solutions by Service:**
 
 #### Xero Sync Issues
+
 1. **Check credentials:**
    - Verify `XERO_CLIENT_ID` and `XERO_CLIENT_SECRET`
    - Ensure OAuth token is valid
@@ -112,6 +127,7 @@ railway logs --service [service-id] | grep -i sync
    ```
 
 #### Shopify Sync Issues
+
 1. **Verify API access:**
    - Check `SHOPIFY_API_KEY` and `SHOPIFY_API_SECRET`
    - Confirm store domain is correct
@@ -124,6 +140,7 @@ railway logs --service [service-id] | grep -i sync
    ```
 
 #### Amazon SP-API Issues
+
 1. **Check credentials:**
    - Verify AWS credentials
    - Confirm IAM role permissions
@@ -140,12 +157,15 @@ railway logs --service [service-id] | grep -i sync
 ### 4. Database Connection Issues
 
 #### Problem: "Database connection failed"
+
 **Symptoms:**
+
 - 500 errors on API calls
 - "Database: disconnected" in monitoring
 - Timeout errors
 
 **Diagnosis:**
+
 ```bash
 # Test database connection
 psql "postgresql://[connection-string]" -c "SELECT 1"
@@ -155,12 +175,14 @@ psql "postgresql://[connection-string]" -c "SELECT 1"
 ```
 
 **Solutions:**
+
 1. **Verify connection string:**
    - Check `DATABASE_URL` format
    - Ensure SSL mode is set: `?sslmode=require`
    - Verify Neon branch exists
 
 2. **Check connection pool:**
+
    ```sql
    -- Check active connections
    SELECT count(*) FROM pg_stat_activity;
@@ -182,12 +204,15 @@ psql "postgresql://[connection-string]" -c "SELECT 1"
 ### 5. Performance Issues
 
 #### Problem: Slow response times
+
 **Symptoms:**
+
 - API calls take >3 seconds
 - Dashboard loads slowly
 - Timeout errors
 
 **Diagnosis:**
+
 ```bash
 # Check response times
 curl -w "@curl-format.txt" -o /dev/null -s https://[domain]/api/health
@@ -197,7 +222,9 @@ curl https://[domain]/api/mcp/metrics
 ```
 
 **Solutions:**
+
 1. **Optimize sync intervals:**
+
    ```javascript
    // Reduce sync frequency
    {
@@ -208,6 +235,7 @@ curl https://[domain]/api/mcp/metrics
    ```
 
 2. **Clear cache:**
+
    ```bash
    # Reset Redis cache
    railway run --service [service-id] redis-cli FLUSHALL
@@ -223,12 +251,15 @@ curl https://[domain]/api/mcp/metrics
 ### 6. Authentication Errors
 
 #### Problem: "Authentication failed"
+
 **Symptoms:**
+
 - 401/403 errors
 - "Unauthorized" messages
 - Login failures
 
 **Diagnosis:**
+
 ```bash
 # Check Clerk status
 curl https://api.clerk.dev/v1/health
@@ -238,7 +269,9 @@ curl -H "Authorization: Bearer [token]" https://[domain]/api/health
 ```
 
 **Solutions:**
+
 1. **Update Clerk keys:**
+
    ```bash
    railway variables set CLERK_SECRET_KEY=[key] --service [service-id]
    railway variables set VITE_CLERK_PUBLISHABLE_KEY=[key] --service [service-id]
@@ -254,24 +287,25 @@ curl -H "Authorization: Bearer [token]" https://[domain]/api/health
 
 ## Error Code Reference
 
-| Code | Message | Cause | Solution |
-|------|---------|-------|----------|
-| MCP001 | Server unreachable | MCP Server down | Check Railway deployment |
-| MCP002 | WebSocket failed | Connection error | Reconnect WebSocket |
-| MCP003 | Sync timeout | Large dataset | Increase timeout, reduce batch size |
-| MCP004 | Rate limit | Too many requests | Reduce sync frequency |
-| MCP005 | Auth expired | Token timeout | Refresh authentication |
-| MCP006 | Database error | Connection issue | Check connection string |
-| MCP007 | API error | External service | Check service status |
-| MCP008 | Cache miss | No cached data | Trigger manual sync |
-| MCP009 | Config error | Missing variables | Configure environment |
-| MCP010 | Version mismatch | Incompatible versions | Update dependencies |
+| Code   | Message            | Cause                 | Solution                            |
+| ------ | ------------------ | --------------------- | ----------------------------------- |
+| MCP001 | Server unreachable | MCP Server down       | Check Railway deployment            |
+| MCP002 | WebSocket failed   | Connection error      | Reconnect WebSocket                 |
+| MCP003 | Sync timeout       | Large dataset         | Increase timeout, reduce batch size |
+| MCP004 | Rate limit         | Too many requests     | Reduce sync frequency               |
+| MCP005 | Auth expired       | Token timeout         | Refresh authentication              |
+| MCP006 | Database error     | Connection issue      | Check connection string             |
+| MCP007 | API error          | External service      | Check service status                |
+| MCP008 | Cache miss         | No cached data        | Trigger manual sync                 |
+| MCP009 | Config error       | Missing variables     | Configure environment               |
+| MCP010 | Version mismatch   | Incompatible versions | Update dependencies                 |
 
 ---
 
 ## Debugging Tools
 
 ### 1. Health Check Script
+
 ```powershell
 # Comprehensive health check
 .\scripts\health-monitor.ps1 -Mode once
@@ -281,6 +315,7 @@ curl -H "Authorization: Bearer [token]" https://[domain]/api/health
 ```
 
 ### 2. Log Analysis
+
 ```bash
 # View recent errors
 railway logs --service [service-id] | grep ERROR | tail -20
@@ -293,6 +328,7 @@ railway logs --service [service-id] | grep -i "mcp\|sync\|websocket"
 ```
 
 ### 3. Database Diagnostics
+
 ```powershell
 # Check database status
 .\scripts\database-operations.ps1 -Operation status -Environment production
@@ -305,6 +341,7 @@ railway logs --service [service-id] | grep -i "mcp\|sync\|websocket"
 ```
 
 ### 4. API Testing
+
 ```bash
 # Test all endpoints
 for endpoint in health status metrics; do
@@ -321,6 +358,7 @@ curl -X POST https://[domain]/api/mcp/sync/trigger/xero
 ## Recovery Procedures
 
 ### Complete System Reset
+
 ```bash
 # 1. Stop all services
 railway down --service [service-id]
@@ -339,6 +377,7 @@ redis-cli FLUSHALL
 ```
 
 ### Emergency Rollback
+
 ```bash
 # 1. List deployments
 railway deployments --service [service-id]
@@ -351,6 +390,7 @@ curl https://[domain]/api/health
 ```
 
 ### Data Recovery
+
 ```powershell
 # 1. Restore from backup
 .\scripts\database-operations.ps1 -Operation restore -Environment production -BackupFile [file]
@@ -367,24 +407,28 @@ curl -X POST https://[domain]/api/mcp/sync/full
 ## Prevention Strategies
 
 ### 1. Monitoring Setup
+
 - Enable continuous health monitoring
 - Set up alerts for critical services
 - Monitor error rates and response times
 - Track sync success rates
 
 ### 2. Regular Maintenance
+
 - Weekly database optimization
 - Monthly API key rotation
 - Quarterly dependency updates
 - Annual disaster recovery drills
 
 ### 3. Configuration Best Practices
+
 - Use environment-specific configs
 - Document all API keys
 - Enable auto-sync for critical services
 - Set appropriate timeout values
 
 ### 4. Backup Strategy
+
 - Daily automated backups
 - Test restore procedures
 - Keep 30-day backup history
@@ -395,7 +439,9 @@ curl -X POST https://[domain]/api/mcp/sync/full
 ## Getting Help
 
 ### Log Collection
+
 When reporting issues, collect:
+
 ```bash
 # System status
 .\scripts\test-mcp-integration.ps1 -Environment production > status.txt
@@ -408,11 +454,13 @@ railway logs --service [service-id] --since 1h > logs.txt
 ```
 
 ### Support Channels
+
 1. **GitHub Issues**: https://github.com/The-social-drink-company/sentia-manufacturing-dashboard/issues
 2. **Railway Support**: https://railway.app/help
 3. **Email**: support@sentia.com
 
 ### Information to Provide
+
 - Environment (development/testing/production)
 - Error messages and codes
 - Time of occurrence
@@ -425,6 +473,7 @@ railway logs --service [service-id] --since 1h > logs.txt
 ## Appendix
 
 ### Environment Variables Checklist
+
 ```
 Required:
 □ DATABASE_URL
@@ -452,6 +501,7 @@ Optional:
 ```
 
 ### Quick Commands
+
 ```bash
 # Health check
 curl https://[domain]/api/health

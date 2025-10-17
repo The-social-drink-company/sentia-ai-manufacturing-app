@@ -16,12 +16,12 @@ class ErrorBoundary extends Component {
       error: error,
       errorInfo: errorInfo,
       componentStack: errorInfo.componentStack,
-      errorBoundary: this.props.name || 'Unknown'
+      errorBoundary: this.props.name || 'Unknown',
     })
 
     this.setState({
       error: error,
-      errorInfo: errorInfo
+      errorInfo: errorInfo,
     })
 
     // Optional: Send error to monitoring service
@@ -33,20 +33,19 @@ class ErrorBoundary extends Component {
   render() {
     if (this.state.hasError) {
       const errorName = this.props.name || 'Component'
-      
+
       return (
         <div className="min-h-96 flex items-center justify-center p-6">
           <div className="max-w-md w-full bg-red-50 border border-red-200 rounded-lg p-6">
             <div className="flex items-start space-x-3">
               <ExclamationTriangleIcon className="w-6 h-6 text-red-600 flex-shrink-0 mt-0.5" />
               <div className="flex-1">
-                <h3 className="text-lg font-medium text-red-900 mb-2">
-                  {errorName} Error
-                </h3>
+                <h3 className="text-lg font-medium text-red-900 mb-2">{errorName} Error</h3>
                 <p className="text-sm text-red-700 mb-4">
-                  Something went wrong while loading this component. Please check the browser console for more details.
+                  Something went wrong while loading this component. Please check the browser
+                  console for more details.
                 </p>
-                
+
                 {this.props.showDetails && this.state.error && (
                   <details className="mb-4">
                     <summary className="text-sm font-medium text-red-800 cursor-pointer hover:text-red-900">
@@ -65,7 +64,7 @@ class ErrorBoundary extends Component {
                     </div>
                   </details>
                 )}
-                
+
                 <div className="flex space-x-3">
                   <button
                     onClick={() => window.location.reload()}

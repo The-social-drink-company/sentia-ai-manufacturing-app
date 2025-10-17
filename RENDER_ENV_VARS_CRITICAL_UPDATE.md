@@ -1,6 +1,7 @@
 # 🚨 CRITICAL: Render Environment Variables Update Required
 
 ## Current Status
+
 - **Production**: 502 Error - Missing critical environment variables
 - **Development**: 200 OK but missing authentication keys
 - **Git Push**: ✅ COMPLETED - Simplified server deployed
@@ -8,6 +9,7 @@
 ## IMMEDIATE ACTION REQUIRED
 
 ### 📍 Navigate to Render Dashboard
+
 Go to: https://dashboard.render.com
 
 ---
@@ -17,10 +19,12 @@ Go to: https://dashboard.render.com
 **Service**: `sentia-manufacturing-production`
 
 ### Step 1: Navigate to Environment Tab
+
 1. Click on `sentia-manufacturing-production` service
 2. Go to `Environment` tab
 
 ### Step 2: Add Missing Critical Variables
+
 **Copy and paste these exactly:**
 
 ```env
@@ -54,6 +58,7 @@ JWT_EXPIRES_IN=24h
 ```
 
 ### Step 3: Save and Deploy
+
 1. Click **"Save Changes"**
 2. Render will automatically redeploy
 3. Wait 2-5 minutes for deployment
@@ -65,6 +70,7 @@ JWT_EXPIRES_IN=24h
 **Service**: `sentia-manufacturing-development`
 
 ### Repeat Same Process
+
 1. Navigate to `sentia-manufacturing-development` service
 2. Go to `Environment` tab
 3. Add the SAME variables but with development URLs:
@@ -85,9 +91,11 @@ CORS_ORIGINS=https://sentia-manufacturing-development.onrender.com
 ### After 5 minutes, test:
 
 1. **Production Health Check**
+
    ```bash
    curl https://sentia-manufacturing-production.onrender.com/health
    ```
+
    Expected: JSON response with "status": "healthy"
 
 2. **Production Main Site**
@@ -95,9 +103,11 @@ CORS_ORIGINS=https://sentia-manufacturing-development.onrender.com
    - Should see: Login page or dashboard
 
 3. **Development Health Check**
+
    ```bash
    curl https://sentia-manufacturing-development.onrender.com/health
    ```
+
    Expected: JSON response
 
 4. **Development Main Site**
@@ -109,12 +119,14 @@ CORS_ORIGINS=https://sentia-manufacturing-development.onrender.com
 ## 🎯 What This Fixes
 
 ### Production (502 Error)
+
 - ✅ Simplified server is deployed (git push completed)
 - ❌ Missing Clerk keys preventing authentication
 - ❌ Missing API configuration causing server errors
 - **Solution**: Adding environment variables enables the simplified server to start correctly
 
 ### Development (Loading Screen)
+
 - ✅ Server is running (200 OK)
 - ❌ React context error from missing VITE_CLERK_PUBLISHABLE_KEY
 - ❌ Authentication system not initialized
@@ -134,12 +146,14 @@ CORS_ORIGINS=https://sentia-manufacturing-development.onrender.com
 ## 🚀 Why This Will Work
 
 The simplified production server (`production-server-simple.js`) is already deployed via Git. It's designed to:
+
 - Start quickly (within Render's timeout)
 - Use minimal environment variables
 - Serve static files efficiently
 - Handle basic authentication
 
 The ONLY missing piece is the environment variables, especially:
+
 - `VITE_CLERK_PUBLISHABLE_KEY` (for frontend)
 - `CLERK_SECRET_KEY` (for backend)
 - `VITE_API_BASE_URL` (for API routing)
@@ -175,5 +189,3 @@ Once these are added, both environments will be fully functional!
 **Created**: 2025-09-20
 **Priority**: CRITICAL - Production is DOWN
 **Time to Fix**: ~10 minutes total
-
-

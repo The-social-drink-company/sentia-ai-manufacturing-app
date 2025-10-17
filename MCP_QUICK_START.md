@@ -3,6 +3,7 @@
 ## 🚀 5-Minute Setup
 
 ### Prerequisites
+
 - Node.js 18+ installed
 - Railway CLI installed (`npm install -g @railway/cli`)
 - Access to Railway project dashboard
@@ -12,18 +13,22 @@
 ## Step 1: Configure Environment (2 minutes)
 
 ### Option A: Use Configuration Script (Recommended)
+
 ```powershell
 # Windows PowerShell
 .\scripts\configure-api-keys.ps1 -Environment development
 ```
 
 ### Option B: Manual Configuration
+
 Create `.env` file from template:
+
 ```bash
 cp .env.template .env
 ```
 
 Add these essential variables:
+
 ```env
 # MCP Server Configuration
 MCP_SERVER_URL=https://web-production-99691282.up.railway.app
@@ -51,6 +56,7 @@ npm install
 ## Step 3: Start Services (1 minute)
 
 ### Development Mode
+
 ```bash
 # Start both frontend and backend
 npm run dev
@@ -61,6 +67,7 @@ npm run dev:server  # Backend on :5000
 ```
 
 ### Production Mode
+
 ```bash
 npm run build
 npm start
@@ -79,6 +86,7 @@ npm start
 ## 🎯 Quick Test
 
 ### Test MCP Connection
+
 ```bash
 # Health check
 curl http://localhost:5000/api/mcp/health
@@ -88,6 +96,7 @@ curl http://localhost:5000/api/mcp/status
 ```
 
 ### Expected Response
+
 ```json
 {
   "status": "ok",
@@ -104,12 +113,14 @@ curl http://localhost:5000/api/mcp/status
 ## 🚂 Railway Deployment (5 minutes)
 
 ### 1. Link to Railway Project
+
 ```bash
 railway link
 # Select: feisty-delight
 ```
 
 ### 2. Configure Railway Variables
+
 ```bash
 # Set MCP variables
 railway variables set MCP_SERVER_URL=https://web-production-99691282.up.railway.app
@@ -123,6 +134,7 @@ railway variables set CLERK_SECRET_KEY=$CLERK_SECRET_KEY
 ```
 
 ### 3. Deploy to Railway
+
 ```bash
 # Deploy current branch
 railway up
@@ -132,6 +144,7 @@ git push origin development
 ```
 
 ### 4. Monitor Deployment
+
 ```bash
 # View logs
 railway logs
@@ -145,6 +158,7 @@ railway status
 ## 📊 Key Features
 
 ### MCP Monitoring Dashboard
+
 - **URL**: `/mcp-monitor`
 - **Features**:
   - Real-time connection status
@@ -153,15 +167,17 @@ railway status
   - Auto-sync management
 
 ### API Endpoints
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/api/mcp/health` | GET | MCP Server health check |
-| `/api/mcp/status` | GET | Comprehensive status |
-| `/api/mcp/sync/trigger/:service` | POST | Trigger manual sync |
-| `/api/mcp/sync/enable` | POST | Enable auto-sync |
-| `/api/mcp/websocket/reconnect` | POST | Reconnect WebSocket |
+
+| Endpoint                         | Method | Description             |
+| -------------------------------- | ------ | ----------------------- |
+| `/api/mcp/health`                | GET    | MCP Server health check |
+| `/api/mcp/status`                | GET    | Comprehensive status    |
+| `/api/mcp/sync/trigger/:service` | POST   | Trigger manual sync     |
+| `/api/mcp/sync/enable`           | POST   | Enable auto-sync        |
+| `/api/mcp/websocket/reconnect`   | POST   | Reconnect WebSocket     |
 
 ### Auto-Sync Services
+
 - **Xero**: Every 30 minutes
 - **Shopify**: Every 15 minutes
 - **Amazon**: Every hour
@@ -172,17 +188,20 @@ railway status
 ## 🔧 Troubleshooting
 
 ### MCP Server Shows "Disconnected"
+
 1. Check MCP Server URL is correct
 2. Verify environment variables are loaded
 3. Check network connectivity
 4. Review logs: `railway logs --service 99691282`
 
 ### WebSocket Connection Fails
+
 1. Navigate to `/mcp-monitor`
 2. Click "Reconnect" in WebSocket tab
 3. Check browser console for errors
 
 ### API Sync Not Working
+
 1. Verify API keys are configured
 2. Check service status in monitoring dashboard
 3. Trigger manual sync: `curl -X POST http://localhost:5000/api/mcp/sync/trigger/xero`
@@ -200,12 +219,14 @@ railway status
 ## 🆘 Need Help?
 
 ### Check Status
+
 ```powershell
 # Run comprehensive test
 .\scripts\test-mcp-integration.ps1 -Environment development
 ```
 
 ### View Logs
+
 ```bash
 # Railway logs
 railway logs --tail
@@ -215,6 +236,7 @@ npm run dev 2>&1 | tee debug.log
 ```
 
 ### Get Support
+
 - GitHub Issues: https://github.com/The-social-drink-company/sentia-manufacturing-dashboard/issues
 - Railway Support: https://railway.app/help
 
@@ -223,6 +245,7 @@ npm run dev 2>&1 | tee debug.log
 **Ready to go!** 🎉 Your MCP integration should now be operational.
 
 **Next Steps**:
+
 1. Configure API keys for external services (Xero, Shopify, Amazon)
 2. Enable auto-sync in production
 3. Set up monitoring alerts

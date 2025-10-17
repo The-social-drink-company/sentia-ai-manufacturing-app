@@ -1,11 +1,13 @@
 # MCP Integration API Documentation
 
 ## Base URL
+
 - **Development**: `http://localhost:5000/api/mcp`
 - **Testing**: `https://sentia-manufacturing-testing.up.railway.app/api/mcp`
 - **Production**: `https://sentia-manufacturing-production.up.railway.app/api/mcp`
 
 ## Authentication
+
 All MCP API endpoints require authentication via JWT token or Clerk session.
 
 ```javascript
@@ -21,9 +23,11 @@ cookie: __session=<clerk_session_token>
 ## Health & Monitoring Endpoints
 
 ### GET /health
+
 Check MCP Server connection health.
 
 **Response:**
+
 ```json
 {
   "status": "ok",
@@ -37,9 +41,11 @@ Check MCP Server connection health.
 ```
 
 ### GET /status
+
 Get comprehensive MCP integration status.
 
 **Response:**
+
 ```json
 {
   "status": "operational",
@@ -73,9 +79,11 @@ Get comprehensive MCP integration status.
 ## WebSocket Management
 
 ### GET /websocket/stats
+
 Get WebSocket connection statistics.
 
 **Response:**
+
 ```json
 {
   "connected": true,
@@ -93,9 +101,11 @@ Get WebSocket connection statistics.
 ```
 
 ### GET /websocket/history
+
 Get WebSocket connection history.
 
 **Response:**
+
 ```json
 {
   "connections": [
@@ -118,9 +128,11 @@ Get WebSocket connection history.
 ```
 
 ### POST /websocket/reconnect
+
 Force WebSocket reconnection.
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -134,9 +146,11 @@ Force WebSocket reconnection.
 ## Synchronization Management
 
 ### GET /sync/status
+
 Get synchronization status for all services.
 
 **Response:**
+
 ```json
 {
   "enabled": true,
@@ -168,12 +182,15 @@ Get synchronization status for all services.
 ```
 
 ### POST /sync/trigger/:service
+
 Trigger manual synchronization for a specific service.
 
 **Parameters:**
+
 - `service` (path): Service name (xero, shopify, amazon, unleashed, database)
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -184,9 +201,11 @@ Trigger manual synchronization for a specific service.
 ```
 
 ### POST /sync/full
+
 Trigger full synchronization for all services.
 
 **Response:**
+
 ```json
 {
   "success": 3,
@@ -203,9 +222,11 @@ Trigger full synchronization for all services.
 ```
 
 ### POST /sync/enable
+
 Enable automatic synchronization.
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -215,9 +236,11 @@ Enable automatic synchronization.
 ```
 
 ### POST /sync/disable
+
 Disable automatic synchronization.
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -230,9 +253,11 @@ Disable automatic synchronization.
 ## AI Manufacturing Tools
 
 ### POST /ai/manufacturing-request
+
 Process manufacturing request using AI.
 
 **Request Body:**
+
 ```json
 {
   "request": "Analyze production efficiency for last month",
@@ -244,6 +269,7 @@ Process manufacturing request using AI.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -262,9 +288,11 @@ Process manufacturing request using AI.
 ```
 
 ### POST /ai/optimize-inventory
+
 Get AI-powered inventory optimization recommendations.
 
 **Request Body:**
+
 ```json
 {
   "products": ["SKU001", "SKU002"],
@@ -277,6 +305,7 @@ Get AI-powered inventory optimization recommendations.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -300,9 +329,11 @@ Get AI-powered inventory optimization recommendations.
 ```
 
 ### POST /ai/forecast-demand
+
 Generate AI-powered demand forecast.
 
 **Request Body:**
+
 ```json
 {
   "product": "SKU001",
@@ -313,6 +344,7 @@ Generate AI-powered demand forecast.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -338,9 +370,11 @@ Generate AI-powered demand forecast.
 ```
 
 ### POST /ai/analyze-quality
+
 Analyze quality metrics using AI.
 
 **Request Body:**
+
 ```json
 {
   "data": {
@@ -353,16 +387,14 @@ Analyze quality metrics using AI.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
   "analysis": {
     "qualityScore": 94.2,
     "trend": "improving",
-    "issues": [
-      "Packaging defects increasing",
-      "Assembly tolerance variations"
-    ],
+    "issues": ["Packaging defects increasing", "Assembly tolerance variations"],
     "recommendations": [
       "Implement automated packaging inspection",
       "Recalibrate assembly equipment"
@@ -377,15 +409,18 @@ Analyze quality metrics using AI.
 ## External API Proxies
 
 ### GET /xero/invoices
+
 Get Xero invoices (proxied through MCP).
 
 **Query Parameters:**
+
 - `limit` (optional): Number of invoices to return (default: 10)
 - `status` (optional): Invoice status filter (DRAFT, SUBMITTED, AUTHORISED)
 - `from` (optional): Start date (ISO 8601)
 - `to` (optional): End date (ISO 8601)
 
 **Response:**
+
 ```json
 {
   "source": "api",
@@ -396,7 +431,7 @@ Get Xero invoices (proxied through MCP).
       "InvoiceNumber": "INV-001",
       "Type": "ACCREC",
       "Status": "AUTHORISED",
-      "Total": 1500.00,
+      "Total": 1500.0,
       "DueDate": "2024-12-15",
       "Contact": {
         "Name": "Customer Name"
@@ -409,9 +444,11 @@ Get Xero invoices (proxied through MCP).
 ```
 
 ### GET /shopify/orders
+
 Get Shopify orders (proxied through MCP).
 
 **Query Parameters:**
+
 - `limit` (optional): Number of orders (default: 10)
 - `status` (optional): Order status (open, closed, cancelled)
 - `fulfillment_status` (optional): Fulfillment status
@@ -419,6 +456,7 @@ Get Shopify orders (proxied through MCP).
 - `created_at_max` (optional): End date
 
 **Response:**
+
 ```json
 {
   "source": "api",
@@ -443,15 +481,18 @@ Get Shopify orders (proxied through MCP).
 ```
 
 ### GET /shopify/products
+
 Get Shopify products (proxied through MCP).
 
 **Query Parameters:**
+
 - `limit` (optional): Number of products (default: 50)
 - `collection_id` (optional): Filter by collection
 - `product_type` (optional): Filter by type
 - `vendor` (optional): Filter by vendor
 
 **Response:**
+
 ```json
 {
   "source": "api",
@@ -479,15 +520,18 @@ Get Shopify products (proxied through MCP).
 ```
 
 ### GET /amazon/orders
+
 Get Amazon orders (proxied through MCP).
 
 **Query Parameters:**
+
 - `limit` (optional): Number of orders (default: 10)
 - `marketplaceIds` (optional): Marketplace IDs (comma-separated)
 - `createdAfter` (optional): Start date
 - `createdBefore` (optional): End date
 
 **Response:**
+
 ```json
 {
   "source": "api",
@@ -515,9 +559,11 @@ Get Amazon orders (proxied through MCP).
 ## Database Operations
 
 ### GET /database/status
+
 Check database connection and branch status.
 
 **Response:**
+
 ```json
 {
   "connected": true,
@@ -534,9 +580,11 @@ Check database connection and branch status.
 ```
 
 ### POST /database/sync-branches
+
 Synchronize database branches.
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -567,18 +615,18 @@ All endpoints may return error responses in the following format:
 
 ### Error Codes
 
-| Code | Description | HTTP Status |
-|------|-------------|-------------|
-| MCP001 | MCP Server unreachable | 503 |
-| MCP002 | WebSocket connection failed | 502 |
-| MCP003 | Sync timeout | 504 |
-| MCP004 | Rate limit exceeded | 429 |
-| MCP005 | Authentication expired | 401 |
-| MCP006 | Database connection error | 500 |
-| MCP007 | External API error | 502 |
-| MCP008 | No cached data available | 404 |
-| MCP009 | Configuration error | 500 |
-| MCP010 | Version mismatch | 400 |
+| Code   | Description                 | HTTP Status |
+| ------ | --------------------------- | ----------- |
+| MCP001 | MCP Server unreachable      | 503         |
+| MCP002 | WebSocket connection failed | 502         |
+| MCP003 | Sync timeout                | 504         |
+| MCP004 | Rate limit exceeded         | 429         |
+| MCP005 | Authentication expired      | 401         |
+| MCP006 | Database connection error   | 500         |
+| MCP007 | External API error          | 502         |
+| MCP008 | No cached data available    | 404         |
+| MCP009 | Configuration error         | 500         |
+| MCP010 | Version mismatch            | 400         |
 
 ---
 
@@ -591,6 +639,7 @@ API endpoints are subject to rate limiting:
 - **AI endpoints**: 20 requests per minute
 
 Rate limit headers:
+
 ```
 X-RateLimit-Limit: 100
 X-RateLimit-Remaining: 95
@@ -604,12 +653,14 @@ X-RateLimit-Reset: 1701424800
 The MCP integration supports real-time updates via WebSocket:
 
 ### Connection Events
+
 - `connected` - WebSocket connected to MCP Server
 - `disconnected` - WebSocket disconnected
 - `error` - Connection error occurred
 - `reconnecting` - Attempting to reconnect
 
 ### Data Events
+
 - `ai-response` - AI processing complete
 - `manufacturing-alert` - Manufacturing alert triggered
 - `api-update` - External API data updated
@@ -617,32 +668,33 @@ The MCP integration supports real-time updates via WebSocket:
 - `system-status` - System status change
 
 ### Example WebSocket Client
+
 ```javascript
-const ws = new WebSocket('wss://[domain]/api/mcp/websocket');
+const ws = new WebSocket('wss://[domain]/api/mcp/websocket')
 
 ws.on('open', () => {
-  console.log('Connected to MCP WebSocket');
-});
+  console.log('Connected to MCP WebSocket')
+})
 
-ws.on('message', (data) => {
-  const event = JSON.parse(data);
+ws.on('message', data => {
+  const event = JSON.parse(data)
 
-  switch(event.type) {
+  switch (event.type) {
     case 'ai-response':
-      console.log('AI Response:', event.data);
-      break;
+      console.log('AI Response:', event.data)
+      break
     case 'manufacturing-alert':
-      console.log('Alert:', event.alert);
-      break;
+      console.log('Alert:', event.alert)
+      break
     case 'api-update':
-      console.log('API Update:', event.service);
-      break;
+      console.log('API Update:', event.service)
+      break
   }
-});
+})
 
-ws.on('error', (error) => {
-  console.error('WebSocket error:', error);
-});
+ws.on('error', error => {
+  console.error('WebSocket error:', error)
+})
 ```
 
 ---

@@ -5,20 +5,23 @@
 The following admin users have been added to the Sentia Manufacturing Dashboard system:
 
 ### 1. Daniel Kenny
-- **Email**: daniel.kenny@sentiaspirits.com  
+
+- **Email**: daniel.kenny@sentiaspirits.com
 - **Password**: Ui$4j#AnxPSVpnSQ
 - **Role**: Administrator (full access)
 - **Status**: Active
 - **MFA**: Enabled (recommended for security)
 
-### 2. Paul Roberts  
+### 2. Paul Roberts
+
 - **Email**: paul.roberts@sentiaspirits.com
 - **Password**: tgyZiI1%ME7jt391
 - **Role**: Administrator (full access)
-- **Status**: Active  
+- **Status**: Active
 - **MFA**: Enabled (recommended for security)
 
 ### 3. David Orren
+
 - **Email**: david.orren@gabalabs.com
 - **Password**: DQ%66t^UzQXjVuIU
 - **Role**: Administrator (full access)
@@ -28,6 +31,7 @@ The following admin users have been added to the Sentia Manufacturing Dashboard 
 ## Setup Instructions
 
 ### In Code (Already Completed)
+
 ✅ Users have been added to the AdminUsers component mock data
 ✅ All users configured with admin role and active status
 ✅ MFA enabled by default for security
@@ -44,7 +48,9 @@ To complete the user setup, you need to add these users to your Clerk dashboard:
 6. **Assign admin role/permissions** in Clerk's role management
 
 ### Alternative: User Invitation Method
+
 Instead of manual creation, you can:
+
 1. Use the "Create User" button in the Admin panel (`/admin`)
 2. Send invitations to each email address
 3. Users will receive email invitations with setup instructions
@@ -53,6 +59,7 @@ Instead of manual creation, you can:
 ## Security Notes
 
 ⚠️ **Important Security Considerations**:
+
 - These passwords are temporary and should be changed on first login
 - MFA should be enabled for all admin accounts
 - Regular password rotation recommended
@@ -62,6 +69,7 @@ Instead of manual creation, you can:
 ## Admin Panel Access
 
 Once configured, these users will have access to:
+
 - Full Admin Panel at `/admin`
 - User Management at `/admin/users`
 - System Configuration
@@ -73,8 +81,9 @@ Once configured, these users will have access to:
 ## Testing Admin Access
 
 After setup, test each user can:
+
 1. ✅ Log in successfully with provided credentials
-2. ✅ Access Admin Panel without restrictions  
+2. ✅ Access Admin Panel without restrictions
 3. ✅ View and manage all system users
 4. ✅ Configure system settings
 5. ✅ Access FinanceFlo-specific features (lead times, multi-currency)

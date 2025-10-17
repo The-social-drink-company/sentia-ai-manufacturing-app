@@ -3,39 +3,48 @@
 ## 🔍 Issues Found and Corrections Needed
 
 ### 1. ❌ INCORRECT: MCP_SERVER_PORT in Development
+
 - **Current**: `MCP_SERVER_PORT=3001`
 - **Issue**: Port numbers are not used on Render (auto-assigned)
 - **Action**: REMOVE this variable from development environment
 
 ### 2. ⚠️ WARNING: AUTO_DEPLOY_ENABLED in Testing
+
 - **Current Testing**: `AUTO_DEPLOY_ENABLED=true`
 - **Current Development**: `AUTO_DEPLOY_ENABLED=false`
 - **Issue**: Testing shouldn't auto-deploy
 - **Action**: Change to `false` in testing environment
 
 ### 3. ✅ CORRECT: Environment-Specific URLs
+
 All URLs are correctly configured for each environment:
 
 #### Development URLs (Correct)
+
 - `CORS_ORIGINS=https://sentia-manufacturing-development.onrender.com`
 - `VITE_API_BASE_URL=https://sentia-manufacturing-development.onrender.com/api`
 - `XERO_REDIRECT_URI=https://sentia-manufacturing-development.onrender.com/api/xero/callback`
 
 #### Testing URLs (Need to be added/verified)
+
 - `CORS_ORIGINS=https://sentia-manufacturing-testing.onrender.com` ✅
 - `VITE_API_BASE_URL=https://sentia-manufacturing-testing.onrender.com/api` ✅
 - `XERO_REDIRECT_URI=https://sentia-manufacturing-testing.onrender.com/api/xero/callback` (MISSING - needs to be added)
 
 ### 4. ✅ CORRECT: NODE_ENV Values
+
 - Development: `NODE_ENV=development` ✅
 - Testing: `NODE_ENV=test` ✅
 
 ### 5. ✅ CORRECT: Database URLs
+
 - Development: Uses `sentia_manufacturing_dev` database ✅
 - Testing: Uses `sentia_manufacturing_test` database ✅
 
 ### 6. ❌ MISSING in Testing: Critical Authentication Variables
+
 Testing is missing ALL Clerk authentication variables:
+
 - `CLERK_ENVIRONMENT`
 - `CLERK_SECRET_KEY`
 - `CLERK_WEBHOOK_SECRET`
@@ -48,26 +57,31 @@ Testing is missing ALL Clerk authentication variables:
 - `VITE_CLERK_SIGN_UP_URL`
 
 ### 7. ❌ MISSING in Testing: API Integration Credentials
+
 - All Shopify credentials (8 variables)
 - All Xero credentials (3 variables)
 - All Unleashed credentials (3 variables)
 - Amazon Marketplace IDs (2 variables)
 
 ### 8. ❌ MISSING in Testing: AI Service Keys
+
 - `OPENAI_API_KEY`
 - `ANTHROPIC_API_KEY`
 
 ### 9. ❌ MISSING in Testing: Security Keys
+
 - `JWT_SECRET`
 - `SESSION_SECRET`
 
 ### 10. ⚠️ MICROSOFT_TENANT_ID
+
 - **Issue**: Missing in testing but present in development
 - **Value**: `common` (should be same in both)
 
 ## 📋 Complete Corrected Variable Lists
 
 ### DEVELOPMENT Environment (Corrected)
+
 ```env
 # Core Configuration
 NODE_ENV=development
@@ -153,6 +167,7 @@ DATABASE_SYNC_INTERVAL=0 */6 * * *
 ```
 
 ### TESTING Environment (Corrected & Complete)
+
 ```env
 # Core Configuration
 NODE_ENV=test
@@ -240,17 +255,18 @@ DATABASE_SYNC_INTERVAL=0 */6 * * *
 ## 🎯 Summary of Required Actions
 
 ### For DEVELOPMENT Environment:
+
 1. ❌ **REMOVE** `MCP_SERVER_PORT=3001` (not needed on Render)
 2. ✅ Everything else is correct
 
 ### For TESTING Environment:
+
 1. ❌ **ADD** 35 missing variables (all listed above)
 2. ⚠️ **CHANGE** `AUTO_DEPLOY_ENABLED` from `true` to `false`
 3. ⚠️ **ENSURE** `XERO_REDIRECT_URI` uses testing URL (not development)
 
 ## 🔐 Security Notes
+
 - All API keys and secrets are the same across environments (this is OK for dev/test)
 - Production should have different keys when deployed
 - Clerk is using production keys even in dev/test (this is intentional for real auth)
-
-

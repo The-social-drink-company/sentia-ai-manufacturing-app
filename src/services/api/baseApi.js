@@ -38,7 +38,7 @@ class BaseApi {
   constructor() {
     this.baseURL = API_BASE_URL
     this.defaultHeaders = {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
     }
   }
 
@@ -49,8 +49,8 @@ class BaseApi {
       ...options,
       headers: {
         ...this.defaultHeaders,
-        ...options.headers
-      }
+        ...options.headers,
+      },
     }
 
     // Add auth token if available
@@ -69,7 +69,7 @@ class BaseApi {
           const contentType = response.headers.get('content-type')
           console.error(`[BaseApi] HTTP ${response.status} error for ${url}`)
           console.error(`[BaseApi] Content-Type: ${contentType}`)
-          
+
           let errorData = {}
           if (contentType && contentType.includes('application/json')) {
             try {
@@ -80,12 +80,12 @@ class BaseApi {
           } else {
             const textResponse = await response.text()
             console.error(`[BaseApi] Non-JSON response: ${textResponse.substring(0, 200)}...`)
-            errorData = { 
+            errorData = {
               message: `Expected JSON but got ${contentType}. URL: ${url}`,
-              htmlResponse: textResponse.substring(0, 500)
+              htmlResponse: textResponse.substring(0, 500),
             }
           }
-          
+
           throw new ApiError(
             errorData.message || `HTTP ${response.status} - Expected JSON but got ${contentType}`,
             response.status,
@@ -121,34 +121,34 @@ class BaseApi {
     const url = queryString ? `${endpoint}?${queryString}` : endpoint
 
     return this.request(url, {
-      method: 'GET'
+      method: 'GET',
     })
   }
 
   async post(endpoint, data = {}) {
     return this.request(endpoint, {
       method: 'POST',
-      body: JSON.stringify(data)
+      body: JSON.stringify(data),
     })
   }
 
   async put(endpoint, data = {}) {
     return this.request(endpoint, {
       method: 'PUT',
-      body: JSON.stringify(data)
+      body: JSON.stringify(data),
     })
   }
 
   async patch(endpoint, data = {}) {
     return this.request(endpoint, {
       method: 'PATCH',
-      body: JSON.stringify(data)
+      body: JSON.stringify(data),
     })
   }
 
   async delete(endpoint) {
     return this.request(endpoint, {
-      method: 'DELETE'
+      method: 'DELETE',
     })
   }
 

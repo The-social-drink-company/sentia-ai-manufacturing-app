@@ -185,17 +185,17 @@ export const createMockSensorData = (machineId = 'CNC_001') => ({
     powerConsumption: { value: 12.8, unit: 'kW', status: 'normal' },
     productionCount: { value: 1450, unit: 'pieces', status: 'normal' },
     qualityScore: { value: 94.2, unit: '%', status: 'normal' },
-    safetyStatus: { value: 'safe', unit: '', status: 'normal' }
+    safetyStatus: { value: 'safe', unit: '', status: 'normal' },
   },
   oee: {
     availability: 92.5,
     performance: 88.3,
     quality: 96.1,
-    overall: 80.7
+    overall: 80.7,
   },
   alarms: [],
   lastMaintenance: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-  nextMaintenance: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString()
+  nextMaintenance: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
 })
 
 // Helper to create mock machine state
@@ -208,7 +208,7 @@ export const createMockMachineState = (machineId = 'CNC_001') => ({
   productivity: 92.3,
   efficiency: 98.3,
   downtime: 0,
-  totalRuntime: 28800000
+  totalRuntime: 28800000,
 })
 
 // Helper to create mock alarms
@@ -221,7 +221,7 @@ export const createMockAlarm = (machineId = 'CNC_001', severity = 'medium') => (
   acknowledged: false,
   resolved: false,
   category: 'test_alarm',
-  recommendedAction: 'Check system status'
+  recommendedAction: 'Check system status',
 })
 
 // Helper to create mock production metrics
@@ -232,14 +232,14 @@ export const createMockProductionMetrics = () => ({
     efficiency: 85.2,
     qualityScore: 94.1,
     downtime: 45,
-    activeAlarms: 2
+    activeAlarms: 2,
   },
   oee: {
     overall: 78.5,
     availability: 88.2,
     performance: 89.1,
     quality: 94.1,
-    trend: 'improving'
+    trend: 'improving',
   },
   machines: [
     {
@@ -248,8 +248,8 @@ export const createMockProductionMetrics = () => ({
       status: 'running',
       oee: 82.1,
       currentJob: 'JOB_001',
-      efficiency: 88.5
-    }
+      efficiency: 88.5,
+    },
   ],
   schedule: [
     {
@@ -259,8 +259,8 @@ export const createMockProductionMetrics = () => ({
       startTime: new Date().toISOString(),
       endTime: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(),
       status: 'in_progress',
-      priority: 'high'
-    }
+      priority: 'high',
+    },
   ],
   quality: {
     overallScore: 94.1,
@@ -269,15 +269,15 @@ export const createMockProductionMetrics = () => ({
     reworkRate: 1.8,
     defectTypes: [
       { type: 'Surface defect', count: 12 },
-      { type: 'Dimensional', count: 8 }
-    ]
+      { type: 'Dimensional', count: 8 },
+    ],
   },
   capacity: {
     utilized: 82.5,
     available: 95.0,
     planned: 100.0,
     bottlenecks: ['CNC_002'],
-    forecast: [85, 88, 90, 87, 89]
+    forecast: [85, 88, 90, 87, 89],
   },
   shifts: [
     {
@@ -286,8 +286,8 @@ export const createMockProductionMetrics = () => ({
       startTime: '06:00',
       endTime: '14:00',
       supervisor: 'John Smith',
-      performance: 88.2
-    }
+      performance: 88.2,
+    },
   ],
   alerts: [
     {
@@ -296,7 +296,7 @@ export const createMockProductionMetrics = () => ({
       severity: 'medium',
       message: 'Machine efficiency below target',
       timestamp: new Date().toISOString(),
-      source: 'CNC_001'
-    }
-  ]
+      source: 'CNC_001',
+    },
+  ],
 })

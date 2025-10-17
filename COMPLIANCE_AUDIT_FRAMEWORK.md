@@ -1,4 +1,5 @@
 # COMPLIANCE AUDIT FRAMEWORK
+
 ## Sentia Manufacturing Dashboard - Enterprise Compliance Standards
 
 Version: 1.0.0
@@ -10,7 +11,9 @@ Classification: **CONFIDENTIAL**
 ## 1. COMPLIANCE OVERVIEW
 
 ### Regulatory Requirements
+
 The Sentia Manufacturing Dashboard complies with:
+
 - **GDPR** (General Data Protection Regulation) - EU Privacy Law
 - **SOX** (Sarbanes-Oxley Act) - Financial Reporting
 - **ISO 27001** - Information Security Management
@@ -19,13 +22,14 @@ The Sentia Manufacturing Dashboard complies with:
 - **HIPAA** - Health Insurance Portability (if healthcare data processed)
 
 ### Compliance Status Dashboard
-| Regulation | Status | Last Audit | Next Audit | Risk Level |
-|------------|--------|------------|------------|------------|
-| GDPR | ✅ Compliant | 2025-08-15 | 2025-11-15 | Low |
-| SOX | ✅ Compliant | 2025-07-30 | 2025-10-30 | Medium |
-| ISO 27001 | ✅ Certified | 2025-06-01 | 2026-06-01 | Low |
-| ISO 9001 | ✅ Certified | 2025-06-01 | 2026-06-01 | Low |
-| PCI DSS | ⚠️ In Progress | N/A | 2025-12-01 | High |
+
+| Regulation | Status         | Last Audit | Next Audit | Risk Level |
+| ---------- | -------------- | ---------- | ---------- | ---------- |
+| GDPR       | ✅ Compliant   | 2025-08-15 | 2025-11-15 | Low        |
+| SOX        | ✅ Compliant   | 2025-07-30 | 2025-10-30 | Medium     |
+| ISO 27001  | ✅ Certified   | 2025-06-01 | 2026-06-01 | Low        |
+| ISO 9001   | ✅ Certified   | 2025-06-01 | 2026-06-01 | Low        |
+| PCI DSS    | ⚠️ In Progress | N/A        | 2025-12-01 | High       |
 
 ---
 
@@ -107,12 +111,14 @@ export const GDPRCompliance = {
 **Processor**: Sentia Manufacturing Dashboard
 
 ## Processing Details
+
 - **Purpose**: Manufacturing analytics and forecasting
 - **Data Categories**: User profiles, transaction data, inventory data
 - **Duration**: As per service agreement
 - **Security Measures**: Industry-standard encryption, access controls
 
 ## Processor Obligations
+
 1. Process data only on documented instructions
 2. Ensure confidentiality of personnel
 3. Implement appropriate security measures
@@ -134,7 +140,7 @@ export const SOXControls = {
     ceoSignoff: true,
     cfoSignoff: true,
     quarterlyReview: true,
-    materialWeaknesses: []
+    materialWeaknesses: [],
   },
 
   section404: {
@@ -143,13 +149,13 @@ export const SOXControls = {
     controlTesting: {
       frequency: 'quarterly',
       coverage: 100,
-      deficiencies: []
+      deficiencies: [],
     },
     auditTrail: {
       enabled: true,
       retention: '7 years',
-      immutable: true
-    }
+      immutable: true,
+    },
   },
 
   section409: {
@@ -157,17 +163,17 @@ export const SOXControls = {
     materialEvents: {
       reporting: 'within 4 days',
       channels: ['SEC filing', 'investor relations'],
-      approval: 'CFO required'
-    }
+      approval: 'CFO required',
+    },
   },
 
   accessControls: {
     segregationOfDuties: true,
     privilegedAccess: 'monitored',
     changeManagement: 'documented',
-    passwordPolicy: 'enforced'
-  }
-};
+    passwordPolicy: 'enforced',
+  },
+}
 ```
 
 ### 3.2 SOX Audit Procedures
@@ -221,13 +227,13 @@ WHERE cm.affects_financial_reporting = true
 
 ### 3.3 Internal Control Testing
 
-| Control Area | Test Frequency | Test Method | Last Test | Result |
-|-------------|---------------|-------------|-----------|---------|
-| Access Controls | Monthly | Automated | 2025-09-01 | ✅ Pass |
-| Change Management | Quarterly | Manual Review | 2025-07-15 | ✅ Pass |
-| Data Integrity | Weekly | Automated | 2025-09-10 | ✅ Pass |
-| Segregation of Duties | Quarterly | Manual Review | 2025-07-15 | ✅ Pass |
-| Audit Logging | Continuous | Automated | Real-time | ✅ Pass |
+| Control Area          | Test Frequency | Test Method   | Last Test  | Result  |
+| --------------------- | -------------- | ------------- | ---------- | ------- |
+| Access Controls       | Monthly        | Automated     | 2025-09-01 | ✅ Pass |
+| Change Management     | Quarterly      | Manual Review | 2025-07-15 | ✅ Pass |
+| Data Integrity        | Weekly         | Automated     | 2025-09-10 | ✅ Pass |
+| Segregation of Duties | Quarterly      | Manual Review | 2025-07-15 | ✅ Pass |
+| Audit Logging         | Continuous     | Automated     | Real-time  | ✅ Pass |
 
 ---
 
@@ -276,27 +282,27 @@ export const ISO27001Controls = {
   A5_InformationSecurityPolicies: {
     implemented: true,
     lastReview: '2025-06-01',
-    nextReview: '2026-06-01'
+    nextReview: '2026-06-01',
   },
 
   A6_OrganizationOfInformationSecurity: {
     roles: 'defined',
     responsibilities: 'documented',
-    segregationOfDuties: true
+    segregationOfDuties: true,
   },
 
   A7_HumanResourceSecurity: {
     backgroundChecks: true,
     confidentialityAgreements: true,
     securityTraining: true,
-    terminationProcedures: true
+    terminationProcedures: true,
   },
 
   A8_AssetManagement: {
     assetInventory: true,
     assetClassification: true,
     acceptableUse: 'documented',
-    assetReturn: 'process defined'
+    assetReturn: 'process defined',
   },
 
   A9_AccessControl: {
@@ -304,19 +310,19 @@ export const ISO27001Controls = {
     userRegistration: true,
     privilegedAccess: 'monitored',
     passwordManagement: true,
-    twoFactorAuth: true
+    twoFactorAuth: true,
   },
 
   A10_Cryptography: {
     encryptionPolicy: true,
     keyManagement: true,
-    algorithms: ['AES-256', 'RSA-2048', 'SHA-256']
+    algorithms: ['AES-256', 'RSA-2048', 'SHA-256'],
   },
 
   A11_PhysicalSecurity: {
     secureAreas: 'defined',
     physicalAccess: 'controlled',
-    equipmentProtection: true
+    equipmentProtection: true,
   },
 
   A12_OperationsSecurity: {
@@ -325,47 +331,47 @@ export const ISO27001Controls = {
     malwareProtection: true,
     backup: true,
     logging: true,
-    monitoring: true
+    monitoring: true,
   },
 
   A13_CommunicationsSecurity: {
     networkSegmentation: true,
     networkSecurity: true,
-    informationTransfer: 'encrypted'
+    informationTransfer: 'encrypted',
   },
 
   A14_SystemDevelopment: {
     secureDevelopment: true,
     securityTesting: true,
-    testDataProtection: true
+    testDataProtection: true,
   },
 
   A15_SupplierRelationships: {
     supplierSecurity: 'assessed',
     supplierAgreements: true,
-    supplyChainMonitoring: true
+    supplyChainMonitoring: true,
   },
 
   A16_IncidentManagement: {
     incidentResponse: true,
     incidentReporting: true,
     evidenceCollection: true,
-    lessonsLearned: true
+    lessonsLearned: true,
   },
 
   A17_BusinessContinuity: {
     continuityPlanning: true,
     redundancies: true,
-    testing: 'quarterly'
+    testing: 'quarterly',
   },
 
   A18_Compliance: {
     legalRequirements: 'identified',
     intellectualProperty: 'protected',
     privacyProtection: true,
-    regularReviews: true
-  }
-};
+    regularReviews: true,
+  },
+}
 ```
 
 ---
@@ -381,24 +387,24 @@ export const AuditSchedule = {
     Q1: [
       { type: 'Internal Security', date: '2025-01-15', scope: 'Full ISMS' },
       { type: 'SOX Controls', date: '2025-02-01', scope: 'Financial Systems' },
-      { type: 'GDPR', date: '2025-03-15', scope: 'Data Processing' }
+      { type: 'GDPR', date: '2025-03-15', scope: 'Data Processing' },
     ],
     Q2: [
       { type: 'ISO 27001 Surveillance', date: '2025-05-01', scope: 'Full' },
-      { type: 'Internal Security', date: '2025-06-15', scope: 'Access Controls' }
+      { type: 'Internal Security', date: '2025-06-15', scope: 'Access Controls' },
     ],
     Q3: [
       { type: 'SOX Controls', date: '2025-07-30', scope: 'Q2 Financials' },
       { type: 'GDPR', date: '2025-08-15', scope: 'Subject Rights' },
-      { type: 'Internal Security', date: '2025-09-15', scope: 'Incident Response' }
+      { type: 'Internal Security', date: '2025-09-15', scope: 'Incident Response' },
     ],
     Q4: [
       { type: 'SOX Year-End', date: '2025-10-30', scope: 'Annual Review' },
       { type: 'GDPR', date: '2025-11-15', scope: 'Full Compliance' },
-      { type: 'Internal Security', date: '2025-12-15', scope: 'Annual Assessment' }
-    ]
-  }
-};
+      { type: 'Internal Security', date: '2025-12-15', scope: 'Annual Assessment' },
+    ],
+  },
+}
 ```
 
 ### 5.2 Audit Evidence Collection
@@ -549,55 +555,55 @@ export const ComplianceMonitor = {
       consentExpiry: {
         check: 'daily',
         threshold: '30 days',
-        action: 'notify user'
+        action: 'notify user',
       },
       dataRetention: {
         check: 'weekly',
         policy: 'delete after retention period',
-        action: 'automated deletion'
+        action: 'automated deletion',
       },
       accessRequests: {
         check: 'hourly',
         sla: '30 days',
-        action: 'escalate if overdue'
-      }
+        action: 'escalate if overdue',
+      },
     },
 
     sox: {
       privilegedAccess: {
         check: 'real-time',
         logging: 'all actions',
-        alert: 'unusual activity'
+        alert: 'unusual activity',
       },
       changeApprovals: {
         check: 'before deployment',
         requirement: 'documented approval',
-        action: 'block if missing'
+        action: 'block if missing',
       },
       financialTransactions: {
         check: 'real-time',
         validation: 'dual approval for >$10000',
-        audit: 'complete trail'
-      }
+        audit: 'complete trail',
+      },
     },
 
     iso27001: {
       accessReviews: {
         check: 'monthly',
         scope: 'all users',
-        action: 'disable inactive accounts'
+        action: 'disable inactive accounts',
       },
       vulnerabilityScans: {
         check: 'weekly',
         tools: ['nessus', 'qualys'],
-        action: 'patch critical within 24h'
+        action: 'patch critical within 24h',
       },
       backupValidation: {
         check: 'daily',
         test: 'restore random sample',
-        action: 'alert if failed'
-      }
-    }
+        action: 'alert if failed',
+      },
+    },
   },
 
   dashboardMetrics: {
@@ -606,17 +612,17 @@ export const ComplianceMonitor = {
     overdueActions: 0,
     upcomingAudits: 2,
     lastIncident: '2025-08-20',
-    trainingCompliance: 100
-  }
-};
+    trainingCompliance: 100,
+  },
+}
 ```
 
 ### 6.2 Compliance Dashboard Implementation
 
 ```javascript
 // compliance-dashboard.jsx
-import React from 'react';
-import { Card, Grid, Progress, Alert } from '@components/ui';
+import React from 'react'
+import { Card, Grid, Progress, Alert } from '@components/ui'
 
 export const ComplianceDashboard = () => {
   const [metrics, setMetrics] = useState({
@@ -624,13 +630,13 @@ export const ComplianceDashboard = () => {
     gdpr: 99,
     sox: 98,
     iso27001: 98.5,
-    pci: 95
-  });
+    pci: 95,
+  })
 
   const [alerts, setAlerts] = useState([
     { type: 'warning', message: 'PCI DSS certification due in 45 days' },
-    { type: 'info', message: 'Next ISO 27001 audit scheduled for 2025-11-01' }
-  ]);
+    { type: 'info', message: 'Next ISO 27001 audit scheduled for 2025-11-01' },
+  ])
 
   return (
     <div className="compliance-dashboard">
@@ -682,8 +688,8 @@ export const ComplianceDashboard = () => {
       <AuditCalendar />
       <FindingsTracker />
     </div>
-  );
-};
+  )
+}
 ```
 
 ---
@@ -694,32 +700,38 @@ export const ComplianceDashboard = () => {
 
 ```markdown
 # Executive Compliance Report
+
 ## Period: Q3 2025
 
 ### Executive Summary
+
 - **Overall Compliance Score**: 98.5%
 - **Critical Findings**: 0
 - **High Risk Findings**: 1
 - **Certifications Maintained**: All current
 
 ### Compliance Status by Framework
-| Framework | Status | Score | Trend |
-|-----------|--------|-------|-------|
-| GDPR | ✅ Compliant | 99% | ↑ |
-| SOX | ✅ Compliant | 98% | → |
-| ISO 27001 | ✅ Certified | 98.5% | ↑ |
-| ISO 9001 | ✅ Certified | 99% | → |
+
+| Framework | Status       | Score | Trend |
+| --------- | ------------ | ----- | ----- |
+| GDPR      | ✅ Compliant | 99%   | ↑     |
+| SOX       | ✅ Compliant | 98%   | →     |
+| ISO 27001 | ✅ Certified | 98.5% | ↑     |
+| ISO 9001  | ✅ Certified | 99%   | →     |
 
 ### Key Achievements
+
 1. Zero critical findings in Q3 audits
 2. 100% training compliance achieved
 3. Automated 15 manual compliance checks
 
 ### Areas for Improvement
+
 1. PCI DSS certification in progress
 2. Enhanced third-party risk assessment needed
 
 ### Upcoming Milestones
+
 - ISO 27001 surveillance audit: November 2025
 - SOX year-end review: October 2025
 - GDPR annual assessment: November 2025
@@ -753,34 +765,42 @@ ORDER BY month DESC, framework;
 
 ```javascript
 // compliance-automation.js
-import { CronJob } from 'cron';
+import { CronJob } from 'cron'
 
 export class ComplianceAutomation {
   constructor() {
-    this.jobs = [];
-    this.initializeJobs();
+    this.jobs = []
+    this.initializeJobs()
   }
 
   initializeJobs() {
     // Daily GDPR consent check
-    this.jobs.push(new CronJob('0 0 * * *', async () => {
-      await this.checkGDPRConsents();
-    }));
+    this.jobs.push(
+      new CronJob('0 0 * * *', async () => {
+        await this.checkGDPRConsents()
+      })
+    )
 
     // Weekly vulnerability scan
-    this.jobs.push(new CronJob('0 2 * * 0', async () => {
-      await this.runVulnerabilityScan();
-    }));
+    this.jobs.push(
+      new CronJob('0 2 * * 0', async () => {
+        await this.runVulnerabilityScan()
+      })
+    )
 
     // Monthly access review
-    this.jobs.push(new CronJob('0 0 1 * *', async () => {
-      await this.performAccessReview();
-    }));
+    this.jobs.push(
+      new CronJob('0 0 1 * *', async () => {
+        await this.performAccessReview()
+      })
+    )
 
     // Quarterly SOX control test
-    this.jobs.push(new CronJob('0 0 1 */3 *', async () => {
-      await this.testSOXControls();
-    }));
+    this.jobs.push(
+      new CronJob('0 0 1 */3 *', async () => {
+        await this.testSOXControls()
+      })
+    )
   }
 
   async checkGDPRConsents() {
@@ -788,24 +808,24 @@ export class ComplianceAutomation {
       SELECT * FROM user_consents
       WHERE expiry_date < NOW() + INTERVAL '30 days'
       AND renewal_sent = false
-    `);
+    `)
 
     for (const consent of expiringConsents) {
-      await this.sendConsentRenewal(consent);
-      await this.logComplianceAction('GDPR', 'consent_renewal', consent);
+      await this.sendConsentRenewal(consent)
+      await this.logComplianceAction('GDPR', 'consent_renewal', consent)
     }
   }
 
   async runVulnerabilityScan() {
-    const scanResults = await this.vulnerabilityScanner.scan();
+    const scanResults = await this.vulnerabilityScanner.scan()
 
-    const criticalVulns = scanResults.filter(v => v.severity === 'critical');
+    const criticalVulns = scanResults.filter(v => v.severity === 'critical')
     if (criticalVulns.length > 0) {
-      await this.createIncident('CRITICAL_VULNERABILITIES', criticalVulns);
-      await this.notifySecurityTeam(criticalVulns);
+      await this.createIncident('CRITICAL_VULNERABILITIES', criticalVulns)
+      await this.notifySecurityTeam(criticalVulns)
     }
 
-    await this.logComplianceAction('ISO27001', 'vulnerability_scan', scanResults);
+    await this.logComplianceAction('ISO27001', 'vulnerability_scan', scanResults)
   }
 
   async performAccessReview() {
@@ -813,29 +833,29 @@ export class ComplianceAutomation {
       SELECT * FROM users
       WHERE last_login < NOW() - INTERVAL '90 days'
       AND is_active = true
-    `);
+    `)
 
     for (const user of inactiveUsers) {
-      await this.disableUser(user);
-      await this.notifyManager(user);
-      await this.logComplianceAction('SOX', 'access_review', user);
+      await this.disableUser(user)
+      await this.notifyManager(user)
+      await this.logComplianceAction('SOX', 'access_review', user)
     }
   }
 
   async testSOXControls() {
-    const controls = await this.getSOXControls();
-    const results = [];
+    const controls = await this.getSOXControls()
+    const results = []
 
     for (const control of controls) {
-      const result = await this.testControl(control);
-      results.push(result);
+      const result = await this.testControl(control)
+      results.push(result)
 
       if (!result.passed) {
-        await this.createFinding('SOX', control, result);
+        await this.createFinding('SOX', control, result)
       }
     }
 
-    await this.generateSOXReport(results);
+    await this.generateSOXReport(results)
   }
 }
 ```
@@ -855,9 +875,9 @@ export const ComplianceIncidentResponse = {
       notification: {
         internal: 'immediate',
         regulatory: '72 hours',
-        affected: 'without undue delay'
+        affected: 'without undue delay',
       },
-      team: ['DPO', 'CISO', 'Legal', 'CEO']
+      team: ['DPO', 'CISO', 'Legal', 'CEO'],
     },
 
     unauthorizedAccess: {
@@ -865,9 +885,9 @@ export const ComplianceIncidentResponse = {
       notification: {
         internal: '1 hour',
         regulatory: 'if material',
-        affected: 'if high risk'
+        affected: 'if high risk',
       },
-      team: ['Security', 'Compliance', 'IT']
+      team: ['Security', 'Compliance', 'IT'],
     },
 
     controlFailure: {
@@ -875,10 +895,10 @@ export const ComplianceIncidentResponse = {
       notification: {
         internal: '4 hours',
         regulatory: 'quarterly report',
-        affected: 'not required'
+        affected: 'not required',
       },
-      team: ['Compliance', 'Process Owner']
-    }
+      team: ['Compliance', 'Process Owner'],
+    },
   },
 
   responseSteps: [
@@ -889,7 +909,7 @@ export const ComplianceIncidentResponse = {
     'Investigate root cause',
     'Remediate and recover',
     'Document and report',
-    'Lessons learned review'
+    'Lessons learned review',
   ],
 
   templates: {
@@ -920,9 +940,9 @@ export const ComplianceIncidentResponse = {
       [PLANNED ACTIONS AND TIMELINE]
 
       Contact: [DPO CONTACT INFORMATION]
-    `
-  }
-};
+    `,
+  },
+}
 ```
 
 ---
@@ -941,22 +961,22 @@ export const ComplianceTrainingProgram = {
         frequency: 'annual',
         duration: '2 hours',
         assessment: true,
-        passingScore: 80
+        passingScore: 80,
       },
       {
         course: 'Information Security Awareness',
         frequency: 'annual',
         duration: '1 hour',
         assessment: true,
-        passingScore: 75
+        passingScore: 75,
       },
       {
         course: 'Anti-Phishing Training',
         frequency: 'quarterly',
         duration: '30 minutes',
         assessment: false,
-        simulation: true
-      }
+        simulation: true,
+      },
     ],
 
     financeTeam: [
@@ -965,8 +985,8 @@ export const ComplianceTrainingProgram = {
         frequency: 'annual',
         duration: '3 hours',
         assessment: true,
-        passingScore: 85
-      }
+        passingScore: 85,
+      },
     ],
 
     developers: [
@@ -975,36 +995,37 @@ export const ComplianceTrainingProgram = {
         frequency: 'bi-annual',
         duration: '4 hours',
         assessment: true,
-        passingScore: 80
+        passingScore: 80,
       },
       {
         course: 'OWASP Top 10',
         frequency: 'annual',
         duration: '2 hours',
         assessment: true,
-        passingScore: 85
-      }
-    ]
+        passingScore: 85,
+      },
+    ],
   },
 
   tracking: {
     completion: {
       current: 100,
       target: 100,
-      overdue: []
+      overdue: [],
     },
     effectiveness: {
       phishingTestFailure: 2, // percentage
       securityIncidents: 0,
-      complianceViolations: 0
-    }
-  }
-};
+      complianceViolations: 0,
+    },
+  },
+}
 ```
 
 ---
 
 **Document Control**:
+
 - **Version**: 1.0.0
 - **Classification**: Confidential
 - **Last Updated**: 2025-09-14
@@ -1014,4 +1035,4 @@ export const ComplianceTrainingProgram = {
 
 ---
 
-*This Compliance Audit Framework ensures comprehensive regulatory compliance and continuous improvement of compliance posture.*
+_This Compliance Audit Framework ensures comprehensive regulatory compliance and continuous improvement of compliance posture._

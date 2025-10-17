@@ -3,6 +3,7 @@
 ## Database Connection Details
 
 ### Development Database
+
 - **Database ID**: `dpg-d344rkfdiees73a20c50-a`
 - **Database Name**: `sentia_manufacturing_dev`
 - **Username**: `sentia_dev`
@@ -10,6 +11,7 @@
 - **Port**: `5432`
 
 #### Connection URLs:
+
 ```bash
 # Internal (for Render services)
 DATABASE_URL=postgresql://sentia_dev:nZ4vtXienMAwxahr0GJByc2qXFIFSoYL@dpg-d344rkfdiees73a20c50-a/sentia_manufacturing_dev
@@ -19,6 +21,7 @@ DATABASE_URL=postgresql://sentia_dev:nZ4vtXienMAwxahr0GJByc2qXFIFSoYL@dpg-d344rk
 ```
 
 #### PSQL Command:
+
 ```bash
 PGPASSWORD=nZ4vtXienMAwxahr0GJByc2qXFIFSoYL psql -h dpg-d344rkfdiees73a20c50-a.oregon-postgres.render.com -U sentia_dev sentia_manufacturing_dev
 ```
@@ -26,6 +29,7 @@ PGPASSWORD=nZ4vtXienMAwxahr0GJByc2qXFIFSoYL psql -h dpg-d344rkfdiees73a20c50-a.o
 ---
 
 ### Testing Database
+
 - **Database ID**: `dpg-d344rkfdiees73a20c40-a`
 - **Database Name**: `sentia_manufacturing_test`
 - **Username**: `sentia_test`
@@ -33,6 +37,7 @@ PGPASSWORD=nZ4vtXienMAwxahr0GJByc2qXFIFSoYL psql -h dpg-d344rkfdiees73a20c50-a.o
 - **Port**: `5432`
 
 #### Connection URLs:
+
 ```bash
 # Internal (for Render services)
 DATABASE_URL=postgresql://sentia_test:He45HKApt8BjbCXXVPtEhIxbaBXxk3we@dpg-d344rkfdiees73a20c40-a/sentia_manufacturing_test
@@ -42,6 +47,7 @@ DATABASE_URL=postgresql://sentia_test:He45HKApt8BjbCXXVPtEhIxbaBXxk3we@dpg-d344r
 ```
 
 #### PSQL Command:
+
 ```bash
 PGPASSWORD=He45HKApt8BjbCXXVPtEhIxbaBXxk3we psql -h dpg-d344rkfdiees73a20c40-a.oregon-postgres.render.com -U sentia_test sentia_manufacturing_test
 ```
@@ -49,6 +55,7 @@ PGPASSWORD=He45HKApt8BjbCXXVPtEhIxbaBXxk3we psql -h dpg-d344rkfdiees73a20c40-a.o
 ---
 
 ### Production Database
+
 - **Database ID**: `dpg-d344rkfdiees73a20c30-a`
 - **Database Name**: `sentia_manufacturing_prod`
 - **Username**: `sentia_prod`
@@ -56,6 +63,7 @@ PGPASSWORD=He45HKApt8BjbCXXVPtEhIxbaBXxk3we psql -h dpg-d344rkfdiees73a20c40-a.o
 - **Port**: `5432`
 
 #### Connection URLs:
+
 ```bash
 # Internal (for Render services)
 DATABASE_URL=postgresql://sentia_prod:nKnFo2pRzVrQ2tQEkFNEULhwLZIBmwK2@dpg-d344rkfdiees73a20c30-a/sentia_manufacturing_prod
@@ -65,6 +73,7 @@ DATABASE_URL=postgresql://sentia_prod:nKnFo2pRzVrQ2tQEkFNEULhwLZIBmwK2@dpg-d344r
 ```
 
 #### PSQL Command:
+
 ```bash
 PGPASSWORD=nKnFo2pRzVrQ2tQEkFNEULhwLZIBmwK2 psql -h dpg-d344rkfdiees73a20c30-a.oregon-postgres.render.com -U sentia_prod sentia_manufacturing_prod
 ```
@@ -74,6 +83,7 @@ PGPASSWORD=nKnFo2pRzVrQ2tQEkFNEULhwLZIBmwK2 psql -h dpg-d344rkfdiees73a20c30-a.o
 ## Access Control
 
 All databases are configured with the following access control:
+
 - **Allowed IP Range**: `0.0.0.0/0` (everywhere)
 - **Description**: Open access for development and deployment
 
@@ -86,16 +96,19 @@ All databases are configured with the following access control:
 When deploying to Render, use the **internal** connection URLs in your environment variables:
 
 #### Development Service
+
 ```env
 DATABASE_URL=postgresql://sentia_dev:nZ4vtXienMAwxahr0GJByc2qXFIFSoYL@dpg-d344rkfdiees73a20c50-a/sentia_manufacturing_dev
 ```
 
 #### Testing Service
+
 ```env
 DATABASE_URL=postgresql://sentia_test:He45HKApt8BjbCXXVPtEhIxbaBXxk3we@dpg-d344rkfdiees73a20c40-a/sentia_manufacturing_test
 ```
 
 #### Production Service
+
 ```env
 DATABASE_URL=postgresql://sentia_prod:nKnFo2pRzVrQ2tQEkFNEULhwLZIBmwK2@dpg-d344rkfdiees73a20c30-a/sentia_manufacturing_prod
 ```
@@ -156,6 +169,7 @@ npx prisma studio
 Render PostgreSQL databases support connection pooling. The connection URLs provided above already include the necessary configuration for optimal performance.
 
 ### Recommended Pool Settings:
+
 ```env
 DB_POOL_MIN=5
 DB_POOL_MAX=50
@@ -199,10 +213,11 @@ If you cannot connect to the database:
 ## Support
 
 For database issues:
+
 1. Check Render dashboard for database status
 2. Review logs in Render dashboard
 3. Contact Render support if issues persist
 
 ---
 
-*Last Updated: December 2024*
+_Last Updated: December 2024_

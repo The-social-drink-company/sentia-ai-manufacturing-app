@@ -15,22 +15,15 @@ export default defineConfig({
     pool: 'threads',
     poolOptions: {
       threads: {
-        singleThread: true
-      }
+        singleThread: true,
+      },
     },
     testTimeout: 10000,
     hookTimeout: 10000,
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
-      exclude: [
-        'node_modules/',
-        'dist/',
-        'tests/setup.*',
-        '*.config.js',
-        'server.js'
-      ]
-    }
-  }
+      exclude: ['node_modules/', 'dist/', 'tests/setup.*', '*.config.js', 'server.js'],
+    },
+  },
 })
-

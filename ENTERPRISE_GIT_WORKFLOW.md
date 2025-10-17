@@ -7,10 +7,11 @@ This document implements world-class enterprise-level Git workflow best practice
 ## **BRANCH STRUCTURE & WORKFLOW**
 
 ### **Branch Hierarchy**
+
 ```
 development (dev/coding branch)
     ↓
-test (UAT/user testing branch) 
+test (UAT/user testing branch)
     ↓
 production (live/production branch)
 ```
@@ -18,6 +19,7 @@ production (live/production branch)
 ### **Branch Purposes**
 
 #### 🔧 **DEVELOPMENT BRANCH**
+
 - **Purpose**: Active development and coding area
 - **Railway URL**: https://sentia-manufacturing-dashboard-development.up.railway.app
 - **Database**: Development Neon PostgreSQL instance
@@ -25,15 +27,17 @@ production (live/production branch)
 - **Stability**: Unstable - frequent changes, experimental features
 - **Team Access**: All developers
 
-#### 🧪 **TEST BRANCH** 
+#### 🧪 **TEST BRANCH**
+
 - **Purpose**: User Acceptance Testing (UAT) environment
 - **Railway URL**: https://sentiatest.financeflo.ai
-- **Database**: Testing Neon PostgreSQL instance  
+- **Database**: Testing Neon PostgreSQL instance
 - **Usage**: Extensive user testing, quality assurance, client preview
 - **Stability**: Stable - only tested, ready-for-UAT code
 - **Team Access**: Developers, QA team, stakeholders, clients (for UAT)
 
 #### 🚀 **PRODUCTION BRANCH**
+
 - **Purpose**: Live production environment for daily operations
 - **Railway URL**: https://sentia-manufacturing-dashboard-production.up.railway.app
 - **Database**: Production Neon PostgreSQL instance
@@ -44,6 +48,7 @@ production (live/production branch)
 ## **WORKFLOW PROCESS**
 
 ### **STEP 1: Development Phase**
+
 ```bash
 # Work on development branch
 git checkout development
@@ -70,6 +75,7 @@ git push origin development
 ```
 
 ### **STEP 2: Testing Phase (UAT Ready)**
+
 ```bash
 # When development features are complete and ready for UAT
 git checkout test
@@ -81,9 +87,11 @@ git merge development
 # Push to test branch for UAT
 git push origin test
 ```
+
 **Result**: Automatic Railway deployment to https://sentiatest.financeflo.ai
 
 ### **STEP 3: Production Deployment (Go Live)**
+
 ```bash
 # After successful UAT and client approval
 git checkout production
@@ -95,11 +103,13 @@ git merge test
 # Push to production branch for live deployment
 git push origin production
 ```
+
 **Result**: Automatic Railway deployment to https://sentia-manufacturing-dashboard-production.up.railway.app
 
 ## **QUALITY GATES**
 
 ### **Development → Test**
+
 - [ ] All features implemented and functional
 - [ ] Local testing completed (http://localhost:3000)
 - [ ] No console errors or warnings
@@ -108,7 +118,8 @@ git push origin production
 - [ ] Code review completed
 - [ ] Documentation updated
 
-### **Test → Production**  
+### **Test → Production**
+
 - [ ] User Acceptance Testing (UAT) completed
 - [ ] Client approval received
 - [ ] Performance testing passed
@@ -134,7 +145,7 @@ Each branch automatically deploys to its respective Railway environment:
     },
     "testing": {
       "variables": {
-        "NODE_ENV": "test", 
+        "NODE_ENV": "test",
         "ENABLE_AUTONOMOUS_TESTING": "true",
         "AUTO_FIX_ENABLED": "true",
         "AUTO_DEPLOY_ENABLED": "false"
@@ -144,7 +155,7 @@ Each branch automatically deploys to its respective Railway environment:
       "variables": {
         "NODE_ENV": "production",
         "ENABLE_AUTONOMOUS_TESTING": "false",
-        "AUTO_FIX_ENABLED": "false", 
+        "AUTO_FIX_ENABLED": "false",
         "AUTO_DEPLOY_ENABLED": "false"
       }
     }
@@ -155,7 +166,9 @@ Each branch automatically deploys to its respective Railway environment:
 ## **EMERGENCY PROCEDURES**
 
 ### **Hotfix Process**
+
 For critical production issues:
+
 ```bash
 # Create hotfix branch from production
 git checkout production
@@ -165,7 +178,7 @@ git checkout -b hotfix/critical-issue-fix
 # Test locally
 
 # Deploy to development first
-git checkout development  
+git checkout development
 git merge hotfix/critical-issue-fix
 git push origin development
 
@@ -184,7 +197,9 @@ git branch -d hotfix/critical-issue-fix
 ```
 
 ### **Rollback Process**
+
 If production deployment fails:
+
 ```bash
 # Revert production to previous stable commit
 git checkout production
@@ -195,32 +210,37 @@ git push origin production --force-with-lease
 ## **CURRENT WORKFLOW VIOLATIONS**
 
 ### **Issues Identified:**
+
 1. **Direct development on development branch** ✅ **CORRECT**
 2. **Bypassing UAT in test environment** ❌ **VIOLATION**
 3. **No formal promotion process** ❌ **VIOLATION**
 4. **Inconsistent environment configurations** ❌ **VIOLATION**
 
 ### **Immediate Actions Required:**
+
 1. **Commit current development changes**
-2. **Promote stable code to test branch for UAT** 
+2. **Promote stable code to test branch for UAT**
 3. **Only deploy to production after successful UAT**
 4. **Establish formal change approval process**
 
 ## **BENEFITS OF THIS WORKFLOW**
 
 ### **Risk Mitigation**
+
 - Prevents untested code reaching production
-- Provides rollback capabilities at each stage  
+- Provides rollback capabilities at each stage
 - Isolates development experiments from live systems
 - Enables thorough testing before client exposure
 
 ### **Quality Assurance**
+
 - Multiple testing phases (dev → test → production)
 - Client/stakeholder approval gates
 - Database integrity protection
 - Performance validation opportunities
 
 ### **Compliance & Governance**
+
 - Audit trail of all changes
 - Approval workflows documented
 - Change management compliance
@@ -229,24 +249,28 @@ git push origin production --force-with-lease
 ## **TEAM RESPONSIBILITIES**
 
 ### **Developers**
+
 - Work exclusively on development branch
 - Ensure code quality before promoting to test
 - Document all changes thoroughly
 - Follow commit message standards
 
 ### **QA Team**
+
 - Validate functionality in test environment
 - Perform regression testing
 - Sign off on UAT completion
 - Document test results
 
 ### **Operations Team**
+
 - Monitor production deployments
 - Execute rollback procedures if needed
 - Maintain environment configurations
 - Coordinate deployment schedules
 
 ### **Stakeholders/Clients**
+
 - Perform User Acceptance Testing in test environment
 - Provide formal approval for production deployment
 - Report issues discovered during UAT
@@ -255,8 +279,9 @@ git push origin production --force-with-lease
 ## **CONCLUSION**
 
 This enterprise Git workflow ensures:
+
 - **Code Quality**: Multiple testing phases
-- **Risk Management**: Staged deployment process  
+- **Risk Management**: Staged deployment process
 - **Client Satisfaction**: UAT approval gates
 - **Operational Excellence**: Stable production environment
 - **Compliance**: Audit trails and approval processes

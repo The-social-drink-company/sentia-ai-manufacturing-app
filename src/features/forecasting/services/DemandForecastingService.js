@@ -14,7 +14,7 @@ export class DemandForecastingService {
       confidenceThreshold: options.confidenceThreshold || 0.7,
       seasonalityDetectionThreshold: options.seasonalityDetectionThreshold || 0.3,
       aiEnabled: options.aiEnabled !== false,
-      ...options
+      ...options,
     }
 
     this.algorithms = {
@@ -23,7 +23,7 @@ export class DemandForecastingService {
       SEASONAL_DECOMPOSITION: 'seasonal_decomposition',
       MOVING_AVERAGE: 'moving_average',
       MACHINE_LEARNING: 'machine_learning',
-      HYBRID: 'hybrid'
+      HYBRID: 'hybrid',
     }
 
     this.forecastAccuracy = new Map()
@@ -44,7 +44,9 @@ export class DemandForecastingService {
       const processedData = this.preprocessData(historicalData)
 
       if (processedData.length < 3) {
-        throw new Error('Insufficient historical data for forecasting (minimum 3 data points required)')
+        throw new Error(
+          'Insufficient historical data for forecasting (minimum 3 data points required)'
+        )
       }
 
       // Detect seasonality and trends
@@ -66,7 +68,11 @@ export class DemandForecastingService {
       const accuracyMetrics = this.calculateAccuracyMetrics(processedData, forecasts)
 
       // AI-powered insights and recommendations
-      const aiInsights = await this.generateAIInsights(processedData, ensembleForecast, dataAnalysis)
+      const aiInsights = await this.generateAIInsights(
+        processedData,
+        ensembleForecast,
+        dataAnalysis
+      )
 
       return {
         forecast: ensembleForecast,
@@ -80,10 +86,9 @@ export class DemandForecastingService {
           forecastPeriods: config.defaultForecastPeriods,
           confidence: this.calculateOverallConfidence(forecasts),
           generatedAt: new Date().toISOString(),
-          version: '2.0'
-        }
+          version: '2.0',
+        },
       }
-
     } catch (error) {
       logError('Demand forecasting failed', error)
       throw new Error(`Demand forecasting failed: ${error.message}`)
@@ -143,13 +148,13 @@ export class DemandForecastingService {
           const interpolatedDate = new Date(currentDate)
           interpolatedDate.setMonth(interpolatedDate.getMonth() + j)
 
-          const interpolatedValue = data[i].value +
-            ((data[i + 1].value - data[i].value) * (j / monthsDiff))
+          const interpolatedValue =
+            data[i].value + (data[i + 1].value - data[i].value) * (j / monthsDiff)
 
           filled.push({
             date: interpolatedDate.toISOString(),
             value: interpolatedValue,
-            interpolated: true
+            interpolated: true,
           })
         }
       }
@@ -188,7 +193,7 @@ export class DemandForecastingService {
       trend,
       seasonality,
       autocorrelation,
-      dataQuality: this.assessDataQuality(data)
+      dataQuality: this.assessDataQuality(data),
     }
   }
 
@@ -200,10 +205,10 @@ export class DemandForecastingService {
 
     // Calculate linear regression
     const n = data.length
-    const sumX = n * (n - 1) / 2
+    const sumX = (n * (n - 1)) / 2
     const sumY = data.reduce((sum, point) => sum + point.value, 0)
-    const sumXY = data.reduce((sum, point, index) => sum + (index * point.value), 0)
-    const sumX2 = n * (n - 1) * (2 * n - 1) / 6
+    const sumXY = data.reduce((sum, point, index) => sum + index * point.value, 0)
+    const sumX2 = (n * (n - 1) * (2 * n - 1)) / 6
 
     const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX)
     const rSquared = this.calculateRSquared(data, slope, sumY / n)
@@ -212,7 +217,7 @@ export class DemandForecastingService {
       type: Math.abs(slope) < 0.01 ? 'none' : slope > 0 ? 'increasing' : 'decreasing',
       slope,
       strength: rSquared,
-      significance: rSquared > 0.5 ? 'strong' : rSquared > 0.2 ? 'moderate' : 'weak'
+      significance: rSquared > 0.5 ? 'strong' : rSquared > 0.2 ? 'moderate' : 'weak',
     }
   }
 
@@ -241,7 +246,7 @@ export class DemandForecastingService {
       present: maxStrength > this.options.seasonalityDetectionThreshold,
       period: bestPeriod,
       strength: maxStrength,
-      significance: maxStrength > 0.7 ? 'strong' : maxStrength > 0.4 ? 'moderate' : 'weak'
+      significance: maxStrength > 0.7 ? 'strong' : maxStrength > 0.4 ? 'moderate' : 'weak',
     }
   }
 
@@ -265,14 +270,14 @@ export class DemandForecastingService {
 
     // Calculate variance of seasonal averages
     const overallMean = seasonalAverages.reduce((a, b) => a + b, 0) / period
-    const seasonalVariance = seasonalAverages.reduce((sum, avg) =>
-      sum + Math.pow(avg - overallMean, 2), 0) / period
+    const seasonalVariance =
+      seasonalAverages.reduce((sum, avg) => sum + Math.pow(avg - overallMean, 2), 0) / period
 
     // Calculate overall variance
     const values = data.map(d => d.value)
     const totalMean = values.reduce((a, b) => a + b, 0) / values.length
-    const totalVariance = values.reduce((sum, val) =>
-      sum + Math.pow(val - totalMean, 2), 0) / values.length
+    const totalVariance =
+      values.reduce((sum, val) => sum + Math.pow(val - totalMean, 2), 0) / values.length
 
     return totalVariance > 0 ? seasonalVariance / totalVariance : 0
   }
@@ -291,7 +296,8 @@ export class DemandForecastingService {
     forecasts.exponentialSmoothing = trendForecaster.exponentialSmoothing()
 
     // Add future periods for exponential smoothing
-    const lastValue = forecasts.exponentialSmoothing[forecasts.exponentialSmoothing.length - 1].value
+    const lastValue =
+      forecasts.exponentialSmoothing[forecasts.exponentialSmoothing.length - 1].value
     const lastDate = new Date(data[data.length - 1].date)
 
     for (let i = 0; i < config.defaultForecastPeriods; i++) {
@@ -304,7 +310,7 @@ export class DemandForecastingService {
         period: `Forecast ${i + 1}`,
         isForecast: true,
         method: 'Exponential Smoothing',
-        confidence: Math.max(0.5, 0.9 - (i * 0.05))
+        confidence: Math.max(0.5, 0.9 - i * 0.05),
       })
     }
 
@@ -340,13 +346,13 @@ export class DemandForecastingService {
       futureDate.setMonth(futureDate.getMonth() + i + 1)
 
       // Apply trend with some ML-like adjustments
-      let predictedValue = lastValue + (trend.slope * (i + 1))
+      let predictedValue = lastValue + trend.slope * (i + 1)
 
       // Add some AI-like pattern recognition
       const cyclicalFactor = Math.sin((i * 2 * Math.PI) / 12) * 0.1
       const momentumFactor = trend.strength * 0.2
 
-      predictedValue *= (1 + cyclicalFactor + momentumFactor)
+      predictedValue *= 1 + cyclicalFactor + momentumFactor
 
       mlForecast.push({
         date: futureDate.toISOString(),
@@ -354,7 +360,7 @@ export class DemandForecastingService {
         period: `ML Forecast ${i + 1}`,
         isForecast: true,
         method: 'Machine Learning',
-        confidence: Math.max(0.6, 0.95 - (i * 0.04))
+        confidence: Math.max(0.6, 0.95 - i * 0.04),
       })
     }
 
@@ -394,7 +400,7 @@ export class DemandForecastingService {
           ...forecastInfo,
           value: weightedSum / totalWeight,
           method: 'Ensemble',
-          contributingMethods: methods.filter(m => forecasts[m][i])
+          contributingMethods: methods.filter(m => forecasts[m][i]),
         })
       }
     }
@@ -443,18 +449,18 @@ export class DemandForecastingService {
       optimistic: this.applyScenarioMultipliers(baseForecast, {
         growth: 1.15,
         volatility: 0.8,
-        confidence: 1.1
+        confidence: 1.1,
       }),
       pessimistic: this.applyScenarioMultipliers(baseForecast, {
         growth: 0.85,
         volatility: 1.3,
-        confidence: 0.9
+        confidence: 0.9,
       }),
       stressed: this.applyScenarioMultipliers(baseForecast, {
         growth: 0.7,
         volatility: 1.8,
-        confidence: 0.7
-      })
+        confidence: 0.7,
+      }),
     }
 
     return scenarios
@@ -466,13 +472,16 @@ export class DemandForecastingService {
   applyScenarioMultipliers(forecast, multipliers) {
     return forecast.map((point, index) => {
       if (point.isForecast) {
-        const growthFactor = Math.pow(multipliers.growth, index - forecast.findIndex(p => p.isForecast) + 1)
+        const growthFactor = Math.pow(
+          multipliers.growth,
+          index - forecast.findIndex(p => p.isForecast) + 1
+        )
         const randomFactor = 1 + (Math.random() - 0.5) * 0.1 * multipliers.volatility
 
         return {
           ...point,
           value: point.value * growthFactor * randomFactor,
-          confidence: (point.confidence || 0.8) * multipliers.confidence
+          confidence: (point.confidence || 0.8) * multipliers.confidence,
         }
       }
       return point
@@ -515,9 +524,10 @@ export class DemandForecastingService {
         severity: 'info',
         title: `Strong ${dataAnalysis.trend.type} Trend Detected`,
         description: `Data shows a ${dataAnalysis.trend.significance} ${dataAnalysis.trend.type} trend with ${(dataAnalysis.trend.strength * 100).toFixed(1)}% confidence`,
-        recommendation: dataAnalysis.trend.type === 'increasing'
-          ? 'Consider scaling production capacity to meet growing demand'
-          : 'Implement cost optimization and efficiency measures'
+        recommendation:
+          dataAnalysis.trend.type === 'increasing'
+            ? 'Consider scaling production capacity to meet growing demand'
+            : 'Implement cost optimization and efficiency measures',
       })
     }
 
@@ -528,7 +538,8 @@ export class DemandForecastingService {
         severity: 'info',
         title: 'Seasonal Pattern Identified',
         description: `${dataAnalysis.seasonality.period}-month seasonal cycle detected with ${dataAnalysis.seasonality.significance} strength`,
-        recommendation: 'Optimize inventory levels and production scheduling based on seasonal demand patterns'
+        recommendation:
+          'Optimize inventory levels and production scheduling based on seasonal demand patterns',
       })
     }
 
@@ -539,14 +550,13 @@ export class DemandForecastingService {
         severity: 'warning',
         title: 'High Demand Volatility',
         description: `Demand volatility of ${(dataAnalysis.volatility * 100).toFixed(1)}% indicates unpredictable demand patterns`,
-        recommendation: 'Implement flexible production planning and safety stock strategies'
+        recommendation: 'Implement flexible production planning and safety stock strategies',
       })
     }
 
     // Forecast accuracy warnings
-    const avgConfidence = forecast
-      .filter(p => p.isForecast)
-      .reduce((sum, p) => sum + (p.confidence || 0.5), 0) /
+    const avgConfidence =
+      forecast.filter(p => p.isForecast).reduce((sum, p) => sum + (p.confidence || 0.5), 0) /
       forecast.filter(p => p.isForecast).length
 
     if (avgConfidence < 0.7) {
@@ -555,7 +565,8 @@ export class DemandForecastingService {
         severity: 'warning',
         title: 'Low Forecast Confidence',
         description: `Average forecast confidence of ${(avgConfidence * 100).toFixed(1)}% suggests uncertainty in predictions`,
-        recommendation: 'Collect more data points and consider external factors for improved accuracy'
+        recommendation:
+          'Collect more data points and consider external factors for improved accuracy',
       })
     }
 
@@ -616,7 +627,7 @@ export class DemandForecastingService {
     const ssTotal = actual.reduce((sum, val) => sum + Math.pow(val - actualMean, 2), 0)
     const ssRes = actual.reduce((sum, val, i) => sum + Math.pow(val - predicted[i], 2), 0)
 
-    return ssTotal !== 0 ? 1 - (ssRes / ssTotal) : 0
+    return ssTotal !== 0 ? 1 - ssRes / ssTotal : 0
   }
 
   calculateAutocorrelation(values, lag) {
@@ -659,13 +670,14 @@ export class DemandForecastingService {
     const consistencyScore = this.calculateDataConsistency(data)
 
     return {
-      score: (validDataRatio * 0.7 + consistencyScore * 0.3),
+      score: validDataRatio * 0.7 + consistencyScore * 0.3,
       validDataRatio,
       interpolatedPoints: interpolatedCount,
       consistencyScore,
-      recommendation: validDataRatio < 0.8
-        ? 'Collect more historical data for improved forecast accuracy'
-        : 'Data quality is sufficient for reliable forecasting'
+      recommendation:
+        validDataRatio < 0.8
+          ? 'Collect more historical data for improved forecast accuracy'
+          : 'Data quality is sufficient for reliable forecasting',
     }
   }
 
@@ -679,8 +691,9 @@ export class DemandForecastingService {
     }
 
     const avgInterval = intervals.reduce((a, b) => a + b, 0) / intervals.length
-    const variance = intervals.reduce((sum, interval) =>
-      sum + Math.pow(interval - avgInterval, 2), 0) / intervals.length
+    const variance =
+      intervals.reduce((sum, interval) => sum + Math.pow(interval - avgInterval, 2), 0) /
+      intervals.length
 
     const stdDev = Math.sqrt(variance)
     const coefficientOfVariation = avgInterval !== 0 ? stdDev / avgInterval : 0

@@ -1,53 +1,55 @@
-import http from 'http';
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import http from 'http'
+import fs from 'fs'
+import path from 'path'
+import { fileURLToPath } from 'url'
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5000
 
 const server = http.createServer((req, res) => {
   // Set CORS headers
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Origin', '*')
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
 
   // Handle preflight requests
   if (req.method === 'OPTIONS') {
-    res.writeHead(200);
-    res.end();
-    return;
+    res.writeHead(200)
+    res.end()
+    return
   }
 
   // Health check endpoint
   if (req.url === '/health') {
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ status: 'ok', timestamp: new Date().toISOString() }));
-    return;
+    res.writeHead(200, { 'Content-Type': 'application/json' })
+    res.end(JSON.stringify({ status: 'ok', timestamp: new Date().toISOString() }))
+    return
   }
 
   // API endpoint
   if (req.url === '/api/status') {
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ 
-      message: 'Sentia Manufacturing Dashboard API is running',
-      version: '1.0.5',
-      timestamp: new Date().toISOString()
-    }));
-    return;
+    res.writeHead(200, { 'Content-Type': 'application/json' })
+    res.end(
+      JSON.stringify({
+        message: 'Sentia Manufacturing Dashboard API is running',
+        version: '1.0.5',
+        timestamp: new Date().toISOString(),
+      })
+    )
+    return
   }
 
   // Serve static files if they exist
-  let filePath = req.url === '/' ? '/index.html' : req.url;
-  const fullPath = path.join(__dirname, 'dist', filePath);
+  let filePath = req.url === '/' ? '/index.html' : req.url
+  const fullPath = path.join(__dirname, 'dist', filePath)
 
   // Check if file exists
-  fs.access(fullPath, fs.constants.F_OK, (err) => {
+  fs.access(fullPath, fs.constants.F_OK, err => {
     if (err) {
       // File doesn't exist, return a simple HTML page
-      res.writeHead(200, { 'Content-Type': 'text/html' });
+      res.writeHead(200, { 'Content-Type': 'text/html' })
       res.end(`
         <!DOCTYPE html>
         <html lang="en">
@@ -135,57 +137,53 @@ const server = http.createServer((req, res) => {
           </div>
         </body>
         </html>
-      `);
+      `)
     } else {
       // File exists, serve it
-      const ext = path.extname(fullPath);
-      const contentType = {
-        '.html': 'text/html',
-        '.js': 'text/javascript',
-        '.css': 'text/css',
-        '.json': 'application/json',
-        '.png': 'image/png',
-        '.jpg': 'image/jpeg',
-        '.gif': 'image/gif',
-        '.svg': 'image/svg+xml'
-      }[ext] || 'text/plain';
+      const ext = path.extname(fullPath)
+      const contentType =
+        {
+          '.html': 'text/html',
+          '.js': 'text/javascript',
+          '.css': 'text/css',
+          '.json': 'application/json',
+          '.png': 'image/png',
+          '.jpg': 'image/jpeg',
+          '.gif': 'image/gif',
+          '.svg': 'image/svg+xml',
+        }[ext] || 'text/plain'
 
       fs.readFile(fullPath, (err, data) => {
         if (err) {
-          res.writeHead(500);
-          res.end('Server Error');
+          res.writeHead(500)
+          res.end('Server Error')
         } else {
-          res.writeHead(200, { 'Content-Type': contentType });
-          res.end(data);
+          res.writeHead(200, { 'Content-Type': contentType })
+          res.end(data)
         }
-      });
+      })
     }
-  });
-});
+  })
+})
 
 server.listen(PORT, '0.0.0.0', () => {
-  console.log(`🚀 Sentia Manufacturing Dashboard server running on port ${PORT}`);
-  console.log(`📊 Health check: http://localhost:${PORT}/health`);
-  console.log(`🔧 API status: http://localhost:${PORT}/api/status`);
-  console.log(`🌐 Main app: http://localhost:${PORT}`);
-});
+  console.log(`🚀 Sentia Manufacturing Dashboard server running on port ${PORT}`)
+  console.log(`📊 Health check: http://localhost:${PORT}/health`)
+  console.log(`🔧 API status: http://localhost:${PORT}/api/status`)
+  console.log(`🌐 Main app: http://localhost:${PORT}`)
+})
 
 // Graceful shutdown
 process.on('SIGTERM', () => {
-  console.log('SIGTERM received, shutting down gracefully');
+  console.log('SIGTERM received, shutting down gracefully')
   server.close(() => {
-    process.exit(0);
-  });
-});
+    process.exit(0)
+  })
+})
 
 process.on('SIGINT', () => {
-  console.log('SIGINT received, shutting down gracefully');
+  console.log('SIGINT received, shutting down gracefully')
   server.close(() => {
-    process.exit(0);
-  });
-});
-
-
-
-
-
+    process.exit(0)
+  })
+})

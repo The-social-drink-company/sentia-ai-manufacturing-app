@@ -9,7 +9,7 @@
    - Environment configurations ready
    - Railway configuration files prepared
 
-2. **Frontend Integration** - COMPLETE  
+2. **Frontend Integration** - COMPLETE
    - React service created (`mcpService.js`)
    - React hooks implemented (`useMCPService.js`)
    - Status widget created (`MCPStatusWidget.jsx`)
@@ -32,11 +32,13 @@
 ### 🚀 Next Steps for Deployment
 
 1. **Login to Railway CLI**
+
    ```bash
    railway login
    ```
 
 2. **Run Setup Script**
+
    ```bash
    cd mcp-server
    setup-railway.bat
@@ -50,9 +52,10 @@
      - Xero credentials (already in .env files)
 
 4. **Deploy to Each Environment**
+
    ```bash
    deploy-development.bat
-   deploy-test.bat  
+   deploy-test.bat
    deploy-production.bat
    ```
 
@@ -63,15 +66,16 @@
 
 ### 📋 Environment URLs
 
-| Environment | URL | Status |
-|-------------|-----|--------|
-| Production | https://sentia-mcp-server.railway.app | Ready to Deploy |
-| Test | https://test-sentia-mcp-server.railway.app | Ready to Deploy |
-| Development | https://dev-sentia-mcp-server.railway.app | Ready to Deploy |
+| Environment | URL                                        | Status          |
+| ----------- | ------------------------------------------ | --------------- |
+| Production  | https://sentia-mcp-server.railway.app      | Ready to Deploy |
+| Test        | https://test-sentia-mcp-server.railway.app | Ready to Deploy |
+| Development | https://dev-sentia-mcp-server.railway.app  | Ready to Deploy |
 
 ### 🔧 Local Testing
 
 The MCP server has been tested locally with:
+
 - Dependencies installed successfully
 - Server starts on port 3001
 - Import issues resolved
@@ -80,12 +84,14 @@ The MCP server has been tested locally with:
 ### 📦 Files Created (24 total)
 
 #### Configuration Files
+
 - `.env.production`
-- `.env.test` 
+- `.env.test`
 - `.env.development`
 - `.env` (local testing)
 
 #### Deployment Scripts
+
 - `setup-railway.bat`
 - `deploy-production.bat`
 - `deploy-test.bat`
@@ -95,25 +101,30 @@ The MCP server has been tested locally with:
 - `deploy-development.sh`
 
 #### Monitoring Tools
+
 - `monitor-health.js`
 - `monitor-health.bat`
 - `test-integration.js`
 
 #### Frontend Integration
+
 - `src/services/mcpService.js`
 - `src/hooks/useMCPService.js`
 - `src/components/widgets/MCPStatusWidget.jsx`
 
 #### Documentation
+
 - `README.md`
 - `DEPLOYMENT_INSTRUCTIONS.md`
 - `IMPLEMENTATION_SUMMARY.md`
 - `DEPLOYMENT_STATUS.md`
 
 #### CI/CD
+
 - `.github/workflows/deploy-mcp-server.yml`
 
 #### Modified Files
+
 - `.env.template`
 - `mcp-server/package.json`
 
@@ -137,6 +148,7 @@ The MCP server has been tested locally with:
 ### 🎯 Action Required
 
 To complete deployment:
+
 1. Run `railway login` to authenticate
 2. Execute `setup-railway.bat` to create the Railway project
 3. Add your API keys in Railway dashboard

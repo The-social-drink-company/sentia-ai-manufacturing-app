@@ -11,7 +11,9 @@ const AdminPanelEnhanced = () => (
     <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
       <div>
         <h1 className="text-3xl font-semibold tracking-tight">Admin control centre</h1>
-        <p className="text-sm text-muted-foreground">Manage access, monitor integrations, and review audit activity.</p>
+        <p className="text-sm text-muted-foreground">
+          Manage access, monitor integrations, and review audit activity.
+        </p>
       </div>
       <Badge variant="outline">Admin</Badge>
     </header>
@@ -19,12 +21,19 @@ const AdminPanelEnhanced = () => (
     <Card>
       <CardHeader>
         <CardTitle>Platform status</CardTitle>
-        <CardDescription>Snapshot of core services monitored by the MCP health agent.</CardDescription>
+        <CardDescription>
+          Snapshot of core services monitored by the MCP health agent.
+        </CardDescription>
       </CardHeader>
       <CardContent className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Metric label="MCP orchestrator" value="Online" helper="Latency 42 ms" tone="success" />
         <Metric label="Xero integration" value="Online" helper="Last sync 10:42" tone="success" />
-        <Metric label="Shop floor agents" value="Partial" helper="Line B sensor offline" tone="warning" />
+        <Metric
+          label="Shop floor agents"
+          value="Partial"
+          helper="Line B sensor offline"
+          tone="warning"
+        />
         <Metric label="Security alerts" value="0" helper="Past 24 hours" tone="default" />
       </CardContent>
     </Card>
@@ -33,22 +42,31 @@ const AdminPanelEnhanced = () => (
       <Card>
         <CardHeader>
           <CardTitle>Access requests</CardTitle>
-          <CardDescription>Outstanding provisioning tasks from finance and operations.</CardDescription>
+          <CardDescription>
+            Outstanding provisioning tasks from finance and operations.
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
           {ACCESS_REQUESTS.length === 0 ? (
             <div className="flex items-center justify-center p-8">
               <div className="text-center">
                 <p className="text-sm text-muted-foreground">No pending access requests</p>
-                <p className="text-xs text-muted-foreground">All user access is properly configured</p>
+                <p className="text-xs text-muted-foreground">
+                  All user access is properly configured
+                </p>
               </div>
             </div>
           ) : (
-            ACCESS_REQUESTS.map((request) => (
-              <div key={request.name} className="rounded-lg border border-border bg-muted/30 p-4 text-sm">
+            ACCESS_REQUESTS.map(request => (
+              <div
+                key={request.name}
+                className="rounded-lg border border-border bg-muted/30 p-4 text-sm"
+              >
                 <div className="flex items-center justify-between">
                   <p className="font-semibold text-foreground">{request.name}</p>
-                  <Badge variant={request.status.includes('Pending') ? 'secondary' : 'outline'}>{request.status}</Badge>
+                  <Badge variant={request.status.includes('Pending') ? 'secondary' : 'outline'}>
+                    {request.status}
+                  </Badge>
                 </div>
                 <p className="text-xs text-muted-foreground">Role: {request.role}</p>
                 <p className="text-xs text-muted-foreground">Requested: {request.requested}</p>
@@ -72,7 +90,7 @@ const AdminPanelEnhanced = () => (
               </div>
             </div>
           ) : (
-            AUDIT_EVENTS.map((event) => (
+            AUDIT_EVENTS.map(event => (
               <div key={event.time} className="rounded-lg border border-border bg-muted/30 p-3">
                 <div className="flex items-center justify-between text-xs text-muted-foreground">
                   <span>{event.time}</span>

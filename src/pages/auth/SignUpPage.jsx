@@ -1,47 +1,47 @@
-import { devLog } from '../lib/devLog.js';
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { devLog } from '../lib/devLog.js'
+import React, { useState } from 'react'
+import { useNavigate, Link } from 'react-router-dom'
 
 const SignUpPage = () => {
-  const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-  
+  const navigate = useNavigate()
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
+
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
     email: '',
     password: '',
     confirmPassword: '',
-    department: ''
-  });
+    department: '',
+  })
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
+  const handleInputChange = e => {
+    const { name, value } = e.target
     setFormData(prev => ({
       ...prev,
-      [name]: value
-    }));
-  };
+      [name]: value,
+    }))
+  }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-    setSuccess('');
-    setIsLoading(true);
+  const handleSubmit = async e => {
+    e.preventDefault()
+    setError('')
+    setSuccess('')
+    setIsLoading(true)
 
     // Basic validation
     if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
-      setIsLoading(false);
-      return;
+      setError('Passwords do not match')
+      setIsLoading(false)
+      return
     }
 
     if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters long');
-      setIsLoading(false);
-      return;
+      setError('Password must be at least 6 characters long')
+      setIsLoading(false)
+      return
     }
 
     try {
@@ -55,27 +55,27 @@ const SignUpPage = () => {
           lastName: formData.lastName,
           email: formData.email,
           password: formData.password,
-          department: formData.department
+          department: formData.department,
         }),
-      });
+      })
 
-      const data = await response.json();
+      const data = await response.json()
 
       if (response.ok) {
-        setSuccess('Account created successfully! You can now sign in.');
+        setSuccess('Account created successfully! You can now sign in.')
         setTimeout(() => {
-          navigate('/auth/signin');
-        }, 2000);
+          navigate('/auth/signin')
+        }, 2000)
       } else {
-        setError(data.error || 'Registration failed');
+        setError(data.error || 'Registration failed')
       }
     } catch (error) {
-      devLog.error('Registration error:', error);
-      setError('Registration failed. Please try again.');
+      devLog.error('Registration error:', error)
+      setError('Registration failed. Please try again.')
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -98,7 +98,7 @@ const SignUpPage = () => {
               {error}
             </div>
           )}
-          
+
           {success && (
             <div className="bg-green-50 border border-green-200 text-green-600 px-4 py-3 rounded-md text-sm">
               {success}
@@ -214,9 +214,25 @@ const SignUpPage = () => {
             >
               {isLoading ? (
                 <div className="flex items-center">
-                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  <svg
+                    className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
                   </svg>
                   Creating account...
                 </div>
@@ -229,10 +245,7 @@ const SignUpPage = () => {
           <div className="text-center">
             <p className="text-sm text-gray-600">
               Already have an account?{' '}
-              <Link 
-                to="/auth/signin" 
-                className="font-medium text-blue-600 hover:text-blue-500"
-              >
+              <Link to="/auth/signin" className="font-medium text-blue-600 hover:text-blue-500">
                 Sign in here
               </Link>
             </p>
@@ -240,7 +253,7 @@ const SignUpPage = () => {
         </form>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default SignUpPage;
+export default SignUpPage

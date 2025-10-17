@@ -18,7 +18,7 @@ I've prepared your Sentia Manufacturing Dashboard for Netlify deployment with al
 
 3. **Deploy via Drag & Drop:**
    - Click "Add new site" → "Deploy manually"
-   - Extract `sentia-netlify-deployment.tar.gz` 
+   - Extract `sentia-netlify-deployment.tar.gz`
    - Drag the extracted folder to the deployment area
    - Netlify will automatically deploy your site
 
@@ -31,6 +31,7 @@ I've prepared your Sentia Manufacturing Dashboard for Netlify deployment with al
    - Branch: `development` (or `production`)
 
 2. **Build Settings:**
+
    ```
    Build command: npm run build
    Publish directory: dist
@@ -48,13 +49,15 @@ I've prepared your Sentia Manufacturing Dashboard for Netlify deployment with al
 ## ⚙️ **CONFIGURATION FILES INCLUDED**
 
 ### **✅ netlify.toml**
+
 - Build configuration
 - Redirect rules for SPA routing
 - Security headers
 - Cache optimization
 - API proxy configuration
 
-### **✅ _redirects**
+### **✅ \_redirects**
+
 - SPA fallback routing
 - API endpoint redirects
 - 404 handling
@@ -62,6 +65,7 @@ I've prepared your Sentia Manufacturing Dashboard for Netlify deployment with al
 ## 🔒 **SECURITY FEATURES**
 
 ### **Enterprise Security Headers:**
+
 - X-Frame-Options: DENY
 - X-XSS-Protection: 1; mode=block
 - X-Content-Type-Options: nosniff
@@ -69,6 +73,7 @@ I've prepared your Sentia Manufacturing Dashboard for Netlify deployment with al
 - Referrer Policy: strict-origin-when-cross-origin
 
 ### **Performance Optimizations:**
+
 - Static asset caching (1 year)
 - Immutable cache headers
 - Gzip compression
@@ -77,6 +82,7 @@ I've prepared your Sentia Manufacturing Dashboard for Netlify deployment with al
 ## 🌐 **EXPECTED DEPLOYMENT RESULT**
 
 ### **✅ What Will Work:**
+
 - ✅ **Landing Page**: Professional manufacturing dashboard interface
 - ✅ **Authentication**: Clerk integration for secure login
 - ✅ **Static Assets**: All CSS, JS, images optimized and cached
@@ -86,6 +92,7 @@ I've prepared your Sentia Manufacturing Dashboard for Netlify deployment with al
 - ✅ **Performance**: Sub-2s load times with CDN
 
 ### **⚠️ What Needs Backend:**
+
 - ⚠️ **API Endpoints**: Will need separate backend deployment (Railway)
 - ⚠️ **Database Operations**: Requires Neon PostgreSQL connection
 - ⚠️ **External Integrations**: Shopify, Xero, etc. need server-side processing
@@ -94,11 +101,13 @@ I've prepared your Sentia Manufacturing Dashboard for Netlify deployment with al
 ## 🔄 **HYBRID DEPLOYMENT STRATEGY**
 
 ### **Recommended Architecture:**
+
 1. **Frontend (Netlify)**: Static React app with optimized performance
 2. **Backend (Railway)**: API server with database and integrations
 3. **Database (Neon)**: PostgreSQL with vector support
 
 ### **Configuration:**
+
 ```javascript
 // In your React app, set API base URL to Railway:
 const API_BASE_URL = 'https://your-railway-app.railway.app/api'
@@ -107,6 +116,7 @@ const API_BASE_URL = 'https://your-railway-app.railway.app/api'
 ## 📊 **DEPLOYMENT CHECKLIST**
 
 ### **Pre-Deployment:**
+
 - ✅ Build completed successfully
 - ✅ Netlify configuration files created
 - ✅ Security headers configured
@@ -114,6 +124,7 @@ const API_BASE_URL = 'https://your-railway-app.railway.app/api'
 - ✅ Deployment package created
 
 ### **Post-Deployment:**
+
 - [ ] Test landing page functionality
 - [ ] Verify authentication flow
 - [ ] Check SPA routing
@@ -124,6 +135,7 @@ const API_BASE_URL = 'https://your-railway-app.railway.app/api'
 ## 🚀 **EXPECTED PERFORMANCE**
 
 ### **Netlify Advantages:**
+
 - **Global CDN**: Sub-100ms response times worldwide
 - **Automatic HTTPS**: SSL certificates included
 - **Branch Previews**: Automatic preview deployments
@@ -131,6 +143,7 @@ const API_BASE_URL = 'https://your-railway-app.railway.app/api'
 - **Analytics**: Built-in performance monitoring
 
 ### **Performance Metrics:**
+
 - **Load Time**: <2 seconds (first visit)
 - **Lighthouse Score**: 95+ (Performance, SEO, Accessibility)
 - **Core Web Vitals**: Excellent ratings
@@ -147,10 +160,10 @@ const API_BASE_URL = 'https://your-railway-app.railway.app/api'
 ## 📞 **SUPPORT**
 
 If you encounter any issues:
+
 1. Check Netlify deploy logs
 2. Verify build settings match the guide
 3. Ensure all environment variables are set
 4. Test locally with `npm run build && npm run preview`
 
 **Your Sentia Manufacturing Dashboard is ready for world-class Netlify deployment!** 🌟
-

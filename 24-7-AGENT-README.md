@@ -7,24 +7,28 @@ The 24/7 Self-Healing Agent is an enterprise-grade monitoring and recovery syste
 ## Features
 
 ### 🚀 **Comprehensive Monitoring**
+
 - **Multi-Environment Monitoring**: Local development, Railway development, test (UAT), and production
 - **Health Checks Every 10 Minutes**: Rapid detection of issues across all systems
 - **Deep Scans Every 60 Minutes**: Comprehensive system analysis and performance evaluation
 - **MCP Server Integration**: Full monitoring of AI Central Nervous System on port 3001
 
 ### 🔧 **Self-Healing Capabilities**
+
 - **Intelligent Auto-Fix**: Automatically attempts to resolve detected issues
 - **Circuit Breaker Protection**: Prevents cascade failures in external API integrations
 - **Recovery Mechanisms**: Smart restart and recovery procedures for local services
 - **Recommendation Engine**: Generates actionable insights for manual intervention
 
 ### 📊 **Enterprise Monitoring**
+
 - **Real-Time Status Tracking**: Continuous health status for all environments
 - **Performance Metrics**: Response times, uptime, and resource utilization
 - **Security Scanning**: Automated npm audit and vulnerability detection
 - **Structured Logging**: Enterprise-grade logging with multiple log levels
 
 ### 🛡️ **Circuit Breaker Protection**
+
 - **External API Protection**: Xero, Shopify, Amazon SP-API, Unleashed ERP, Render PostgreSQL Database
 - **Failure Isolation**: Prevents external service failures from affecting core operations
 - **Automatic Recovery**: Smart retry logic with exponential backoff
@@ -32,6 +36,7 @@ The 24/7 Self-Healing Agent is an enterprise-grade monitoring and recovery syste
 ## Quick Start
 
 ### Start Agent (Foreground - Interactive)
+
 ```bash
 # Windows
 start-self-healing-agent.bat
@@ -41,6 +46,7 @@ node scripts/24-7-self-healing-agent.js start
 ```
 
 ### Start Agent (Background - Service Mode)
+
 ```bash
 # Windows - Starts as background service
 start-agent-background.bat
@@ -50,16 +56,19 @@ start "Sentia Agent" /min node scripts/24-7-self-healing-agent.js start
 ```
 
 ### Check Agent Status
+
 ```bash
 node scripts/24-7-self-healing-agent.js status
 ```
 
 ### Run Single Health Check
+
 ```bash
 node scripts/24-7-self-healing-agent.js check
 ```
 
 ### Run Deep System Scan
+
 ```bash
 node scripts/24-7-self-healing-agent.js scan
 ```
@@ -67,22 +76,26 @@ node scripts/24-7-self-healing-agent.js scan
 ## Monitored Environments
 
 ### Local Development
+
 - **Frontend**: http://localhost:3000
 - **Backend**: http://localhost:5000/api/health
 - **MCP Server**: http://localhost:3001/health
 - **Auto-Fix**: Can restart local services if they crash
 
 ### Railway Development
+
 - **Application**: https://sentia-manufacturing-dashboard-development.up.railway.app/api/health
 - **MCP Server**: https://dev-sentia-mcp-server.railway.app/health
 - **Status**: Currently experiencing 502 errors (known issue)
 
 ### Railway Test (UAT)
+
 - **Application**: https://sentiatest.financeflo.ai/api/health
 - **MCP Server**: https://test-sentia-mcp-server.railway.app/health
 - **Purpose**: User acceptance testing environment
 
 ### Railway Production
+
 - **Application**: https://sentia-manufacturing-dashboard-production.up.railway.app/api/health
 - **MCP Server**: https://sentia-mcp-server.railway.app/health
 - **Status**: ✅ Healthy and operational
@@ -99,6 +112,7 @@ The agent monitors and protects against failures in:
 - **Render Database**: PostgreSQL database connections
 
 ### Circuit Breaker States
+
 - **CLOSED**: Normal operation, requests flow through
 - **OPEN**: Circuit breaker activated, requests blocked
 - **HALF_OPEN**: Testing recovery, limited requests allowed
@@ -106,6 +120,7 @@ The agent monitors and protects against failures in:
 ## Configuration
 
 ### Timing Configuration
+
 ```javascript
 config: {
   healthCheckInterval: 600000,    // 10 minutes
@@ -122,6 +137,7 @@ config: {
 ```
 
 ### Environment Priorities
+
 - **Local Development**: Low priority, 5-minute alert delay
 - **Railway Development**: Medium priority, 2-minute alert delay
 - **Railway Test**: High priority, 30-second alert delay
@@ -130,6 +146,7 @@ config: {
 ## Logging and Monitoring
 
 ### Log Files Location
+
 ```
 logs/self-healing-agent/
 ├── agent-{id}.log              # Main agent activity log
@@ -139,6 +156,7 @@ logs/self-healing-agent/
 ```
 
 ### Log Levels
+
 - **INFO**: Normal operation, health checks, status updates
 - **WARN**: Potential issues, degraded performance
 - **ERROR**: Service failures, connection issues
@@ -146,6 +164,7 @@ logs/self-healing-agent/
 - **FIX**: Auto-fix attempts and results
 
 ### Sample Log Output
+
 ```
 [2025-09-09T20:27:45.142Z] [INFO] [agent-2025-09-09T20-27-45-0vwp] 24/7 Self-Healing Agent started
 [2025-09-09T20:27:45.142Z] [INFO] [agent-2025-09-09T20-27-45-0vwp] Health checks every 600s, Deep scans every 3600s
@@ -161,6 +180,7 @@ logs/self-healing-agent/
 ## Health Status Reporting
 
 ### Overall Health States
+
 - **healthy**: All systems operational
 - **degraded**: Some systems experiencing issues
 - **unhealthy**: Multiple systems failing
@@ -168,7 +188,9 @@ logs/self-healing-agent/
 - **error**: Agent unable to determine status
 
 ### Environment Health Checks
+
 Each environment reports:
+
 - **HTTP Status**: Response codes and connectivity
 - **Response Time**: Performance metrics
 - **Service Status**: Individual component health
@@ -177,16 +199,19 @@ Each environment reports:
 ## Auto-Fix Capabilities
 
 ### Local Development Fixes
+
 - **Frontend Service**: Restart React development server (port 3000)
 - **Backend Service**: Restart Express API server (port 5000)
 - **MCP Server**: Restart AI Central Nervous System (port 3001)
 
 ### Remote Environment Fixes
+
 - **Railway Deployments**: Limited to monitoring and reporting
 - **Manual Intervention**: Requires Railway API integration for remote restarts
 - **Recommendation Engine**: Provides specific fix recommendations
 
 ### Security Fixes
+
 - **NPM Audit**: Automatically runs `npm audit fix` for security vulnerabilities
 - **Dependency Updates**: Identifies and recommends package updates
 - **Vulnerability Scanning**: Regular security assessments
@@ -194,13 +219,16 @@ Each environment reports:
 ## Deep Scan Features
 
 ### System Analysis
+
 - **Dependency Health**: Node.js version, package integrity
 - **Git Status**: Uncommitted changes, repository health
 - **Performance Metrics**: CPU, memory, response time analysis
 - **Security Audit**: Vulnerability scanning and reporting
 
 ### Recommendation Generation
+
 The agent generates actionable recommendations:
+
 - **Environment Issues**: Specific steps to resolve health problems
 - **Security Vulnerabilities**: Commands to fix security issues
 - **Performance Optimization**: Suggestions for improving system performance
@@ -209,12 +237,15 @@ The agent generates actionable recommendations:
 ## Integration with Existing Infrastructure
 
 ### Compatible with Current Monitoring
+
 The agent integrates with existing monitoring infrastructure:
+
 - **Enterprise Monitoring Service**: `services/enterprise-monitoring.js`
 - **Railway Health Monitor**: `scripts/railway-health-monitor.js`
 - **MCP Server Health**: `mcp-server/monitor-health.js`
 
 ### Non-Intrusive Operation
+
 - **Read-Only Monitoring**: Does not interfere with normal operations
 - **Isolated Logging**: Separate log files prevent conflicts
 - **Background Operation**: Minimal resource usage
@@ -225,6 +256,7 @@ The agent integrates with existing monitoring infrastructure:
 ### Common Issues
 
 #### Agent Won't Start
+
 ```bash
 # Check Node.js installation
 node --version
@@ -240,6 +272,7 @@ node scripts/24-7-self-healing-agent.js status
 ```
 
 #### No Log Files Generated
+
 ```bash
 # Check permissions
 # Ensure logs/ directory exists and is writable
@@ -250,6 +283,7 @@ mkdir logs\self-healing-agent
 ```
 
 #### Circuit Breaker Stuck Open
+
 ```bash
 # Check agent status to see circuit breaker states
 node scripts/24-7-self-healing-agent.js status
@@ -259,6 +293,7 @@ node scripts/24-7-self-healing-agent.js status
 ```
 
 ### Performance Impact
+
 - **CPU Usage**: <2% average impact
 - **Memory Usage**: ~50MB RAM consumption
 - **Network**: Minimal bandwidth for health checks
@@ -267,18 +302,21 @@ node scripts/24-7-self-healing-agent.js status
 ## Production Deployment
 
 ### Prerequisites
+
 - Node.js 18+ installed
 - NPM dependencies installed
 - Network access to all monitored environments
 - Write permissions for logs directory
 
 ### Recommended Deployment
+
 1. **Install as Windows Service** (for production servers)
 2. **Use Background Mode** for development workstations
 3. **Configure Log Rotation** for long-running deployments
 4. **Set Up Monitoring Alerts** based on log output
 
 ### Security Considerations
+
 - **No Sensitive Data**: Agent logs do not contain API keys or secrets
 - **Network Security**: Uses HTTPS for all external communications
 - **Process Isolation**: Runs in separate process with minimal privileges
@@ -287,11 +325,13 @@ node scripts/24-7-self-healing-agent.js status
 ## Current Status (September 2025)
 
 ### Known Issues
+
 1. **Railway Development**: 502 Bad Gateway errors (deployment configuration issue)
 2. **Railway Test**: 502 Bad Gateway errors (environment variables not loading)
 3. **Local Development**: Services not running (expected when not in development)
 
 ### Working Correctly
+
 1. **Railway Production**: ✅ Healthy and operational
 2. **MCP Servers**: All environments responding to health checks
 3. **Circuit Breakers**: Functioning correctly with proper state management
@@ -300,6 +340,7 @@ node scripts/24-7-self-healing-agent.js status
 6. **Recommendation Engine**: Generating actionable insights
 
 ### Immediate Benefits
+
 - **Production Monitoring**: Real-time health status for live environment
 - **Issue Detection**: Rapid identification of system problems
 - **Historical Tracking**: Comprehensive logs for troubleshooting

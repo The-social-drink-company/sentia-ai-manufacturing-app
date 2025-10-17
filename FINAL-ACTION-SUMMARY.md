@@ -3,6 +3,7 @@
 ## 🕐 Current Status at 6:21 PM
 
 ### Production: 🔴 DOWN (502 Bad Gateway)
+
 **Monitoring Active**: Checking every 30 seconds
 
 ---
@@ -10,6 +11,7 @@
 ## ✅ What We've Completed:
 
 ### Code & Configuration (100% DONE)
+
 1. ✅ Fixed query-optimizer.js error
 2. ✅ Created minimal-server.js for fast startup
 3. ✅ Updated package.json to use minimal server
@@ -19,6 +21,7 @@
 7. ✅ Verified code is ready and working locally
 
 ### Documentation (100% DONE)
+
 1. ✅ Created fix instructions
 2. ✅ Generated environment variable lists
 3. ✅ Built monitoring scripts
@@ -31,6 +34,7 @@
 ### Environment Variables in Render Dashboard
 
 **The ONLY reason production is down:**
+
 - Clerk authentication keys are not configured in Render
 - Without these, the server cannot start
 - This causes the 502 error
@@ -57,16 +61,16 @@ API_BASE_URL=/api
 
 ## ⏱️ Timeline After Adding Variables:
 
-| Time | What Happens |
-|------|-------------|
-| 0:00 | You click "Save Changes" |
-| 0:01 | Render detects change |
-| 0:02 | Deployment triggers |
-| 0:30 | Build starts |
-| 2:00 | Build completes |
-| 3:00 | New server starts |
-| 3:30 | Health checks pass |
-| **4:00** | **Production is LIVE!** |
+| Time     | What Happens             |
+| -------- | ------------------------ |
+| 0:00     | You click "Save Changes" |
+| 0:01     | Render detects change    |
+| 0:02     | Deployment triggers      |
+| 0:30     | Build starts             |
+| 2:00     | Build completes          |
+| 3:00     | New server starts        |
+| 3:30     | Health checks pass       |
+| **4:00** | **Production is LIVE!**  |
 
 ---
 
@@ -89,12 +93,14 @@ API_BASE_URL=/api
 ## 🎉 When Production Comes Online:
 
 You'll see:
+
 ```
 [XX:XX:XX] ✅ PRODUCTION IS UP!
 {"status":"ok","timestamp":"2025-09-20T..."}
 ```
 
 And can access:
+
 - Main site: https://sentia-manufacturing-production.onrender.com
 - Health check: https://sentia-manufacturing-production.onrender.com/health
 - Dashboard: https://sentia-manufacturing-production.onrender.com/dashboard
@@ -121,5 +127,3 @@ And can access:
 **Monitor Status**: ✅ Running - Will alert when production comes online
 
 **Next Update**: As soon as production status changes
-
-

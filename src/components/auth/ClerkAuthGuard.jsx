@@ -31,9 +31,12 @@ export default function ClerkAuthGuard({ children }) {
               </div>
               <h1 className="text-5xl font-bold text-white">Sentia Manufacturing</h1>
             </div>
-            <h2 className="text-2xl text-blue-200 mb-6">Enterprise Working Capital Intelligence Platform</h2>
+            <h2 className="text-2xl text-blue-200 mb-6">
+              Enterprise Working Capital Intelligence Platform
+            </h2>
             <p className="text-lg text-gray-300 max-w-4xl mx-auto leading-relaxed">
-              Secure access to advanced cash flow analysis and optimization for manufacturing enterprises.
+              Secure access to advanced cash flow analysis and optimization for manufacturing
+              enterprises.
             </p>
           </div>
 
@@ -56,13 +59,13 @@ export default function ClerkAuthGuard({ children }) {
                       <TabsTrigger value="signin">Sign In</TabsTrigger>
                       <TabsTrigger value="signup">Sign Up</TabsTrigger>
                     </TabsList>
-                    
+
                     <TabsContent value="signin" className="space-y-4">
                       <div className="flex justify-center">
                         <div className="text-center text-white">
                           <p className="mb-4">Development Mode Active</p>
-                          <Button 
-                            onClick={() => window.location.href = '/app/dashboard'}
+                          <Button
+                            onClick={() => (window.location.href = '/app/dashboard')}
                             className="bg-blue-600 hover:bg-blue-700"
                           >
                             Continue to Dashboard
@@ -70,13 +73,13 @@ export default function ClerkAuthGuard({ children }) {
                         </div>
                       </div>
                     </TabsContent>
-                    
+
                     <TabsContent value="signup" className="space-y-4">
                       <div className="flex justify-center">
                         <div className="text-center text-white">
                           <p className="mb-4">Development Mode Active</p>
-                          <Button 
-                            onClick={() => window.location.href = '/app/dashboard'}
+                          <Button
+                            onClick={() => (window.location.href = '/app/dashboard')}
                             className="bg-blue-600 hover:bg-blue-700"
                           >
                             Continue to Dashboard
@@ -181,7 +184,7 @@ export default function ClerkAuthGuard({ children }) {
           {/* Footer */}
           <div className="text-center mt-12 text-gray-400">
             <p className="text-sm">
-              © 2024 Sentia Manufacturing. All rights reserved. | 
+              © 2024 Sentia Manufacturing. All rights reserved. |
               <span className="ml-2">Enterprise-grade financial intelligence platform</span>
             </p>
           </div>

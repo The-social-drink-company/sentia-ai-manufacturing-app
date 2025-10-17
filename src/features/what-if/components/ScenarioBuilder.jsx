@@ -1,6 +1,14 @@
 import { useState } from 'react'
 
-import { Card, CardContent, CardHeader, CardTitle , Badge , Alert, AlertDescription } from '../../../components/ui'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  Badge,
+  Alert,
+  AlertDescription,
+} from '../../../components/ui'
 
 const defaultScenarios = [
   {
@@ -12,10 +20,10 @@ const defaultScenarios = [
       priceIncrease: 0,
       costReduction: 0,
       inventoryDays: 30,
-      productionCapacity: 100
+      productionCapacity: 100,
     },
     isActive: true,
-    isBaseline: true
+    isBaseline: true,
   },
   {
     id: 'optimistic',
@@ -26,10 +34,10 @@ const defaultScenarios = [
       priceIncrease: 5,
       costReduction: 3,
       inventoryDays: 25,
-      productionCapacity: 120
+      productionCapacity: 120,
     },
     isActive: false,
-    isBaseline: false
+    isBaseline: false,
   },
   {
     id: 'conservative',
@@ -40,11 +48,11 @@ const defaultScenarios = [
       priceIncrease: 2,
       costReduction: 10,
       inventoryDays: 35,
-      productionCapacity: 95
+      productionCapacity: 95,
     },
     isActive: false,
-    isBaseline: false
-  }
+    isBaseline: false,
+  },
 ]
 
 export function ScenarioBuilder({ onScenarioChange }) {
@@ -66,18 +74,18 @@ export function ScenarioBuilder({ onScenarioChange }) {
       if (updatedScenario) {
         onScenarioChange({
           ...updatedScenario,
-          variables: { ...updatedScenario.variables, [variable]: Number(value) }
+          variables: { ...updatedScenario.variables, [variable]: Number(value) },
         })
       }
     }
   }
 
-  const handleScenarioSelect = (_scenarioId) => {
+  const handleScenarioSelect = _scenarioId => {
     setActiveScenario(scenarioId)
     setScenarios(prev =>
       prev.map(scenario => ({
         ...scenario,
-        isActive: scenario.id === scenarioId
+        isActive: scenario.id === scenarioId,
       }))
     )
 
@@ -112,9 +120,7 @@ export function ScenarioBuilder({ onScenarioChange }) {
                   <h3 className="font-semibold">{scenario.name}</h3>
                   {scenario.isBaseline && <Badge variant="info">Baseline</Badge>}
                 </div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {scenario.description}
-                </p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">{scenario.description}</p>
               </button>
             ))}
           </div>
@@ -149,7 +155,7 @@ export function ScenarioBuilder({ onScenarioChange }) {
                   min="-50"
                   max="150"
                   value={value}
-                  onChange={(e) => handleVariableChange(activeScenario, key, e.target.value)}
+                  onChange={e => handleVariableChange(activeScenario, key, e.target.value)}
                   disabled={!isEditing || currentScenario?.isBaseline}
                   className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
                 />
@@ -160,7 +166,8 @@ export function ScenarioBuilder({ onScenarioChange }) {
           {currentScenario?.isBaseline && (
             <Alert variant="info" className="mt-4">
               <AlertDescription>
-                The baseline scenario represents current operational parameters and cannot be edited.
+                The baseline scenario represents current operational parameters and cannot be
+                edited.
               </AlertDescription>
             </Alert>
           )}

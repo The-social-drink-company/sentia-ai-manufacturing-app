@@ -8,25 +8,31 @@
 Go to Render Dashboard and update these **exact values**:
 
 ### 1. Development Service: `sentia-manufacturing-development`
+
 **Navigate to**: Environment Variables tab
 **Find**: `DATABASE_URL`
 **Replace with**:
+
 ```
 postgresql://sentia_dev:nZ4vtXienMAwxahr0GJByc2qXFIFSoYL@dpg-d344rkfdiees73a20c50-a.oregon-postgres.render.com/sentia_manufacturing_dev?sslmode=require
 ```
 
 ### 2. Testing Service: `sentia-manufacturing-testing`
+
 **Navigate to**: Environment Variables tab
 **Find**: `DATABASE_URL`
 **Replace with**:
+
 ```
 postgresql://sentia_test:nZ4vtXienMAwxahr0GJByc2qXFIFSoYL@dpg-d344rkfdiees73a20c50-a.oregon-postgres.render.com/sentia_manufacturing_test?sslmode=require
 ```
 
 ### 3. Production Service: `sentia-manufacturing-production`
+
 **Navigate to**: Environment Variables tab
 **Find**: `DATABASE_URL`
 **Replace with**:
+
 ```
 postgresql://sentia_prod:nZ4vtXienMAwxahr0GJByc2qXFIFSoYL@dpg-d344rkfdiees73a20c50-a.oregon-postgres.render.com/sentia_manufacturing_prod?sslmode=require
 ```

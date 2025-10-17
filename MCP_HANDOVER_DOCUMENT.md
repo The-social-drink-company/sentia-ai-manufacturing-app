@@ -43,14 +43,14 @@ The MCP (Model Context Protocol) Server integration has been successfully implem
 
 ### Technology Stack
 
-| Layer | Technology | Purpose |
-|-------|------------|---------|
-| Frontend | React 18 + Vite | User interface |
-| Backend | Node.js + Express | API server |
-| Database | PostgreSQL (Neon) | Data persistence |
-| AI Layer | MCP Server | AI orchestration |
-| Deployment | Railway | Cloud hosting |
-| Monitoring | Custom Dashboard | Real-time monitoring |
+| Layer      | Technology        | Purpose              |
+| ---------- | ----------------- | -------------------- |
+| Frontend   | React 18 + Vite   | User interface       |
+| Backend    | Node.js + Express | API server           |
+| Database   | PostgreSQL (Neon) | Data persistence     |
+| AI Layer   | MCP Server        | AI orchestration     |
+| Deployment | Railway           | Cloud hosting        |
+| Monitoring | Custom Dashboard  | Real-time monitoring |
 
 ---
 
@@ -58,28 +58,28 @@ The MCP (Model Context Protocol) Server integration has been successfully implem
 
 ### Production Endpoints
 
-| Service | URL | Purpose |
-|---------|-----|---------|
-| Main Application | https://sentia-manufacturing-production.up.railway.app | Production app |
-| MCP Monitor | https://sentia-manufacturing-production.up.railway.app/mcp-monitor | Monitoring dashboard |
-| Health Check | https://sentia-manufacturing-production.up.railway.app/api/health | System health |
-| MCP API | https://sentia-manufacturing-production.up.railway.app/api/mcp/* | MCP endpoints |
+| Service          | URL                                                                | Purpose              |
+| ---------------- | ------------------------------------------------------------------ | -------------------- |
+| Main Application | https://sentia-manufacturing-production.up.railway.app             | Production app       |
+| MCP Monitor      | https://sentia-manufacturing-production.up.railway.app/mcp-monitor | Monitoring dashboard |
+| Health Check     | https://sentia-manufacturing-production.up.railway.app/api/health  | System health        |
+| MCP API          | https://sentia-manufacturing-production.up.railway.app/api/mcp/*   | MCP endpoints        |
 
 ### Railway Project Access
 
-| Project | ID | Access |
-|---------|----|----|
+| Project          | ID                                   | Access            |
+| ---------------- | ------------------------------------ | ----------------- |
 | Main Application | b9ca1af1-13c5-4ced-9ab6-68fddd73fc8f | Railway Dashboard |
-| MCP Server | 3adb1ac4-84d8-473b-885f-3a9790fe6140 | Railway Dashboard |
+| MCP Server       | 3adb1ac4-84d8-473b-885f-3a9790fe6140 | Railway Dashboard |
 
 ### Service IDs
 
-| Environment | Service ID |
-|------------|------------|
-| Production | 3e0053fc-ea90-49ec-9708-e09d58cad4a0 |
-| Testing | 02e0c7f6-9ca1-4355-af52-ee9eec0b3545 |
+| Environment | Service ID                           |
+| ----------- | ------------------------------------ |
+| Production  | 3e0053fc-ea90-49ec-9708-e09d58cad4a0 |
+| Testing     | 02e0c7f6-9ca1-4355-af52-ee9eec0b3545 |
 | Development | f97b65ad-c306-410a-9d5d-5f5fdc098620 |
-| MCP Server | 99691282-de66-45b2-98cf-317083dd11ba |
+| MCP Server  | 99691282-de66-45b2-98cf-317083dd11ba |
 
 ---
 
@@ -140,12 +140,14 @@ DATABASE_SYNC_INTERVAL=0 */6 * * *
 ### Daily Operations
 
 #### Morning Check (5 minutes)
+
 1. Access MCP Monitor: `/mcp-monitor`
 2. Verify all status indicators are green
 3. Check sync history for overnight operations
 4. Review error count (should be 0)
 
 #### Evening Review (10 minutes)
+
 1. Check WebSocket uptime percentage
 2. Review API sync success rates
 3. Verify no rate limit warnings
@@ -154,6 +156,7 @@ DATABASE_SYNC_INTERVAL=0 */6 * * *
 ### Weekly Maintenance
 
 #### Monday - Performance Review
+
 ```bash
 # Check response times
 curl https://[domain]/api/mcp/status | jq '.performance'
@@ -163,6 +166,7 @@ curl https://[domain]/api/mcp/websocket/stats
 ```
 
 #### Wednesday - Security Check
+
 ```bash
 # Review authentication logs
 railway logs | grep -i "auth.*fail"
@@ -172,6 +176,7 @@ railway logs | grep -i "rate.*limit\|unauthorized"
 ```
 
 #### Friday - Sync Optimization
+
 ```bash
 # Review sync performance
 .\scripts\test-mcp-integration.ps1 -Environment production
@@ -183,18 +188,21 @@ railway variables set XERO_SYNC_INTERVAL="*/45 * * * *"
 ### Monthly Tasks
 
 #### First Monday - Security Audit
+
 1. Rotate API keys and secrets
 2. Review access logs
 3. Update dependencies
 4. Check GitHub security alerts
 
 #### Mid-Month - Performance Analysis
+
 1. Analyze sync patterns
 2. Optimize database queries
 3. Review resource usage
 4. Plan capacity adjustments
 
 #### Month End - Backup & Documentation
+
 1. Backup configuration
 2. Export sync history
 3. Update documentation
@@ -207,6 +215,7 @@ railway variables set XERO_SYNC_INTERVAL="*/45 * * * *"
 ### Common Issues & Solutions
 
 #### Issue 1: MCP Server Disconnected
+
 ```bash
 # Quick Fix
 curl -X POST https://[domain]/api/mcp/websocket/reconnect
@@ -220,6 +229,7 @@ railway up
 ```
 
 #### Issue 2: Sync Failures
+
 ```bash
 # Check specific service
 curl https://[domain]/api/mcp/sync/status
@@ -232,6 +242,7 @@ curl -X POST https://[domain]/api/mcp/sync/trigger/xero
 ```
 
 #### Issue 3: High Error Rate
+
 ```bash
 # Identify errors
 railway logs | grep ERROR | tail -20
@@ -246,12 +257,14 @@ git log --oneline -10
 ### Emergency Procedures
 
 #### System Down
+
 1. Check Railway status: https://railway.app/status
 2. Review deployment logs: `railway logs`
 3. Rollback if needed: `railway rollback [deployment-id]`
 4. Contact support if unresolved
 
 #### Data Loss Prevention
+
 1. Stop auto-sync: `curl -X POST https://[domain]/api/mcp/sync/disable`
 2. Backup current data
 3. Investigate root cause
@@ -262,18 +275,21 @@ git log --oneline -10
 ## 6. Support & Escalation
 
 ### Level 1 Support (0-30 minutes)
+
 - Check monitoring dashboard
 - Review recent logs
 - Follow troubleshooting guide
 - Attempt standard fixes
 
 ### Level 2 Support (30-120 minutes)
+
 - Deep log analysis
 - Component testing
 - Configuration validation
 - Consult documentation
 
 ### Level 3 Support (>2 hours)
+
 - Code debugging required
 - Infrastructure issues
 - Security incidents
@@ -281,11 +297,11 @@ git log --oneline -10
 
 ### Contact Information
 
-| Role | Contact | When to Contact |
-|------|---------|-----------------|
-| GitHub Issues | [Create Issue](https://github.com/The-social-drink-company/sentia-manufacturing-dashboard/issues) | Bug reports, feature requests |
-| Railway Support | [Get Help](https://railway.app/help) | Deployment issues |
-| Development Team | support@sentia.com | Critical issues |
+| Role             | Contact                                                                                           | When to Contact               |
+| ---------------- | ------------------------------------------------------------------------------------------------- | ----------------------------- |
+| GitHub Issues    | [Create Issue](https://github.com/The-social-drink-company/sentia-manufacturing-dashboard/issues) | Bug reports, feature requests |
+| Railway Support  | [Get Help](https://railway.app/help)                                                              | Deployment issues             |
+| Development Team | support@sentia.com                                                                                | Critical issues               |
 
 ---
 
@@ -319,14 +335,14 @@ tests/
 
 ### Documentation Files
 
-| Document | Purpose | When to Use |
-|----------|---------|-------------|
-| MCP_USER_GUIDE.md | End-user guide | Training new users |
-| MCP_TROUBLESHOOTING.md | Problem resolution | When issues occur |
-| MCP_API_DOCUMENTATION.md | API reference | Development work |
-| MCP_QUICK_START.md | Quick setup | New deployments |
-| MCP_MONITORING_GUIDE.md | Operations guide | Daily monitoring |
-| MCP_DEPLOYMENT_CHECKLIST.md | Deployment steps | Updates/deployments |
+| Document                    | Purpose            | When to Use         |
+| --------------------------- | ------------------ | ------------------- |
+| MCP_USER_GUIDE.md           | End-user guide     | Training new users  |
+| MCP_TROUBLESHOOTING.md      | Problem resolution | When issues occur   |
+| MCP_API_DOCUMENTATION.md    | API reference      | Development work    |
+| MCP_QUICK_START.md          | Quick setup        | New deployments     |
+| MCP_MONITORING_GUIDE.md     | Operations guide   | Daily monitoring    |
+| MCP_DEPLOYMENT_CHECKLIST.md | Deployment steps   | Updates/deployments |
 
 ---
 
@@ -334,40 +350,43 @@ tests/
 
 ### Expected Performance Metrics
 
-| Metric | Target | Current | Status |
-|--------|--------|---------|--------|
-| Uptime | >99.9% | 99.95% | ✅ |
-| API Response Time | <500ms | 320ms | ✅ |
-| WebSocket Latency | <100ms | 85ms | ✅ |
-| Sync Success Rate | >95% | 97.3% | ✅ |
-| Error Rate | <1% | 0.4% | ✅ |
+| Metric            | Target | Current | Status |
+| ----------------- | ------ | ------- | ------ |
+| Uptime            | >99.9% | 99.95%  | ✅     |
+| API Response Time | <500ms | 320ms   | ✅     |
+| WebSocket Latency | <100ms | 85ms    | ✅     |
+| Sync Success Rate | >95%   | 97.3%   | ✅     |
+| Error Rate        | <1%    | 0.4%    | ✅     |
 
 ### Resource Usage
 
-| Resource | Limit | Current | Headroom |
-|----------|-------|---------|----------|
-| Memory | 2GB | 650MB | 68% |
-| CPU | 2 cores | 35% avg | 65% |
-| Database Connections | 100 | 25 | 75% |
-| API Rate Limits | Varies | <50% | >50% |
+| Resource             | Limit   | Current | Headroom |
+| -------------------- | ------- | ------- | -------- |
+| Memory               | 2GB     | 650MB   | 68%      |
+| CPU                  | 2 cores | 35% avg | 65%      |
+| Database Connections | 100     | 25      | 75%      |
+| API Rate Limits      | Varies  | <50%    | >50%     |
 
 ---
 
 ## 9. Future Enhancements
 
 ### Planned Improvements (Q1 2025)
+
 1. Enhanced AI models integration
 2. Additional API integrations
 3. Advanced analytics dashboard
 4. Automated anomaly detection
 
 ### Technical Debt
+
 1. Address GitHub security vulnerabilities (4 pending)
 2. Optimize database queries for scale
 3. Implement comprehensive logging
 4. Add integration tests
 
 ### Scaling Considerations
+
 - Horizontal scaling ready
 - Database read replicas for high load
 - CDN for static assets
@@ -414,11 +433,11 @@ tests/
 
 The MCP integration has been successfully implemented, tested, documented, and deployed. All systems are operational and ready for production use.
 
-| Role | Name | Date | Signature |
-|------|------|------|-----------|
-| Development Lead | [Name] | Dec 2024 | __________ |
-| Operations Lead | [Name] | Dec 2024 | __________ |
-| Project Manager | [Name] | Dec 2024 | __________ |
+| Role             | Name   | Date     | Signature    |
+| ---------------- | ------ | -------- | ------------ |
+| Development Lead | [Name] | Dec 2024 | ****\_\_**** |
+| Operations Lead  | [Name] | Dec 2024 | ****\_\_**** |
+| Project Manager  | [Name] | Dec 2024 | ****\_\_**** |
 
 ---
 

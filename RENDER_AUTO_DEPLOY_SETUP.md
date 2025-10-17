@@ -1,21 +1,23 @@
 # Render Auto-Deploy Configuration Guide
 
 ## Overview
+
 This guide sets up automatic deployments from GitHub branches to Render services.
 
 ## Branch-to-Service Mapping
 
-| Branch | Service Name | URL | Plan |
-|--------|-------------|-----|------|
-| `development` | sentia-manufacturing-development | https://sentia-manufacturing-development.onrender.com | Free |
-| `test` | sentia-manufacturing-testing | https://sentia-manufacturing-testing.onrender.com | Starter ($7) |
-| `production` | sentia-manufacturing-production | https://sentia-manufacturing-production.onrender.com | Standard ($25) |
+| Branch        | Service Name                     | URL                                                   | Plan           |
+| ------------- | -------------------------------- | ----------------------------------------------------- | -------------- |
+| `development` | sentia-manufacturing-development | https://sentia-manufacturing-development.onrender.com | Free           |
+| `test`        | sentia-manufacturing-testing     | https://sentia-manufacturing-testing.onrender.com     | Starter ($7)   |
+| `production`  | sentia-manufacturing-production  | https://sentia-manufacturing-production.onrender.com  | Standard ($25) |
 
 ## Step 1: Initial Service Creation
 
 ### Option A: Via Render Dashboard (Recommended)
 
 1. **Development Service**:
+
    ```
    - Go to https://dashboard.render.com
    - Click "New +" → "Web Service"
@@ -29,6 +31,7 @@ This guide sets up automatic deployments from GitHub branches to Render services
    ```
 
 2. **Testing Service**:
+
    ```
    - Repeat above with:
    - Name: sentia-manufacturing-testing
@@ -80,16 +83,19 @@ MCP_ENABLE_WEBSOCKET: true
 ### Database URLs by Environment
 
 **Development**:
+
 ```
 DATABASE_URL: postgresql://neondb_owner:npg_2wXVD9gdintm@ep-aged-dust-abpyip0r-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require
 ```
 
 **Testing**:
+
 ```
 DATABASE_URL: postgresql://neondb_owner:npg_2wXVD9gdintm@ep-shiny-dream-ab2zho2p-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require
 ```
 
 **Production**:
+
 ```
 DATABASE_URL: postgresql://neondb_owner:npg_2wXVD9gdintm@ep-broad-resonance-ablmx6yo-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require
 ```
@@ -108,6 +114,7 @@ Render automatically sets up webhooks. Verify in GitHub:
 ## Step 5: Deployment Workflow
 
 ### Development Workflow
+
 ```bash
 # Make changes locally
 git add .
@@ -118,6 +125,7 @@ git push origin development
 ```
 
 ### Testing Workflow
+
 ```bash
 # Merge development to test
 git checkout test
@@ -128,6 +136,7 @@ git push origin test
 ```
 
 ### Production Workflow
+
 ```bash
 # After UAT approval, merge to production
 git checkout production
@@ -140,11 +149,13 @@ git push origin production
 ## Step 6: Monitoring Auto-Deploys
 
 ### Render Dashboard
+
 - View deployment status in real-time
 - Check build logs for errors
 - Monitor service health
 
 ### GitHub Actions Integration (Optional)
+
 ```yaml
 # .github/workflows/render-notify.yml
 name: Notify Render Deploy
@@ -164,11 +175,13 @@ jobs:
 If deployment fails:
 
 ### Automatic Rollback
+
 1. Render keeps previous builds
 2. Go to service → Deploys
 3. Click "Rollback" on last working deploy
 
 ### Manual Rollback
+
 ```bash
 # Revert commit locally
 git revert HEAD
@@ -184,11 +197,13 @@ git push --force origin <branch>
 ### Automated Health Checks
 
 Each service has `/health` endpoint configured. Render will:
+
 - Check every 30 seconds
 - Alert if unhealthy
 - Restart if needed
 
 ### Manual Health Check
+
 ```powershell
 # Test all environments
 $environments = @("development", "testing", "production")
@@ -229,11 +244,11 @@ foreach ($service in $services) {
 
 ## Deployment Status Dashboard
 
-| Environment | Auto-Deploy | Branch | Status | MCP Server |
-|------------|-------------|---------|---------|------------|
-| Development | ✅ Enabled | `development` | 🟢 Live | Connected |
-| Testing | ✅ Enabled | `test` | 🟢 Live | Connected |
-| Production | ✅ Enabled | `production` | 🟢 Live | Connected |
+| Environment | Auto-Deploy | Branch        | Status  | MCP Server |
+| ----------- | ----------- | ------------- | ------- | ---------- |
+| Development | ✅ Enabled  | `development` | 🟢 Live | Connected  |
+| Testing     | ✅ Enabled  | `test`        | 🟢 Live | Connected  |
+| Production  | ✅ Enabled  | `production`  | 🟢 Live | Connected  |
 
 ## Cost Summary
 
@@ -246,16 +261,19 @@ foreach ($service in $services) {
 ## Troubleshooting
 
 ### Build Fails
+
 - Check build logs in Render dashboard
 - Verify package.json dependencies
 - Check Node version compatibility
 
 ### MCP Connection Issues
+
 - Verify MCP_SERVER_URL is correct
 - Check CORS_ORIGINS includes your domain
 - Verify JWT_SECRET matches
 
 ### Database Connection Fails
+
 - Verify DATABASE_URL is correct
 - Check Neon dashboard for connection limits
 - Ensure SSL mode is set correctly

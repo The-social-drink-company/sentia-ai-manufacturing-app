@@ -20,7 +20,7 @@ class BaseApi {
   constructor() {
     this.baseURL = API_BASE_URL
     this.defaultHeaders = {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
     }
   }
 
@@ -30,8 +30,8 @@ class BaseApi {
       ...options,
       headers: {
         ...this.defaultHeaders,
-        ...options.headers
-      }
+        ...options.headers,
+      },
     }
 
     // Add auth token if available
@@ -78,34 +78,34 @@ class BaseApi {
     const url = queryString ? `${endpoint}?${queryString}` : endpoint
 
     return this.request(url, {
-      method: 'GET'
+      method: 'GET',
     })
   }
 
   async post(endpoint, data = {}) {
     return this.request(endpoint, {
       method: 'POST',
-      body: JSON.stringify(data)
+      body: JSON.stringify(data),
     })
   }
 
   async put(endpoint, data = {}) {
     return this.request(endpoint, {
       method: 'PUT',
-      body: JSON.stringify(data)
+      body: JSON.stringify(data),
     })
   }
 
   async patch(endpoint, data = {}) {
     return this.request(endpoint, {
       method: 'PATCH',
-      body: JSON.stringify(data)
+      body: JSON.stringify(data),
     })
   }
 
   async delete(endpoint) {
     return this.request(endpoint, {
-      method: 'DELETE'
+      method: 'DELETE',
     })
   }
 

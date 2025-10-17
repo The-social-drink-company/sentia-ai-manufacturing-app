@@ -3,6 +3,7 @@
 ## Overview
 
 The Sentia Manufacturing Dashboard now supports dual authentication methods:
+
 1. **Email/Password**: Traditional username and password authentication
 2. **Microsoft OAuth**: Single Sign-On through Azure Active Directory
 
@@ -24,7 +25,7 @@ The Sentia Manufacturing Dashboard now supports dual authentication methods:
 4. Configure:
    - **Name**: `Sentia Manufacturing Dashboard`
    - **Supported account types**: `Accounts in any organizational directory and personal Microsoft accounts`
-   - **Redirect URI**: 
+   - **Redirect URI**:
      - Development: `http://localhost:3000/auth/microsoft/callback`
      - Production: `https://your-domain.com/auth/microsoft/callback`
 
@@ -35,7 +36,7 @@ In your Azure AD app registration:
 1. Go to **API permissions**
 2. Add the following Microsoft Graph permissions:
    - `openid` (Sign in and read user profile)
-   - `profile` (Read user's basic profile)  
+   - `profile` (Read user's basic profile)
    - `email` (Read user's email address)
    - `User.Read` (Read signed-in user's profile)
 
@@ -65,12 +66,13 @@ For Railway deployments, add the environment variables in the Railway dashboard:
 
 ```env
 VITE_MICROSOFT_CLIENT_ID=your_application_client_id
-MICROSOFT_CLIENT_ID=your_application_client_id  
+MICROSOFT_CLIENT_ID=your_application_client_id
 MICROSOFT_CLIENT_SECRET=your_client_secret_value
 MICROSOFT_TENANT_ID=common
 ```
 
 **Important**: Update redirect URIs in Azure AD to match your Railway deployment URLs:
+
 - Development: `https://sentia-manufacturing-dashboard-development.up.railway.app/auth/microsoft/callback`
 - Testing: `https://sentia-manufacturing-dashboard-testing.up.railway.app/auth/microsoft/callback`
 - Production: `https://sentia-manufacturing-dashboard-production.up.railway.app/auth/microsoft/callback`
@@ -114,7 +116,7 @@ MICROSOFT_TENANT_ID=common
 
 Users now see a clean sign-in page with:
 
-1. **Microsoft OAuth Button**: 
+1. **Microsoft OAuth Button**:
    - Prominent "Sign in with Microsoft" button with Microsoft logo
    - Single-click authentication for Microsoft users
 
@@ -161,7 +163,7 @@ Users with existing email/password accounts can:
 Test the OAuth flow locally:
 
 1. Start development servers: `npm run dev`
-2. Navigate to `http://localhost:3000/auth/signin`  
+2. Navigate to `http://localhost:3000/auth/signin`
 3. Click "Sign in with Microsoft"
 4. Complete Microsoft authentication
 5. Verify redirect to dashboard
@@ -186,7 +188,8 @@ Before going live:
 ## Support
 
 For Microsoft OAuth setup assistance:
+
 - Check Azure AD documentation
-- Verify environment variable configuration  
+- Verify environment variable configuration
 - Review server logs for authentication errors
 - Test OAuth flow in development first

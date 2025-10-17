@@ -1,6 +1,7 @@
 # Render Custom Domain Setup Guide
 
 ## Overview
+
 This guide walks through setting up custom domains for your Sentia Manufacturing Dashboard on Render.
 
 ## Prerequisites
@@ -13,6 +14,7 @@ This guide walks through setting up custom domains for your Sentia Manufacturing
 ## Domain Structure Planning
 
 ### Recommended Setup
+
 ```
 Main Application:
 - Production: sentia-manufacturing.com (apex) & www.sentia-manufacturing.com
@@ -52,6 +54,7 @@ Additional Services:
 ### For Subdomains (test, dev, mcp)
 
 Repeat the process for each service:
+
 - `test.sentia-manufacturing.com` → sentia-manufacturing-testing service
 - `dev.sentia-manufacturing.com` → sentia-manufacturing-development service
 - `mcp.sentia-manufacturing.com` → sentia-mcp-server service
@@ -61,6 +64,7 @@ Repeat the process for each service:
 ### Common Domain Registrars
 
 #### Namecheap
+
 ```
 1. Login to Namecheap
 2. Go to Domain List → Manage
@@ -87,6 +91,7 @@ For Subdomains:
 ```
 
 #### GoDaddy
+
 ```
 1. Login to GoDaddy
 2. Go to My Domains → Select Domain
@@ -95,6 +100,7 @@ For Subdomains:
 ```
 
 #### Cloudflare
+
 ```
 1. Login to Cloudflare
 2. Select your domain
@@ -141,6 +147,7 @@ TTL: 300
 ## Step 3: Verify Domain Setup
 
 ### DNS Propagation Check
+
 ```powershell
 # Check DNS propagation
 nslookup sentia-manufacturing.com
@@ -154,6 +161,7 @@ Start-Process "https://dnschecker.org/#A/sentia-manufacturing.com"
 ```
 
 ### Render Verification
+
 1. Go back to Render Dashboard
 2. Check "Custom Domains" section
 3. Look for green checkmark ✓ next to each domain
@@ -162,6 +170,7 @@ Start-Process "https://dnschecker.org/#A/sentia-manufacturing.com"
 ## Step 4: Update Application Configuration
 
 ### Update Environment Variables
+
 ```yaml
 # In render.yaml for each environment
 
@@ -187,6 +196,7 @@ Start-Process "https://dnschecker.org/#A/sentia-manufacturing.com"
 ### Update OAuth Callbacks
 
 #### Clerk Authentication
+
 1. Go to Clerk Dashboard
 2. Update redirect URLs:
    - `https://sentia-manufacturing.com/auth/callback`
@@ -194,6 +204,7 @@ Start-Process "https://dnschecker.org/#A/sentia-manufacturing.com"
    - `https://dev.sentia-manufacturing.com/auth/callback`
 
 #### Xero Integration
+
 1. Go to Xero Developer Portal
 2. Update OAuth 2.0 redirect URIs:
    - `https://sentia-manufacturing.com/api/xero/callback`
@@ -202,12 +213,15 @@ Start-Process "https://dnschecker.org/#A/sentia-manufacturing.com"
 ## Step 5: SSL Certificate Configuration
 
 ### Automatic SSL (Default)
+
 Render automatically provisions Let's Encrypt SSL certificates:
+
 - No configuration needed
 - Auto-renewal every 90 days
 - Supports wildcard certificates
 
 ### Custom SSL Certificate (Optional)
+
 If you have your own SSL certificate:
 
 1. Go to Settings → Custom Domains
@@ -218,6 +232,7 @@ If you have your own SSL certificate:
 ## Step 6: Testing Custom Domains
 
 ### Quick Test Script
+
 ```powershell
 # test-custom-domains.ps1
 
@@ -254,25 +269,28 @@ foreach ($domain in $domains) {
 ## Step 7: Redirect Configuration
 
 ### Force HTTPS
+
 Render automatically redirects HTTP to HTTPS
 
 ### WWW to Apex (or vice versa)
+
 Add to your application code:
 
 ```javascript
 // server.js or server-render.js
 app.use((req, res, next) => {
-    // Redirect www to apex
-    if (req.hostname === 'www.sentia-manufacturing.com') {
-        return res.redirect(301, `https://sentia-manufacturing.com${req.originalUrl}`);
-    }
-    next();
-});
+  // Redirect www to apex
+  if (req.hostname === 'www.sentia-manufacturing.com') {
+    return res.redirect(301, `https://sentia-manufacturing.com${req.originalUrl}`)
+  }
+  next()
+})
 ```
 
 ## Troubleshooting
 
 ### Domain Not Verifying
+
 - **Issue**: Domain shows "Pending" in Render
 - **Solution**:
   1. Check DNS records are correct
@@ -280,6 +298,7 @@ app.use((req, res, next) => {
   3. Try removing and re-adding domain
 
 ### SSL Certificate Error
+
 - **Issue**: Browser shows SSL warning
 - **Solution**:
   1. Verify domain is verified in Render
@@ -287,6 +306,7 @@ app.use((req, res, next) => {
   3. Force certificate renewal if needed
 
 ### Redirect Loops
+
 - **Issue**: Site redirects infinitely
 - **Solution**:
   1. Check CORS_ORIGINS configuration
@@ -324,11 +344,11 @@ When migrating from old domain:
    ```javascript
    // Add to application
    app.use((req, res, next) => {
-       res.setHeader('Strict-Transport-Security', 'max-age=31536000');
-       res.setHeader('X-Content-Type-Options', 'nosniff');
-       res.setHeader('X-Frame-Options', 'SAMEORIGIN');
-       next();
-   });
+     res.setHeader('Strict-Transport-Security', 'max-age=31536000')
+     res.setHeader('X-Content-Type-Options', 'nosniff')
+     res.setHeader('X-Frame-Options', 'SAMEORIGIN')
+     next()
+   })
    ```
 
 ## Cost Considerations

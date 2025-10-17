@@ -13,7 +13,8 @@ const RealWorkingCapital = () => {
   useEffect(() => {
     if (data && !loading && !error) {
       setAnalysisLoading(true)
-      engine.getWorkingCapitalAnalysis()
+      engine
+        .getWorkingCapitalAnalysis()
         .then(analysis => {
           setEnhancedData(analysis)
         })
@@ -33,12 +34,10 @@ const RealWorkingCapital = () => {
       <section className="space-y-6">
         <header>
           <h1 className="text-2xl font-semibold tracking-tight">Working Capital Overview</h1>
-          <p className="text-sm text-muted-foreground">
-            Loading live financial data...
-          </p>
+          <p className="text-sm text-muted-foreground">Loading live financial data...</p>
         </header>
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          {[1,2,3,4].map(i => (
+          {[1, 2, 3, 4].map(i => (
             <Card key={i} className="animate-pulse">
               <CardContent className="space-y-2 p-5">
                 <div className="h-4 bg-gray-200 rounded w-1/2"></div>
@@ -54,34 +53,35 @@ const RealWorkingCapital = () => {
 
   // Error state - no fallback data, show clear error
   if (error) {
-    
     return (
       <section className="space-y-6">
         <header>
           <h1 className="text-2xl font-semibold tracking-tight">Working Capital Overview</h1>
-          <p className="text-sm text-muted-foreground">
-            Unable to load financial data
-          </p>
+          <p className="text-sm text-muted-foreground">Unable to load financial data</p>
         </header>
-        
+
         {/* Xero connection banners removed - custom connections don't require user interaction */}
-        
+
         <Card className="border-red-200 bg-red-50">
           <CardHeader>
-            <CardTitle className="text-red-800 flex items-center gap-2">
-              🔴 {error.type}
-            </CardTitle>
+            <CardTitle className="text-red-800 flex items-center gap-2">🔴 {error.type}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-red-700">{error.message}</p>
             <div className="space-y-2">
-              <p className="text-sm text-red-600"><strong>Action required:</strong> {error.userAction}</p>
+              <p className="text-sm text-red-600">
+                <strong>Action required:</strong> {error.userAction}
+              </p>
               {error.retryIn && (
-                <p className="text-sm text-red-600"><strong>Retry in:</strong> {error.retryIn}</p>
+                <p className="text-sm text-red-600">
+                  <strong>Retry in:</strong> {error.retryIn}
+                </p>
               )}
-              <p className="text-xs text-red-500">Error occurred at: {new Date(error.timestamp).toLocaleString()}</p>
+              <p className="text-xs text-red-500">
+                Error occurred at: {new Date(error.timestamp).toLocaleString()}
+              </p>
             </div>
-            <button 
+            <button
               onClick={retryConnection}
               className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
             >
@@ -96,7 +96,7 @@ const RealWorkingCapital = () => {
   // Success state with live data
   const displayData = enhancedData?.data || data
   const recommendations = enhancedData?.optimizationRecommendations || []
-  
+
   return (
     <section className="space-y-6">
       <header>
@@ -133,33 +133,40 @@ const RealWorkingCapital = () => {
       </Card>
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <MetricCard 
-          label="Working Capital" 
-          value={currency(displayData.workingCapital)} 
-          helper="Assets − Liabilities" 
+        <MetricCard
+          label="Working Capital"
+          value={currency(displayData.workingCapital)}
+          helper="Assets − Liabilities"
           tone="primary"
           dataSource="Sentia Database"
           trend={displayData.advanced?.efficiency?.workingCapitalTurnover}
         />
-        <MetricCard 
-          label="Current Ratio" 
-          value={displayData.currentRatio?.toFixed(2) || 'N/A'} 
-          helper="Target ≥ 2.0" 
-          tone={displayData.currentRatio >= 2 ? "success" : "warning"}
+        <MetricCard
+          label="Current Ratio"
+          value={displayData.currentRatio?.toFixed(2) || 'N/A'}
+          helper="Target ≥ 2.0"
+          tone={displayData.currentRatio >= 2 ? 'success' : 'warning'}
           dataSource="Sentia Database"
         />
-        <MetricCard 
-          label="Cash Conversion Cycle" 
-          value={`${Math.round(displayData.cashConversionCycle || 0)} days`} 
-          helper={displayData.advanced?.cashConversionCycle?.optimal?.total ? 
-            `Target: ${displayData.advanced.cashConversionCycle.optimal.total} days` : "Industry benchmark"} 
-          tone={displayData.advanced?.cashConversionCycle?.metrics?.cccEfficiency < 1.2 ? "success" : "warning"}
+        <MetricCard
+          label="Cash Conversion Cycle"
+          value={`${Math.round(displayData.cashConversionCycle || 0)} days`}
+          helper={
+            displayData.advanced?.cashConversionCycle?.optimal?.total
+              ? `Target: ${displayData.advanced.cashConversionCycle.optimal.total} days`
+              : 'Industry benchmark'
+          }
+          tone={
+            displayData.advanced?.cashConversionCycle?.metrics?.cccEfficiency < 1.2
+              ? 'success'
+              : 'warning'
+          }
           dataSource="Sentia Database"
         />
-        <MetricCard 
-          label="WC Efficiency" 
-          value={displayData.advanced?.efficiency?.efficiency?.category || 'Calculating...'} 
-          helper="Overall efficiency rating" 
+        <MetricCard
+          label="WC Efficiency"
+          value={displayData.advanced?.efficiency?.efficiency?.category || 'Calculating...'}
+          helper="Overall efficiency rating"
           tone={getEfficiencyTone(displayData.advanced?.efficiency?.efficiency?.category)}
           dataSource="AI Analysis"
         />
@@ -172,31 +179,51 @@ const RealWorkingCapital = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 🎯 Cash Conversion Cycle Analysis
-                {analysisLoading && <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>}
+                {analysisLoading && (
+                  <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                )}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-3 gap-4 text-center">
                 <div>
                   <p className="text-sm text-muted-foreground">DSO</p>
-                  <p className="text-lg font-semibold">{Math.round(enhancedData.data.advanced.cashConversionCycle.current.dso)} days</p>
-                  <p className="text-xs text-green-600">Target: {enhancedData.data.advanced.cashConversionCycle.optimal.dso}</p>
+                  <p className="text-lg font-semibold">
+                    {Math.round(enhancedData.data.advanced.cashConversionCycle.current.dso)} days
+                  </p>
+                  <p className="text-xs text-green-600">
+                    Target: {enhancedData.data.advanced.cashConversionCycle.optimal.dso}
+                  </p>
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">DIO</p>
-                  <p className="text-lg font-semibold">{Math.round(enhancedData.data.advanced.cashConversionCycle.current.dio)} days</p>
-                  <p className="text-xs text-green-600">Target: {enhancedData.data.advanced.cashConversionCycle.optimal.dio}</p>
+                  <p className="text-lg font-semibold">
+                    {Math.round(enhancedData.data.advanced.cashConversionCycle.current.dio)} days
+                  </p>
+                  <p className="text-xs text-green-600">
+                    Target: {enhancedData.data.advanced.cashConversionCycle.optimal.dio}
+                  </p>
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">DPO</p>
-                  <p className="text-lg font-semibold">{Math.round(enhancedData.data.advanced.cashConversionCycle.current.dpo)} days</p>
-                  <p className="text-xs text-green-600">Target: {enhancedData.data.advanced.cashConversionCycle.optimal.dpo}</p>
+                  <p className="text-lg font-semibold">
+                    {Math.round(enhancedData.data.advanced.cashConversionCycle.current.dpo)} days
+                  </p>
+                  <p className="text-xs text-green-600">
+                    Target: {enhancedData.data.advanced.cashConversionCycle.optimal.dpo}
+                  </p>
                 </div>
               </div>
               {enhancedData.data.advanced.cashConversionCycle.metrics.improvementPotential > 5 && (
                 <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
                   <p className="text-sm text-yellow-800">
-                    ⚡ Potential improvement: <strong>{Math.round(enhancedData.data.advanced.cashConversionCycle.metrics.improvementPotential)} days</strong>
+                    ⚡ Potential improvement:{' '}
+                    <strong>
+                      {Math.round(
+                        enhancedData.data.advanced.cashConversionCycle.metrics.improvementPotential
+                      )}{' '}
+                      days
+                    </strong>
                   </p>
                 </div>
               )}
@@ -213,14 +240,19 @@ const RealWorkingCapital = () => {
                   {Object.entries(enhancedData.data.advanced.channels.channels)
                     .slice(0, 3)
                     .map(([channel, profile]) => (
-                    <div key={channel} className="flex justify-between items-center p-2 bg-gray-50 rounded">
-                      <span className="text-sm font-medium">{channel}</span>
-                      <div className="text-right">
-                        <p className="text-sm">{profile.paymentTerms} days</p>
-                        <p className="text-xs text-muted-foreground">{(profile.commission * 100).toFixed(1)}% fee</p>
+                      <div
+                        key={channel}
+                        className="flex justify-between items-center p-2 bg-gray-50 rounded"
+                      >
+                        <span className="text-sm font-medium">{channel}</span>
+                        <div className="text-right">
+                          <p className="text-sm">{profile.paymentTerms} days</p>
+                          <p className="text-xs text-muted-foreground">
+                            {(profile.commission * 100).toFixed(1)}% fee
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
                 </div>
               ) : (
                 <p className="text-sm text-muted-foreground">Channel analysis loading...</p>
@@ -236,23 +268,34 @@ const RealWorkingCapital = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               💡 AI Optimization Recommendations
-              <span className="text-sm font-normal text-muted-foreground">({recommendations.length} insights)</span>
+              <span className="text-sm font-normal text-muted-foreground">
+                ({recommendations.length} insights)
+              </span>
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             {recommendations.map((rec, index) => (
-              <div key={index} className={`border-l-4 pl-4 py-3 ${
-                rec.priority === 'high' ? 'border-red-500 bg-red-50' :
-                rec.priority === 'medium' ? 'border-yellow-500 bg-yellow-50' :
-                'border-blue-500 bg-blue-50'
-              }`}>
+              <div
+                key={index}
+                className={`border-l-4 pl-4 py-3 ${
+                  rec.priority === 'high'
+                    ? 'border-red-500 bg-red-50'
+                    : rec.priority === 'medium'
+                      ? 'border-yellow-500 bg-yellow-50'
+                      : 'border-blue-500 bg-blue-50'
+                }`}
+              >
                 <div className="flex justify-between items-start mb-2">
                   <h4 className="font-semibold text-lg">{rec.title}</h4>
-                  <span className={`px-2 py-1 rounded text-xs font-medium ${
-                    rec.priority === 'high' ? 'bg-red-100 text-red-800' :
-                    rec.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' :
-                    'bg-blue-100 text-blue-800'
-                  }`}>
+                  <span
+                    className={`px-2 py-1 rounded text-xs font-medium ${
+                      rec.priority === 'high'
+                        ? 'bg-red-100 text-red-800'
+                        : rec.priority === 'medium'
+                          ? 'bg-yellow-100 text-yellow-800'
+                          : 'bg-blue-100 text-blue-800'
+                    }`}
+                  >
                     {rec.priority} priority
                   </span>
                 </div>
@@ -282,22 +325,38 @@ const RealWorkingCapital = () => {
           <CardTitle>Balance Summary (Live from Sentia Database)</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-3 md:grid-cols-2">
-          <LineItem label="Receivables" value={currency(displayData.accountsReceivable || 0)} dataSource="Sentia Database" />
-          <LineItem label="Payables" value={currency(displayData.accountsPayable || 0)} dataSource="Sentia Database" />
-          <LineItem label="Inventory" value={currency(displayData.inventory || 0)} dataSource="Sentia Database" />
-          <LineItem label="Cash Position" value={currency(displayData.cash || 0)} dataSource="Sentia Database" />
+          <LineItem
+            label="Receivables"
+            value={currency(displayData.accountsReceivable || 0)}
+            dataSource="Sentia Database"
+          />
+          <LineItem
+            label="Payables"
+            value={currency(displayData.accountsPayable || 0)}
+            dataSource="Sentia Database"
+          />
+          <LineItem
+            label="Inventory"
+            value={currency(displayData.inventory || 0)}
+            dataSource="Sentia Database"
+          />
+          <LineItem
+            label="Cash Position"
+            value={currency(displayData.cash || 0)}
+            dataSource="Sentia Database"
+          />
         </CardContent>
       </Card>
     </section>
   )
 }
 
-const getEfficiencyTone = (category) => {
+const getEfficiencyTone = category => {
   const toneMap = {
-    'excellent': 'success',
-    'good': 'success', 
-    'fair': 'warning',
-    'poor': 'warning'
+    excellent: 'success',
+    good: 'success',
+    fair: 'warning',
+    poor: 'warning',
   }
   return toneMap[category] || 'primary'
 }
@@ -315,16 +374,16 @@ const MetricCard = ({ label, value, helper, tone, dataSource, trend }) => {
       <CardContent className="space-y-2 p-5">
         <div className="flex items-center justify-between">
           <p className="text-sm font-medium opacity-80">{label}</p>
-          <span className="text-xs opacity-60 bg-white/50 px-2 py-1 rounded">
-            📊 {dataSource}
-          </span>
+          <span className="text-xs opacity-60 bg-white/50 px-2 py-1 rounded">📊 {dataSource}</span>
         </div>
         <div className="flex items-baseline gap-2">
           <p className="text-2xl font-semibold">{value}</p>
           {trend && (
-            <span className={`text-sm ${
-              trend > 2 ? 'text-green-600' : trend > 1 ? 'text-yellow-600' : 'text-red-600'
-            }`}>
+            <span
+              className={`text-sm ${
+                trend > 2 ? 'text-green-600' : trend > 1 ? 'text-yellow-600' : 'text-red-600'
+              }`}
+            >
               {trend > 2 ? '↗️' : trend > 1 ? '➡️' : '↘️'}
             </span>
           )}
@@ -345,16 +404,11 @@ const LineItem = ({ label, value, dataSource }) => (
   </div>
 )
 
-const currency = (value) =>
+const currency = value =>
   new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
-    maximumFractionDigits: 0
+    maximumFractionDigits: 0,
   }).format(value)
 
 export default RealWorkingCapital
-
-
-
-
-

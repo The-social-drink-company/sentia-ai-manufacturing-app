@@ -3,29 +3,30 @@ export default {
   extensionsToTreatAsEsm: ['.js'],
   globals: {
     'ts-jest': {
-      useESM: true
-    }
+      useESM: true,
+    },
   },
   moduleNameMapping: {
-    '^(\\.{1,2}/.*)\\.js$': '$1'
+    '^(\\.{1,2}/.*)\\.js$': '$1',
   },
   transform: {
-    '^.+\\.js$': ['babel-jest', { presets: [['@babel/preset-env', { targets: { node: 'current' } }]] }]
+    '^.+\\.js$': [
+      'babel-jest',
+      { presets: [['@babel/preset-env', { targets: { node: 'current' } }]] },
+    ],
   },
-  testMatch: [
-    '**/tests/**/*.test.js'
-  ],
+  testMatch: ['**/tests/**/*.test.js'],
   collectCoverageFrom: [
     'services/forecasting/**/*.js',
     'services/optimization/**/*.js',
     'api/forecasting.js',
     'api/optimization.js',
     '!**/node_modules/**',
-    '!**/tests/**'
+    '!**/tests/**',
   ],
   coverageDirectory: 'coverage',
   coverageReporters: ['text', 'lcov', 'html'],
   setupFilesAfterEnv: ['<rootDir>/tests/jest.setup.js'],
   testTimeout: 30000,
-  verbose: true
-};
+  verbose: true,
+}

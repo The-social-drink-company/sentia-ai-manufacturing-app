@@ -4,18 +4,22 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 const fetchRecentActivity = async () => {
   const response = await fetch('/api/system/activity', {
     headers: { 'Content-Type': 'application/json' },
-    credentials: 'include'
+    credentials: 'include',
   })
-  
+
   if (!response.ok) {
     throw new Error(`Failed to fetch activity: ${response.status}`)
   }
-  
+
   return response.json()
 }
 
 const ActivityWidget = ({ limit = 5 }) => {
-  const { data: activities, isLoading, error } = useQuery({
+  const {
+    data: activities,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ['system-activity', limit],
     queryFn: fetchRecentActivity,
     staleTime: 2 * 60 * 1000, // 2 minutes
@@ -30,7 +34,10 @@ const ActivityWidget = ({ limit = 5 }) => {
         </CardHeader>
         <CardContent className="space-y-3 text-sm">
           {[...Array(3)].map((_, index) => (
-            <div key={index} className="animate-pulse rounded-lg border border-border bg-muted/30 p-3">
+            <div
+              key={index}
+              className="animate-pulse rounded-lg border border-border bg-muted/30 p-3"
+            >
               <div className="h-3 w-12 bg-gray-300 rounded mb-2"></div>
               <div className="h-4 w-full bg-gray-300 rounded"></div>
             </div>
@@ -63,11 +70,14 @@ const ActivityWidget = ({ limit = 5 }) => {
       <CardContent className="space-y-3 text-sm">
         {recentActivities.length > 0 ? (
           recentActivities.map((event, index) => (
-            <div key={`${event.timestamp}-${index}`} className="rounded-lg border border-border bg-muted/30 p-3">
+            <div
+              key={`${event.timestamp}-${index}`}
+              className="rounded-lg border border-border bg-muted/30 p-3"
+            >
               <p className="text-xs text-muted-foreground">
-                {new Date(event.timestamp).toLocaleTimeString('en-US', { 
-                  hour: '2-digit', 
-                  minute: '2-digit' 
+                {new Date(event.timestamp).toLocaleTimeString('en-US', {
+                  hour: '2-digit',
+                  minute: '2-digit',
                 })}
               </p>
               <p className="text-foreground">{event.message}</p>

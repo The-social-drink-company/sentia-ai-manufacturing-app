@@ -15,16 +15,19 @@ The Sentia Manufacturing Dashboard is now fully operational and ready for produc
 ## 🌐 ACCESS URLS
 
 ### Production Environment (LIVE)
+
 **URL**: https://sentia-manufacturing-dashboard-production.up.railway.app  
 **Status**: ✅ OPERATIONAL  
 **Use**: Live production data and real users
 
-### Development Environment 
+### Development Environment
+
 **URL**: https://sentia-manufacturing-dashboard-development.up.railway.app  
 **Status**: ✅ OPERATIONAL  
 **Use**: Testing new features
 
 ### Test Environment
+
 **URL**: https://sentiatest.financeflo.ai  
 **Status**: ✅ OPERATIONAL  
 **Use**: User acceptance testing
@@ -34,22 +37,25 @@ The Sentia Manufacturing Dashboard is now fully operational and ready for produc
 ## 🔑 LOGIN CREDENTIALS
 
 ### Admin Account
+
 - **Email**: admin@sentia.com
 - **Password**: [Set during first login via Clerk]
 - **Access**: Full system administration
 
 ### Demo Accounts
+
 - **Manager**: manager@sentia.com
-- **Operator**: operator@sentia.com  
+- **Operator**: operator@sentia.com
 - **Viewer**: viewer@sentia.com
 
-*First-time users will receive a password reset email from Clerk authentication*
+_First-time users will receive a password reset email from Clerk authentication_
 
 ---
 
 ## 📊 REAL DATA INTEGRATIONS
 
 ### ✅ Unleashed Software
+
 - **Status**: CONFIGURED & OPERATIONAL
 - **Data Available**:
   - Real-time inventory levels
@@ -59,6 +65,7 @@ The Sentia Manufacturing Dashboard is now fully operational and ready for produc
 - **Update Frequency**: Every 5 minutes
 
 ### ✅ Amazon SP-API
+
 - **Status**: CONFIGURED & OPERATIONAL
 - **Data Available**:
   - Amazon sales data
@@ -68,6 +75,7 @@ The Sentia Manufacturing Dashboard is now fully operational and ready for produc
 - **Update Frequency**: Every 15 minutes
 
 ### ✅ Shopify
+
 - **Status**: CONFIGURED & OPERATIONAL
 - **Stores Connected**:
   - UK Store
@@ -80,6 +88,7 @@ The Sentia Manufacturing Dashboard is now fully operational and ready for produc
 - **Update Frequency**: Real-time via webhooks
 
 ### ✅ Spreadsheet Upload
+
 - **Status**: FULLY FUNCTIONAL
 - **Supported Formats**: CSV, XLSX, XLS
 - **Upload Location**: Data Import page
@@ -90,37 +99,44 @@ The Sentia Manufacturing Dashboard is now fully operational and ready for produc
 ## 🚀 KEY FEATURES AVAILABLE
 
 ### Dashboard Features
+
 ✅ **Real-time KPI Monitoring**
+
 - Revenue tracking across all channels
-- Order volume monitoring  
+- Order volume monitoring
 - Production efficiency metrics
 - Quality scores
 
 ✅ **Manufacturing Planning Wizard**
+
 - 3-step production planning
 - Resource allocation
 - Timeline management
 - Priority scheduling
 
 ✅ **Predictive Maintenance**
+
 - Equipment health monitoring
 - Maintenance predictions
 - Alert system
 - Historical analysis
 
 ✅ **Smart Inventory Management**
+
 - Multi-source inventory tracking
 - Reorder point calculations
 - Stock optimization
 - Demand forecasting
 
 ✅ **Financial Management**
+
 - Working capital dashboard
 - CFO KPI metrics
 - Cash flow visualization
 - AR/AP tracking
 
 ✅ **Multi-Channel Sales Analytics**
+
 - Amazon performance
 - Shopify analytics
 - Unleashed sales data
@@ -131,14 +147,16 @@ The Sentia Manufacturing Dashboard is now fully operational and ready for produc
 ## 📋 HOW TO USE THE SYSTEM
 
 ### 1. First Login
+
 1. Navigate to production URL
-2. Click "Sign In" 
+2. Click "Sign In"
 3. Use your email address
 4. Check email for verification link
 5. Set your password
 6. Complete profile setup
 
 ### 2. Dashboard Navigation
+
 - **Overview Tab**: High-level KPIs and metrics
 - **Production Tab**: Manufacturing metrics and planning
 - **Finance Tab**: Financial dashboards and reports
@@ -146,6 +164,7 @@ The Sentia Manufacturing Dashboard is now fully operational and ready for produc
 - **Analytics Tab**: Advanced reporting and forecasting
 
 ### 3. Uploading Data
+
 1. Navigate to **Data Import** page
 2. Select data type (Inventory, Sales, Production)
 3. Download template if needed
@@ -154,6 +173,7 @@ The Sentia Manufacturing Dashboard is now fully operational and ready for produc
 6. Confirm import
 
 ### 4. Generating Reports
+
 1. Go to Analytics section
 2. Select report type
 3. Choose date range
@@ -162,6 +182,7 @@ The Sentia Manufacturing Dashboard is now fully operational and ready for produc
 6. Export as PDF or Excel
 
 ### 5. Managing Users (Admin Only)
+
 1. Navigate to Admin Panel
 2. Click "User Management"
 3. Add new users with email
@@ -173,15 +194,19 @@ The Sentia Manufacturing Dashboard is now fully operational and ready for produc
 ## 🔧 TROUBLESHOOTING
 
 ### Widget Shows "No Data"
+
 - **Solution**: Data is syncing from external sources. Wait 5 minutes and refresh.
 
 ### Login Issues
+
 - **Solution**: Use "Forgot Password" link or contact admin for password reset.
 
 ### Slow Performance
+
 - **Solution**: Clear browser cache and cookies. Use Chrome or Edge for best performance.
 
 ### Data Not Updating
+
 - **Solution**: Check API connection status in Admin Panel > Integrations
 
 ---
@@ -189,6 +214,7 @@ The Sentia Manufacturing Dashboard is now fully operational and ready for produc
 ## 📱 MOBILE ACCESS
 
 The dashboard is fully responsive and works on:
+
 - Tablets (iPad, Android tablets)
 - Large phones (landscape mode recommended)
 - Desktop browsers (Chrome, Edge, Firefox, Safari)
@@ -208,10 +234,12 @@ The dashboard is fully responsive and works on:
 ## 📞 SUPPORT
 
 ### Technical Support
+
 - **Email**: support@sentia.com
 - **Hours**: Monday-Friday, 9 AM - 5 PM GMT
 
 ### Documentation
+
 - **User Guide**: Available in Help section
 - **Video Tutorials**: Coming soon
 - **API Documentation**: For developers
@@ -220,16 +248,16 @@ The dashboard is fully responsive and works on:
 
 ## ✅ SYSTEM HEALTH STATUS
 
-| Component | Status | Performance |
-|-----------|---------|-------------|
-| Frontend Application | ✅ Operational | Excellent |
-| Backend APIs | ✅ Operational | < 200ms response |
-| Database | ✅ Operational | Optimized |
-| Unleashed Integration | ✅ Connected | Syncing |
-| Amazon Integration | ✅ Connected | Syncing |
-| Shopify Integration | ✅ Connected | Real-time |
-| Authentication | ✅ Active | Secure |
-| File Upload | ✅ Working | Ready |
+| Component             | Status         | Performance      |
+| --------------------- | -------------- | ---------------- |
+| Frontend Application  | ✅ Operational | Excellent        |
+| Backend APIs          | ✅ Operational | < 200ms response |
+| Database              | ✅ Operational | Optimized        |
+| Unleashed Integration | ✅ Connected   | Syncing          |
+| Amazon Integration    | ✅ Connected   | Syncing          |
+| Shopify Integration   | ✅ Connected   | Real-time        |
+| Authentication        | ✅ Active      | Secure           |
+| File Upload           | ✅ Working     | Ready            |
 
 ---
 
@@ -248,6 +276,7 @@ The dashboard is fully responsive and works on:
 ## 📈 SUCCESS METRICS
 
 The system has achieved:
+
 - **92% Quality Score** (Excellent)
 - **100% API Integration Success**
 - **100% Feature Completion**
@@ -275,4 +304,4 @@ Your Sentia Manufacturing Dashboard is ready for immediate use. All systems are 
 
 ---
 
-*This document was generated on September 5, 2025. For updates, check the Help section in the application.*
+_This document was generated on September 5, 2025. For updates, check the Help section in the application._

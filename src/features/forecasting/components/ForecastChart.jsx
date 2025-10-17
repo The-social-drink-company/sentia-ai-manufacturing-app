@@ -12,32 +12,32 @@ import {
   AreaChart,
   ReferenceLine,
   Legend,
-  Brush
+  Brush,
 } from 'recharts'
 import {
   ChartBarIcon,
   EyeIcon,
   EyeSlashIcon,
   ArrowsUpDownIcon,
-  AdjustmentsHorizontalIcon
+  AdjustmentsHorizontalIcon,
 } from '@heroicons/react/24/solid'
 
 const ForecastChart = ({
   data = [],
   scenarios = {},
-  title = "Forecast Chart",
+  title = 'Forecast Chart',
   height = 400,
   showConfidenceBands = true,
   showScenarios = true,
-  className = "",
+  className = '',
   onDataPointClick,
-  interactive = true
+  interactive = true,
 }) => {
   const [visibleScenarios, setVisibleScenarios] = React.useState({
     realistic: true,
     optimistic: false,
     pessimistic: false,
-    stressed: false
+    stressed: false,
   })
   const [showBrush, setShowBrush] = React.useState(false)
   const [chartType, setChartType] = React.useState('line') // line, area
@@ -52,7 +52,7 @@ const ForecastChart = ({
       date: new Date(point.date).toLocaleDateString(),
       shortDate: new Date(point.date).toLocaleDateString('en-US', {
         month: 'short',
-        day: 'numeric'
+        day: 'numeric',
       }),
       value: typeof point.value === 'number' ? Math.round(point.value) : 0,
       confidence: point.confidence ? Math.round(point.confidence * 100) : null,
@@ -63,7 +63,7 @@ const ForecastChart = ({
         ? Math.round(point.value * (1 - (1 - point.confidence) * 0.5))
         : point.value,
       isHistorical: !point.isForecast,
-      isForecast: point.isForecast || false
+      isForecast: point.isForecast || false,
     }))
 
     // Add scenario data if available
@@ -73,9 +73,8 @@ const ForecastChart = ({
           scenarioData.forEach((scenarioPoint, _index) => {
             const existingPoint = processedData[index]
             if (existingPoint) {
-              existingPoint[`${scenarioName}Value`] = typeof scenarioPoint.value === 'number'
-                ? Math.round(scenarioPoint.value)
-                : 0
+              existingPoint[`${scenarioName}Value`] =
+                typeof scenarioPoint.value === 'number' ? Math.round(scenarioPoint.value) : 0
             }
           })
         }
@@ -89,14 +88,14 @@ const ForecastChart = ({
   const forecastData = chartData.filter(d => d.isForecast)
   const forecastStartIndex = historicalData.length - 1
 
-  const toggleScenario = (scenario) => {
+  const toggleScenario = scenario => {
     setVisibleScenarios(prev => ({
       ...prev,
-      [scenario]: !prev[scenario]
+      [scenario]: !prev[scenario],
     }))
   }
 
-  const formatValue = (value) => {
+  const formatValue = value => {
     if (typeof value !== 'number' || isNaN(value)) return '--'
     return value.toLocaleString()
   }
@@ -148,10 +147,7 @@ const ForecastChart = ({
               const [value, name] = formatTooltipValue(entry.value, entry.dataKey)
               return (
                 <div key={index} className="flex justify-between items-center">
-                  <span
-                    className="text-sm"
-                    style={{ color: entry.color }}
-                  >
+                  <span className="text-sm" style={{ color: entry.color }}>
                     {name}:
                   </span>
                   <span className="font-medium ml-2" style={{ color: entry.color }}>
@@ -164,9 +160,7 @@ const ForecastChart = ({
           {dataPoint.confidence && (
             <div className="mt-2 pt-2 border-t border-gray-200 dark:border-gray-700">
               <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600 dark:text-gray-400">
-                  Confidence:
-                </span>
+                <span className="text-sm text-gray-600 dark:text-gray-400">Confidence:</span>
                 <span className="font-medium text-gray-900 dark:text-white">
                   {dataPoint.confidence}%
                 </span>
@@ -209,7 +203,7 @@ const ForecastChart = ({
               {/* Chart Type Toggle */}
               <select
                 value={chartType}
-                onChange={(e) => setChartType(e.target.value)}
+                onChange={e => setChartType(e.target.value)}
                 className="px-2 py-1 text-xs border border-gray-300 rounded"
               >
                 <option value="line">Line</option>
@@ -231,14 +225,15 @@ const ForecastChart = ({
                 className={`p-1 rounded ${showConfidenceBands ? 'bg-green-100 text-green-600' : 'text-gray-400'}`}
                 title="Toggle confidence bands"
               >
-                {showConfidenceBands ? <EyeIcon className="h-4 w-4" /> : <EyeSlashIcon className="h-4 w-4" />}
+                {showConfidenceBands ? (
+                  <EyeIcon className="h-4 w-4" />
+                ) : (
+                  <EyeSlashIcon className="h-4 w-4" />
+                )}
               </button>
 
               {/* Settings */}
-              <button
-                className="p-1 text-gray-400 hover:text-gray-600"
-                title="Chart settings"
-              >
+              <button className="p-1 text-gray-400 hover:text-gray-600" title="Chart settings">
                 <AdjustmentsHorizontalIcon className="h-4 w-4" />
               </button>
             </div>
@@ -267,23 +262,10 @@ const ForecastChart = ({
 
       <CardContent>
         <ResponsiveContainer width="100%" height={height}>
-          <ChartComponent
-            data={chartData}
-            margin={{ top: 10, right: 30, left: 20, bottom: 5 }}
-          >
+          <ChartComponent data={chartData} margin={{ top: 10, right: 30, left: 20, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-            <XAxis
-              dataKey="shortDate"
-              stroke="#666"
-              fontSize={12}
-              tickLine={false}
-            />
-            <YAxis
-              stroke="#666"
-              fontSize={12}
-              tickLine={false}
-              tickFormatter={formatValue}
-            />
+            <XAxis dataKey="shortDate" stroke="#666" fontSize={12} tickLine={false} />
+            <YAxis stroke="#666" fontSize={12} tickLine={false} tickFormatter={formatValue} />
             <Tooltip content={customTooltip} />
             <Legend />
 
@@ -313,7 +295,7 @@ const ForecastChart = ({
               dataKey="value"
               stroke="#2563eb"
               strokeWidth={3}
-              fill={chartType === 'area' ? "#3b82f6" : undefined}
+              fill={chartType === 'area' ? '#3b82f6' : undefined}
               fillOpacity={chartType === 'area' ? 0.1 : undefined}
               dot={{ fill: '#2563eb', strokeWidth: 2, r: 4 }}
               activeDot={{ r: 6, stroke: '#2563eb', strokeWidth: 2 }}
@@ -359,19 +341,12 @@ const ForecastChart = ({
                 x={chartData[forecastStartIndex]?.shortDate}
                 stroke="#6b7280"
                 strokeDasharray="2 2"
-                label={{ value: "Forecast Start", position: "top" }}
+                label={{ value: 'Forecast Start', position: 'top' }}
               />
             )}
 
             {/* Brush for zooming */}
-            {showBrush && (
-              <Brush
-                dataKey="shortDate"
-                height={30}
-                stroke="#8884d8"
-                fill="#f0f4ff"
-              />
-            )}
+            {showBrush && <Brush dataKey="shortDate" height={30} stroke="#8884d8" fill="#f0f4ff" />}
           </ChartComponent>
         </ResponsiveContainer>
 
@@ -391,10 +366,11 @@ const ForecastChart = ({
               <span className="ml-2 font-semibold">
                 {forecastData.length > 0
                   ? Math.round(
-                      forecastData.reduce((sum, d) => sum + (d.confidence || 80), 0) / forecastData.length
+                      forecastData.reduce((sum, d) => sum + (d.confidence || 80), 0) /
+                        forecastData.length
                     )
-                  : '--'
-                }%
+                  : '--'}
+                %
               </span>
             </div>
             <div>

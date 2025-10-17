@@ -1,6 +1,7 @@
 # Render Rollback Procedures
 
 ## Overview
+
 This document provides step-by-step procedures for rolling back deployments on Render in case of issues.
 
 ## Rollback Scenarios
@@ -8,6 +9,7 @@ This document provides step-by-step procedures for rolling back deployments on R
 ### 1. Application Code Rollback
 
 #### Immediate Rollback (Last Working Version)
+
 1. **Go to Render Dashboard**
    - Navigate to the affected service
    - Click on "Events" tab
@@ -22,6 +24,7 @@ This document provides step-by-step procedures for rolling back deployments on R
    - Confirm the rollback
 
 #### Git-Based Rollback
+
 ```bash
 # Revert the last commit
 git revert HEAD
@@ -35,6 +38,7 @@ git push --force origin <branch>
 ### 2. Database Rollback
 
 #### Using Render Backups (Paid Plans)
+
 1. **Access Database Dashboard**
    - Go to your database service
    - Click "Backups" tab
@@ -46,6 +50,7 @@ git push --force origin <branch>
    - Update DATABASE_URL in application
 
 #### Manual Database Rollback
+
 ```powershell
 # If you have a backup file
 .\database-migration-render.ps1 -Operation import `
@@ -56,6 +61,7 @@ git push --force origin <branch>
 ### 3. Environment Variable Rollback
 
 #### Quick Revert
+
 1. **Go to Environment Tab**
    - Open the affected service
    - Click "Environment"
@@ -65,6 +71,7 @@ git push --force origin <branch>
    - Or manually revert changed values
 
 #### Backup-Based Restore
+
 ```powershell
 # If you saved environment variables
 # Copy from your backup files:
@@ -75,14 +82,14 @@ git push --force origin <branch>
 
 ## Rollback Decision Matrix
 
-| Issue Type | Severity | Rollback Method | Time to Recovery |
-|------------|----------|-----------------|------------------|
-| App crash on startup | Critical | Dashboard rollback | 2-5 minutes |
-| API errors (>50%) | Critical | Dashboard rollback | 2-5 minutes |
-| Performance degradation | High | Git revert + deploy | 10-15 minutes |
-| UI bugs | Medium | Git fix + deploy | 15-30 minutes |
-| Database corruption | Critical | Backup restore | 30-60 minutes |
-| Wrong env variables | High | Manual update | 5-10 minutes |
+| Issue Type              | Severity | Rollback Method     | Time to Recovery |
+| ----------------------- | -------- | ------------------- | ---------------- |
+| App crash on startup    | Critical | Dashboard rollback  | 2-5 minutes      |
+| API errors (>50%)       | Critical | Dashboard rollback  | 2-5 minutes      |
+| Performance degradation | High     | Git revert + deploy | 10-15 minutes    |
+| UI bugs                 | Medium   | Git fix + deploy    | 15-30 minutes    |
+| Database corruption     | Critical | Backup restore      | 30-60 minutes    |
+| Wrong env variables     | High     | Manual update       | 5-10 minutes     |
 
 ## Emergency Rollback Script
 
@@ -135,6 +142,7 @@ switch ($RollbackType) {
 Before any deployment, ensure:
 
 - [ ] Database backup taken
+
   ```powershell
   .\database-migration-render.ps1 -Operation export `
     -SourceDB $env:DATABASE_URL `
@@ -142,12 +150,14 @@ Before any deployment, ensure:
   ```
 
 - [ ] Environment variables documented
+
   ```powershell
   # Save current env vars
   render envs > "env-backup-$(Get-Date -Format 'yyyy-MM-dd').txt"
   ```
 
 - [ ] Current commit hash noted
+
   ```bash
   git rev-parse HEAD > last-working-commit.txt
   ```
@@ -160,6 +170,7 @@ Before any deployment, ensure:
 ## Rollback Communication Template
 
 ### Internal Team Notification
+
 ```
 Subject: [ROLLBACK] Sentia Manufacturing - [Environment]
 
@@ -177,6 +188,7 @@ Updates will follow every 15 minutes.
 ```
 
 ### User Notification (if needed)
+
 ```
 Subject: Temporary Service Interruption
 
@@ -247,12 +259,12 @@ foreach ($endpoint in $endpoints) {
 
 ## Recovery Time Objectives (RTO)
 
-| Service | Target RTO | Maximum RTO |
-|---------|------------|-------------|
-| Production App | 5 minutes | 15 minutes |
-| MCP Server | 5 minutes | 15 minutes |
-| Database | 30 minutes | 60 minutes |
-| Full System | 45 minutes | 90 minutes |
+| Service        | Target RTO | Maximum RTO |
+| -------------- | ---------- | ----------- |
+| Production App | 5 minutes  | 15 minutes  |
+| MCP Server     | 5 minutes  | 15 minutes  |
+| Database       | 30 minutes | 60 minutes  |
+| Full System    | 45 minutes | 90 minutes  |
 
 ## Support Contacts
 
@@ -266,9 +278,9 @@ foreach ($endpoint in $endpoints) {
 Document each rollback:
 
 | Date | Environment | Issue | Resolution | Prevention |
-|------|------------|-------|------------|------------|
-| | | | | |
-| | | | | |
+| ---- | ----------- | ----- | ---------- | ---------- |
+|      |             |       |            |            |
+|      |             |       |            |            |
 
 ---
 

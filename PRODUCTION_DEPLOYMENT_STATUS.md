@@ -9,6 +9,7 @@
 ### 🔴 CRITICAL ISSUE: 502 Bad Gateway
 
 The production deployment at `https://sentia-manufacturing-production.onrender.com` is returning:
+
 - **HTTP Status**: 502 Bad Gateway
 - **Header**: `x-render-routing: no-deploy`
 - **Issue**: Service is not starting properly due to missing environment variables
@@ -34,18 +35,21 @@ The production service is failing to start because critical environment variable
 ## Completed Actions
 
 ✅ **Code Updates Implemented:**
+
 - Migrated from `server.js` to `minimal-server.js` for faster startup
 - Updated `render-entry.js` to use minimal server
 - Removed complex initialization that was causing timeouts
 - Pushed all changes to production branch
 
 ✅ **Documentation Created:**
+
 - `render-production-env-vars.txt` - Complete list of required variables
 - `update-render-env-vars.ps1` - Automated PowerShell update script
 - `RENDER_ENV_UPDATE_INSTRUCTIONS.md` - Step-by-step manual instructions
 - `verify-production.ps1` - Production verification script
 
 ✅ **Repository Updates:**
+
 - All changes committed and pushed to production branch
 - Latest commit: `3e53bccc` - Added env var update scripts
 
@@ -54,6 +58,7 @@ The production service is failing to start because critical environment variable
 ### Step 1: Add Environment Variables (5 minutes)
 
 **Option A: Manual Update (Recommended)**
+
 1. Go to: https://dashboard.render.com/web/srv-ctg8hkpu0jms73ab8m00/env
 2. Click "Add Environment Variable" or use bulk edit
 3. Copy ALL variables from `render-production-env-vars.txt`
@@ -61,6 +66,7 @@ The production service is failing to start because critical environment variable
 5. Service will auto-deploy
 
 **Option B: PowerShell Script**
+
 ```powershell
 cd "C:\Projects\Sentia Manufacturing Dashboard\sentia-manufacturing-dashboard"
 .\update-render-env-vars.ps1
@@ -76,24 +82,26 @@ cd "C:\Projects\Sentia Manufacturing Dashboard\sentia-manufacturing-dashboard"
 ### Step 3: Verify Production (1 minute)
 
 Run verification script:
+
 ```powershell
 .\verify-production.ps1
 ```
 
 Expected results:
+
 - Health endpoint returns JSON: `{"status":"ok","timestamp":"..."}`
 - Main site loads without 502 error
 - Authentication pages accessible
 
 ## Critical Environment Variables Checklist
 
-| Variable | Required | Status | Value |
-|----------|----------|---------|--------|
-| VITE_CLERK_PUBLISHABLE_KEY | ✅ YES | ❌ Missing | pk_live_REDACTED |
-| CLERK_SECRET_KEY | ✅ YES | ❌ Missing | sk_live_REDACTED |
-| PORT | ✅ YES | ❌ Missing | 5000 |
-| NODE_ENV | ✅ YES | ❌ Missing | production |
-| DATABASE_URL | ✅ YES | ✅ Auto-set | (Render PostgreSQL) |
+| Variable                   | Required | Status      | Value               |
+| -------------------------- | -------- | ----------- | ------------------- |
+| VITE_CLERK_PUBLISHABLE_KEY | ✅ YES   | ❌ Missing  | pk_live_REDACTED    |
+| CLERK_SECRET_KEY           | ✅ YES   | ❌ Missing  | sk_live_REDACTED    |
+| PORT                       | ✅ YES   | ❌ Missing  | 5000                |
+| NODE_ENV                   | ✅ YES   | ❌ Missing  | production          |
+| DATABASE_URL               | ✅ YES   | ✅ Auto-set | (Render PostgreSQL) |
 
 ## Expected Timeline
 
@@ -112,6 +120,7 @@ Expected results:
 ## Success Criteria
 
 Production deployment is successful when:
+
 1. ✅ Health endpoint returns JSON response
 2. ✅ No 502 errors
 3. ✅ Authentication pages load
@@ -128,8 +137,8 @@ Production deployment is successful when:
 ## Contact for Issues
 
 If problems persist after adding environment variables:
+
 1. Check deployment logs for specific errors
 2. Verify all critical variables are set correctly
 3. Ensure latest code from production branch is deployed
 4. Check that build/start commands match configuration
-

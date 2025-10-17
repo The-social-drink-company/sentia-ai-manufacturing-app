@@ -10,9 +10,9 @@ export function KPICard({
   changeType = 'neutral',
   icon: Icon,
   format = 'number',
-  loading = false
+  loading = false,
 }) {
-  const formatValue = (val) => {
+  const formatValue = val => {
     if (!val && val !== 0) return '--'
 
     switch (format) {
@@ -21,7 +21,7 @@ export function KPICard({
           style: 'currency',
           currency: 'USD',
           minimumFractionDigits: 0,
-          maximumFractionDigits: 0
+          maximumFractionDigits: 0,
         }).format(val)
       case 'percentage':
         return `${val.toFixed(1)}%`
@@ -39,14 +39,16 @@ export function KPICard({
     const ChangeIcon = isPositive ? ArrowUpIcon : ArrowDownIcon
 
     return (
-      <div className={cn(
-        'flex items-center text-sm font-medium',
-        changeType === 'positive' && isPositive && 'text-green-600',
-        changeType === 'positive' && !isPositive && 'text-red-600',
-        changeType === 'negative' && isPositive && 'text-red-600',
-        changeType === 'negative' && !isPositive && 'text-green-600',
-        changeType === 'neutral' && 'text-gray-600'
-      )}>
+      <div
+        className={cn(
+          'flex items-center text-sm font-medium',
+          changeType === 'positive' && isPositive && 'text-green-600',
+          changeType === 'positive' && !isPositive && 'text-red-600',
+          changeType === 'negative' && isPositive && 'text-red-600',
+          changeType === 'negative' && !isPositive && 'text-green-600',
+          changeType === 'neutral' && 'text-gray-600'
+        )}
+      >
         <ChangeIcon className="h-4 w-4 mr-1" />
         {Math.abs(change).toFixed(1)}%
       </div>
@@ -70,9 +72,7 @@ export function KPICard({
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium text-muted-foreground">
-          {title}
-        </CardTitle>
+        <CardTitle className="text-sm font-medium text-muted-foreground">{title}</CardTitle>
         {Icon && <Icon className="h-4 w-4 text-muted-foreground" />}
       </CardHeader>
       <CardContent>

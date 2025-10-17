@@ -5,7 +5,7 @@ import {
   ExclamationTriangleIcon,
   ClipboardDocumentCheckIcon,
   ArrowTrendingUpIcon,
-  ArrowTrendingDownIcon
+  ArrowTrendingDownIcon,
 } from '@heroicons/react/24/solid'
 
 const QualityMetrics = memo(function QualityMetrics({ data }) {
@@ -24,15 +24,15 @@ const QualityMetrics = memo(function QualityMetrics({ data }) {
     )
   }
 
-  const getQualityStatus = (percentage) => {
+  const getQualityStatus = percentage => {
     if (percentage >= 99) return { color: 'green', icon: CheckCircleIcon }
     if (percentage >= 95) return { color: 'blue', icon: CheckCircleIcon }
     if (percentage >= 90) return { color: 'yellow', icon: ExclamationTriangleIcon }
     return { color: 'red', icon: XCircleIcon }
   }
 
-  const formatPercentage = (value) => `${(value || 0).toFixed(1)}%`
-  const formatNumber = (value) => (value || 0).toLocaleString()
+  const formatPercentage = value => `${(value || 0).toFixed(1)}%`
+  const formatNumber = value => (value || 0).toLocaleString()
 
   const summary = data.summary || {}
 
@@ -197,7 +197,7 @@ const QualityMetrics = memo(function QualityMetrics({ data }) {
               </tr>
             </thead>
             <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-              {data.inspectionPoints?.map((point) => {
+              {data.inspectionPoints?.map(point => {
                 const qualityStatus = getQualityStatus(point.quality)
                 const StatusIcon = qualityStatus.icon
 
@@ -207,17 +207,21 @@ const QualityMetrics = memo(function QualityMetrics({ data }) {
                       <div className="text-sm font-medium text-gray-900 dark:text-white">
                         {point.name}
                       </div>
-                      <div className="text-sm text-gray-500 dark:text-gray-400">
-                        {point.id}
-                      </div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400">{point.id}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
-                        <StatusIcon className={`h-4 w-4 mr-2 ${
-                          qualityStatus.color === 'green' ? 'text-green-500' :
-                          qualityStatus.color === 'blue' ? 'text-blue-500' :
-                          qualityStatus.color === 'yellow' ? 'text-yellow-500' : 'text-red-500'
-                        }`} />
+                        <StatusIcon
+                          className={`h-4 w-4 mr-2 ${
+                            qualityStatus.color === 'green'
+                              ? 'text-green-500'
+                              : qualityStatus.color === 'blue'
+                                ? 'text-blue-500'
+                                : qualityStatus.color === 'yellow'
+                                  ? 'text-yellow-500'
+                                  : 'text-red-500'
+                          }`}
+                        />
                         <span className="text-sm font-medium text-gray-900 dark:text-white">
                           {formatPercentage(point.quality)}
                         </span>
@@ -230,11 +234,13 @@ const QualityMetrics = memo(function QualityMetrics({ data }) {
                       {formatNumber(point.defects)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                        point.status === 'active'
-                          ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
-                          : 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
-                      }`}>
+                      <span
+                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                          point.status === 'active'
+                            ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
+                            : 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
+                        }`}
+                      >
                         {point.status}
                       </span>
                     </td>
@@ -245,7 +251,10 @@ const QualityMetrics = memo(function QualityMetrics({ data }) {
                 )
               }) || (
                 <tr>
-                  <td colSpan="6" className="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
+                  <td
+                    colSpan="6"
+                    className="px-6 py-4 text-center text-gray-500 dark:text-gray-400"
+                  >
                     No inspection points data available
                   </td>
                 </tr>

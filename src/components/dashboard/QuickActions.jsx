@@ -33,7 +33,7 @@ const QuickActions = () => {
               <FileText className="h-4 w-4" />
               Generate Reports
             </Button>
-            
+
             {/* Placeholder for future quick actions */}
             <Button
               variant="outline"
@@ -45,17 +45,14 @@ const QuickActions = () => {
               Export Data
             </Button>
           </div>
-          
+
           <p className="text-sm text-muted-foreground mt-4 text-center">
             Create customizable reports with your dashboard data and export as PDF
           </p>
         </CardContent>
       </Card>
 
-      <ReportConfigModal
-        open={reportModalOpen}
-        onClose={() => setReportModalOpen(false)}
-      />
+      <ReportConfigModal open={reportModalOpen} onClose={() => setReportModalOpen(false)} />
     </>
   )
 }

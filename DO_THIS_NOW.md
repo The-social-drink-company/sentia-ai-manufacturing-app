@@ -9,12 +9,15 @@
 ## FASTEST METHOD: Copy & Paste (2 minutes)
 
 ### Step 1: Open Render Dashboard
+
 Click this link: https://dashboard.render.com/web/srv-ctg8hkpu0jms73ab8m00/env
 
 ### Step 2: Click "Bulk Edit" Button
+
 Look for the "Bulk Edit" button on the environment variables page
 
 ### Step 3: Copy ALL Text Below
+
 ```
 NODE_ENV=production
 PORT=5000
@@ -82,9 +85,11 @@ RENDER_EXTERNAL_URL=https://sentia-manufacturing-production.onrender.com
 ```
 
 ### Step 4: Paste in Bulk Edit Mode
+
 Paste all the above text into the bulk edit text area
 
 ### Step 5: Click "Save Changes"
+
 The deployment will start automatically
 
 ---
@@ -92,11 +97,13 @@ The deployment will start automatically
 ## ALTERNATIVE: Automated Script (3 minutes)
 
 If you have a Render API key, run:
+
 ```powershell
 .\apply-render-env-from-file.ps1
 ```
 
 To get API key:
+
 1. Go to: https://dashboard.render.com/u/settings
 2. Find "API Keys" section
 3. Create or copy key
@@ -106,6 +113,7 @@ To get API key:
 ## VERIFY SUCCESS (After 3 minutes)
 
 Run this command:
+
 ```powershell
 .\quick-test-production.ps1
 ```
@@ -119,6 +127,7 @@ Or visit: https://sentia-manufacturing-production.onrender.com
 ## MONITOR DEPLOYMENT
 
 Watch the deployment progress:
+
 ```powershell
 .\monitor-production.ps1
 ```
@@ -131,6 +140,7 @@ https://dashboard.render.com/web/srv-ctg8hkpu0jms73ab8m00/deploys
 ## TROUBLESHOOTING
 
 If still getting 502 after adding variables:
+
 1. Check logs: https://dashboard.render.com/web/srv-ctg8hkpu0jms73ab8m00/logs
 2. Verify PORT=5000 is set
 3. Verify NODE_ENV=production is set

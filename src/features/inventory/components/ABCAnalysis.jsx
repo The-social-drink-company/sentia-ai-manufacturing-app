@@ -11,7 +11,7 @@ import {
   PieChart,
   Pie,
   Cell,
-  TreeMap
+  TreeMap,
 } from 'recharts'
 import {
   CubeIcon,
@@ -20,7 +20,7 @@ import {
   ArrowUpIcon,
   ArrowDownIcon,
   StarIcon,
-  ExclamationTriangleIcon
+  ExclamationTriangleIcon,
 } from '@heroicons/react/24/solid'
 
 export default function ABCAnalysis({ data, title }) {
@@ -33,7 +33,9 @@ export default function ABCAnalysis({ data, title }) {
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">{title}</h3>
         <div className="flex items-center justify-center h-64">
-          <p className="text-gray-500 dark:text-gray-400">No inventory data available for ABC analysis</p>
+          <p className="text-gray-500 dark:text-gray-400">
+            No inventory data available for ABC analysis
+          </p>
         </div>
       </div>
     )
@@ -48,8 +50,9 @@ export default function ABCAnalysis({ data, title }) {
       return valueB - valueA
     })
 
-    const totalValue = sortedItems.reduce((sum, item) =>
-      sum + ((item.unitCost || 0) * (item.quantity || 0)), 0
+    const totalValue = sortedItems.reduce(
+      (sum, item) => sum + (item.unitCost || 0) * (item.quantity || 0),
+      0
     )
 
     let cumulativeValue = 0
@@ -72,7 +75,7 @@ export default function ABCAnalysis({ data, title }) {
         cumulativeValue,
         cumulativePercentage,
         category,
-        rank: index + 1
+        rank: index + 1,
       }
     })
 
@@ -84,7 +87,7 @@ export default function ABCAnalysis({ data, title }) {
     const categoryStats = {
       A: { count: 0, value: 0, percentage: 0 },
       B: { count: 0, value: 0, percentage: 0 },
-      C: { count: 0, value: 0, percentage: 0 }
+      C: { count: 0, value: 0, percentage: 0 },
     }
 
     const totalValue = abcData.reduce((sum, item) => sum + item.value, 0)
@@ -96,18 +99,16 @@ export default function ABCAnalysis({ data, title }) {
     })
 
     Object.keys(categoryStats).forEach(category => {
-      categoryStats[category].percentage = totalCount > 0
-        ? (categoryStats[category].count / totalCount) * 100
-        : 0
-      categoryStats[category].valuePercentage = totalValue > 0
-        ? (categoryStats[category].value / totalValue) * 100
-        : 0
+      categoryStats[category].percentage =
+        totalCount > 0 ? (categoryStats[category].count / totalCount) * 100 : 0
+      categoryStats[category].valuePercentage =
+        totalValue > 0 ? (categoryStats[category].value / totalValue) * 100 : 0
     })
 
     return categoryStats
   }, [abcData])
 
-  const getCategoryColor = (category) => {
+  const getCategoryColor = category => {
     switch (category) {
       case 'A':
         return {
@@ -115,7 +116,7 @@ export default function ABCAnalysis({ data, title }) {
           light: '#fecaca', // red-200
           bg: 'bg-red-50 dark:bg-red-900/20',
           text: 'text-red-600 dark:text-red-400',
-          badge: 'bg-red-600'
+          badge: 'bg-red-600',
         }
       case 'B':
         return {
@@ -123,7 +124,7 @@ export default function ABCAnalysis({ data, title }) {
           light: '#fed7aa', // amber-200
           bg: 'bg-amber-50 dark:bg-amber-900/20',
           text: 'text-amber-600 dark:text-amber-400',
-          badge: 'bg-amber-600'
+          badge: 'bg-amber-600',
         }
       case 'C':
         return {
@@ -131,7 +132,7 @@ export default function ABCAnalysis({ data, title }) {
           light: '#bbf7d0', // green-200
           bg: 'bg-green-50 dark:bg-green-900/20',
           text: 'text-green-600 dark:text-green-400',
-          badge: 'bg-green-600'
+          badge: 'bg-green-600',
         }
       default:
         return {
@@ -139,12 +140,12 @@ export default function ABCAnalysis({ data, title }) {
           light: '#d1d5db',
           bg: 'bg-gray-50 dark:bg-gray-900/20',
           text: 'text-gray-600 dark:text-gray-400',
-          badge: 'bg-gray-600'
+          badge: 'bg-gray-600',
         }
     }
   }
 
-  const getCategoryDescription = (category) => {
+  const getCategoryDescription = category => {
     switch (category) {
       case 'A':
         return 'High Value Items - Critical for business, require tight control'
@@ -157,9 +158,10 @@ export default function ABCAnalysis({ data, title }) {
     }
   }
 
-  const filteredData = selectedCategory === 'all'
-    ? abcData
-    : abcData.filter(item => item.category === selectedCategory)
+  const filteredData =
+    selectedCategory === 'all'
+      ? abcData
+      : abcData.filter(item => item.category === selectedCategory)
 
   const sortedData = [...filteredData].sort((a, b) => {
     switch (sortBy) {
@@ -192,13 +194,8 @@ export default function ABCAnalysis({ data, title }) {
           {payload.map((entry, index) => (
             <div key={index} className="flex items-center justify-between min-w-40">
               <div className="flex items-center">
-                <div
-                  className="w-3 h-3 rounded mr-2"
-                  style={{ backgroundColor: entry.color }}
-                />
-                <span className="text-sm text-gray-600 dark:text-gray-400">
-                  {entry.name}:
-                </span>
+                <div className="w-3 h-3 rounded mr-2" style={{ backgroundColor: entry.color }} />
+                <span className="text-sm text-gray-600 dark:text-gray-400">{entry.name}:</span>
               </div>
               <span className="text-sm font-medium text-gray-900 dark:text-white ml-4">
                 {formatTooltipValue(entry.value, entry.name)[0]}
@@ -217,14 +214,14 @@ export default function ABCAnalysis({ data, title }) {
     count: summaryStats[category].count,
     value: summaryStats[category].value,
     percentage: summaryStats[category].percentage,
-    valuePercentage: summaryStats[category].valuePercentage
+    valuePercentage: summaryStats[category].valuePercentage,
   }))
 
   const pieData = chartData.map(item => ({
     name: `Category ${item.category}`,
     value: item.valuePercentage,
     count: item.count,
-    color: getCategoryColor(item.category).primary
+    color: getCategoryColor(item.category).primary,
   }))
 
   // TreeMap data
@@ -232,7 +229,7 @@ export default function ABCAnalysis({ data, title }) {
     name: item.name,
     size: item.value,
     category: item.category,
-    fill: getCategoryColor(item.category).primary
+    fill: getCategoryColor(item.category).primary,
   }))
 
   const renderChart = () => (
@@ -276,7 +273,7 @@ export default function ABCAnalysis({ data, title }) {
                 <Cell key={`cell-${index}`} fill={entry.color} />
               ))}
             </Pie>
-            <Tooltip formatter={(value) => `${value.toFixed(1)}%`} />
+            <Tooltip formatter={value => `${value.toFixed(1)}%`} />
           </PieChart>
         </ResponsiveContainer>
       </div>
@@ -292,7 +289,7 @@ export default function ABCAnalysis({ data, title }) {
         <TreeMap
           data={treeMapData}
           dataKey="size"
-          ratio={4/3}
+          ratio={4 / 3}
           stroke="#fff"
           strokeWidth={2}
           content={({ root, depth, x, y, width, height, index, payload, name }) => {
@@ -308,7 +305,7 @@ export default function ABCAnalysis({ data, title }) {
                       fill: payload.fill,
                       stroke: '#fff',
                       strokeWidth: 2,
-                      fillOpacity: depth < 2 ? 1 : 0.7
+                      fillOpacity: depth < 2 ? 1 : 0.7,
                     }}
                   />
                   {width > 100 && height > 40 && (
@@ -398,7 +395,9 @@ export default function ABCAnalysis({ data, title }) {
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium text-white ${colors.badge}`}>
+                  <span
+                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium text-white ${colors.badge}`}
+                  >
                     {item.category}
                   </span>
                 </td>
@@ -442,7 +441,7 @@ export default function ABCAnalysis({ data, title }) {
           {/* Category filter */}
           <select
             value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
+            onChange={e => setSelectedCategory(e.target.value)}
             className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-sm"
           >
             <option value="all">All Categories</option>
@@ -498,19 +497,19 @@ export default function ABCAnalysis({ data, title }) {
             <div key={category} className={`p-4 rounded-lg ${colors.bg}`}>
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center space-x-2">
-                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium text-white ${colors.badge}`}>
+                  <span
+                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium text-white ${colors.badge}`}
+                  >
                     Category {category}
                   </span>
                   {category === 'A' && <StarIcon className="h-4 w-4 text-yellow-500" />}
-                  {category === 'C' && <ExclamationTriangleIcon className="h-4 w-4 text-gray-500" />}
+                  {category === 'C' && (
+                    <ExclamationTriangleIcon className="h-4 w-4 text-gray-500" />
+                  )}
                 </div>
-                <div className={`text-xl font-bold ${colors.text}`}>
-                  {stats.count}
-                </div>
+                <div className={`text-xl font-bold ${colors.text}`}>{stats.count}</div>
               </div>
-              <p className={`text-xs ${colors.text} mb-1`}>
-                {getCategoryDescription(category)}
-              </p>
+              <p className={`text-xs ${colors.text} mb-1`}>{getCategoryDescription(category)}</p>
               <div className="text-sm">
                 <div className={`${colors.text} font-medium`}>
                   {stats.percentage.toFixed(1)}% of items

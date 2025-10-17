@@ -1,34 +1,54 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { 
-  MessageCircle, X, Send, Bot, User, TrendingUp, AlertCircle, 
-  BarChart3, DollarSign, Package, Users, Zap, Brain, Sparkles,
-  FileText, Download, Copy, ThumbsUp, ThumbsDown, RefreshCw
-} from 'lucide-react';
-import FinancialAlgorithms from '../services/FinancialAlgorithms';
+import React, { useState, useEffect, useRef, useMemo } from 'react'
+import {
+  MessageCircle,
+  X,
+  Send,
+  Bot,
+  User,
+  TrendingUp,
+  AlertCircle,
+  BarChart3,
+  DollarSign,
+  Package,
+  Users,
+  Zap,
+  Brain,
+  Sparkles,
+  FileText,
+  Download,
+  Copy,
+  ThumbsUp,
+  ThumbsDown,
+  RefreshCw,
+} from 'lucide-react'
+import FinancialAlgorithms from '../services/FinancialAlgorithms'
 
 const EnterpriseAIChatbot = ({ dashboardData }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState([]);
-  const [inputValue, setInputValue] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [suggestions, setSuggestions] = useState([]);
-  const messagesEndRef = useRef(null);
-  const inputRef = useRef(null);
+  const [isOpen, setIsOpen] = useState(false)
+  const [messages, setMessages] = useState([])
+  const [inputValue, setInputValue] = useState('')
+  const [isTyping, setIsTyping] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [suggestions, setSuggestions] = useState([])
+  const messagesEndRef = useRef(null)
+  const inputRef = useRef(null)
 
-  const financialAlgorithms = new FinancialAlgorithms();
+  const financialAlgorithms = new FinancialAlgorithms()
 
   // Smart suggestions based on current dashboard data
-  const smartSuggestions = useMemo(() => ([
-    "Analyze current working capital trends",
-    "What's driving our revenue growth?",
-    "Identify inventory optimization opportunities",
-    "Generate cash flow forecast",
-    "Compare performance vs industry benchmarks",
-    "Recommend cost reduction strategies",
-    "Analyze customer satisfaction metrics",
-    "Predict next quarter's performance"
-  ]), []);
+  const smartSuggestions = useMemo(
+    () => [
+      'Analyze current working capital trends',
+      "What's driving our revenue growth?",
+      'Identify inventory optimization opportunities',
+      'Generate cash flow forecast',
+      'Compare performance vs industry benchmarks',
+      'Recommend cost reduction strategies',
+      'Analyze customer satisfaction metrics',
+      "Predict next quarter's performance",
+    ],
+    []
+  )
 
   useEffect(() => {
     if (isOpen && messages.length === 0) {
@@ -48,42 +68,42 @@ const EnterpriseAIChatbot = ({ dashboardData }) => {
 
 How can I assist you today?`,
         timestamp: new Date(),
-        suggestions: smartSuggestions.slice(0, 4)
-      };
-      setMessages([welcomeMessage]);
-      setSuggestions(smartSuggestions);
+        suggestions: smartSuggestions.slice(0, 4),
+      }
+      setMessages([welcomeMessage])
+      setSuggestions(smartSuggestions)
     }
-  }, [isOpen, messages.length, smartSuggestions]);
+  }, [isOpen, messages.length, smartSuggestions])
 
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+    scrollToBottom()
+  }, [messages])
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }
 
   const handleSendMessage = async (message = inputValue) => {
-    if (!message.trim()) return;
+    if (!message.trim()) return
 
     const userMessage = {
       id: Date.now(),
       type: 'user',
       content: message,
-      timestamp: new Date()
-    };
+      timestamp: new Date(),
+    }
 
-    setMessages(prev => [...prev, userMessage]);
-    setInputValue('');
-    setIsTyping(true);
-    setIsLoading(true);
+    setMessages(prev => [...prev, userMessage])
+    setInputValue('')
+    setIsTyping(true)
+    setIsLoading(true)
 
     try {
       // Simulate AI processing delay
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      const response = await generateAIResponse(message);
-      
+      await new Promise(resolve => setTimeout(resolve, 1500))
+
+      const response = await generateAIResponse(message)
+
       const botMessage = {
         id: Date.now() + 1,
         type: 'bot',
@@ -91,50 +111,51 @@ How can I assist you today?`,
         timestamp: new Date(),
         data: response.data,
         charts: response.charts,
-        suggestions: response.suggestions
-      };
+        suggestions: response.suggestions,
+      }
 
-      setMessages(prev => [...prev, botMessage]);
+      setMessages(prev => [...prev, botMessage])
     } catch {
       const errorMessage = {
         id: Date.now() + 1,
         type: 'bot',
-        content: "I apologize, but I'm experiencing some technical difficulties. Please try again in a moment.",
+        content:
+          "I apologize, but I'm experiencing some technical difficulties. Please try again in a moment.",
         timestamp: new Date(),
-        isError: true
-      };
-      setMessages(prev => [...prev, errorMessage]);
+        isError: true,
+      }
+      setMessages(prev => [...prev, errorMessage])
     } finally {
-      setIsTyping(false);
-      setIsLoading(false);
+      setIsTyping(false)
+      setIsLoading(false)
     }
-  };
+  }
 
-  const generateAIResponse = async (query) => {
-    const lowerQuery = query.toLowerCase();
-    
+  const generateAIResponse = async query => {
+    const lowerQuery = query.toLowerCase()
+
     // Analyze query intent and generate contextual response
     if (lowerQuery.includes('working capital') || lowerQuery.includes('liquidity')) {
-      return await generateWorkingCapitalInsights();
+      return await generateWorkingCapitalInsights()
     } else if (lowerQuery.includes('revenue') || lowerQuery.includes('sales')) {
-      return await generateRevenueAnalysis();
+      return await generateRevenueAnalysis()
     } else if (lowerQuery.includes('inventory') || lowerQuery.includes('stock')) {
-      return await generateInventoryInsights();
+      return await generateInventoryInsights()
     } else if (lowerQuery.includes('forecast') || lowerQuery.includes('predict')) {
-      return await generateForecastAnalysis();
+      return await generateForecastAnalysis()
     } else if (lowerQuery.includes('cost') || lowerQuery.includes('expense')) {
-      return await generateCostAnalysis();
+      return await generateCostAnalysis()
     } else if (lowerQuery.includes('performance') || lowerQuery.includes('kpi')) {
-      return await generatePerformanceAnalysis();
+      return await generatePerformanceAnalysis()
     } else {
-      return await generateGeneralInsights(query);
+      return await generateGeneralInsights(query)
     }
-  };
+  }
 
   const generateWorkingCapitalInsights = async () => {
     try {
-      const workingCapital = await financialAlgorithms.calculateWorkingCapital();
-      
+      const workingCapital = await financialAlgorithms.calculateWorkingCapital()
+
       return {
         content: `## 💰 Working Capital Analysis
 
@@ -151,24 +172,25 @@ How can I assist you today?`,
 ${workingCapital.recommendations?.map(rec => `• ${rec.action} (${rec.impact})`).join('\n') || '• Optimize payment terms with suppliers\n• Accelerate receivables collection\n• Implement dynamic inventory management'}`,
         data: workingCapital,
         suggestions: [
-          "Show me cash flow forecast",
-          "Analyze receivables aging",
-          "Compare with industry benchmarks",
-          "Generate working capital report"
-        ]
-      };
+          'Show me cash flow forecast',
+          'Analyze receivables aging',
+          'Compare with industry benchmarks',
+          'Generate working capital report',
+        ],
+      }
     } catch {
       return {
-        content: "I'm analyzing your working capital data. Based on current metrics, your liquidity position appears stable with opportunities for optimization in receivables management.",
-        suggestions: ["Show financial overview", "Analyze cash flow trends"]
-      };
+        content:
+          "I'm analyzing your working capital data. Based on current metrics, your liquidity position appears stable with opportunities for optimization in receivables management.",
+        suggestions: ['Show financial overview', 'Analyze cash flow trends'],
+      }
     }
-  };
+  }
 
   const generateRevenueAnalysis = async () => {
-    const currentRevenue = dashboardData?.financial?.totalRevenue || 3170000;
-    const growth = dashboardData?.financial?.growth?.monthly || 15.2;
-    
+    const currentRevenue = dashboardData?.financial?.totalRevenue || 3170000
+    const growth = dashboardData?.financial?.growth?.monthly || 15.2
+
     return {
       content: `## 📈 Revenue Performance Analysis
 
@@ -177,8 +199,8 @@ ${workingCapital.recommendations?.map(rec => `• ${rec.action} (${rec.impact})`
 **Quarterly Trend:** Strong upward trajectory
 
 **Revenue Breakdown:**
-• UK Market: £${(currentRevenue * 0.47 / 1000).toFixed(0)}K (47%)
-• USA Market: £${(currentRevenue * 0.53 / 1000).toFixed(0)}K (53%)
+• UK Market: £${((currentRevenue * 0.47) / 1000).toFixed(0)}K (47%)
+• USA Market: £${((currentRevenue * 0.53) / 1000).toFixed(0)}K (53%)
 • Growth Rate: ${growth > 12 ? 'Exceptional' : growth > 8 ? 'Strong' : 'Moderate'}
 
 **AI Insights:**
@@ -191,13 +213,13 @@ ${workingCapital.recommendations?.map(rec => `• ${rec.action} (${rec.impact})`
 • Implement dynamic pricing strategies for premium products
 • Focus on customer retention programs (current LTV: £2,450)`,
       suggestions: [
-        "Analyze customer segments",
-        "Show revenue forecasting",
-        "Compare regional performance",
-        "Generate sales report"
-      ]
-    };
-  };
+        'Analyze customer segments',
+        'Show revenue forecasting',
+        'Compare regional performance',
+        'Generate sales report',
+      ],
+    }
+  }
 
   const generateInventoryInsights = async () => {
     return {
@@ -223,13 +245,13 @@ ${workingCapital.recommendations?.map(rec => `• ${rec.action} (${rec.impact})`
 🔄 Seasonal demand surge expected in 6 weeks
 💡 EOQ optimization could reduce holding costs by 18%`,
       suggestions: [
-        "Show EOQ calculations",
-        "Analyze stockout risks",
-        "Generate reorder report",
-        "Optimize safety stock levels"
-      ]
-    };
-  };
+        'Show EOQ calculations',
+        'Analyze stockout risks',
+        'Generate reorder report',
+        'Optimize safety stock levels',
+      ],
+    }
+  }
 
   const generateForecastAnalysis = async () => {
     return {
@@ -262,13 +284,13 @@ ${workingCapital.recommendations?.map(rec => `• ${rec.action} (${rec.impact})`
 • Working capital needs: £1.2M peak in Q3
 • Recommended credit facility: £500K buffer`,
       suggestions: [
-        "Show detailed cash flow forecast",
-        "Analyze scenario planning",
-        "Generate budget recommendations",
-        "Create executive summary"
-      ]
-    };
-  };
+        'Show detailed cash flow forecast',
+        'Analyze scenario planning',
+        'Generate budget recommendations',
+        'Create executive summary',
+      ],
+    }
+  }
 
   const generateCostAnalysis = async () => {
     return {
@@ -297,13 +319,13 @@ ${workingCapital.recommendations?.map(rec => `• ${rec.action} (${rec.impact})`
 3. Cross-train workforce for flexibility (Improve efficiency by 12%)
 4. Invest in quality control automation (Reduce defects by 40%)`,
       suggestions: [
-        "Show ROI calculations",
-        "Analyze supplier performance",
-        "Generate cost reduction plan",
-        "Compare with competitors"
-      ]
-    };
-  };
+        'Show ROI calculations',
+        'Analyze supplier performance',
+        'Generate cost reduction plan',
+        'Compare with competitors',
+      ],
+    }
+  }
 
   const generatePerformanceAnalysis = async () => {
     return {
@@ -335,15 +357,15 @@ ${workingCapital.recommendations?.map(rec => `• ${rec.action} (${rec.impact})`
 3. Invest in supply chain resilience
 4. Maintain quality leadership position`,
       suggestions: [
-        "Deep dive into delivery issues",
-        "Show competitive analysis",
-        "Generate board report",
-        "Create improvement roadmap"
-      ]
-    };
-  };
+        'Deep dive into delivery issues',
+        'Show competitive analysis',
+        'Generate board report',
+        'Create improvement roadmap',
+      ],
+    }
+  }
 
-  const generateGeneralInsights = async (query) => {
+  const generateGeneralInsights = async query => {
     return {
       content: `I understand you're asking about "${query}". Let me provide some relevant insights based on your current business data:
 
@@ -360,23 +382,23 @@ ${workingCapital.recommendations?.map(rec => `• ${rec.action} (${rec.impact})`
 
 Would you like me to dive deeper into any specific area? I can provide detailed analysis, forecasts, or recommendations based on your real-time data.`,
       suggestions: [
-        "Analyze financial performance",
-        "Show operational metrics",
-        "Generate executive summary",
-        "Create action plan"
-      ]
-    };
-  };
+        'Analyze financial performance',
+        'Show operational metrics',
+        'Generate executive summary',
+        'Create action plan',
+      ],
+    }
+  }
 
-  const handleSuggestionClick = (suggestion) => {
-    handleSendMessage(suggestion);
-  };
+  const handleSuggestionClick = suggestion => {
+    handleSendMessage(suggestion)
+  }
 
-  const copyMessage = (content) => {
-    navigator.clipboard.writeText(content);
-  };
+  const copyMessage = content => {
+    navigator.clipboard.writeText(content)
+  }
 
-  const downloadReport = (message) => {
+  const downloadReport = message => {
     const reportContent = `# AI Business Intelligence Report
 Generated: ${message.timestamp.toLocaleString()}
 
@@ -384,16 +406,16 @@ ${message.content}
 
 ---
 Generated by Sentia Manufacturing AI Assistant
-`;
-    
-    const blob = new Blob([reportContent], { type: 'text/markdown' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `business-report-${Date.now()}.md`;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
+`
+
+    const blob = new Blob([reportContent], { type: 'text/markdown' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `business-report-${Date.now()}.md`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
 
   return (
     <>
@@ -440,7 +462,7 @@ Generated by Sentia Manufacturing AI Assistant
 
           {/* Messages */}
           <div className="flex-1 overflow-y-auto p-4 space-y-4">
-            {messages.map((message) => (
+            {messages.map(message => (
               <div
                 key={message.id}
                 className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
@@ -450,8 +472,8 @@ Generated by Sentia Manufacturing AI Assistant
                     message.type === 'user'
                       ? 'bg-blue-600 text-white'
                       : message.isError
-                      ? 'bg-red-50 text-red-800 border border-red-200'
-                      : 'bg-gray-50 text-gray-800'
+                        ? 'bg-red-50 text-red-800 border border-red-200'
+                        : 'bg-gray-50 text-gray-800'
                   }`}
                 >
                   {message.type === 'bot' && (
@@ -460,12 +482,14 @@ Generated by Sentia Manufacturing AI Assistant
                       <span className="text-xs font-medium text-blue-600">AI Assistant</span>
                     </div>
                   )}
-                  
+
                   <div className="prose prose-sm max-w-none">
                     {message.content.split('\n').map((line, index) => (
                       <div key={index} className="mb-1">
                         {line.startsWith('##') ? (
-                          <h3 className="text-lg font-bold text-gray-900 mb-2">{line.replace('##', '').trim()}</h3>
+                          <h3 className="text-lg font-bold text-gray-900 mb-2">
+                            {line.replace('##', '').trim()}
+                          </h3>
                         ) : line.startsWith('**') && line.endsWith('**') ? (
                           <p className="font-semibold text-gray-900">{line.replace(/\*\*/g, '')}</p>
                         ) : line.startsWith('•') ? (
@@ -526,8 +550,14 @@ Generated by Sentia Manufacturing AI Assistant
                     <Brain className="h-4 w-4 text-blue-600 animate-pulse" />
                     <div className="flex space-x-1">
                       <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"></div>
-                      <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                      <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                      <div
+                        className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"
+                        style={{ animationDelay: '0.1s' }}
+                      ></div>
+                      <div
+                        className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"
+                        style={{ animationDelay: '0.2s' }}
+                      ></div>
                     </div>
                   </div>
                 </div>
@@ -543,8 +573,8 @@ Generated by Sentia Manufacturing AI Assistant
                 ref={inputRef}
                 type="text"
                 value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                onChange={e => setInputValue(e.target.value)}
+                onKeyPress={e => e.key === 'Enter' && handleSendMessage()}
                 placeholder="Ask about your business data..."
                 className="flex-1 border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 disabled={isLoading}
@@ -561,7 +591,7 @@ Generated by Sentia Manufacturing AI Assistant
                 )}
               </button>
             </div>
-            
+
             {/* Quick Actions */}
             <div className="mt-2 flex flex-wrap gap-1">
               {suggestions.slice(0, 3).map((suggestion, index) => (
@@ -578,8 +608,7 @@ Generated by Sentia Manufacturing AI Assistant
         </div>
       )}
     </>
-  );
-};
+  )
+}
 
-export default EnterpriseAIChatbot;
-
+export default EnterpriseAIChatbot

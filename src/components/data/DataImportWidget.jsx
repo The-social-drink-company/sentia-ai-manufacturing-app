@@ -1,28 +1,28 @@
-import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import React, { useState } from 'react'
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
 
 const DataImportWidget = () => {
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [importStatus, setImportStatus] = useState('idle');
+  const [selectedFile, setSelectedFile] = useState(null)
+  const [importStatus, setImportStatus] = useState('idle')
 
-  const handleFileSelect = (e) => {
-    setSelectedFile(e.target.files[0]);
-  };
+  const handleFileSelect = e => {
+    setSelectedFile(e.target.files[0])
+  }
 
   const handleImport = async () => {
-    if (!selectedFile) return;
-    
-    setImportStatus('importing');
+    if (!selectedFile) return
+
+    setImportStatus('importing')
     // Simulate import
     setTimeout(() => {
-      setImportStatus('complete');
-    }, 2000);
-  };
+      setImportStatus('complete')
+    }, 2000)
+  }
 
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-bold text-gray-900">Data Import</h1>
-      
+
       <Card>
         <CardHeader>
           <CardTitle>Import Data from External Sources</CardTitle>
@@ -44,7 +44,9 @@ const DataImportWidget = () => {
             {selectedFile && (
               <div className="p-4 bg-gray-50 rounded-lg">
                 <p className="text-sm text-gray-600">Selected: {selectedFile.name}</p>
-                <p className="text-xs text-gray-500">Size: {(selectedFile.size / 1024).toFixed(2)} KB</p>
+                <p className="text-xs text-gray-500">
+                  Size: {(selectedFile.size / 1024).toFixed(2)} KB
+                </p>
               </div>
             )}
 
@@ -77,7 +79,10 @@ const DataImportWidget = () => {
               { name: 'Amazon SP-API', status: 'connected', lastSync: '10 mins ago' },
               { name: 'PostgreSQL Database', status: 'connected', lastSync: 'Live' },
             ].map((source, index) => (
-              <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <div
+                key={index}
+                className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+              >
                 <div>
                   <p className="font-medium">{source.name}</p>
                   <p className="text-xs text-gray-500">Last sync: {source.lastSync}</p>
@@ -91,7 +96,7 @@ const DataImportWidget = () => {
         </CardContent>
       </Card>
     </div>
-  );
-};
+  )
+}
 
-export default DataImportWidget;
+export default DataImportWidget

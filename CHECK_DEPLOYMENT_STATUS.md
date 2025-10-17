@@ -3,12 +3,14 @@
 ## Current Status (As of verification)
 
 ### ❌ Development Service
+
 - **URL**: https://sentia-manufacturing-development.onrender.com
 - **Health**: ✅ Service is online
 - **Authentication**: ⚠️ Using TEST keys (needs PRODUCTION keys)
 - **Action Required**: YES - Add production Clerk keys
 
 ### ❌ Production Service
+
 - **URL**: https://sentia-manufacturing-production.onrender.com
 - **Health**: ❌ Service returning 502 (may be deploying or not created)
 - **Authentication**: Not configured
@@ -21,18 +23,21 @@
 You need to add these 3 critical environment variables to BOTH services:
 
 ### 1. Frontend Key (VITE_CLERK_PUBLISHABLE_KEY)
+
 ```
 Name: VITE_CLERK_PUBLISHABLE_KEY
 Value: pk_live_REDACTED
 ```
 
 ### 2. Backend Secret (CLERK_SECRET_KEY)
+
 ```
 Name: CLERK_SECRET_KEY
 Value: sk_live_REDACTED
 ```
 
 ### 3. Custom Domain (VITE_CLERK_DOMAIN)
+
 ```
 Name: VITE_CLERK_DOMAIN
 Value: clerk.financeflo.ai
@@ -65,9 +70,11 @@ Value: clerk.financeflo.ai
 ### For Production Service (PRIORITY 2)
 
 If service exists:
+
 - Follow same steps as development
 
 If service doesn't exist (502 error suggests this):
+
 1. Click "New +" → "Blueprint"
 2. Connect your GitHub repository
 3. Select `production` branch
@@ -104,6 +111,7 @@ curl -s https://sentia-manufacturing-development.onrender.com | grep "pk_live_"
 ## 🎯 EXPECTED OUTCOME
 
 After configuration:
+
 - ✅ Both services respond with 200 OK
 - ✅ Production Clerk keys detected (`pk_live_`)
 - ✅ Users can sign up/sign in
@@ -121,4 +129,3 @@ After configuration:
 ---
 
 **Next Step**: Add the 3 critical variables to development service NOW to enable authentication.
-

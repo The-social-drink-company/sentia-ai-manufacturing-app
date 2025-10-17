@@ -5,13 +5,13 @@ import { format } from 'date-fns'
  * Generate and download a PDF report
  * @param {Object} reportData - Complete report data
  */
-export const generatePDF = async (reportData) => {
+export const generatePDF = async reportData => {
   try {
     const pdf = new jsPDF('p', 'mm', 'a4')
     const pageWidth = pdf.internal.pageSize.getWidth()
     const pageHeight = pdf.internal.pageSize.getHeight()
     const margin = 20
-    const contentWidth = pageWidth - (margin * 2)
+    const contentWidth = pageWidth - margin * 2
     let currentY = margin
 
     // Company branding and header
@@ -27,14 +27,21 @@ export const generatePDF = async (reportData) => {
     pdf.setFontSize(12)
     pdf.setFont(undefined, 'normal')
     pdf.setTextColor(100, 100, 100)
-    pdf.text(`Generated: ${format(new Date(), 'MMMM d, yyyy \'at\' h:mm a')}`, margin, currentY)
+    pdf.text(`Generated: ${format(new Date(), "MMMM d, yyyy 'at' h:mm a")}`, margin, currentY)
     currentY += 8
     pdf.text(`Report Period: ${reportData.metadata.reportPeriod.formatted}`, margin, currentY)
     currentY += 20
 
     // Executive Summary
     if (reportData.executiveSummary) {
-      currentY = addExecutiveSummary(pdf, reportData.executiveSummary, margin, currentY, contentWidth, pageHeight)
+      currentY = addExecutiveSummary(
+        pdf,
+        reportData.executiveSummary,
+        margin,
+        currentY,
+        contentWidth,
+        pageHeight
+      )
     }
 
     // Add each selected section
@@ -60,7 +67,7 @@ export const generatePDF = async (reportData) => {
 
     // Save the PDF
     pdf.save(filename)
-    
+
     return { success: true, filename }
   } catch (error) {
     console.error('Error generating PDF:', error)
@@ -75,24 +82,24 @@ const addHeader = (pdf, pageWidth, margin) => {
   // Company logo area (placeholder)
   pdf.setFillColor(59, 130, 246) // Blue color
   pdf.roundedRect(margin, margin, 30, 15, 2, 2, 'F')
-  
+
   // Company logo text
   pdf.setFontSize(14)
   pdf.setFont(undefined, 'bold')
   pdf.setTextColor(255, 255, 255)
   pdf.text('S', margin + 12, margin + 10)
-  
+
   // Company name
   pdf.setFontSize(16)
   pdf.setFont(undefined, 'bold')
   pdf.setTextColor(0, 0, 0)
   pdf.text('Sentia Manufacturing', margin + 35, margin + 8)
-  
+
   pdf.setFontSize(12)
   pdf.setFont(undefined, 'normal')
   pdf.setTextColor(100, 100, 100)
   pdf.text('Enterprise Manufacturing Intelligence', margin + 35, margin + 16)
-  
+
   // Horizontal line
   pdf.setDrawColor(200, 200, 200)
   pdf.line(margin, margin + 25, pageWidth - margin, margin + 25)
@@ -103,7 +110,7 @@ const addHeader = (pdf, pageWidth, margin) => {
  */
 const addExecutiveSummary = (pdf, summary, margin, startY, contentWidth, pageHeight) => {
   let currentY = startY
-  
+
   // Section header
   pdf.setFontSize(18)
   pdf.setFont(undefined, 'bold')
@@ -133,7 +140,7 @@ const addExecutiveSummary = (pdf, summary, margin, startY, contentWidth, pageHei
     currentY += 8
 
     pdf.setFont(undefined, 'normal')
-    summary.keyInsights.forEach((insight) => {
+    summary.keyInsights.forEach(insight => {
       const lines = pdf.splitTextToSize(`• ${insight}`, contentWidth - 10)
       lines.forEach(line => {
         if (currentY > pageHeight - 30) {
@@ -154,7 +161,7 @@ const addExecutiveSummary = (pdf, summary, margin, startY, contentWidth, pageHei
     pdf.setFont(undefined, 'bold')
     pdf.text('Recommendation:', margin, currentY)
     currentY += 8
-    
+
     pdf.setFont(undefined, 'normal')
     const recLines = pdf.splitTextToSize(summary.recommendation, contentWidth)
     recLines.forEach(line => {
@@ -176,7 +183,7 @@ const addExecutiveSummary = (pdf, summary, margin, startY, contentWidth, pageHei
  */
 const addSection = (pdf, sectionData, margin, startY, contentWidth, pageHeight) => {
   let currentY = startY
-  
+
   // Section header
   pdf.setFontSize(16)
   pdf.setFont(undefined, 'bold')
@@ -204,7 +211,7 @@ const addSection = (pdf, sectionData, margin, startY, contentWidth, pageHeight) 
       pdf.addPage()
       addHeader(pdf, pdf.internal.pageSize.getWidth(), margin)
       currentY = margin + 30
-      
+
       // Re-add section header on new page
       pdf.setFontSize(16)
       pdf.setFont(undefined, 'bold')
@@ -212,7 +219,7 @@ const addSection = (pdf, sectionData, margin, startY, contentWidth, pageHeight) 
       pdf.text(sectionData.title, margin, currentY)
       currentY += 15
     }
-    
+
     if (sectionData.title === 'Capital Position' || sectionData.title === 'Performance Metrics') {
       // KPI format
       currentY = addKPITable(pdf, sectionData.data, margin, currentY, contentWidth)
@@ -253,8 +260,8 @@ const addKPITable = (pdf, data, margin, startY, contentWidth) => {
   let currentY = startY
   const baseRowHeight = 12
   const headerHeight = 15
-  const col1Width = contentWidth * 0.4  // 40% for metric name
-  const col2Width = contentWidth * 0.25 // 25% for value  
+  const col1Width = contentWidth * 0.4 // 40% for metric name
+  const col2Width = contentWidth * 0.25 // 25% for value
   const col3Width = contentWidth * 0.35 // 35% for description
 
   // Table header
@@ -273,15 +280,18 @@ const addKPITable = (pdf, data, margin, startY, contentWidth) => {
     // Calculate required height for this row
     const metricText = pdf.splitTextToSize(item.label, col1Width - 10)
     const helperText = pdf.splitTextToSize(item.helper || '', col3Width - 10)
-    const rowHeight = Math.max(baseRowHeight, Math.max(metricText.length, helperText.length) * 6 + 6)
-    
+    const rowHeight = Math.max(
+      baseRowHeight,
+      Math.max(metricText.length, helperText.length) * 6 + 6
+    )
+
     // Check if row fits on current page
     const pageHeight = pdf.internal.pageSize.getHeight()
     if (currentY + rowHeight > pageHeight - 30) {
       pdf.addPage()
       addHeader(pdf, pdf.internal.pageSize.getWidth(), margin)
       currentY = margin + 30
-      
+
       // Re-add table header
       pdf.setFillColor(245, 245, 245)
       pdf.rect(margin, currentY, contentWidth, headerHeight, 'F')
@@ -293,12 +303,12 @@ const addKPITable = (pdf, data, margin, startY, contentWidth) => {
       currentY += headerHeight
       pdf.setFont(undefined, 'normal')
     }
-    
+
     if (index % 2 === 0) {
       pdf.setFillColor(250, 250, 250)
       pdf.rect(margin, currentY, contentWidth, rowHeight, 'F')
     }
-    
+
     // Draw text with proper wrapping
     pdf.text(metricText, margin + 5, currentY + 8)
     pdf.setFont(undefined, 'bold')
@@ -318,9 +328,9 @@ const addRegionalTable = (pdf, data, margin, startY, contentWidth) => {
   let currentY = startY
   const rowHeight = 12
   const headerHeight = 15
-  const col1Width = contentWidth * 0.33  // 33% for region
-  const col2Width = contentWidth * 0.33  // 33% for revenue
-  const col3Width = contentWidth * 0.34  // 34% for EBITDA
+  const col1Width = contentWidth * 0.33 // 33% for region
+  const col2Width = contentWidth * 0.33 // 33% for revenue
+  const col3Width = contentWidth * 0.34 // 34% for EBITDA
 
   // Table header
   pdf.setFillColor(245, 245, 245)
@@ -339,10 +349,14 @@ const addRegionalTable = (pdf, data, margin, startY, contentWidth) => {
       pdf.setFillColor(250, 250, 250)
       pdf.rect(margin, currentY, contentWidth, rowHeight, 'F')
     }
-    
+
     pdf.text(item.region, margin + 5, currentY + 8)
     pdf.text(`$${(item.revenue / 1000000).toFixed(1)}M`, margin + col1Width + 5, currentY + 8)
-    pdf.text(`$${(item.ebitda / 1000000).toFixed(1)}M`, margin + col1Width + col2Width + 5, currentY + 8)
+    pdf.text(
+      `$${(item.ebitda / 1000000).toFixed(1)}M`,
+      margin + col1Width + col2Width + 5,
+      currentY + 8
+    )
     currentY += rowHeight
   })
 
@@ -356,10 +370,10 @@ const addPLTable = (pdf, data, margin, startY, contentWidth) => {
   let currentY = startY
   const rowHeight = 10
   const headerHeight = 12
-  const col1Width = contentWidth * 0.25  // 25% for month
-  const col2Width = contentWidth * 0.25  // 25% for revenue
-  const col3Width = contentWidth * 0.25  // 25% for gross profit
-  const col4Width = contentWidth * 0.25  // 25% for EBITDA
+  const col1Width = contentWidth * 0.25 // 25% for month
+  const col2Width = contentWidth * 0.25 // 25% for revenue
+  const col3Width = contentWidth * 0.25 // 25% for gross profit
+  const col4Width = contentWidth * 0.25 // 25% for EBITDA
 
   // Show only last 6 months for space
   const recentData = data.slice(-6)
@@ -382,7 +396,7 @@ const addPLTable = (pdf, data, margin, startY, contentWidth) => {
       pdf.setFillColor(250, 250, 250)
       pdf.rect(margin, currentY, contentWidth, rowHeight, 'F')
     }
-    
+
     pdf.text(item.month, margin + 5, currentY + 7)
     pdf.text(`$${item.revenue}K`, margin + col1Width + 5, currentY + 7)
     pdf.text(`$${item.grossProfit}K`, margin + col1Width + col2Width + 5, currentY + 7)
@@ -400,10 +414,10 @@ const addProductSalesTable = (pdf, data, margin, startY, contentWidth) => {
   let currentY = startY
   const rowHeight = 12
   const headerHeight = 15
-  const col1Width = contentWidth * 0.25  // 25% for product name
-  const col2Width = contentWidth * 0.25  // 25% for revenue
-  const col3Width = contentWidth * 0.25  // 25% for units
-  const col4Width = contentWidth * 0.25  // 25% for growth/market share
+  const col1Width = contentWidth * 0.25 // 25% for product name
+  const col2Width = contentWidth * 0.25 // 25% for revenue
+  const col3Width = contentWidth * 0.25 // 25% for units
+  const col4Width = contentWidth * 0.25 // 25% for growth/market share
 
   // Table header
   pdf.setFillColor(245, 245, 245)
@@ -425,7 +439,7 @@ const addProductSalesTable = (pdf, data, margin, startY, contentWidth) => {
       pdf.addPage()
       addHeader(pdf, pdf.internal.pageSize.getWidth(), margin)
       currentY = margin + 30
-      
+
       // Re-add table header
       pdf.setFillColor(245, 245, 245)
       pdf.rect(margin, currentY, contentWidth, headerHeight, 'F')
@@ -438,15 +452,15 @@ const addProductSalesTable = (pdf, data, margin, startY, contentWidth) => {
       currentY += headerHeight
       pdf.setFont(undefined, 'normal')
     }
-    
+
     if (index % 2 === 0) {
       pdf.setFillColor(250, 250, 250)
       pdf.rect(margin, currentY, contentWidth, rowHeight, 'F')
     }
-    
+
     // Extract data from item (handle both object and JSON string formats)
     let product, revenue, units, growthRate
-    
+
     if (typeof item === 'string') {
       try {
         const parsedItem = JSON.parse(item)
@@ -471,12 +485,13 @@ const addProductSalesTable = (pdf, data, margin, startY, contentWidth) => {
       units = 0
       growthRate = 0
     }
-    
+
     // Format the data
-    const formattedRevenue = revenue >= 1000000 ? `$${(revenue / 1000000).toFixed(1)}M` : `$${Math.round(revenue / 1000)}K`
+    const formattedRevenue =
+      revenue >= 1000000 ? `$${(revenue / 1000000).toFixed(1)}M` : `$${Math.round(revenue / 1000)}K`
     const formattedUnits = units >= 1000 ? `${Math.round(units / 1000)}K` : `${units}`
     const formattedGrowth = `${Number(growthRate).toFixed(1)}%`
-    
+
     pdf.text(product, margin + 5, currentY + 8)
     pdf.text(formattedRevenue, margin + col1Width + 5, currentY + 8)
     pdf.text(formattedUnits, margin + col1Width + col2Width + 5, currentY + 8)
@@ -492,11 +507,11 @@ const addProductSalesTable = (pdf, data, margin, startY, contentWidth) => {
  */
 const addGenericTable = (pdf, data, margin, startY, contentWidth) => {
   let currentY = startY
-  
+
   // Simple list format for generic data
   pdf.setFontSize(11)
   pdf.setFont(undefined, 'normal')
-  
+
   data.forEach(item => {
     const text = typeof item === 'object' ? JSON.stringify(item) : String(item)
     const lines = pdf.splitTextToSize(`• ${text}`, contentWidth)
@@ -518,14 +533,14 @@ const addSummaryBox = (pdf, summary, margin, startY, contentWidth) => {
   if (!summary || typeof summary !== 'object') {
     return startY
   }
-  
+
   let currentY = startY
   let contentHeight = 0
-  
+
   // Calculate required height based on content
   pdf.setFontSize(10)
   let summaryLines = []
-  
+
   if (summary.status) {
     summaryLines.push(`Status: ${summary.status}`)
   }
@@ -533,7 +548,7 @@ const addSummaryBox = (pdf, summary, margin, startY, contentWidth) => {
     const insightLines = pdf.splitTextToSize(summary.keyInsight, contentWidth - 10)
     summaryLines = summaryLines.concat(insightLines)
   }
-  
+
   // Additional summary fields
   if (summary.totalRevenue) {
     summaryLines.push(`Total Revenue: ${summary.totalRevenue}`)
@@ -547,32 +562,32 @@ const addSummaryBox = (pdf, summary, margin, startY, contentWidth) => {
   if (summary.topRegion) {
     summaryLines.push(`Top performing region: ${summary.topRegion}`)
   }
-  
+
   // If no content, don't draw the box
   if (summaryLines.length === 0) {
     return startY
   }
-  
+
   contentHeight = summaryLines.length * 5 + 15 // 5px per line + padding
-  
+
   // Summary box background
   pdf.setFillColor(249, 250, 251)
   pdf.setDrawColor(200, 200, 200)
   pdf.roundedRect(margin, currentY, contentWidth, contentHeight, 2, 2, 'FD')
-  
+
   currentY += 8
   pdf.setFontSize(10)
   pdf.setFont(undefined, 'bold')
   pdf.text('Summary:', margin + 5, currentY)
   currentY += 6
-  
+
   // Add summary content
   pdf.setFont(undefined, 'normal')
   summaryLines.forEach(line => {
     pdf.text(line, margin + 5, currentY)
     currentY += 5
   })
-  
+
   return startY + contentHeight + 5
 }
 
@@ -581,22 +596,26 @@ const addSummaryBox = (pdf, summary, margin, startY, contentWidth) => {
  */
 const addFooter = (pdf, pageWidth, pageHeight, margin) => {
   const footerY = pageHeight - 15
-  
+
   // Footer line
   pdf.setDrawColor(200, 200, 200)
   pdf.line(margin, footerY - 5, pageWidth - margin, footerY - 5)
-  
+
   // Footer text
   pdf.setFontSize(9)
   pdf.setTextColor(100, 100, 100)
   pdf.text('Sentia Manufacturing Dashboard Report', margin, footerY)
-  
+
   // Page number
   const pageNum = pdf.internal.getCurrentPageInfo().pageNumber
   pdf.text(`Page ${pageNum}`, pageWidth - margin - 20, footerY)
-  
+
   // Generation timestamp
-  pdf.text(`Generated: ${format(new Date(), 'yyyy-MM-dd HH:mm')}`, pageWidth - margin - 70, footerY + 5)
+  pdf.text(
+    `Generated: ${format(new Date(), 'yyyy-MM-dd HH:mm')}`,
+    pageWidth - margin - 70,
+    footerY + 5
+  )
 }
 
 export default generatePDF

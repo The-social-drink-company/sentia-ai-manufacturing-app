@@ -9,13 +9,13 @@ import { sseClient } from '../services/realtime/sseClient'
 export function useSSE(eventTypes = [], options = {}) {
   const normalizedEventTypes = useMemo(() => {
     if (!eventTypes) {
-      return [];
+      return []
     }
 
-    return Array.isArray(eventTypes) ? eventTypes : [eventTypes];
-  }, [eventTypes]);
+    return Array.isArray(eventTypes) ? eventTypes : [eventTypes]
+  }, [eventTypes])
 
-  const { onEvent, disconnectOnUnmount = false } = options;
+  const { onEvent, disconnectOnUnmount = false } = options
   const [data, setData] = useState({})
   const [isConnected, setIsConnected] = useState(false)
   const [lastUpdate, setLastUpdate] = useState(null)
@@ -27,22 +27,22 @@ export function useSSE(eventTypes = [], options = {}) {
     }
 
     // Subscribe to connection status
-    const unsubConnection = sseClient.subscribe('connection', (status) => {
+    const unsubConnection = sseClient.subscribe('connection', status => {
       setIsConnected(status.status === 'connected')
     })
 
     // Subscribe to specified event types
     const unsubscribers = normalizedEventTypes.map(eventType => {
-      return sseClient.subscribe(eventType, (eventData) => {
+      return sseClient.subscribe(eventType, eventData => {
         setData(prevData => ({
           ...prevData,
-          [eventType]: eventData
+          [eventType]: eventData,
         }))
         setLastUpdate(new Date())
 
         // Call custom handler if provided
         if (onEvent) {
-          onEvent(eventType, eventData);
+          onEvent(eventType, eventData)
         }
       })
     })
@@ -57,7 +57,7 @@ export function useSSE(eventTypes = [], options = {}) {
 
       // Disconnect if no other components are using SSE
       if (disconnectOnUnmount) {
-        sseClient.disconnect();
+        sseClient.disconnect()
       }
     }
   }, [normalizedEventTypes, disconnectOnUnmount, onEvent])
@@ -75,7 +75,7 @@ export function useSSE(eventTypes = [], options = {}) {
     isConnected,
     lastUpdate,
     reconnect,
-    disconnect
+    disconnect,
   }
 }
 
@@ -94,7 +94,7 @@ export function useSSEEvent(eventType, handler) {
     }
 
     // Subscribe to the event
-    const unsubscribe = sseClient.subscribe(eventType, (data) => {
+    const unsubscribe = sseClient.subscribe(eventType, data => {
       setLastData(data)
       handler(data)
     })
@@ -104,6 +104,3 @@ export function useSSEEvent(eventType, handler) {
 
   return lastData
 }
-
-
-

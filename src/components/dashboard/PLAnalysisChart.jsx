@@ -7,7 +7,7 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend
+  Legend,
 } from 'recharts'
 
 const PLAnalysisChart = ({ data }) => {
@@ -20,8 +20,8 @@ const PLAnalysisChart = ({ data }) => {
           {payload.map((entry, index) => (
             <p key={index} className="text-sm" style={{ color: entry.color }}>
               {`${entry.name}: ${
-                entry.name === 'Gross Margin %' 
-                  ? `${entry.value.toFixed(1)}%` 
+                entry.name === 'Gross Margin %'
+                  ? `${entry.value.toFixed(1)}%`
                   : `£${entry.value.toLocaleString()}K`
               }`}
             </p>
@@ -33,8 +33,8 @@ const PLAnalysisChart = ({ data }) => {
   }
 
   // Format Y-axis labels
-  const formatLeftYAxis = (value) => `£${value}K`
-  const formatRightYAxis = (value) => `${value}%`
+  const formatLeftYAxis = value => `£${value}K`
+  const formatRightYAxis = value => `${value}%`
 
   return (
     <ResponsiveContainer width="100%" height="100%">
@@ -48,9 +48,9 @@ const PLAnalysisChart = ({ data }) => {
         }}
       >
         <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" className="dark:stroke-gray-600" />
-        
+
         {/* Left Y-Axis for amounts */}
-        <YAxis 
+        <YAxis
           yAxisId="left"
           orientation="left"
           tickFormatter={formatLeftYAxis}
@@ -58,9 +58,9 @@ const PLAnalysisChart = ({ data }) => {
           tickLine={false}
           className="text-xs text-gray-500 dark:text-gray-400"
         />
-        
+
         {/* Right Y-Axis for percentages */}
-        <YAxis 
+        <YAxis
           yAxisId="right"
           orientation="right"
           tickFormatter={formatRightYAxis}
@@ -68,20 +68,20 @@ const PLAnalysisChart = ({ data }) => {
           tickLine={false}
           className="text-xs text-gray-500 dark:text-gray-400"
         />
-        
-        <XAxis 
+
+        <XAxis
           dataKey="month"
           axisLine={false}
           tickLine={false}
           className="text-xs text-gray-500 dark:text-gray-400"
         />
-        
+
         <Tooltip content={<CustomTooltip />} />
-        
-        <Legend 
+
+        <Legend
           wrapperStyle={{
             paddingTop: '20px',
-            fontSize: '12px'
+            fontSize: '12px',
           }}
         />
 

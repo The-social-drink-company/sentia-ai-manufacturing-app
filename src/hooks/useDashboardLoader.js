@@ -15,7 +15,7 @@ const LOADING_PHASES = {
   LOADING_REALTIME: 'loading_realtime',
   OPTIMIZING: 'optimizing',
   FINALIZING: 'finalizing',
-  COMPLETE: 'complete'
+  COMPLETE: 'complete',
 }
 
 const PHASE_DURATIONS = {
@@ -29,7 +29,7 @@ const PHASE_DURATIONS = {
   [LOADING_PHASES.INITIALIZING_WIDGETS]: 700,
   [LOADING_PHASES.LOADING_REALTIME]: 900,
   [LOADING_PHASES.OPTIMIZING]: 600,
-  [LOADING_PHASES.FINALIZING]: 500
+  [LOADING_PHASES.FINALIZING]: 500,
 }
 
 const useDashboardLoader = () => {
@@ -39,8 +39,8 @@ const useDashboardLoader = () => {
   const { isSignedIn, isLoaded: authLoaded } = useEnvironmentAuth()
   const { user: _user, isLoaded: userLoaded } = useEnvironmentUser()
 
-  const phases = Object.values(LOADING_PHASES).filter(phase =>
-    phase !== LOADING_PHASES.INITIAL && phase !== LOADING_PHASES.COMPLETE
+  const phases = Object.values(LOADING_PHASES).filter(
+    phase => phase !== LOADING_PHASES.INITIAL && phase !== LOADING_PHASES.COMPLETE
   )
 
   const getCurrentPhaseIndex = useCallback(() => {
@@ -97,7 +97,7 @@ const useDashboardLoader = () => {
       [LOADING_PHASES.LOADING_REALTIME]: 'Loading Real-time Feeds...',
       [LOADING_PHASES.OPTIMIZING]: 'Optimizing Performance...',
       [LOADING_PHASES.FINALIZING]: 'Finalizing Dashboard...',
-      [LOADING_PHASES.COMPLETE]: 'Dashboard Ready!'
+      [LOADING_PHASES.COMPLETE]: 'Dashboard Ready!',
     }
     return messages[loadingPhase] || 'Loading...'
   }, [loadingPhase])
@@ -112,7 +112,7 @@ const useDashboardLoader = () => {
     totalPhases: phases.length,
     startLoading,
     reset,
-    canStart: authLoaded && userLoaded && isSignedIn
+    canStart: authLoaded && userLoaded && isSignedIn,
   }
 }
 

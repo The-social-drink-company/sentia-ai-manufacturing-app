@@ -9,22 +9,28 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
-  ResponsiveContainer
+  ResponsiveContainer,
 } from 'recharts'
 
 import { Card, CardContent, CardHeader, CardTitle } from '../../../components/ui'
 
-export function CashFlowChart({ data, height = 400, showForecast = true, loading = false, error = null }) {
+export function CashFlowChart({
+  data,
+  height = 400,
+  showForecast = true,
+  loading = false,
+  error = null,
+}) {
   const chartData = useMemo(() => {
     return Array.isArray(data) ? data : []
   }, [data])
 
-  const formatCurrency = (value) => {
+  const formatCurrency = value => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
       minimumFractionDigits: 0,
-      maximumFractionDigits: 0
+      maximumFractionDigits: 0,
     }).format(value)
   }
 

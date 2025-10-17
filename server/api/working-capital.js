@@ -13,7 +13,7 @@ const toNumber = (value, fallback = 0) => {
   return Number.isFinite(numeric) ? numeric : fallback
 }
 
-const determineStatus = (ratio) => {
+const determineStatus = ratio => {
   const value = toNumber(ratio)
   if (!value) {
     return 'unknown'
@@ -25,11 +25,13 @@ const determineStatus = (ratio) => {
   return 'critical'
 }
 
-const calculateChange = (series) => {
+const calculateChange = series => {
   if (!Array.isArray(series) || series.length < 2) {
     return 0
   }
-  const sanitized = series.map((item) => toNumber(typeof item === 'number' ? item : item?.value ?? item?.amount))
+  const sanitized = series.map(item =>
+    toNumber(typeof item === 'number' ? item : (item?.value ?? item?.amount))
+  )
   if (sanitized.length < 2) {
     return 0
   }
@@ -38,7 +40,7 @@ const calculateChange = (series) => {
   return Number((current - previous).toFixed(2))
 }
 
-const calculateRunwayChange = (runwayHistory) => {
+const calculateRunwayChange = runwayHistory => {
   if (!Array.isArray(runwayHistory) || runwayHistory.length < 2) {
     return 0
   }
@@ -48,7 +50,7 @@ const calculateRunwayChange = (runwayHistory) => {
   return Number((current - previous).toFixed(2))
 }
 
-const getPeriodCount = (period) => {
+const getPeriodCount = period => {
   const map = {
     '7d': 1,
     '14d': 2,
@@ -56,49 +58,50 @@ const getPeriodCount = (period) => {
     '60d': 2,
     '90d': 3,
     '180d': 6,
-    '365d': 12
+    '365d': 12,
   }
   return map[period] ?? 1
 }
 
-const buildWorkingCapitalTrend = (records) => {
+const buildWorkingCapitalTrend = records => {
   if (!Array.isArray(records)) {
     return []
   }
   const ordered = [...records].sort((a, b) => new Date(a.date) - new Date(b.date))
-  return ordered.map((entry) => ({
-    date: entry.date instanceof Date ? entry.date.toISOString() : new Date(entry.date).toISOString(),
+  return ordered.map(entry => ({
+    date:
+      entry.date instanceof Date ? entry.date.toISOString() : new Date(entry.date).toISOString(),
     cash: toNumber(entry.cash),
     currentAssets: toNumber(entry.currentAssets),
-    currentLiabilities: toNumber(entry.currentLiabilities)
+    currentLiabilities: toNumber(entry.currentLiabilities),
   }))
 }
 
-const buildAgingFromLatest = (latest) => {
+const buildAgingFromLatest = latest => {
   const receivables = toNumber(latest?.accountsReceivable)
   const payables = toNumber(latest?.accountsPayable)
 
-  const bucketize = (total) => ({
+  const bucketize = total => ({
     current: Number((total * 0.55).toFixed(2)),
     '30-60': Number((total * 0.25).toFixed(2)),
     '60-90': Number((total * 0.15).toFixed(2)),
-    '90+': Number((total * 0.05).toFixed(2))
+    '90+': Number((total * 0.05).toFixed(2)),
   })
 
   return {
     receivables: bucketize(receivables),
-    payables: bucketize(payables)
+    payables: bucketize(payables),
   }
 }
 
-const parseCashFlowReport = (data) => {
+const parseCashFlowReport = data => {
   if (!data) {
     return []
   }
   const rows = data?.Reports?.[0]?.Rows || data?.reports?.[0]?.rows || []
   const points = []
 
-  rows.forEach((row) => {
+  rows.forEach(row => {
     if (row?.Cells && Array.isArray(row.Cells)) {
       row.Cells.forEach((cell, index) => {
         const value = toNumber(cell?.Value ?? cell?.value)
@@ -106,7 +109,7 @@ const parseCashFlowReport = (data) => {
           points[index] = {
             period: index,
             inflow: 0,
-            outflow: 0
+            outflow: 0,
           }
         }
         const key = (row.RowType || row.rowType || '').toLowerCase()
@@ -121,34 +124,36 @@ const parseCashFlowReport = (data) => {
     }
   })
 
-  return points
-    .filter(Boolean)
-    .map((point, idx) => ({
-      label: `Period ${idx + 1}`,
-      inflow: point.inflow,
-      outflow: point.outflow,
-      net: toNumber(point.net ?? point.inflow - point.outflow)
-    }))
+  return points.filter(Boolean).map((point, idx) => ({
+    label: `Period ${idx + 1}`,
+    inflow: point.inflow,
+    outflow: point.outflow,
+    net: toNumber(point.net ?? point.inflow - point.outflow),
+  }))
 }
 
 const fetchInventorySummary = async () => {
   const items = await prisma.inventory.findMany({
-    include: { movements: true }
+    include: { movements: true },
   })
 
   const totalValue = items.reduce((sum, item) => sum + toNumber(item.totalValue), 0)
   const totalQuantity = items.reduce((sum, item) => sum + toNumber(item.quantity), 0)
 
-  const outgoing = items.reduce((sum, item) => (
-    sum + item.movements
-      .filter((movement) => movement.type === 'OUT')
-      .reduce((subtotal, movement) => subtotal + toNumber(movement.quantity), 0)
-  ), 0)
+  const outgoing = items.reduce(
+    (sum, item) =>
+      sum +
+      item.movements
+        .filter(movement => movement.type === 'OUT')
+        .reduce((subtotal, movement) => subtotal + toNumber(movement.quantity), 0),
+    0
+  )
 
-  const turnoverRate = totalValue > 0 ? Number(((outgoing || 0) / Math.max(totalValue, 1)).toFixed(2)) : 0
+  const turnoverRate =
+    totalValue > 0 ? Number(((outgoing || 0) / Math.max(totalValue, 1)).toFixed(2)) : 0
 
-  const stockouts = items.filter((item) => item.quantity <= item.reorderPoint).length
-  const excessStock = items.filter((item) => item.quantity >= item.reorderPoint * 2).length
+  const stockouts = items.filter(item => item.quantity <= item.reorderPoint).length
+  const excessStock = items.filter(item => item.quantity >= item.reorderPoint * 2).length
 
   const categories = items.reduce((acc, item) => {
     const key = item.warehouse || 'General'
@@ -156,7 +161,7 @@ const fetchInventorySummary = async () => {
       acc[key] = {
         warehouse: key,
         items: 0,
-        value: 0
+        value: 0,
       }
     }
     acc[key].items += 1
@@ -170,11 +175,11 @@ const fetchInventorySummary = async () => {
     turnoverRate,
     stockouts,
     excessStock,
-    categories: Object.values(categories)
+    categories: Object.values(categories),
   }
 }
 
-const calculateDaysInventory = (summary) => {
+const calculateDaysInventory = summary => {
   if (!summary.totalValue || !summary.turnoverRate) {
     return 0
   }
@@ -186,21 +191,21 @@ const calculateDaysInventory = (summary) => {
 router.get('/', async (req, res) => {
   try {
     console.log('📊 Working capital data requested')
-    
+
     // Get working capital data from database
     const [history, runwayHistory] = await Promise.all([
       prisma.workingCapital.findMany({
         orderBy: { date: 'desc' },
-        take: 1
+        take: 1,
       }),
       prisma.cashRunway.findMany({
         orderBy: { date: 'desc' },
-        take: 1
-      })
+        take: 1,
+      }),
     ])
 
     let workingCapitalData = {}
-    
+
     if (history.length > 0) {
       const latest = history[0]
       workingCapitalData = {
@@ -210,7 +215,7 @@ router.get('/', async (req, res) => {
         cash: toNumber(latest.cash || runwayHistory[0]?.cashBalance),
         receivables: toNumber(latest.accountsReceivable),
         payables: toNumber(latest.accountsPayable),
-        lastCalculated: latest.date || new Date().toISOString()
+        lastCalculated: latest.date || new Date().toISOString(),
       }
     } else {
       // Fallback data if no database records
@@ -221,7 +226,7 @@ router.get('/', async (req, res) => {
         cash: 580000,
         receivables: 1850000,
         payables: 980000,
-        lastCalculated: new Date().toISOString()
+        lastCalculated: new Date().toISOString(),
       }
     }
 
@@ -232,10 +237,9 @@ router.get('/', async (req, res) => {
       metadata: {
         source: 'database',
         timestamp: new Date().toISOString(),
-        dataSource: 'database'
-      }
+        dataSource: 'database',
+      },
     })
-    
   } catch (error) {
     console.error('💥 Working capital endpoint error:', error)
     return res.status(500).json({
@@ -246,8 +250,8 @@ router.get('/', async (req, res) => {
       timestamp: new Date().toISOString(),
       debug: {
         errorType: error.name,
-        errorMessage: error.message
-      }
+        errorMessage: error.message,
+      },
     })
   }
 })
@@ -257,12 +261,12 @@ router.get('/metrics', authenticateToken, async (_req, res) => {
     const [history, runwayHistory] = await Promise.all([
       prisma.workingCapital.findMany({
         orderBy: { date: 'desc' },
-        take: 24
+        take: 24,
       }),
       prisma.cashRunway.findMany({
         orderBy: { date: 'desc' },
-        take: 6
-      })
+        take: 6,
+      }),
     ])
 
     if (!history.length) {
@@ -277,14 +281,19 @@ router.get('/metrics', authenticateToken, async (_req, res) => {
     const metrics = {
       cashPosition: toNumber(latest.cash),
       cashRunway: toNumber(runwayHistory[0]?.runwayMonths ?? latest.cashConversionCycle) * 30,
-      wcRatio: toNumber(latest.workingCapitalRatio ?? (latest.currentAssets / Math.max(latest.currentLiabilities, 1))),
-      quickRatio: toNumber(latest.quickRatio ?? ((latest.currentAssets - latest.inventory) / Math.max(latest.currentLiabilities, 1))),
+      wcRatio: toNumber(
+        latest.workingCapitalRatio ?? latest.currentAssets / Math.max(latest.currentLiabilities, 1)
+      ),
+      quickRatio: toNumber(
+        latest.quickRatio ??
+          (latest.currentAssets - latest.inventory) / Math.max(latest.currentLiabilities, 1)
+      ),
       cashChange: calculateChange([previous?.cash ?? latest.cash, latest.cash]),
       runwayChange,
       wcStatus: determineStatus(latest.workingCapitalRatio),
       quickStatus: determineStatus(latest.quickRatio),
       history: buildWorkingCapitalTrend(orderedHistory),
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     }
 
     return res.json(metrics)
@@ -299,36 +308,35 @@ router.get('/xero/cashflow', authenticateToken, async (req, res) => {
     const { period = '30d' } = req.query
     const history = await prisma.workingCapital.findMany({
       orderBy: { date: 'desc' },
-      take: getPeriodCount(period) * 12
+      take: getPeriodCount(period) * 12,
     })
     const timeline = buildWorkingCapitalTrend(history)
 
     if (!timeline.length) {
-      return res.status(404).json({ error: 'No working capital history available for cash flow analysis' })
+      return res
+        .status(404)
+        .json({ error: 'No working capital history available for cash flow analysis' })
     }
 
     if (!process.env.XERO_ACCESS_TOKEN || !process.env.XERO_TENANT_ID) {
       return res.status(503).json({
         error: 'Xero integration not configured',
-        message: 'Set XERO_ACCESS_TOKEN and XERO_TENANT_ID to retrieve cash flow data'
+        message: 'Set XERO_ACCESS_TOKEN and XERO_TENANT_ID to retrieve cash flow data',
       })
     }
 
     const token = process.env.XERO_ACCESS_TOKEN
-    const response = await axios.get(
-      `${XERO_API_URL}/Reports/CashflowStatement`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Xero-tenant-id': process.env.XERO_TENANT_ID,
-          Accept: 'application/json'
-        },
-        params: {
-          periods: getPeriodCount(period),
-          timeframe: 'MONTH'
-        }
-      }
-    )
+    const response = await axios.get(`${XERO_API_URL}/Reports/CashflowStatement`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Xero-tenant-id': process.env.XERO_TENANT_ID,
+        Accept: 'application/json',
+      },
+      params: {
+        periods: getPeriodCount(period),
+        timeframe: 'MONTH',
+      },
+    })
 
     const parsed = parseCashFlowReport(response.data)
 
@@ -338,8 +346,8 @@ router.get('/xero/cashflow', authenticateToken, async (req, res) => {
       metadata: {
         source: 'xero',
         period,
-        lastUpdated: new Date().toISOString()
-      }
+        lastUpdated: new Date().toISOString(),
+      },
     })
   } catch (error) {
     console.error('Cashflow retrieval error:', error.message)
@@ -351,7 +359,7 @@ router.get('/finance/ar-ap', authenticateToken, async (_req, res) => {
   try {
     const history = await prisma.workingCapital.findMany({
       orderBy: { date: 'desc' },
-      take: 6
+      take: 6,
     })
 
     if (!history.length) {
@@ -370,7 +378,7 @@ router.get('/finance/ar-ap', authenticateToken, async (_req, res) => {
       daysPayables: toNumber(latest.dpo, 0),
       aging,
       topDebtors: [],
-      topCreditors: []
+      topCreditors: [],
     })
   } catch (error) {
     console.error('AR/AP error:', error)
@@ -389,7 +397,7 @@ router.get('/inventory/turnover', authenticateToken, async (_req, res) => {
       turnoverRate: summary.turnoverRate,
       stockouts: summary.stockouts,
       excessStock: summary.excessStock,
-      breakdown: summary.categories
+      breakdown: summary.categories,
     })
   } catch (error) {
     console.error('Inventory metrics error:', error)
@@ -400,7 +408,7 @@ router.get('/inventory/turnover', authenticateToken, async (_req, res) => {
 router.get('/forecasts/cashflow', authenticateToken, async (_req, res) => {
   return res.status(503).json({
     error: 'Cash flow forecasting service not configured',
-    message: 'Connect an external forecasting service to enable this endpoint'
+    message: 'Connect an external forecasting service to enable this endpoint',
   })
 })
 

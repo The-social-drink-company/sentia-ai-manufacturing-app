@@ -5,7 +5,7 @@ import reactRefresh from 'eslint-plugin-react-refresh'
 
 const sharedRules = {
   ...js.configs.recommended.rules,
-  'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }]
+  'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
 }
 
 export default [
@@ -33,8 +33,8 @@ export default [
       'FORCE-*.js',
       'verify-*.js',
       'prisma-wrapper.js',
-      '.eslintrc.enterprise.cjs'
-    ]
+      '.eslintrc.enterprise.cjs',
+    ],
   },
   {
     files: ['src/**/*.{js,jsx}'],
@@ -43,28 +43,28 @@ export default [
       sourceType: 'module',
       globals: globals.browser,
       parserOptions: {
-        ecmaFeatures: { jsx: true }
-      }
+        ecmaFeatures: { jsx: true },
+      },
     },
     plugins: {
       'react-hooks': reactHooks,
-      'react-refresh': reactRefresh
+      'react-refresh': reactRefresh,
     },
     rules: {
       ...sharedRules,
       ...reactHooks.configs.recommended.rules,
-      'react-refresh/only-export-components': ['warn', { allowConstantExport: true }]
-    }
+      'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
+    },
   },
   {
     files: ['server/**/*.{js,jsx}', 'vite.config.js'],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
-      globals: globals.node
+      globals: globals.node,
     },
     rules: {
-      ...sharedRules
-    }
-  }
+      ...sharedRules,
+    },
+  },
 ]

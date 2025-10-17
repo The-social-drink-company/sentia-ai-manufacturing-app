@@ -3,15 +3,17 @@
 ## 🚨 Emergency Contacts
 
 ### Primary Response Team
-| Role | Name | Phone | Email | Slack |
-|------|------|-------|-------|-------|
+
+| Role               | Name   | Phone   | Email   | Slack      |
+| ------------------ | ------ | ------- | ------- | ---------- |
 | Incident Commander | [Name] | [Phone] | [Email] | @commander |
-| DevOps Lead | [Name] | [Phone] | [Email] | @devops |
-| Backend Lead | [Name] | [Phone] | [Email] | @backend |
-| Frontend Lead | [Name] | [Phone] | [Email] | @frontend |
-| Database Admin | [Name] | [Phone] | [Email] | @dba |
+| DevOps Lead        | [Name] | [Phone] | [Email] | @devops    |
+| Backend Lead       | [Name] | [Phone] | [Email] | @backend   |
+| Frontend Lead      | [Name] | [Phone] | [Email] | @frontend  |
+| Database Admin     | [Name] | [Phone] | [Email] | @dba       |
 
 ### Escalation Chain
+
 1. **Level 1** (0-15 min): On-call Engineer
 2. **Level 2** (15-30 min): Team Lead
 3. **Level 3** (30-60 min): Engineering Manager
@@ -22,32 +24,40 @@
 ## 📊 Incident Severity Levels
 
 ### P1 - Critical 🔴
+
 **Response Time**: 15 minutes
 **Examples**:
+
 - Complete system outage
 - Data breach or security incident
 - Payment processing failure
 - Data loss or corruption
 
 ### P2 - High 🟠
+
 **Response Time**: 1 hour
 **Examples**:
+
 - Major feature unavailable
 - Authentication system down
 - Performance degradation >50%
 - Integration failures (Xero, Shopify)
 
 ### P3 - Medium 🟡
+
 **Response Time**: 4 hours
 **Examples**:
+
 - Minor feature broken
 - Slow API responses
 - Non-critical integration issues
 - UI/UX bugs affecting workflow
 
 ### P4 - Low 🟢
+
 **Response Time**: 24 hours
 **Examples**:
+
 - Cosmetic issues
 - Minor bugs
 - Documentation errors
@@ -60,6 +70,7 @@
 ### Phase 1: Detection & Alert (0-5 minutes)
 
 #### Automatic Detection
+
 ```bash
 # Health monitoring alert
 .\scripts\health-monitor.ps1 -Mode continuous
@@ -72,7 +83,9 @@
 ```
 
 #### Initial Assessment
+
 1. **Verify the incident**
+
    ```bash
    curl https://sentia-manufacturing-production.up.railway.app/api/health
    ```
@@ -83,6 +96,7 @@
    - Is data at risk?
 
 3. **Create incident**
+
    ```bash
    # Create Slack channel
    /incident create [title]
@@ -94,20 +108,24 @@
 ### Phase 2: Response & Communication (5-15 minutes)
 
 #### Immediate Actions
+
 1. **Assign roles**
    - Incident Commander
    - Technical Lead
    - Communications Lead
 
 2. **Start incident timeline**
+
    ```markdown
    ## Incident Timeline
+
    - [TIME] Alert received
    - [TIME] Incident confirmed
    - [TIME] Team assembled
    ```
 
 3. **Initial communication**
+
    ```markdown
    Subject: [P1] System Issue Detected
 
@@ -120,6 +138,7 @@
 ### Phase 3: Diagnosis (15-30 minutes)
 
 #### System Health Checks
+
 ```bash
 # 1. Check all environments
 .\scripts\health-monitor.ps1 -Mode once
@@ -141,6 +160,7 @@ curl https://api.xero.com/health
 #### Common Diagnosis Patterns
 
 **High Error Rate**
+
 ```bash
 # Check error patterns
 railway logs --service [service-id] | grep -E "ERROR|FATAL|CRITICAL" | head -50
@@ -150,6 +170,7 @@ railway logs --service [service-id] | grep -E "ERROR|FATAL|CRITICAL" | head -50
 ```
 
 **Performance Issues**
+
 ```bash
 # Check response times
 curl -w "@curl-format.txt" -o /dev/null https://[domain]/api/health
@@ -160,6 +181,7 @@ railway metrics --service [service-id]
 ```
 
 **Connection Issues**
+
 ```bash
 # Test database connection
 psql $DATABASE_URL -c "SELECT 1"
@@ -174,23 +196,27 @@ curl -I https://api.shopify.com
 #### Quick Fixes
 
 **1. Service Restart**
+
 ```bash
 railway restart --service 9fd67b0e-7883-4973-85a5-639d9513d343 --environment production
 ```
 
 **2. Scale Resources**
+
 ```bash
 # Increase replicas via Railway dashboard
 # Increase memory/CPU limits
 ```
 
 **3. Feature Toggle**
+
 ```bash
 # Disable problematic feature
 railway variables set ENABLE_FEATURE=false --service [service-id]
 ```
 
 **4. Rollback Deployment**
+
 ```bash
 # List recent deployments
 railway deployments --service [service-id]
@@ -200,6 +226,7 @@ railway rollback [deployment-id] --service [service-id]
 ```
 
 **5. Database Recovery**
+
 ```bash
 # Restore from backup
 .\scripts\database-operations.ps1 -Operation restore -Environment production -BackupFile [file]
@@ -208,7 +235,9 @@ railway rollback [deployment-id] --service [service-id]
 ### Phase 5: Resolution
 
 #### Verification Steps
+
 1. **Confirm fix deployed**
+
    ```bash
    railway status --service [service-id]
    ```
@@ -225,6 +254,7 @@ railway rollback [deployment-id] --service [service-id]
    ```
 
 #### Communication
+
 ```markdown
 Subject: [RESOLVED] System Issue Resolved
 
@@ -238,38 +268,48 @@ Next steps: Monitoring for stability
 ### Phase 6: Post-Mortem (Within 48 hours)
 
 #### Post-Mortem Template
+
 ```markdown
 # Incident Post-Mortem: [Title]
+
 Date: [Date]
 Severity: P[1-4]
 Duration: [Duration]
 
 ## Summary
+
 Brief description of what happened.
 
 ## Timeline
+
 - [TIME]: Event
 - [TIME]: Event
 
 ## Root Cause
+
 Detailed explanation of why it happened.
 
 ## Impact
+
 - Users affected: [number]
 - Features impacted: [list]
 - Data loss: [yes/no]
 
 ## Resolution
+
 How the issue was resolved.
 
 ## Lessons Learned
+
 What we learned from this incident.
 
 ## Action Items
+
 - [ ] Action item 1 (Owner)
 - [ ] Action item 2 (Owner)
 
 ## Prevention
+
 How we'll prevent this in the future.
 ```
 
@@ -282,6 +322,7 @@ How we'll prevent this in the future.
 **Symptoms**: Site returns 502/503, health check fails
 
 **Immediate Actions**:
+
 ```bash
 # 1. Check Railway status
 https://status.railway.app
@@ -304,6 +345,7 @@ railway rollback --service 9fd67b0e-7883-4973-85a5-639d9513d343
 **Symptoms**: Unauthorized access, data breach, suspicious activity
 
 **Immediate Actions**:
+
 ```bash
 # 1. Isolate affected systems
 railway variables set MAINTENANCE_MODE=true --service [service-id]
@@ -327,6 +369,7 @@ railway variables set LOG_LEVEL=debug --service [service-id]
 **Symptoms**: Connection errors, slow queries, data inconsistency
 
 **Immediate Actions**:
+
 ```bash
 # 1. Check database status
 .\scripts\database-operations.ps1 -Operation status -Environment production
@@ -349,6 +392,7 @@ psql $DATABASE_URL -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WH
 **Symptoms**: Slow response times, timeouts, high CPU/memory
 
 **Immediate Actions**:
+
 ```bash
 # 1. Check metrics
 railway metrics --service [service-id]
@@ -372,6 +416,7 @@ railway restart --service [service-id]
 **Symptoms**: External API errors, sync failures
 
 **Immediate Actions**:
+
 ```bash
 # 1. Check external service status
 curl https://api.xero.com/health
@@ -395,6 +440,7 @@ railway variables set CLEAR_INTEGRATION_CACHE=true --service [service-id]
 ## 🛠️ Tools & Commands
 
 ### Essential Commands
+
 ```bash
 # Health check
 curl https://sentia-manufacturing-production.up.railway.app/api/health
@@ -416,6 +462,7 @@ railway rollback --service 9fd67b0e-7883-4973-85a5-639d9513d343
 ```
 
 ### Useful Queries
+
 ```sql
 -- Active connections
 SELECT count(*) FROM pg_stat_activity;
@@ -444,6 +491,7 @@ LIMIT 50;
 ## 📝 Communication Templates
 
 ### Initial Alert
+
 ```
 🚨 INCIDENT DETECTED 🚨
 Severity: P[1-4]
@@ -455,6 +503,7 @@ Thread: [Link to incident channel]
 ```
 
 ### Status Update
+
 ```
 📊 INCIDENT UPDATE
 Time: [Current time]
@@ -465,6 +514,7 @@ ETA: [Estimate if available]
 ```
 
 ### Resolution
+
 ```
 ✅ INCIDENT RESOLVED
 Duration: [Start - End time]

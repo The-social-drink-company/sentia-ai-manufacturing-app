@@ -1,54 +1,56 @@
-import React, { useState } from 'react';
-import { MessageCircle, X, Send, Bot } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import React, { useState } from 'react'
+import { MessageCircle, X, Send, Bot } from 'lucide-react'
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
 
 const ChatBot = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState([
     {
       id: 1,
       type: 'bot',
-      message: 'Hello! I\'m your Sentia Manufacturing AI assistant. How can I help you with your working capital analysis today?',
-      timestamp: new Date()
-    }
-  ]);
-  const [inputMessage, setInputMessage] = useState('');
+      message:
+        "Hello! I'm your Sentia Manufacturing AI assistant. How can I help you with your working capital analysis today?",
+      timestamp: new Date(),
+    },
+  ])
+  const [inputMessage, setInputMessage] = useState('')
 
   const quickSuggestions = [
-    "Analyze my cash flow",
-    "Show working capital trends", 
-    "Calculate funding needs",
-    "Industry benchmarks"
-  ];
+    'Analyze my cash flow',
+    'Show working capital trends',
+    'Calculate funding needs',
+    'Industry benchmarks',
+  ]
 
   const handleSendMessage = () => {
-    if (!inputMessage.trim()) return;
+    if (!inputMessage.trim()) return
 
     const newMessage = {
       id: messages.length + 1,
       type: 'user',
       message: inputMessage,
-      timestamp: new Date()
-    };
+      timestamp: new Date(),
+    }
 
-    setMessages([...messages, newMessage]);
-    setInputMessage('');
+    setMessages([...messages, newMessage])
+    setInputMessage('')
 
     // Simulate bot response
     setTimeout(() => {
       const botResponse = {
         id: messages.length + 2,
         type: 'bot',
-        message: 'I understand you\'re asking about working capital analysis. Let me help you with that. Based on your current data, I can see several optimization opportunities...',
-        timestamp: new Date()
-      };
-      setMessages(prev => [...prev, botResponse]);
-    }, 1000);
-  };
+        message:
+          "I understand you're asking about working capital analysis. Let me help you with that. Based on your current data, I can see several optimization opportunities...",
+        timestamp: new Date(),
+      }
+      setMessages(prev => [...prev, botResponse])
+    }, 1000)
+  }
 
-  const handleSuggestionClick = (suggestion) => {
-    setInputMessage(suggestion);
-  };
+  const handleSuggestionClick = suggestion => {
+    setInputMessage(suggestion)
+  }
 
   return (
     <>
@@ -73,20 +75,18 @@ const ChatBot = () => {
               </CardTitle>
               <p className="text-xs text-blue-100">Working Capital Intelligence</p>
             </CardHeader>
-            
+
             <CardContent className="flex-1 flex flex-col p-0">
               {/* Messages */}
               <div className="flex-1 overflow-y-auto p-4 space-y-3">
-                {messages.map((msg) => (
+                {messages.map(msg => (
                   <div
                     key={msg.id}
                     className={`flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}
                   >
                     <div
                       className={`max-w-xs px-3 py-2 rounded-lg text-sm ${
-                        msg.type === 'user'
-                          ? 'bg-blue-600 text-white'
-                          : 'bg-gray-100 text-gray-800'
+                        msg.type === 'user' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-800'
                       }`}
                     >
                       {msg.message}
@@ -119,8 +119,8 @@ const ChatBot = () => {
                   <input
                     type="text"
                     value={inputMessage}
-                    onChange={(e) => setInputMessage(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                    onChange={e => setInputMessage(e.target.value)}
+                    onKeyPress={e => e.key === 'Enter' && handleSendMessage()}
                     placeholder="Ask about your working capital..."
                     className="flex-1 text-sm border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
@@ -137,7 +137,7 @@ const ChatBot = () => {
         </div>
       )}
     </>
-  );
-};
+  )
+}
 
-export default ChatBot;
+export default ChatBot

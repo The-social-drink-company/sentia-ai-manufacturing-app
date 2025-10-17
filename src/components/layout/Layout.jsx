@@ -24,11 +24,13 @@ const Layout = () => {
         <Sidebar isOpen={isSidebarOpen} onToggle={toggleSidebar} />
 
         {/* Main content */}
-        <main className={cn(
-          'flex-1 min-h-[calc(100vh-4rem)]',
-          'transition-all duration-300',
-          'lg:ml-0'
-        )}>
+        <main
+          className={cn(
+            'flex-1 min-h-[calc(100vh-4rem)]',
+            'transition-all duration-300',
+            'lg:ml-0'
+          )}
+        >
           <div className="container mx-auto p-6">
             <Outlet />
           </div>

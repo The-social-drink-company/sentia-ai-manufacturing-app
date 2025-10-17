@@ -4,7 +4,7 @@ import {
   ShoppingCartIcon,
   TruckIcon,
   ClockIcon,
-  CubeIcon
+  CubeIcon,
 } from '@heroicons/react/24/outline'
 
 import { KPICard } from './KPICard'
@@ -17,7 +17,7 @@ const defaultMetrics = [
     change: 12.3,
     changeType: 'positive',
     format: 'currency',
-    icon: CurrencyDollarIcon
+    icon: CurrencyDollarIcon,
   },
   {
     id: 'orders',
@@ -26,7 +26,7 @@ const defaultMetrics = [
     change: 8.7,
     changeType: 'positive',
     format: 'number',
-    icon: ShoppingCartIcon
+    icon: ShoppingCartIcon,
   },
   {
     id: 'inventory',
@@ -35,7 +35,7 @@ const defaultMetrics = [
     change: -3.2,
     changeType: 'negative',
     format: 'currency',
-    icon: CubeIcon
+    icon: CubeIcon,
   },
   {
     id: 'production',
@@ -44,7 +44,7 @@ const defaultMetrics = [
     change: 5.1,
     changeType: 'positive',
     format: 'percentage',
-    icon: ChartBarIcon
+    icon: ChartBarIcon,
   },
   {
     id: 'leadtime',
@@ -53,7 +53,7 @@ const defaultMetrics = [
     change: -15.3,
     changeType: 'positive',
     format: 'number',
-    icon: ClockIcon
+    icon: ClockIcon,
   },
   {
     id: 'shipments',
@@ -62,14 +62,14 @@ const defaultMetrics = [
     change: 0,
     changeType: 'neutral',
     format: 'number',
-    icon: TruckIcon
-  }
+    icon: TruckIcon,
+  },
 ]
 
 export function MetricsGrid({ metrics = defaultMetrics, loading = false }) {
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-      {metrics.map((metric) => (
+      {metrics.map(metric => (
         <KPICard
           key={metric.id}
           title={metric.title}

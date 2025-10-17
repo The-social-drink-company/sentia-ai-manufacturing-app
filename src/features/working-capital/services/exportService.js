@@ -11,7 +11,7 @@ import { jsPDF } from 'jspdf'
 import 'jspdf-autotable'
 
 // Excel export utilities
-const createExcelWorkbook = async (data) => {
+const createExcelWorkbook = async data => {
   // Dynamic import to avoid bundle size issues
   const XLSX = await import('xlsx')
   return XLSX
@@ -25,7 +25,7 @@ export class WorkingCapitalExporter {
       includeForecasts: options.includeForecasts || true,
       includeRecommendations: options.includeRecommendations || true,
       dateRange: options.dateRange || 'current',
-      ...options
+      ...options,
     }
     this.timestamp = new Date().toISOString().split('T')[0]
   }
@@ -151,17 +151,13 @@ export class WorkingCapitalExporter {
           generatedAt: new Date().toISOString(),
           dataType: 'working-capital-report',
           version: '1.0',
-          options: this.options
+          options: this.options,
         },
-        data: this.data
+        data: this.data,
       }
 
       const filename = `working-capital-data-${this.timestamp}.json`
-      this.downloadFile(
-        JSON.stringify(jsonData, null, 2),
-        filename,
-        'application/json'
-      )
+      this.downloadFile(JSON.stringify(jsonData, null, 2), filename, 'application/json')
       return { success: true, filename }
     } catch (error) {
       logError('JSON export failed', error)
@@ -253,10 +249,30 @@ export class WorkingCapitalExporter {
     summaryData.push(['Metric', 'Value', 'Change %', 'Status'])
 
     if (this.data.summary) {
-      summaryData.push(['Working Capital', this.formatCurrency(this.data.summary.workingCapital || 0), `${this.data.summary.workingCapitalChange || 0}%`, this.getStatusText(this.data.summary.workingCapitalChange)])
-      summaryData.push(['Cash Conversion Cycle', `${this.data.summary.cashConversionCycle || 0} days`, `${this.data.summary.cccChange || 0}%`, this.getStatusText(-this.data.summary.cccChange)])
-      summaryData.push(['Current Ratio', this.data.summary.currentRatio || 0, `${this.data.summary.currentRatioChange || 0}%`, this.getStatusText(this.data.summary.currentRatioChange)])
-      summaryData.push(['Quick Ratio', this.data.summary.quickRatio || 0, `${this.data.summary.quickRatioChange || 0}%`, this.getStatusText(this.data.summary.quickRatioChange)])
+      summaryData.push([
+        'Working Capital',
+        this.formatCurrency(this.data.summary.workingCapital || 0),
+        `${this.data.summary.workingCapitalChange || 0}%`,
+        this.getStatusText(this.data.summary.workingCapitalChange),
+      ])
+      summaryData.push([
+        'Cash Conversion Cycle',
+        `${this.data.summary.cashConversionCycle || 0} days`,
+        `${this.data.summary.cccChange || 0}%`,
+        this.getStatusText(-this.data.summary.cccChange),
+      ])
+      summaryData.push([
+        'Current Ratio',
+        this.data.summary.currentRatio || 0,
+        `${this.data.summary.currentRatioChange || 0}%`,
+        this.getStatusText(this.data.summary.currentRatioChange),
+      ])
+      summaryData.push([
+        'Quick Ratio',
+        this.data.summary.quickRatio || 0,
+        `${this.data.summary.quickRatioChange || 0}%`,
+        this.getStatusText(this.data.summary.quickRatioChange),
+      ])
     }
 
     return XLSX.utils.aoa_to_sheet(summaryData)
@@ -271,11 +287,31 @@ export class WorkingCapitalExporter {
     arData.push(['Aging Bucket', 'Amount', 'Percentage'])
     const total = this.data.receivables.total || 0
 
-    arData.push(['Current', this.data.receivables.current || 0, total > 0 ? `${((this.data.receivables.current / total) * 100).toFixed(1)}%` : '0%'])
-    arData.push(['1-30 days', this.data.receivables['1-30'] || 0, total > 0 ? `${((this.data.receivables['1-30'] / total) * 100).toFixed(1)}%` : '0%'])
-    arData.push(['31-60 days', this.data.receivables['31-60'] || 0, total > 0 ? `${((this.data.receivables['31-60'] / total) * 100).toFixed(1)}%` : '0%'])
-    arData.push(['61-90 days', this.data.receivables['61-90'] || 0, total > 0 ? `${((this.data.receivables['61-90'] / total) * 100).toFixed(1)}%` : '0%'])
-    arData.push(['90+ days', this.data.receivables['90+'] || 0, total > 0 ? `${((this.data.receivables['90+'] / total) * 100).toFixed(1)}%` : '0%'])
+    arData.push([
+      'Current',
+      this.data.receivables.current || 0,
+      total > 0 ? `${((this.data.receivables.current / total) * 100).toFixed(1)}%` : '0%',
+    ])
+    arData.push([
+      '1-30 days',
+      this.data.receivables['1-30'] || 0,
+      total > 0 ? `${((this.data.receivables['1-30'] / total) * 100).toFixed(1)}%` : '0%',
+    ])
+    arData.push([
+      '31-60 days',
+      this.data.receivables['31-60'] || 0,
+      total > 0 ? `${((this.data.receivables['31-60'] / total) * 100).toFixed(1)}%` : '0%',
+    ])
+    arData.push([
+      '61-90 days',
+      this.data.receivables['61-90'] || 0,
+      total > 0 ? `${((this.data.receivables['61-90'] / total) * 100).toFixed(1)}%` : '0%',
+    ])
+    arData.push([
+      '90+ days',
+      this.data.receivables['90+'] || 0,
+      total > 0 ? `${((this.data.receivables['90+'] / total) * 100).toFixed(1)}%` : '0%',
+    ])
     arData.push(['Total', total, '100%'])
 
     if (this.data.receivables.topCustomers) {
@@ -299,11 +335,31 @@ export class WorkingCapitalExporter {
     apData.push(['Aging Bucket', 'Amount', 'Percentage'])
     const total = this.data.payables.total || 0
 
-    apData.push(['Current', this.data.payables.current || 0, total > 0 ? `${((this.data.payables.current / total) * 100).toFixed(1)}%` : '0%'])
-    apData.push(['1-30 days', this.data.payables['1-30'] || 0, total > 0 ? `${((this.data.payables['1-30'] / total) * 100).toFixed(1)}%` : '0%'])
-    apData.push(['31-60 days', this.data.payables['31-60'] || 0, total > 0 ? `${((this.data.payables['31-60'] / total) * 100).toFixed(1)}%` : '0%'])
-    apData.push(['61-90 days', this.data.payables['61-90'] || 0, total > 0 ? `${((this.data.payables['61-90'] / total) * 100).toFixed(1)}%` : '0%'])
-    apData.push(['90+ days', this.data.payables['90+'] || 0, total > 0 ? `${((this.data.payables['90+'] / total) * 100).toFixed(1)}%` : '0%'])
+    apData.push([
+      'Current',
+      this.data.payables.current || 0,
+      total > 0 ? `${((this.data.payables.current / total) * 100).toFixed(1)}%` : '0%',
+    ])
+    apData.push([
+      '1-30 days',
+      this.data.payables['1-30'] || 0,
+      total > 0 ? `${((this.data.payables['1-30'] / total) * 100).toFixed(1)}%` : '0%',
+    ])
+    apData.push([
+      '31-60 days',
+      this.data.payables['31-60'] || 0,
+      total > 0 ? `${((this.data.payables['31-60'] / total) * 100).toFixed(1)}%` : '0%',
+    ])
+    apData.push([
+      '61-90 days',
+      this.data.payables['61-90'] || 0,
+      total > 0 ? `${((this.data.payables['61-90'] / total) * 100).toFixed(1)}%` : '0%',
+    ])
+    apData.push([
+      '90+ days',
+      this.data.payables['90+'] || 0,
+      total > 0 ? `${((this.data.payables['90+'] / total) * 100).toFixed(1)}%` : '0%',
+    ])
     apData.push(['Total', total, '100%'])
 
     if (this.data.payables.topSuppliers) {
@@ -325,14 +381,20 @@ export class WorkingCapitalExporter {
     cashFlowData.push([])
 
     if (Array.isArray(this.data.cashFlow)) {
-      cashFlowData.push(['Period', 'Cash Inflow', 'Cash Outflow', 'Net Cash Flow', 'Cumulative Cash'])
+      cashFlowData.push([
+        'Period',
+        'Cash Inflow',
+        'Cash Outflow',
+        'Net Cash Flow',
+        'Cumulative Cash',
+      ])
       this.data.cashFlow.forEach(period => {
         cashFlowData.push([
           period.period || period.month,
           period.cashInflow || period.inflow || 0,
           period.cashOutflow || period.outflow || 0,
           period.netCashFlow || period.netCash || 0,
-          period.cumulativeCash || period.runningBalance || 0
+          period.cumulativeCash || period.runningBalance || 0,
         ])
       })
     }
@@ -356,7 +418,7 @@ export class WorkingCapitalExporter {
           period.cashInflow,
           period.cashOutflow,
           period.netCashFlow,
-          period.confidence ? `${Math.round(period.confidence * 100)}%` : '95%'
+          period.confidence ? `${Math.round(period.confidence * 100)}%` : '95%',
         ])
       })
       forecastData.push([])
@@ -384,7 +446,7 @@ export class WorkingCapitalExporter {
         rec.description,
         rec.impact,
         rec.timeframe || rec.timeline,
-        rec.potentialSaving || rec.potentialImpact || 0
+        rec.potentialSaving || rec.potentialImpact || 0,
       ])
     })
 
@@ -399,11 +461,19 @@ export class WorkingCapitalExporter {
 
     if (this.data.summary) {
       doc.setFontSize(10)
-      doc.text(`Working Capital: ${this.formatCurrency(this.data.summary.workingCapital || 0)}`, 20, yPosition)
+      doc.text(
+        `Working Capital: ${this.formatCurrency(this.data.summary.workingCapital || 0)}`,
+        20,
+        yPosition
+      )
       doc.text(`Change: ${this.data.summary.workingCapitalChange || 0}%`, 120, yPosition)
       yPosition += 6
 
-      doc.text(`Cash Conversion Cycle: ${this.data.summary.cashConversionCycle || 0} days`, 20, yPosition)
+      doc.text(
+        `Cash Conversion Cycle: ${this.data.summary.cashConversionCycle || 0} days`,
+        20,
+        yPosition
+      )
       doc.text(`Change: ${this.data.summary.cccChange || 0}%`, 120, yPosition)
       yPosition += 6
 
@@ -420,10 +490,30 @@ export class WorkingCapitalExporter {
 
     const tableData = [
       ['Metric', 'Current Value', 'Change %', 'Status'],
-      ['Working Capital', this.formatCurrency(this.data.summary.workingCapital || 0), `${this.data.summary.workingCapitalChange || 0}%`, this.getStatusText(this.data.summary.workingCapitalChange)],
-      ['Cash Conversion Cycle', `${this.data.summary.cashConversionCycle || 0} days`, `${this.data.summary.cccChange || 0}%`, this.getStatusText(-this.data.summary.cccChange)],
-      ['Current Ratio', this.data.summary.currentRatio || 0, `${this.data.summary.currentRatioChange || 0}%`, this.getStatusText(this.data.summary.currentRatioChange)],
-      ['Quick Ratio', this.data.summary.quickRatio || 0, `${this.data.summary.quickRatioChange || 0}%`, this.getStatusText(this.data.summary.quickRatioChange)]
+      [
+        'Working Capital',
+        this.formatCurrency(this.data.summary.workingCapital || 0),
+        `${this.data.summary.workingCapitalChange || 0}%`,
+        this.getStatusText(this.data.summary.workingCapitalChange),
+      ],
+      [
+        'Cash Conversion Cycle',
+        `${this.data.summary.cashConversionCycle || 0} days`,
+        `${this.data.summary.cccChange || 0}%`,
+        this.getStatusText(-this.data.summary.cccChange),
+      ],
+      [
+        'Current Ratio',
+        this.data.summary.currentRatio || 0,
+        `${this.data.summary.currentRatioChange || 0}%`,
+        this.getStatusText(this.data.summary.currentRatioChange),
+      ],
+      [
+        'Quick Ratio',
+        this.data.summary.quickRatio || 0,
+        `${this.data.summary.quickRatioChange || 0}%`,
+        this.getStatusText(this.data.summary.quickRatioChange),
+      ],
     ]
 
     doc.autoTable({
@@ -431,7 +521,7 @@ export class WorkingCapitalExporter {
       head: [tableData[0]],
       body: tableData.slice(1),
       theme: 'striped',
-      margin: { left: 20 }
+      margin: { left: 20 },
     })
 
     return doc.lastAutoTable.finalY + 15
@@ -445,12 +535,32 @@ export class WorkingCapitalExporter {
     if (this.data.receivables) {
       const arData = [
         ['AR Aging Bucket', 'Amount', 'Percentage'],
-        ['Current', this.formatCurrency(this.data.receivables.current || 0), this.getPercentage(this.data.receivables.current, this.data.receivables.total)],
-        ['1-30 days', this.formatCurrency(this.data.receivables['1-30'] || 0), this.getPercentage(this.data.receivables['1-30'], this.data.receivables.total)],
-        ['31-60 days', this.formatCurrency(this.data.receivables['31-60'] || 0), this.getPercentage(this.data.receivables['31-60'], this.data.receivables.total)],
-        ['61-90 days', this.formatCurrency(this.data.receivables['61-90'] || 0), this.getPercentage(this.data.receivables['61-90'], this.data.receivables.total)],
-        ['90+ days', this.formatCurrency(this.data.receivables['90+'] || 0), this.getPercentage(this.data.receivables['90+'], this.data.receivables.total)],
-        ['Total', this.formatCurrency(this.data.receivables.total || 0), '100%']
+        [
+          'Current',
+          this.formatCurrency(this.data.receivables.current || 0),
+          this.getPercentage(this.data.receivables.current, this.data.receivables.total),
+        ],
+        [
+          '1-30 days',
+          this.formatCurrency(this.data.receivables['1-30'] || 0),
+          this.getPercentage(this.data.receivables['1-30'], this.data.receivables.total),
+        ],
+        [
+          '31-60 days',
+          this.formatCurrency(this.data.receivables['31-60'] || 0),
+          this.getPercentage(this.data.receivables['31-60'], this.data.receivables.total),
+        ],
+        [
+          '61-90 days',
+          this.formatCurrency(this.data.receivables['61-90'] || 0),
+          this.getPercentage(this.data.receivables['61-90'], this.data.receivables.total),
+        ],
+        [
+          '90+ days',
+          this.formatCurrency(this.data.receivables['90+'] || 0),
+          this.getPercentage(this.data.receivables['90+'], this.data.receivables.total),
+        ],
+        ['Total', this.formatCurrency(this.data.receivables.total || 0), '100%'],
       ]
 
       doc.autoTable({
@@ -458,7 +568,7 @@ export class WorkingCapitalExporter {
         head: [arData[0]],
         body: arData.slice(1),
         theme: 'grid',
-        margin: { left: 20 }
+        margin: { left: 20 },
       })
 
       yPosition = doc.lastAutoTable.finalY + 10
@@ -480,10 +590,30 @@ export class WorkingCapitalExporter {
     if (this.data.cccDetails) {
       const cccData = [
         ['Component', 'Days', 'Target', 'Variance'],
-        ['Days Sales Outstanding (DSO)', this.data.cccDetails.daysSalesOutstanding || 0, '35', `${(this.data.cccDetails.daysSalesOutstanding || 0) - 35}`],
-        ['Days Inventory Outstanding (DIO)', this.data.cccDetails.daysInventoryOutstanding || 0, '30', `${(this.data.cccDetails.daysInventoryOutstanding || 0) - 30}`],
-        ['Days Payable Outstanding (DPO)', this.data.cccDetails.daysPayableOutstanding || 0, '40', `${40 - (this.data.cccDetails.daysPayableOutstanding || 0)}`],
-        ['Cash Conversion Cycle', this.data.cccDetails.cashConversionCycle || 0, '25', `${(this.data.cccDetails.cashConversionCycle || 0) - 25}`]
+        [
+          'Days Sales Outstanding (DSO)',
+          this.data.cccDetails.daysSalesOutstanding || 0,
+          '35',
+          `${(this.data.cccDetails.daysSalesOutstanding || 0) - 35}`,
+        ],
+        [
+          'Days Inventory Outstanding (DIO)',
+          this.data.cccDetails.daysInventoryOutstanding || 0,
+          '30',
+          `${(this.data.cccDetails.daysInventoryOutstanding || 0) - 30}`,
+        ],
+        [
+          'Days Payable Outstanding (DPO)',
+          this.data.cccDetails.daysPayableOutstanding || 0,
+          '40',
+          `${40 - (this.data.cccDetails.daysPayableOutstanding || 0)}`,
+        ],
+        [
+          'Cash Conversion Cycle',
+          this.data.cccDetails.cashConversionCycle || 0,
+          '25',
+          `${(this.data.cccDetails.cashConversionCycle || 0) - 25}`,
+        ],
       ]
 
       doc.autoTable({
@@ -491,7 +621,7 @@ export class WorkingCapitalExporter {
         head: [cccData[0]],
         body: cccData.slice(1),
         theme: 'grid',
-        margin: { left: 20 }
+        margin: { left: 20 },
       })
 
       yPosition = doc.lastAutoTable.finalY + 10
@@ -516,12 +646,13 @@ export class WorkingCapitalExporter {
 
     if (recommendations.length > 0) {
       const recsData = [['Priority', 'Title', 'Impact', 'Timeframe']]
-      recommendations.slice(0, 5).forEach(rec => {  // Limit to top 5 for PDF
+      recommendations.slice(0, 5).forEach(rec => {
+        // Limit to top 5 for PDF
         recsData.push([
           rec.priority || rec.impact,
           rec.title.substring(0, 30) + (rec.title.length > 30 ? '...' : ''),
           this.formatCurrency(rec.potentialSaving || rec.potentialImpact || 0),
-          rec.timeframe || rec.timeline || 'TBD'
+          rec.timeframe || rec.timeline || 'TBD',
         ])
       })
 
@@ -531,7 +662,7 @@ export class WorkingCapitalExporter {
         body: recsData.slice(1),
         theme: 'grid',
         margin: { left: 20 },
-        columnStyles: { 1: { cellWidth: 60 } }
+        columnStyles: { 1: { cellWidth: 60 } },
       })
 
       yPosition = doc.lastAutoTable.finalY + 10
@@ -578,7 +709,7 @@ export class WorkingCapitalExporter {
       style: 'currency',
       currency: 'USD',
       minimumFractionDigits: 0,
-      maximumFractionDigits: 0
+      maximumFractionDigits: 0,
     }).format(value || 0)
   }
 
@@ -627,9 +758,11 @@ export async function exportWorkingCapitalData(data, format, options = {}) {
 
 // Quick export functions
 export const quickExportCSV = (data, options = {}) => exportWorkingCapitalData(data, 'csv', options)
-export const quickExportExcel = (data, options = {}) => exportWorkingCapitalData(data, 'excel', options)
+export const quickExportExcel = (data, options = {}) =>
+  exportWorkingCapitalData(data, 'excel', options)
 export const quickExportPDF = (data, options = {}) => exportWorkingCapitalData(data, 'pdf', options)
-export const quickExportJSON = (data, options = {}) => exportWorkingCapitalData(data, 'json', options)
+export const quickExportJSON = (data, options = {}) =>
+  exportWorkingCapitalData(data, 'json', options)
 
 export default {
   WorkingCapitalExporter,
@@ -637,5 +770,5 @@ export default {
   quickExportCSV,
   quickExportExcel,
   quickExportPDF,
-  quickExportJSON
+  quickExportJSON,
 }

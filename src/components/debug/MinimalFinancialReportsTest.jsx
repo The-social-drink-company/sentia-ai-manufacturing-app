@@ -8,7 +8,7 @@ const MinimalFinancialReportsTest = () => {
     console.log('[Navigation Debug] Current pathname:', window.location.pathname)
     console.log('[Navigation Debug] Current search:', window.location.search)
     console.log('[Navigation Debug] Current hash:', window.location.hash)
-    
+
     return () => {
       console.log('[Navigation Debug] MinimalFinancialReportsTest unmounting')
     }
@@ -17,7 +17,7 @@ const MinimalFinancialReportsTest = () => {
   const testStatus = {
     routeMatched: window.location.pathname === '/app/reports',
     componentMounted: true,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   }
 
   console.log('[Navigation Debug] MinimalFinancialReportsTest status:', testStatus)
@@ -51,7 +51,10 @@ const MinimalFinancialReportsTest = () => {
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <h3 className="font-semibold text-blue-800 mb-2">🔍 Debug Information</h3>
               <ul className="text-sm text-blue-700 space-y-1">
-                <li>Environment: {import.meta.env.VITE_DEVELOPMENT_MODE === 'true' ? 'Development' : 'Production'}</li>
+                <li>
+                  Environment:{' '}
+                  {import.meta.env.VITE_DEVELOPMENT_MODE === 'true' ? 'Development' : 'Production'}
+                </li>
                 <li>Full URL: {window.location.href}</li>
                 <li>Origin: {window.location.origin}</li>
                 <li>User Agent: {navigator.userAgent.substring(0, 50)}...</li>
@@ -62,28 +65,28 @@ const MinimalFinancialReportsTest = () => {
           {/* Test Results */}
           <div className="bg-gray-50 rounded-lg p-6 mb-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Navigation Test Results</h3>
-            
+
             <div className="space-y-3">
               <div className="flex items-center justify-between py-2 border-b border-gray-200">
                 <span className="text-gray-700">Route Registration</span>
                 <span className="text-green-600 font-medium">✅ PASS</span>
               </div>
-              
+
               <div className="flex items-center justify-between py-2 border-b border-gray-200">
                 <span className="text-gray-700">URL Pattern Match</span>
                 <span className="text-green-600 font-medium">✅ PASS</span>
               </div>
-              
+
               <div className="flex items-center justify-between py-2 border-b border-gray-200">
                 <span className="text-gray-700">Component Loading</span>
                 <span className="text-green-600 font-medium">✅ PASS</span>
               </div>
-              
+
               <div className="flex items-center justify-between py-2 border-b border-gray-200">
                 <span className="text-gray-700">Authentication Guard</span>
                 <span className="text-green-600 font-medium">✅ PASS</span>
               </div>
-              
+
               <div className="flex items-center justify-between py-2">
                 <span className="text-gray-700">Error Boundary</span>
                 <span className="text-green-600 font-medium">✅ PASS</span>
@@ -114,7 +117,7 @@ const MinimalFinancialReportsTest = () => {
             >
               Load Real Component
             </button>
-            
+
             <button
               onClick={() => {
                 console.log('[Navigation Debug] User clicked "Back to Dashboard"')

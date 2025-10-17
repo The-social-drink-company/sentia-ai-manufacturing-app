@@ -5,7 +5,7 @@ const API_BASE = import.meta.env.VITE_API_BASE_URL || '/api'
 
 const fetchFinancialData = async (endpoint, params = {}) => {
   const url = new URL(`${API_BASE}/financial/${endpoint}`, window.location.origin)
-  
+
   Object.entries(params).forEach(([key, value]) => {
     if (value !== undefined && value !== null) {
       url.searchParams.append(key, value.toString())
@@ -16,7 +16,7 @@ const fetchFinancialData = async (endpoint, params = {}) => {
     headers: {
       'Content-Type': 'application/json',
     },
-    credentials: 'include'
+    credentials: 'include',
   })
 
   if (!response.ok) {
@@ -26,14 +26,13 @@ const fetchFinancialData = async (endpoint, params = {}) => {
   return response.json()
 }
 
-
 // Query keys for consistent caching
 export const financialQueryKeys = {
   kpiMetrics: (timeRange, filters) => ['financial', 'kpi', { timeRange, filters }],
-  revenueData: (range) => ['financial', 'revenue', range],
-  profitMarginData: (range) => ['financial', 'profit-margin', range],
+  revenueData: range => ['financial', 'revenue', range],
+  profitMarginData: range => ['financial', 'profit-margin', range],
   productPerformance: () => ['financial', 'products'],
-  insights: () => ['financial', 'insights']
+  insights: () => ['financial', 'insights'],
 }
 
 // Custom hooks
@@ -43,7 +42,7 @@ export const useFinancialKPIData = (timeRange = 'year', filters = {}) => {
     queryFn: () => fetchFinancialData('dashboard', { period: timeRange, ...filters }),
     staleTime: 5 * 60 * 1000, // 5 minutes
     cacheTime: 10 * 60 * 1000, // 10 minutes
-    refetchOnWindowFocus: false
+    refetchOnWindowFocus: false,
   })
 }
 
@@ -54,22 +53,22 @@ export const useFinancialChartsData = (revenueRange = '1y', profitRange = '1y') 
         queryKey: financialQueryKeys.revenueData(revenueRange),
         queryFn: () => fetchFinancialData('revenue-trends', { range: revenueRange }),
         staleTime: 5 * 60 * 1000,
-        cacheTime: 10 * 60 * 1000
+        cacheTime: 10 * 60 * 1000,
       },
       {
         queryKey: financialQueryKeys.profitMarginData(profitRange),
         queryFn: () => fetchFinancialData('profit-margins', { range: profitRange }),
         staleTime: 5 * 60 * 1000,
-        cacheTime: 10 * 60 * 1000
-      }
-    ]
+        cacheTime: 10 * 60 * 1000,
+      },
+    ],
   })
 
   return {
     revenueData: results[0].data,
     profitMarginData: results[1].data,
     isLoading: results.some(result => result.isLoading),
-    error: results.find(result => result.error)?.error
+    error: results.find(result => result.error)?.error,
   }
 }
 
@@ -79,7 +78,7 @@ export const useProductPerformanceData = () => {
     queryFn: () => fetchFinancialData('products/performance'),
     staleTime: 5 * 60 * 1000,
     cacheTime: 10 * 60 * 1000,
-    refetchOnWindowFocus: false
+    refetchOnWindowFocus: false,
   })
 }
 
@@ -89,22 +88,17 @@ export const useFinancialInsightsData = () => {
     queryFn: () => fetchFinancialData('insights'),
     staleTime: 5 * 60 * 1000,
     cacheTime: 10 * 60 * 1000,
-    refetchOnWindowFocus: false
+    refetchOnWindowFocus: false,
   })
 }
 
 // Combined hook for all financial reports data
 export const useFinancialReportsData = (options = {}) => {
-  const {
-    timeRange = 'year',
-    revenueRange = '1y',
-    profitRange = '1y',
-    filters = {}
-  } = options
+  const { timeRange = 'year', revenueRange = '1y', profitRange = '1y', filters = {} } = options
 
   const [chartRanges, setChartRanges] = useState({
     revenue: revenueRange,
-    profit: profitRange
+    profit: profitRange,
   })
 
   const kpiData = useFinancialKPIData(timeRange, filters)
@@ -112,7 +106,8 @@ export const useFinancialReportsData = (options = {}) => {
   const productData = useProductPerformanceData()
   const insightsData = useFinancialInsightsData()
 
-  const isLoading = kpiData.isLoading || chartsData.isLoading || productData.isLoading || insightsData.isLoading
+  const isLoading =
+    kpiData.isLoading || chartsData.isLoading || productData.isLoading || insightsData.isLoading
   const error = kpiData.error || chartsData.error || productData.error || insightsData.error
 
   return {
@@ -129,7 +124,7 @@ export const useFinancialReportsData = (options = {}) => {
       kpiData.refetch()
       productData.refetch()
       insightsData.refetch()
-    }
+    },
   }
 }
 

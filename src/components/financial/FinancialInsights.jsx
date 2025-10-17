@@ -1,11 +1,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { 
-  ArrowTrendingUpIcon, 
-  ArrowTrendingDownIcon, 
+import {
+  ArrowTrendingUpIcon,
+  ArrowTrendingDownIcon,
   ExclamationTriangleIcon,
   InformationCircleIcon,
   LightBulbIcon,
-  ChartBarIcon
+  ChartBarIcon,
 } from '@heroicons/react/24/outline'
 import { cn } from '@/utils/cn'
 
@@ -16,82 +16,73 @@ const InsightIcon = ({ type, className }) => {
     warning: ExclamationTriangleIcon,
     info: InformationCircleIcon,
     recommendation: LightBulbIcon,
-    analysis: ChartBarIcon
+    analysis: ChartBarIcon,
   }
-  
+
   const Icon = icons[type] || InformationCircleIcon
   return <Icon className={className} />
 }
 
-const getInsightStyle = (type) => {
+const getInsightStyle = type => {
   const styles = {
     positive: {
       bg: 'bg-green-50 dark:bg-green-900/20',
       border: 'border-green-200 dark:border-green-800',
       icon: 'text-green-600 dark:text-green-400',
-      title: 'text-green-900 dark:text-green-100'
+      title: 'text-green-900 dark:text-green-100',
     },
     negative: {
       bg: 'bg-red-50 dark:bg-red-900/20',
       border: 'border-red-200 dark:border-red-800',
       icon: 'text-red-600 dark:text-red-400',
-      title: 'text-red-900 dark:text-red-100'
+      title: 'text-red-900 dark:text-red-100',
     },
     warning: {
       bg: 'bg-yellow-50 dark:bg-yellow-900/20',
       border: 'border-yellow-200 dark:border-yellow-800',
       icon: 'text-yellow-600 dark:text-yellow-400',
-      title: 'text-yellow-900 dark:text-yellow-100'
+      title: 'text-yellow-900 dark:text-yellow-100',
     },
     info: {
       bg: 'bg-blue-50 dark:bg-blue-900/20',
       border: 'border-blue-200 dark:border-blue-800',
       icon: 'text-blue-600 dark:text-blue-400',
-      title: 'text-blue-900 dark:text-blue-100'
+      title: 'text-blue-900 dark:text-blue-100',
     },
     recommendation: {
       bg: 'bg-purple-50 dark:bg-purple-900/20',
       border: 'border-purple-200 dark:border-purple-800',
       icon: 'text-purple-600 dark:text-purple-400',
-      title: 'text-purple-900 dark:text-purple-100'
+      title: 'text-purple-900 dark:text-purple-100',
     },
     analysis: {
       bg: 'bg-gray-50 dark:bg-gray-900/20',
       border: 'border-gray-200 dark:border-gray-800',
       icon: 'text-gray-600 dark:text-gray-400',
-      title: 'text-gray-900 dark:text-gray-100'
-    }
+      title: 'text-gray-900 dark:text-gray-100',
+    },
   }
-  
+
   return styles[type] || styles.info
 }
 
 const InsightCard = ({ insight, className }) => {
   const style = getInsightStyle(insight.type)
-  
+
   return (
-    <div className={cn(
-      "rounded-lg border p-4 space-y-2",
-      style.bg,
-      style.border,
-      className
-    )}>
+    <div className={cn('rounded-lg border p-4 space-y-2', style.bg, style.border, className)}>
       <div className="flex items-start space-x-3">
-        <InsightIcon 
-          type={insight.type} 
-          className={cn("w-5 h-5 mt-0.5 flex-shrink-0", style.icon)} 
+        <InsightIcon
+          type={insight.type}
+          className={cn('w-5 h-5 mt-0.5 flex-shrink-0', style.icon)}
         />
         <div className="flex-1 space-y-1">
-          <h4 className={cn("font-medium text-sm", style.title)}>
-            {insight.title}
-          </h4>
-          <p className="text-sm text-muted-foreground">
-            {insight.description}
-          </p>
+          <h4 className={cn('font-medium text-sm', style.title)}>{insight.title}</h4>
+          <p className="text-sm text-muted-foreground">{insight.description}</p>
           {insight.metrics && (
             <div className="flex flex-wrap gap-2 mt-2">
               {insight.metrics.map((metric, index) => (
-                <span 
+                <span
                   key={index}
                   className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-white/60 dark:bg-black/20 text-foreground"
                 >
@@ -102,10 +93,9 @@ const InsightCard = ({ insight, className }) => {
           )}
           {insight.action && (
             <div className="mt-2">
-              <button className={cn(
-                "text-xs font-medium underline hover:no-underline",
-                style.title
-              )}>
+              <button
+                className={cn('text-xs font-medium underline hover:no-underline', style.title)}
+              >
                 {insight.action}
               </button>
             </div>
@@ -116,7 +106,7 @@ const InsightCard = ({ insight, className }) => {
   )
 }
 
-const generateInsights = (data) => {
+const generateInsights = data => {
   if (!data) return []
 
   const insights = []
@@ -128,7 +118,7 @@ const generateInsights = (data) => {
       title: 'Strong Revenue Growth',
       description: `Revenue has grown by ${data.revenue.growth.toFixed(1)}% compared to the previous period, indicating strong market performance.`,
       metrics: [`+${data.revenue.growth.toFixed(1)}% Growth`],
-      action: 'View detailed revenue analysis'
+      action: 'View detailed revenue analysis',
     })
   } else if (data.revenue?.growth < -5) {
     insights.push({
@@ -136,7 +126,7 @@ const generateInsights = (data) => {
       title: 'Revenue Decline Detected',
       description: `Revenue has decreased by ${Math.abs(data.revenue.growth).toFixed(1)}% from the previous period. Consider market analysis.`,
       metrics: [`${data.revenue.growth.toFixed(1)}% Decline`],
-      action: 'Analyze market factors'
+      action: 'Analyze market factors',
     })
   }
 
@@ -147,7 +137,7 @@ const generateInsights = (data) => {
       title: 'Low Profit Margins',
       description: `Current profit margin of ${data.profitMargin.current.toFixed(1)}% is below industry standards. Cost optimization may be needed.`,
       metrics: [`${data.profitMargin.current.toFixed(1)}% Margin`],
-      action: 'Review cost structure'
+      action: 'Review cost structure',
     })
   } else if (data.profitMargin?.current > 25) {
     insights.push({
@@ -155,7 +145,7 @@ const generateInsights = (data) => {
       title: 'Excellent Profit Margins',
       description: `Profit margin of ${data.profitMargin.current.toFixed(1)}% exceeds industry benchmarks, indicating efficient operations.`,
       metrics: [`${data.profitMargin.current.toFixed(1)}% Margin`],
-      action: 'Maintain operational efficiency'
+      action: 'Maintain operational efficiency',
     })
   }
 
@@ -164,25 +154,29 @@ const generateInsights = (data) => {
     insights.push({
       type: 'warning',
       title: 'Working Capital Concern',
-      description: 'Current working capital ratio suggests potential liquidity challenges. Monitor cash flow closely.',
+      description:
+        'Current working capital ratio suggests potential liquidity challenges. Monitor cash flow closely.',
       metrics: [`${data.workingCapital.ratio.toFixed(2)}:1 Ratio`],
-      action: 'Review cash flow projections'
+      action: 'Review cash flow projections',
     })
   }
 
   // Product performance insights
   if (data.products) {
-    const topPerformer = data.products.reduce((prev, current) => 
+    const topPerformer = data.products.reduce((prev, current) =>
       prev.revenue > current.revenue ? prev : current
     )
-    
+
     if (topPerformer) {
       insights.push({
         type: 'info',
         title: 'Top Product Performance',
         description: `${topPerformer.name} is your leading revenue generator with ${topPerformer.marketShare.toFixed(1)}% market share.`,
-        metrics: [`£${topPerformer.revenue.toLocaleString()}`, `${topPerformer.marketShare.toFixed(1)}% Share`],
-        action: 'Optimize top performer strategy'
+        metrics: [
+          `£${topPerformer.revenue.toLocaleString()}`,
+          `${topPerformer.marketShare.toFixed(1)}% Share`,
+        ],
+        action: 'Optimize top performer strategy',
       })
     }
   }
@@ -194,7 +188,7 @@ const generateInsights = (data) => {
       title: 'Seasonal Pattern Identified',
       description: `Revenue shows ${data.seasonality.strength} seasonal patterns. Plan inventory and marketing accordingly.`,
       metrics: [`${data.seasonality.strength} Seasonality`],
-      action: 'View seasonal forecast'
+      action: 'View seasonal forecast',
     })
   }
 
@@ -206,7 +200,7 @@ const generateInsights = (data) => {
         title: rec.title,
         description: rec.description,
         metrics: rec.impact ? [rec.impact] : undefined,
-        action: rec.action
+        action: rec.action,
       })
     })
   }

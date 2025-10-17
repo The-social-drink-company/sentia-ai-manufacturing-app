@@ -1,6 +1,7 @@
 # Fix Render Deployment - Show React Application
 
 ## Problem
+
 The deployment is showing the emergency server page instead of your React application.
 
 ## Solution
@@ -15,11 +16,13 @@ The deployment is showing the emergency server page instead of your React applic
    - Go to **Settings** tab
    - Find **Start Command**
    - Change from any emergency command to:
+
    ```
    node server.js
    ```
 
 3. **Update Build Command** (ensure it builds React):
+
    ```
    npm ci --legacy-peer-deps && npm run build
    ```
@@ -32,6 +35,7 @@ The deployment is showing the emergency server page instead of your React applic
 ### Option 2: Check Environment Variables
 
 Make sure these are NOT set (they might override normal startup):
+
 - Remove or set to false: `RAILWAY_EMERGENCY_MODE`
 - Remove or set to false: `USE_EMERGENCY_SERVER`
 - Remove: Any reference to `railway-emergency.js`
@@ -39,6 +43,7 @@ Make sure these are NOT set (they might override normal startup):
 ### Option 3: Verify Build Output
 
 The build should create:
+
 - `dist/` folder with your React build
 - `dist/index.html` - main HTML file
 - `dist/assets/` - JavaScript and CSS files
@@ -48,12 +53,14 @@ The build should create:
 Create and push this fix to ensure proper deployment:
 
 **render-fix.js** (create this file):
+
 ```javascript
 // Render deployment fix - ensures main server runs
-import './server.js';
+import './server.js'
 ```
 
 Then update start command to:
+
 ```
 node render-fix.js
 ```
@@ -88,6 +95,7 @@ Your project has:
 ## What server.js Does
 
 Your `server.js` correctly:
+
 1. Serves static files from `dist/` folder
 2. Handles API routes at `/api/*`
 3. Returns index.html for React routing
@@ -96,6 +104,7 @@ Your `server.js` correctly:
 ## Quick Command Reference
 
 If you can SSH or have console access:
+
 ```bash
 # Check what's running
 ps aux | grep node

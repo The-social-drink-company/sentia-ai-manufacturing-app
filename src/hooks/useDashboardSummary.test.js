@@ -5,7 +5,7 @@ import { useDashboardSummary } from './useDashboardSummary'
 
 // Mock the dashboard service
 vi.mock('../services/dashboardService', () => ({
-  fetchDashboardSummary: vi.fn()
+  fetchDashboardSummary: vi.fn(),
 }))
 
 import { fetchDashboardSummary } from '../services/dashboardService'
@@ -28,13 +28,13 @@ describe('useDashboardSummary', () => {
       generatedAt: '2025-09-26T12:00:00Z',
       metrics: {
         throughput: { value: 95, unit: '%', trend: 2 },
-        cashRunway: { value: 140, unit: 'days', trend: 5 }
-      }
+        cashRunway: { value: 140, unit: 'days', trend: 5 },
+      },
     }
 
     fetchDashboardSummary.mockResolvedValue({
       source: 'mcp',
-      payload: mockData
+      payload: mockData,
     })
 
     const { result } = renderHook(() => useDashboardSummary())
@@ -65,13 +65,13 @@ describe('useDashboardSummary', () => {
     const mockData = {
       generatedAt: new Date().toISOString(),
       metrics: {
-        throughput: { value: 94.7, unit: '%', trend: 1.8 }
-      }
+        throughput: { value: 94.7, unit: '%', trend: 1.8 },
+      },
     }
 
     fetchDashboardSummary.mockResolvedValue({
       source: 'mock',
-      payload: mockData
+      payload: mockData,
     })
 
     const { result } = renderHook(() => useDashboardSummary())
@@ -86,10 +86,17 @@ describe('useDashboardSummary', () => {
 
   it('should set loading status while _fetching', async () => {
     fetchDashboardSummary.mockImplementation(
-      () => new Promise(resolve => setTimeout(() => resolve({
-        source: 'mcp',
-        payload: {}
-      }), 100))
+      () =>
+        new Promise(resolve =>
+          setTimeout(
+            () =>
+              resolve({
+                source: 'mcp',
+                payload: {},
+              }),
+            100
+          )
+        )
     )
 
     const { result } = renderHook(() => useDashboardSummary())

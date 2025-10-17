@@ -10,7 +10,9 @@ const RedirectToSignInEnvironmentAware = ({ redirectUrl, ...props }) => {
   useEffect(() => {
     if (isDevelopmentMode) {
       // Development mode - redirect to dashboard instead of sign-in
-      console.log('[RedirectToSignInEnvironmentAware] Development mode - redirecting to dashboard instead of sign-in')
+      console.log(
+        '[RedirectToSignInEnvironmentAware] Development mode - redirecting to dashboard instead of sign-in'
+      )
       setLoading(false)
       return
     }
@@ -22,7 +24,10 @@ const RedirectToSignInEnvironmentAware = ({ redirectUrl, ...props }) => {
         const clerkAuth = await import('@clerk/clerk-react')
         setRedirectToSignIn(() => clerkAuth.RedirectToSignIn)
       } catch (error) {
-        console.error('[RedirectToSignInEnvironmentAware] Failed to load Clerk RedirectToSignIn:', error)
+        console.error(
+          '[RedirectToSignInEnvironmentAware] Failed to load Clerk RedirectToSignIn:',
+          error
+        )
         // Fallback to dashboard redirect if Clerk fails
         setRedirectToSignIn(null)
       } finally {
@@ -38,7 +43,9 @@ const RedirectToSignInEnvironmentAware = ({ redirectUrl, ...props }) => {
       <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
         <div className="text-center">
           <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
-          <p className="text-xs uppercase tracking-[0.3em] text-slate-300">Loading Authentication...</p>
+          <p className="text-xs uppercase tracking-[0.3em] text-slate-300">
+            Loading Authentication...
+          </p>
         </div>
       </div>
     )

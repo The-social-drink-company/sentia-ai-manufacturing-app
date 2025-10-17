@@ -7,6 +7,7 @@ The Render MCP (Model Context Protocol) Server represents a **game-changing oppo
 ## What is Render MCP Server?
 
 The Render MCP Server is an AI-powered infrastructure management tool that:
+
 - Enables natural language control of Render resources
 - Integrates directly with Claude Code (what you're using now)
 - Provides real-time monitoring and troubleshooting capabilities
@@ -15,7 +16,9 @@ The Render MCP Server is an AI-powered infrastructure management tool that:
 ## 🎯 Enterprise Benefits for Sentia Manufacturing
 
 ### 1. **Streamlined Operations**
+
 Instead of manual dashboard operations, your team can:
+
 ```
 "Check the production logs for the last hour and identify any 500 errors"
 "Scale the testing environment to 2 instances"
@@ -24,14 +27,18 @@ Instead of manual dashboard operations, your team can:
 ```
 
 ### 2. **Rapid Incident Response**
+
 During production issues:
+
 - Query logs instantly: "Show me all error logs from the MCP server in the last 30 minutes"
 - Check metrics: "What's the memory usage on production?"
 - Analyze database: "Run a query to check stuck manufacturing jobs"
 - Environment variables: "Update the API timeout setting on testing"
 
 ### 3. **Developer Productivity**
+
 Developers never leave their IDE to:
+
 - Deploy new features
 - Check deployment status
 - Monitor performance
@@ -43,6 +50,7 @@ Developers never leave their IDE to:
 ### Phase 1: Setup and Configuration (Day 1)
 
 #### 1. Install in Claude Code
+
 ```json
 {
   "mcpServers": {
@@ -57,11 +65,13 @@ Developers never leave their IDE to:
 ```
 
 #### 2. Create Dedicated API Key
+
 - Create a service account for MCP operations
 - Generate API key from Render dashboard
 - Store securely in password manager
 
 #### 3. Configure Access Controls
+
 - Limit MCP to specific workspaces
 - Define allowed operations
 - Set up audit logging
@@ -69,6 +79,7 @@ Developers never leave their IDE to:
 ### Phase 2: Core Capabilities (Week 1)
 
 #### Service Management
+
 ```natural-language
 "List all Sentia manufacturing services"
 "Show me the status of sentia-manufacturing-production"
@@ -76,6 +87,7 @@ Developers never leave their IDE to:
 ```
 
 #### Log Analysis
+
 ```natural-language
 "Show me error logs from production in the last hour"
 "Filter logs for 'database connection' errors"
@@ -83,6 +95,7 @@ Developers never leave their IDE to:
 ```
 
 #### Performance Monitoring
+
 ```natural-language
 "Show CPU and memory usage for all environments"
 "Compare performance metrics between test and production"
@@ -90,6 +103,7 @@ Developers never leave their IDE to:
 ```
 
 #### Database Operations
+
 ```natural-language
 "Query the production database for today's manufacturing jobs"
 "Check database connection pool status"
@@ -99,7 +113,9 @@ Developers never leave their IDE to:
 ### Phase 3: Advanced Integration (Week 2-3)
 
 #### Automated Workflows
+
 1. **Deployment Automation**
+
    ```natural-language
    "Deploy the latest development branch to testing"
    "Check if all health endpoints are responding"
@@ -107,6 +123,7 @@ Developers never leave their IDE to:
    ```
 
 2. **Incident Management**
+
    ```natural-language
    "Create an incident report for the current production issue"
    "Gather all relevant logs and metrics for debugging"
@@ -123,13 +140,16 @@ Developers never leave their IDE to:
 ### Phase 4: Enterprise Features (Month 1)
 
 #### Custom Tools Development
+
 Create custom MCP tools specific to Sentia:
+
 - Manufacturing job monitoring
 - AI processing status checks
 - Inventory sync verification
 - Financial reconciliation queries
 
 #### Integration with Existing Systems
+
 - Connect with your MCP AI server
 - Link to monitoring dashboards
 - Integrate with incident management
@@ -139,15 +159,15 @@ Create custom MCP tools specific to Sentia:
 
 ### Core MCP Tools
 
-| Tool | Purpose | Example Usage |
-|------|---------|---------------|
-| `list_services` | Get all services | "Show me all running services" |
-| `get_service` | Service details | "Get details for production service" |
-| `get_logs` | Retrieve logs | "Show error logs from last hour" |
-| `get_metrics` | Performance data | "Show CPU usage for production" |
-| `query_database` | SQL queries | "Count today's manufacturing orders" |
-| `list_deployments` | Deploy history | "Show recent production deployments" |
-| `update_env_vars` | Modify config | "Update the API timeout to 30 seconds" |
+| Tool               | Purpose          | Example Usage                          |
+| ------------------ | ---------------- | -------------------------------------- |
+| `list_services`    | Get all services | "Show me all running services"         |
+| `get_service`      | Service details  | "Get details for production service"   |
+| `get_logs`         | Retrieve logs    | "Show error logs from last hour"       |
+| `get_metrics`      | Performance data | "Show CPU usage for production"        |
+| `query_database`   | SQL queries      | "Count today's manufacturing orders"   |
+| `list_deployments` | Deploy history   | "Show recent production deployments"   |
+| `update_env_vars`  | Modify config    | "Update the API timeout to 30 seconds" |
 
 ### Metrics Parameters
 
@@ -176,6 +196,7 @@ Create custom MCP tools specific to Sentia:
 ## 🔐 Security Considerations
 
 ### Best Practices
+
 1. **API Key Management**
    - Use dedicated service account
    - Rotate keys quarterly
@@ -197,18 +218,21 @@ Create custom MCP tools specific to Sentia:
 ## 💰 ROI Analysis
 
 ### Time Savings
+
 - **Context Switching**: Save 15-20 minutes per debugging session
 - **Deployment Checks**: Reduce from 10 minutes to 30 seconds
 - **Log Analysis**: 5x faster issue identification
 - **Metric Queries**: Instant vs. 5-minute dashboard navigation
 
 ### Quality Improvements
+
 - Faster incident response (50% reduction in MTTR)
 - Fewer human errors in deployments
 - Better visibility into system health
 - Proactive issue identification
 
 ### Team Benefits
+
 - Junior developers can troubleshoot independently
 - Senior developers focus on architecture
 - DevOps can automate routine tasks
@@ -217,24 +241,28 @@ Create custom MCP tools specific to Sentia:
 ## 🚀 Implementation Roadmap
 
 ### Week 1: Foundation
+
 - [ ] Create Render API key
 - [ ] Configure Claude Code integration
 - [ ] Test basic commands
 - [ ] Document common queries
 
 ### Week 2: Team Rollout
+
 - [ ] Train development team
 - [ ] Create query templates
 - [ ] Set up access controls
 - [ ] Establish usage guidelines
 
 ### Week 3: Advanced Features
+
 - [ ] Implement custom tools
 - [ ] Automate routine tasks
 - [ ] Integrate with CI/CD
 - [ ] Create runbooks
 
 ### Month 1: Optimization
+
 - [ ] Analyze usage patterns
 - [ ] Optimize common workflows
 - [ ] Expand automation
@@ -243,6 +271,7 @@ Create custom MCP tools specific to Sentia:
 ## 📝 Example Enterprise Workflows
 
 ### 1. Production Deployment Verification
+
 ```natural-language
 "Check if production deployment completed successfully"
 "Verify all health endpoints are responding"
@@ -251,6 +280,7 @@ Create custom MCP tools specific to Sentia:
 ```
 
 ### 2. Performance Investigation
+
 ```natural-language
 "Show me the slowest API endpoints in the last hour"
 "Check database query performance"
@@ -259,6 +289,7 @@ Create custom MCP tools specific to Sentia:
 ```
 
 ### 3. Incident Response
+
 ```natural-language
 "Get all error logs from the last 30 minutes"
 "Check if external APIs are responding"
@@ -269,18 +300,21 @@ Create custom MCP tools specific to Sentia:
 ## 🎯 Specific Benefits for Sentia Manufacturing
 
 ### Manufacturing Operations
+
 - Monitor production job queues in real-time
 - Check inventory sync status
 - Verify order processing pipelines
 - Analyze manufacturing performance metrics
 
 ### AI Integration
+
 - Monitor MCP AI server health
 - Check LLM API usage and costs
 - Analyze AI decision patterns
 - Debug AI processing failures
 
 ### Financial Systems
+
 - Verify Xero sync status
 - Check Shopify order imports
 - Monitor payment processing
@@ -297,6 +331,7 @@ Create custom MCP tools specific to Sentia:
 ## 🏆 Success Metrics
 
 Track these KPIs after implementation:
+
 - **MTTR Reduction**: Target 50% improvement
 - **Deployment Success Rate**: Increase to 99%
 - **Developer Productivity**: 20% improvement
@@ -306,18 +341,21 @@ Track these KPIs after implementation:
 ## 💡 Recommendations
 
 ### Immediate Actions
+
 1. **Create API Key** - Start with read-only access
 2. **Configure Claude Code** - Test basic queries
 3. **Document Workflows** - Create team playbooks
 4. **Train Team** - Run workshops on MCP usage
 
 ### Short-term (1 Month)
+
 1. **Automate Deployments** - Use MCP for verification
 2. **Implement Monitoring** - Real-time alerts via MCP
 3. **Create Custom Tools** - Sentia-specific operations
 4. **Measure Impact** - Track time savings
 
 ### Long-term (3 Months)
+
 1. **Full Integration** - MCP as primary ops tool
 2. **Advanced Automation** - Self-healing systems
 3. **Custom Dashboard** - MCP-powered insights
@@ -326,6 +364,7 @@ Track these KPIs after implementation:
 ## 🔮 Future Possibilities
 
 With Render MCP Server, you could:
+
 1. **Self-Healing Infrastructure** - Automatic issue resolution
 2. **Predictive Scaling** - AI-driven resource management
 3. **Intelligent Monitoring** - Anomaly detection
@@ -354,9 +393,10 @@ The Render MCP Server integration represents a **transformative opportunity** fo
 ---
 
 **Next Steps**:
+
 1. Generate Render API key
 2. Configure in Claude Code
 3. Test basic queries
 4. Begin team training
 
-*This integration will position Sentia Manufacturing as a leader in AI-driven infrastructure management.*
+_This integration will position Sentia Manufacturing as a leader in AI-driven infrastructure management._

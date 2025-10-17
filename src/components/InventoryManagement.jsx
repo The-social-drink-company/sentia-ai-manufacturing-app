@@ -5,7 +5,7 @@ import { CubeIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline'
 const currencyFormatter = new Intl.NumberFormat('en-GB', {
   style: 'currency',
   currency: 'GBP',
-  maximumFractionDigits: 0
+  maximumFractionDigits: 0,
 })
 
 const numberFormatter = new Intl.NumberFormat('en-GB')
@@ -44,7 +44,7 @@ const InventoryManagement = () => {
   const lowStockItems = useMemo(() => {
     if (!inventory?.items) return []
     return inventory.items
-      .filter((item) => Number(item.quantity ?? 0) <= Number(item.reorderPoint ?? 0))
+      .filter(item => Number(item.quantity ?? 0) <= Number(item.reorderPoint ?? 0))
       .sort((a, b) => Number(a.quantity ?? 0) - Number(b.quantity ?? 0))
       .slice(0, 5)
   }, [inventory])
@@ -123,13 +123,19 @@ const InventoryManagement = () => {
             <p className="text-sm text-slate-500">No low stock alerts at this time.</p>
           ) : (
             <ul className="space-y-3">
-              {lowStockItems.map((item) => (
-                <li key={item.id || item.sku} className="p-3 bg-amber-50 border border-amber-100 rounded-md">
+              {lowStockItems.map(item => (
+                <li
+                  key={item.id || item.sku}
+                  className="p-3 bg-amber-50 border border-amber-100 rounded-md"
+                >
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-amber-800">{item.sku || item.name}</p>
                       <p className="text-xs text-amber-700">
-                        Available: {numberFormatter.format(Number(item.quantity ?? item.availableQuantity ?? 0))}
+                        Available:{' '}
+                        {numberFormatter.format(
+                          Number(item.quantity ?? item.availableQuantity ?? 0)
+                        )}
                       </p>
                     </div>
                     <p className="text-xs text-amber-700">
@@ -162,12 +168,16 @@ const InventoryManagement = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200">
-              {items.slice(0, 20).map((item) => (
+              {items.slice(0, 20).map(item => (
                 <tr key={item.id || item.sku}>
                   <td className="px-4 py-2 font-medium text-slate-700">{item.sku || 'N/A'}</td>
                   <td className="px-4 py-2 text-slate-500">{item.location || 'Unassigned'}</td>
-                  <td className="px-4 py-2 text-right">{numberFormatter.format(Number(item.quantity ?? item.totalQuantity ?? 0))}</td>
-                  <td className="px-4 py-2 text-right">{currencyFormatter.format(Number(item.value ?? item.totalValue ?? 0))}</td>
+                  <td className="px-4 py-2 text-right">
+                    {numberFormatter.format(Number(item.quantity ?? item.totalQuantity ?? 0))}
+                  </td>
+                  <td className="px-4 py-2 text-right">
+                    {currencyFormatter.format(Number(item.value ?? item.totalValue ?? 0))}
+                  </td>
                   <td className="px-4 py-2 text-right text-slate-500">
                     {item.updatedAt ? new Date(item.updatedAt).toLocaleString() : '—'}
                   </td>

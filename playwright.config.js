@@ -25,7 +25,7 @@ export default defineConfig({
   reporter: [
     ['html'],
     ['json', { outputFile: 'test-results/results.json' }],
-    ['junit', { outputFile: 'test-results/results.xml' }]
+    ['junit', { outputFile: 'test-results/results.xml' }],
   ],
 
   // Shared settings for all the projects below
@@ -58,13 +58,13 @@ export default defineConfig({
       permissions: ['clipboard-read', 'clipboard-write'],
 
       // Set user agent
-      userAgent: 'Sentia-E2E-Test-Runner/1.0'
+      userAgent: 'Sentia-E2E-Test-Runner/1.0',
     },
 
     // Extra HTTP headers
     extraHTTPHeaders: {
-      'X-Test-Environment': 'e2e'
-    }
+      'X-Test-Environment': 'e2e',
+    },
   },
 
   // Configure projects for major browsers
@@ -76,9 +76,9 @@ export default defineConfig({
         ...devices['Desktop Chrome'],
         launchOptions: {
           args: process.env.CI ? [] : ['--start-maximized'],
-          slowMo: process.env.CI ? 0 : 100
-        }
-      }
+          slowMo: process.env.CI ? 0 : 100,
+        },
+      },
     },
 
     // Desktop Firefox
@@ -87,9 +87,9 @@ export default defineConfig({
       use: {
         ...devices['Desktop Firefox'],
         launchOptions: {
-          slowMo: process.env.CI ? 0 : 100
-        }
-      }
+          slowMo: process.env.CI ? 0 : 100,
+        },
+      },
     },
 
     // Desktop Safari
@@ -98,43 +98,38 @@ export default defineConfig({
       use: {
         ...devices['Desktop Safari'],
         launchOptions: {
-          slowMo: process.env.CI ? 0 : 100
-        }
-      }
+          slowMo: process.env.CI ? 0 : 100,
+        },
+      },
     },
 
     // Mobile Chrome
     {
       name: 'mobile-chrome',
       use: {
-        ...devices['Pixel 5']
-      }
+        ...devices['Pixel 5'],
+      },
     },
 
     // Mobile Safari
     {
       name: 'mobile-safari',
       use: {
-        ...devices['iPhone 12']
-      }
+        ...devices['iPhone 12'],
+      },
     },
 
     // Tablet
     {
       name: 'tablet',
       use: {
-        ...devices['iPad Pro']
-      }
-    }
+        ...devices['iPad Pro'],
+      },
+    },
   ],
 
   // Test match patterns
-  testMatch: [
-    '**/*.spec.js',
-    '**/*.spec.ts',
-    '**/*.test.js',
-    '**/*.test.ts'
-  ],
+  testMatch: ['**/*.spec.js', '**/*.spec.ts', '**/*.test.js', '**/*.test.ts'],
 
   // Output directory
   outputDir: 'test-results/',
@@ -153,15 +148,15 @@ export default defineConfig({
     // Visual comparisons
     toMatchSnapshot: {
       threshold: 0.2,
-      maxDiffPixels: 1000
-    }
+      maxDiffPixels: 1000,
+    },
   },
 
   // Metadata
   metadata: {
     'test-environment': process.env.NODE_ENV || 'test',
-    'application': 'Sentia Manufacturing Dashboard',
-    'version': process.env.npm_package_version || '1.0.0',
-    'test-runner': 'Playwright'
-  }
+    application: 'Sentia Manufacturing Dashboard',
+    version: process.env.npm_package_version || '1.0.0',
+    'test-runner': 'Playwright',
+  },
 })

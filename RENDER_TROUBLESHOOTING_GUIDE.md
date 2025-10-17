@@ -1,4 +1,5 @@
 # Render Troubleshooting Guide
+
 ## Quick Solutions for Common Issues
 
 ---
@@ -6,9 +7,11 @@
 ## 🔴 CRITICAL ISSUES (App Won't Start)
 
 ### Issue: "Emergency Server" Page Shows Instead of App
+
 **Symptoms**: You see "Railway Deployment Working!" or emergency page
 
 **Solutions**:
+
 1. Update start command in Render Dashboard:
    ```
    node server-render.js
@@ -22,15 +25,18 @@
 ---
 
 ### Issue: Database Connection Failed
+
 **Error**: `The table 'public.users' does not exist` or `Database connection failed`
 
 **Solutions**:
+
 1. **Check DATABASE_URL is set**:
    - Go to Service → Environment
    - DATABASE_URL should point to your Render database
    - Use INTERNAL URL format: `postgresql://user:pass@sentia-db-development:5432/dbname`
 
 2. **Run database migrations**:
+
    ```bash
    npx prisma generate
    npx prisma db push
@@ -43,17 +49,22 @@
 ---
 
 ### Issue: Build Fails
+
 **Error**: `Build command failed` or timeout
 
 **Solutions**:
+
 1. **Split build command** if too complex:
+
    ```
    npm ci --legacy-peer-deps && npm run build
    ```
+
    Then run migrations separately
 
 2. **Check Node version**:
    - Add `engines` to package.json:
+
    ```json
    "engines": {
      "node": ">=18.0.0"
@@ -68,9 +79,11 @@
 ## 🟡 API & INTEGRATION ISSUES
 
 ### Issue: Clerk Authentication Not Working
+
 **Error**: `Clerk is not configured` or login page doesn't appear
 
 **Solutions**:
+
 1. Verify environment variables:
    ```
    VITE_CLERK_PUBLISHABLE_KEY=pk_test_...
@@ -81,9 +94,11 @@
 ---
 
 ### Issue: API Returns HTML Instead of JSON
+
 **Error**: API endpoints return HTML pages
 
 **Solutions**:
+
 1. Check CORS configuration:
    ```
    CORS_ORIGINS=https://your-service.onrender.com
@@ -94,9 +109,11 @@
 ---
 
 ### Issue: Xero/Shopify Integration Failing
+
 **Error**: `Xero not configured` or sync failures
 
 **Solutions**:
+
 1. Check all required variables are set:
    - `XERO_CLIENT_ID`
    - `XERO_CLIENT_SECRET`
@@ -108,9 +125,11 @@
 ## 🟢 PERFORMANCE ISSUES
 
 ### Issue: Slow Initial Load
+
 **Symptoms**: Application takes long to respond initially
 
 **Solutions**:
+
 1. **Free tier spin-down**: Render free services sleep after 15 minutes
    - Upgrade to paid tier for always-on
    - Use monitoring to keep alive
@@ -123,10 +142,13 @@
 ---
 
 ### Issue: Database Queries Slow
+
 **Symptoms**: API responses take several seconds
 
 **Solutions**:
+
 1. **Use connection pooling**:
+
    ```javascript
    datasource db {
      provider = "postgresql"
@@ -144,9 +166,11 @@
 ## 🔵 DEPLOYMENT ISSUES
 
 ### Issue: Auto-Deploy Not Working
+
 **Symptoms**: GitHub pushes don't trigger deployment
 
 **Solutions**:
+
 1. Check auto-deploy is enabled:
    - Service → Settings → Auto-Deploy from Branch
 2. Verify branch name matches
@@ -155,9 +179,11 @@
 ---
 
 ### Issue: Environment Variables Not Loading
+
 **Symptoms**: Features not working, services show as "not configured"
 
 **Solutions**:
+
 1. **Redeploy after adding variables**:
    - Environment variables require redeploy to take effect
 
@@ -165,8 +191,8 @@
    - No quotes around values in Render Dashboard
    - No trailing spaces
 
-3. **VITE_ variables need rebuild**:
-   - Variables starting with VITE_ are build-time only
+3. **VITE\_ variables need rebuild**:
+   - Variables starting with VITE\_ are build-time only
    - Must clear cache and rebuild
 
 ---
@@ -174,16 +200,19 @@
 ## 📊 QUICK DIAGNOSTIC COMMANDS
 
 ### Check Service Health
+
 ```bash
 curl https://your-service.onrender.com/health
 ```
 
 ### Check Database Connection
+
 ```bash
 curl https://your-service.onrender.com/api/database/health
 ```
 
 ### View Environment (from app)
+
 ```javascript
 // Add this endpoint to debug
 app.get('/api/debug/env', (req, res) => {
@@ -191,9 +220,9 @@ app.get('/api/debug/env', (req, res) => {
     nodeEnv: process.env.NODE_ENV,
     hasDb: !!process.env.DATABASE_URL,
     hasClerk: !!process.env.CLERK_SECRET_KEY,
-    port: process.env.PORT
-  });
-});
+    port: process.env.PORT,
+  })
+})
 ```
 
 ---
@@ -201,6 +230,7 @@ app.get('/api/debug/env', (req, res) => {
 ## 🛠️ COMMON FIXES CHECKLIST
 
 ### For Development Environment
+
 - [ ] Service name: `sentia-manufacturing-development`
 - [ ] Database: `sentia-db-development`
 - [ ] NODE_ENV=development
@@ -210,6 +240,7 @@ app.get('/api/debug/env', (req, res) => {
 - [ ] Start command: `node server-render.js`
 
 ### For Testing Environment
+
 - [ ] Service name: `sentia-manufacturing-testing`
 - [ ] Database: `sentia-db-testing`
 - [ ] NODE_ENV=test
@@ -217,6 +248,7 @@ app.get('/api/debug/env', (req, res) => {
 - [ ] Separate from development database
 
 ### For Production Environment
+
 - [ ] Service name: `sentia-manufacturing-production`
 - [ ] Database: `sentia-db-production`
 - [ ] NODE_ENV=production
@@ -234,11 +266,13 @@ app.get('/api/debug/env', (req, res) => {
    - Dashboard → Deploys → Find working deploy → Rollback
 
 2. **Check all services status**:
+
    ```powershell
    .\verify-render-deployment.ps1 -Environment all
    ```
 
 3. **Reset database** (CAUTION: Data loss):
+
    ```bash
    npx prisma migrate reset
    npx prisma db push
@@ -252,20 +286,21 @@ app.get('/api/debug/env', (req, res) => {
 
 ## 📝 ERROR MESSAGE DECODER
 
-| Error | Meaning | Solution |
-|-------|---------|----------|
-| `ECONNREFUSED` | Service can't connect to database | Check DATABASE_URL |
-| `P2021` | Table doesn't exist | Run migrations |
-| `CORS error` | Cross-origin request blocked | Update CORS_ORIGINS |
-| `502 Bad Gateway` | Service crashed or not running | Check logs, restart |
-| `ERR_MODULE_NOT_FOUND` | Missing dependency | Run `npm ci` |
-| `Cannot find module` | Build issue | Clear cache, rebuild |
+| Error                  | Meaning                           | Solution             |
+| ---------------------- | --------------------------------- | -------------------- |
+| `ECONNREFUSED`         | Service can't connect to database | Check DATABASE_URL   |
+| `P2021`                | Table doesn't exist               | Run migrations       |
+| `CORS error`           | Cross-origin request blocked      | Update CORS_ORIGINS  |
+| `502 Bad Gateway`      | Service crashed or not running    | Check logs, restart  |
+| `ERR_MODULE_NOT_FOUND` | Missing dependency                | Run `npm ci`         |
+| `Cannot find module`   | Build issue                       | Clear cache, rebuild |
 
 ---
 
 ## ✅ SUCCESS INDICATORS
 
 Your deployment is working when:
+
 - Health check returns `{"status": "healthy"}`
 - Database shows "connected"
 - Login page appears (not emergency page)
@@ -281,6 +316,7 @@ Your deployment is working when:
    - Look for error messages
 
 2. **Run Verification**:
+
    ```powershell
    .\verify-render-deployment.ps1 -Detailed
    ```

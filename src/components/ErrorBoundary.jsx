@@ -15,10 +15,10 @@ class ErrorBoundary extends React.Component {
   componentDidCatch(error, errorInfo) {
     console.error('[ErrorBoundary] Error caught:', error)
     console.error('[ErrorBoundary] Error info:', errorInfo)
-    
+
     this.setState({
       error,
-      errorInfo
+      errorInfo,
     })
 
     // Log to external service in production
@@ -38,8 +38,9 @@ class ErrorBoundary extends React.Component {
 
   render() {
     if (this.state.hasError) {
-      const isDevelopment = import.meta.env.VITE_DEVELOPMENT_MODE === 'true' || 
-                           import.meta.env.NODE_ENV === 'development'
+      const isDevelopment =
+        import.meta.env.VITE_DEVELOPMENT_MODE === 'true' ||
+        import.meta.env.NODE_ENV === 'development'
 
       return (
         <div className="min-h-screen bg-slate-950 flex items-center justify-center p-6">
@@ -48,17 +49,17 @@ class ErrorBoundary extends React.Component {
               <div className="inline-flex items-center justify-center w-16 h-16 bg-red-500/20 rounded-full mb-4">
                 <AlertTriangleIcon className="w-8 h-8 text-red-400" />
               </div>
-              <h1 className="text-2xl font-bold text-white mb-2">
-                Something went wrong
-              </h1>
+              <h1 className="text-2xl font-bold text-white mb-2">Something went wrong</h1>
               <p className="text-slate-400">
-                {this.props.fallbackMessage || "An unexpected error occurred in the application"}
+                {this.props.fallbackMessage || 'An unexpected error occurred in the application'}
               </p>
             </div>
 
             {isDevelopment && this.state.error && (
               <div className="mb-6 p-4 bg-slate-800 rounded-lg border border-slate-700">
-                <h3 className="text-sm font-medium text-red-400 mb-2">Development Error Details:</h3>
+                <h3 className="text-sm font-medium text-red-400 mb-2">
+                  Development Error Details:
+                </h3>
                 <div className="text-xs text-slate-300 font-mono space-y-2">
                   <div>
                     <strong>Error:</strong> {this.state.error.toString()}
@@ -96,7 +97,8 @@ class ErrorBoundary extends React.Component {
             {isDevelopment && (
               <div className="mt-6 p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
                 <p className="text-yellow-400 text-sm">
-                  <strong>Development Mode:</strong> Check the browser console for more detailed error information.
+                  <strong>Development Mode:</strong> Check the browser console for more detailed
+                  error information.
                 </p>
               </div>
             )}
@@ -124,7 +126,7 @@ export const withErrorBoundary = (Component, fallbackMessage) => {
 export const useErrorHandler = () => {
   return (error, errorInfo) => {
     console.error('[useErrorHandler] Error:', error)
-    
+
     // In production, send to error reporting service
     if (import.meta.env.NODE_ENV === 'production') {
       // TODO: Send to error reporting service

@@ -21,7 +21,7 @@ const useEnvironmentAuth = () => {
         actor: null,
         orgId: 'org_dev_12345',
         orgRole: 'admin',
-        orgSlug: 'sentia-dev'
+        orgSlug: 'sentia-dev',
       }
     } else {
       // Production mode - start with loading state
@@ -34,7 +34,7 @@ const useEnvironmentAuth = () => {
         actor: null,
         orgId: null,
         orgRole: null,
-        orgSlug: null
+        orgSlug: null,
       }
     }
   })
@@ -56,12 +56,12 @@ const useEnvironmentAuth = () => {
         // This is a hack to get Clerk's auth state
         // In a real implementation, we'd need to properly integrate with React context
         console.log('[useEnvironmentAuth] Clerk loaded successfully')
-        
+
         // For now, set a basic production auth state
         setAuthState(prevState => ({
           ...prevState,
           isLoaded: true,
-          loading: false
+          loading: false,
         }))
       } catch (error) {
         console.error('[useEnvironmentAuth] Failed to load Clerk:', error)
@@ -75,7 +75,7 @@ const useEnvironmentAuth = () => {
           actor: null,
           orgId: null,
           orgRole: null,
-          orgSlug: null
+          orgSlug: null,
         })
       }
     }
@@ -95,7 +95,7 @@ const useEnvironmentAuth = () => {
 
   return {
     ...authState,
-    signOut
+    signOut,
   }
 }
 

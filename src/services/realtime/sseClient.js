@@ -40,7 +40,7 @@ class SSEClient {
 
     try {
       this.eventSource = new EventSource(SSE_URL, {
-        withCredentials: true
+        withCredentials: true,
       })
 
       this.eventSource.onopen = () => {
@@ -50,7 +50,7 @@ class SSEClient {
         this.notifyListeners('connection', { status: 'connected' })
       }
 
-      this.eventSource.onerror = (error) => {
+      this.eventSource.onerror = error => {
         logError('SSE connection error', error)
         this.isConnected = false
         this.notifyListeners('connection', { status: 'error', error })
@@ -60,7 +60,7 @@ class SSEClient {
         }
       }
 
-      this.eventSource.onmessage = (event) => {
+      this.eventSource.onmessage = event => {
         try {
           const data = JSON.parse(event.data)
           this.notifyListeners('message', data)
@@ -86,11 +86,11 @@ class SSEClient {
       'order-update',
       'system-status',
       'forecast-update',
-      'cash-flow-update'
+      'cash-flow-update',
     ]
 
     eventTypes.forEach(type => {
-      this.eventSource.addEventListener(type, (event) => {
+      this.eventSource.addEventListener(type, event => {
         try {
           const data = JSON.parse(event.data)
           this.notifyListeners(type, data)
@@ -171,7 +171,7 @@ class SSEClient {
     return {
       isConnected: this.isConnected,
       readyState: this.eventSource?.readyState,
-      reconnectAttempts: this.reconnectAttempts
+      reconnectAttempts: this.reconnectAttempts,
     }
   }
 }

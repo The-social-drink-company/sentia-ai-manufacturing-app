@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
-const API_BASE_URL = (import.meta.env && import.meta.env.VITE_API_BASE_URL) ? import.meta.env.VITE_API_BASE_URL : '/api'
+const API_BASE_URL =
+  import.meta.env && import.meta.env.VITE_API_BASE_URL ? import.meta.env.VITE_API_BASE_URL : '/api'
 
 function buildUrl(path, params) {
   if (!params || Object.keys(params).length === 0) {
@@ -27,7 +28,10 @@ async function getClerkToken() {
   try {
     return await clerkSession.getToken({ template: 'sentia-backend' })
   } catch (error) {
-    console.warn('[useWorkingCapitalData] Clerk token fetch failed, retrying with default session token', error)
+    console.warn(
+      '[useWorkingCapitalData] Clerk token fetch failed, retrying with default session token',
+      error
+    )
     return clerkSession.getToken()
   }
 }
@@ -52,7 +56,8 @@ async function fetchJson(path, params) {
       // ignore parsing issues here
     }
 
-    const message = details?.error || details?.message || 'HTTP ' + response.status + ' ' + response.statusText
+    const message =
+      details?.error || details?.message || 'HTTP ' + response.status + ' ' + response.statusText
     const error = new Error(message)
     error.status = response.status
     error.details = details
@@ -67,7 +72,12 @@ async function fetchJson(path, params) {
 }
 
 function percentChange(currentValue, previousValue) {
-  if (currentValue === null || currentValue === undefined || previousValue === null || previousValue === undefined) {
+  if (
+    currentValue === null ||
+    currentValue === undefined ||
+    previousValue === null ||
+    previousValue === undefined
+  ) {
     return null
   }
 
@@ -84,15 +94,23 @@ function deriveSummary(latest, previous) {
   }
 
   const workingCapitalCurrent = (latest.currentAssets ?? 0) - (latest.currentLiabilities ?? 0)
-  const workingCapitalPrior = previous ? (previous.currentAssets ?? 0) - (previous.currentLiabilities ?? 0) : null
+  const workingCapitalPrior = previous
+    ? (previous.currentAssets ?? 0) - (previous.currentLiabilities ?? 0)
+    : null
 
   return {
     workingCapital: workingCapitalCurrent,
     workingCapitalChange: percentChange(workingCapitalCurrent, workingCapitalPrior),
     cashConversionCycle: latest.cashConversionCycle ?? null,
-    cccChange: percentChange(latest.cashConversionCycle ?? null, previous?.cashConversionCycle ?? null),
+    cccChange: percentChange(
+      latest.cashConversionCycle ?? null,
+      previous?.cashConversionCycle ?? null
+    ),
     currentRatio: latest.workingCapitalRatio ?? null,
-    currentRatioChange: percentChange(latest.workingCapitalRatio ?? null, previous?.workingCapitalRatio ?? null),
+    currentRatioChange: percentChange(
+      latest.workingCapitalRatio ?? null,
+      previous?.workingCapitalRatio ?? null
+    ),
     quickRatio: latest.quickRatio ?? null,
     quickRatioChange: percentChange(latest.quickRatio ?? null, previous?.quickRatio ?? null),
   }
@@ -151,11 +169,11 @@ function calculateCashFlowInsights(rows) {
   let runningBalance = 0
   const runningBalances = []
 
-  const series = sorted.map((row) => {
+  const series = sorted.map(row => {
     const operating = row.operatingCashFlow ?? 0
     const investing = row.investingCashFlow ?? 0
     const financing = row.financingCashFlow ?? 0
-    const net = row.netCashFlow ?? (operating + investing + financing)
+    const net = row.netCashFlow ?? operating + investing + financing
     runningBalance += net
     runningBalances.push({ date: row.date, balance: runningBalance })
     return {
@@ -178,7 +196,7 @@ function calculateCashFlowInsights(rows) {
     { operating: 0, investing: 0, financing: 0, net: 0 }
   )
 
-  const shortfallDays = runningBalances.filter((entry) => entry.balance < 0)
+  const shortfallDays = runningBalances.filter(entry => entry.balance < 0)
 
   return {
     series,
@@ -212,7 +230,9 @@ export function useWorkingCapitalData(period = 'current') {
       const previousEntry = workingCapitalData.length > 1 ? workingCapitalData[1] : null
 
       if (!latestEntry) {
-        throw new Error('Working capital records are not yet available. Ingest financial data to enable this dashboard.')
+        throw new Error(
+          'Working capital records are not yet available. Ingest financial data to enable this dashboard.'
+        )
       }
 
       const summary = deriveSummary(latestEntry, previousEntry)
@@ -262,7 +282,7 @@ export function useWorkingCapitalData(period = 'current') {
     }
 
     const inventory = {
-      total: payload.latestEntry.inventory ?? (payload.dashboardSummary?.inventory?.value ?? null),
+      total: payload.latestEntry.inventory ?? payload.dashboardSummary?.inventory?.value ?? null,
       dio: payload.latestEntry.dio ?? null,
     }
 

@@ -9,7 +9,7 @@ class APIClient {
     this.mcpServerURL = this.getMCPServerURL()
     this.defaultHeaders = {
       'Content-Type': 'application/json',
-      'Accept': 'application/json',
+      Accept: 'application/json',
     }
   }
 
@@ -18,17 +18,17 @@ class APIClient {
    */
   getBaseURL() {
     const envURL = import.meta.env.VITE_API_BASE_URL
-    
+
     // If no environment URL, use relative /api
     if (!envURL) {
       return '/api'
     }
-    
+
     // If it's already a relative path, use it
     if (envURL.startsWith('/')) {
       return envURL
     }
-    
+
     // If it's a full URL, ensure it ends properly
     return envURL.endsWith('/') ? envURL.slice(0, -1) : envURL
   }
@@ -39,7 +39,7 @@ class APIClient {
   getMCPServerURL() {
     // Environment-specific MCP server URLs
     const hostname = window.location.hostname
-    
+
     if (hostname.includes('development') || hostname.includes('621h')) {
       return 'https://sentia-mcp-production.onrender.com'
     } else if (hostname.includes('test')) {
@@ -47,7 +47,7 @@ class APIClient {
     } else if (hostname.includes('production')) {
       return 'https://sentia-mcp-production.onrender.com'
     }
-    
+
     // Default to localhost for local development
     return 'http://localhost:3001'
   }
@@ -58,12 +58,15 @@ class APIClient {
   async request(endpoint, options = {}) {
     // Determine if this should go to MCP server
     const shouldUseMCP = this.shouldUseMCPServer(endpoint)
-    
+
     if (shouldUseMCP) {
       try {
         return await this.requestMCP(endpoint, options)
       } catch (mcpError) {
-        console.warn(`[APIClient] MCP server request failed, falling back to main server:`, mcpError.message)
+        console.warn(
+          `[APIClient] MCP server request failed, falling back to main server:`,
+          mcpError.message
+        )
         // Fall back to main server
         return await this.requestMain(endpoint, options)
       }
@@ -80,11 +83,11 @@ class APIClient {
   shouldUseMCPServer(endpoint) {
     // Temporarily disable MCP routing - all requests go to main server
     return false
-    
+
     // TODO: Restore this logic once MCP server integrations are working:
     // const mcpEndpoints = [
     //   '/api/financial/kpi-summary',
-    //   '/api/sales/product-performance', 
+    //   '/api/sales/product-performance',
     //   '/api/financial/pl-analysis'
     // ]
     // return mcpEndpoints.some(mcpEndpoint => endpoint.includes(mcpEndpoint))
@@ -108,15 +111,15 @@ class APIClient {
     }
 
     const url = `${this.mcpServerURL}${mcpEndpoint}`
-    
+
     // Add required MCP server headers
     const mcpHeaders = {
       'x-dashboard-version': '2.0.0',
       'x-correlation-id': this.generateCorrelationId(),
       ...this.defaultHeaders,
-      ...options.headers
+      ...options.headers,
     }
-    
+
     const config = {
       headers: mcpHeaders,
       ...options,
@@ -124,7 +127,7 @@ class APIClient {
 
     try {
       const response = await fetch(url, config)
-      
+
       if (!response.ok) {
         throw new Error(`MCP Server Error: ${response.status} ${response.statusText}`)
       }
@@ -133,7 +136,7 @@ class APIClient {
       if (contentType && contentType.includes('application/json')) {
         return await response.json()
       }
-      
+
       return await response.text()
     } catch (error) {
       console.error(`[APIClient] MCP request failed for ${endpoint}:`, error)
@@ -161,7 +164,7 @@ class APIClient {
       const path = endpoint.startsWith('/') ? endpoint : `/${endpoint}`
       url = `${base}${path}`
     }
-    
+
     const config = {
       headers: { ...this.defaultHeaders, ...options.headers },
       ...options,
@@ -170,7 +173,7 @@ class APIClient {
     try {
       console.log(`[APIClient] Making request to: ${url}`)
       const response = await fetch(url, config)
-      
+
       if (!response.ok) {
         throw new Error(`API Error: ${response.status}`)
       }
@@ -179,7 +182,7 @@ class APIClient {
       if (contentType && contentType.includes('application/json')) {
         return await response.json()
       }
-      
+
       return await response.text()
     } catch (error) {
       console.error(`[APIClient] Main server request failed for ${url}:`, error)
@@ -191,30 +194,30 @@ class APIClient {
   async get(endpoint, options = {}) {
     // Extract params from options if provided
     const { params = {}, ...restOptions } = options
-    
+
     // Handle query parameters properly
     let queryString = ''
     if (params && Object.keys(params).length > 0) {
       const searchParams = new URLSearchParams()
-      
+
       Object.keys(params).forEach(key => {
         const value = params[key]
         if (value !== undefined && value !== null) {
           // Handle different types of values
           if (typeof value === 'object') {
             // Serialize objects and arrays properly
-            searchParams.append('params', JSON.stringify({[key]: value}))
+            searchParams.append('params', JSON.stringify({ [key]: value }))
           } else {
             searchParams.append(key, String(value))
           }
         }
       })
-      
+
       if (searchParams.toString()) {
         queryString = '?' + searchParams.toString()
       }
     }
-    
+
     const fullEndpoint = endpoint + queryString
     return this.request(fullEndpoint, { method: 'GET', ...restOptions })
   }

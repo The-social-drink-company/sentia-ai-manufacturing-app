@@ -1,6 +1,7 @@
 # Sentia Manufacturing Dashboard - Comprehensive Codebase Index
 
 ## Overview
+
 This is a comprehensive index of the Sentia Manufacturing Dashboard codebase, documenting all directories, key files, component hierarchy, API endpoints, services, and dependencies.
 
 **Project Type**: Full-Stack Node.js Application with AI Integration
@@ -44,6 +45,7 @@ This is a comprehensive index of the Sentia Manufacturing Dashboard codebase, do
 - **Model Context Protocol (MCP) Server** for AI orchestration
 
 ### Key Features
+
 - 🔥 **World-Class Enterprise Navigation System**
 - 🤖 **AI Central Nervous System** (MCP Server integration)
 - 💰 **Advanced Working Capital Analytics**
@@ -56,6 +58,7 @@ This is a comprehensive index of the Sentia Manufacturing Dashboard codebase, do
 ## 🏗 Architecture
 
 ### Full-Stack Node.js Architecture
+
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
 │   React/Vite    │    │  Node.js/Express│    │ MCP AI Server   │
@@ -71,6 +74,7 @@ This is a comprehensive index of the Sentia Manufacturing Dashboard codebase, do
 ```
 
 ### Tech Stack Summary
+
 - **Frontend:** React 18, Vite 4, Tailwind CSS, TanStack Query
 - **Backend:** Node.js, Express, Prisma ORM
 - **Database:** PostgreSQL (Neon) with 40+ models
@@ -176,28 +180,29 @@ C:\Projects\Sentia Manufacturing Dashboard\sentia-manufacturing-dashboard\
 
 ### Essential Configuration Files
 
-| File | Purpose | Key Features |
-|------|---------|--------------|
-| `package.json` | Dependencies & scripts | 110+ scripts, 220+ dependencies |
-| `server.js` | Main Express server (191KB) | Railway deployment, MCP integration |
-| `App.jsx` | React root component | 90+ routes, lazy loading, error boundaries |
-| `vite.config.js` | Vite build configuration | Advanced chunk splitting, optimization |
-| `tailwind.config.js` | Tailwind CSS config | Sentia brand colors, custom animations |
-| `eslint.config.js` | Code quality configuration | Environment-specific rules |
-| `prisma/schema.prisma` | Database schema | 40+ models, global readiness support |
+| File                   | Purpose                     | Key Features                               |
+| ---------------------- | --------------------------- | ------------------------------------------ |
+| `package.json`         | Dependencies & scripts      | 110+ scripts, 220+ dependencies            |
+| `server.js`            | Main Express server (191KB) | Railway deployment, MCP integration        |
+| `App.jsx`              | React root component        | 90+ routes, lazy loading, error boundaries |
+| `vite.config.js`       | Vite build configuration    | Advanced chunk splitting, optimization     |
+| `tailwind.config.js`   | Tailwind CSS config         | Sentia brand colors, custom animations     |
+| `eslint.config.js`     | Code quality configuration  | Environment-specific rules                 |
+| `prisma/schema.prisma` | Database schema             | 40+ models, global readiness support       |
 
 ### Main Entry Points
 
-| Entry Point | Port | Purpose | Key Features |
-|-------------|------|---------|--------------|
-| `src/App.jsx` | 3000 | React frontend | World-class dashboard, 90+ routes |
-| `server.js` | 5000 | Express API | REST endpoints, SSE, Railway deployment |
-| `mcp-server/enterprise-server-simple.js` | 3001 | AI orchestration | Multi-LLM, unified API interface |
-| `railway-ultimate.js` | $PORT | Production server | Railway-optimized startup |
+| Entry Point                              | Port  | Purpose           | Key Features                            |
+| ---------------------------------------- | ----- | ----------------- | --------------------------------------- |
+| `src/App.jsx`                            | 3000  | React frontend    | World-class dashboard, 90+ routes       |
+| `server.js`                              | 5000  | Express API       | REST endpoints, SSE, Railway deployment |
+| `mcp-server/enterprise-server-simple.js` | 3001  | AI orchestration  | Multi-LLM, unified API interface        |
+| `railway-ultimate.js`                    | $PORT | Production server | Railway-optimized startup               |
 
 ## 🎨 Frontend Components
 
 ### Layout Components
+
 ```
 src/components/layout/
 ├── Header.jsx                     # Enterprise navigation header
@@ -208,6 +213,7 @@ src/components/layout/
 ```
 
 ### Core Dashboard Components
+
 ```
 src/components/
 ├── analytics/
@@ -229,6 +235,7 @@ src/components/
 ```
 
 ### Page Components
+
 ```
 src/pages/
 ├── LandingPage.jsx                # Public marketing page
@@ -239,6 +246,7 @@ src/pages/
 ```
 
 ### Widget System (35+ Dashboard Widgets)
+
 ```
 src/components/widgets/
 ├── KPIStrip.jsx                   # Key performance indicators strip
@@ -262,6 +270,7 @@ src/components/widgets/
 ## ⚙️ Backend Services
 
 ### Core API Services
+
 ```
 services/
 ├── auth/
@@ -287,6 +296,7 @@ services/
 ```
 
 ### AI & Machine Learning Services
+
 ```
 services/ai/
 ├── predictiveMaintenance.js       # Equipment maintenance prediction
@@ -297,6 +307,7 @@ services/ai/
 ```
 
 ### External API Integrations
+
 ```
 services/api/
 ├── amazon.js                      # Amazon SP-API integration
@@ -307,6 +318,7 @@ services/api/
 ```
 
 ### MCP Server (AI Central Nervous System)
+
 ```
 mcp-server/
 ├── enterprise-server-simple.js   # Main MCP server implementation
@@ -321,6 +333,7 @@ mcp-server/
 ```
 
 ### Authentication & Security
+
 ```
 src/components/auth/
 ├── SimpleAuth.jsx                 # Main authentication wrapper
@@ -333,6 +346,7 @@ src/components/auth/
 ```
 
 ### State Management
+
 ```
 src/stores/
 └── layoutStore.js                 # Dashboard layout persistence
@@ -348,6 +362,7 @@ src/hooks/
 ### Core Models (40+ Tables)
 
 #### User Management & Authentication
+
 ```sql
 -- User management with enterprise RBAC
 users (26 fields)                  # User accounts, roles, permissions
@@ -358,6 +373,7 @@ sso_providers                      # Single sign-on configuration
 ```
 
 #### Manufacturing Data Models
+
 ```sql
 -- Core manufacturing entities
 products (22 fields)              # Product catalog & specifications
@@ -368,6 +384,7 @@ inventory_levels (32 fields)      # Multi-location inventory tracking
 ```
 
 #### Financial Models
+
 ```sql
 -- Working capital & financial planning
 working_capital (45 fields)       # Working capital projections
@@ -378,6 +395,7 @@ wc_projections, wc_kpis           # Working capital analytics
 ```
 
 #### Global Readiness Models
+
 ```sql
 -- Multi-entity, multi-currency support
 entities                          # Business entities (subsidiaries)
@@ -387,6 +405,7 @@ vat_rates, sales_tax_us          # Tax rate management
 ```
 
 #### AI & Automation Models
+
 ```sql
 -- Agentic AI system
 agent_runs, agent_steps           # AI agent execution tracking
@@ -396,6 +415,7 @@ agent_policies                    # AI safety & governance
 ```
 
 ### Key Relationships
+
 - **Users** → **Multiple entities** (multi-entity support)
 - **Products** → **Markets** → **Sales Channels** (hierarchical structure)
 - **Historical Sales** → **Forecasts** (ML pipeline)
@@ -405,6 +425,7 @@ agent_policies                    # AI safety & governance
 ## 🌐 API Endpoints
 
 ### Authentication & User Management
+
 ```
 POST   /api/auth/login             # User authentication
 POST   /api/auth/logout            # Session termination
@@ -414,6 +435,7 @@ GET    /api/auth/permissions       # User permissions & roles
 ```
 
 ### Forecasting Endpoints
+
 ```
 GET    /api/forecasting/accuracy/trends        # Forecast accuracy analytics
 POST   /api/forecasting/generate               # Generate new forecasts
@@ -423,6 +445,7 @@ GET    /api/forecasting/performance/{model}    # Model performance metrics
 ```
 
 ### Working Capital Management
+
 ```
 GET    /api/working-capital/projections        # Working capital projections
 POST   /api/working-capital/optimize           # Optimization recommendations
@@ -432,6 +455,7 @@ GET    /api/working-capital/reports            # Executive reporting
 ```
 
 ### Optimization & Analytics
+
 ```
 GET    /api/optimization/inventory              # Inventory optimization
 POST   /api/optimization/production            # Production scheduling
@@ -440,6 +464,7 @@ POST   /api/optimization/validate              # Validate optimization results
 ```
 
 ### Data Import & Management
+
 ```
 POST   /api/data-import/upload                 # File upload & validation
 GET    /api/data-import/templates              # Import templates
@@ -449,6 +474,7 @@ GET    /api/data-import/errors/{jobId}         # Import error details
 ```
 
 ### Health & Monitoring
+
 ```
 GET    /api/health                            # System health check
 GET    /api/health/comprehensive              # Detailed system status
@@ -461,7 +487,8 @@ GET    /api/metrics                           # System performance metrics
 
 ### Environment Variables
 
-#### Frontend Configuration (Vite - VITE_ prefix)
+#### Frontend Configuration (Vite - VITE\_ prefix)
+
 ```env
 VITE_CLERK_PUBLISHABLE_KEY         # Clerk authentication (required)
 VITE_API_BASE_URL                  # Backend API endpoint
@@ -470,6 +497,7 @@ VITE_APP_VERSION                   # Version display
 ```
 
 #### Backend Configuration (Node.js)
+
 ```env
 # Core Configuration
 NODE_ENV                           # Environment mode
@@ -492,6 +520,7 @@ XERO_CLIENT_SECRET
 ```
 
 #### MCP Server Configuration (AI Central Nervous System)
+
 ```env
 # AI Provider Keys
 ANTHROPIC_API_KEY                 # Claude 3.5 Sonnet (required)
@@ -508,6 +537,7 @@ LOG_LEVEL                         # Logging level (default: info)
 ```
 
 ### Configuration Files
+
 ```
 ├── 📄 .env.template              # Environment variable template
 ├── 📄 .env.development.template  # Development environment template
@@ -523,6 +553,7 @@ LOG_LEVEL                         # Logging level (default: info)
 ## 🚀 Build & Deployment
 
 ### Build Scripts
+
 ```json
 {
   "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
@@ -538,6 +569,7 @@ LOG_LEVEL                         # Logging level (default: info)
 ### Railway Deployment Configuration
 
 #### Nixpacks Configuration (`nixpacks.toml`)
+
 ```toml
 [phases.setup]
 nixPkgs = ['nodejs_22']
@@ -552,22 +584,25 @@ cmd = 'npm start'
 ### Deployment Structure
 
 #### Main Application Project
+
 **Project ID:** `b9ca1af1-13c5-4ced-9ab6-68fddd73fc8f`
 
-| Environment | Service ID | URL |
-|-------------|------------|-----|
+| Environment | Service ID                             | URL                                                       |
+| ----------- | -------------------------------------- | --------------------------------------------------------- |
 | Development | `f97b65ad-c306-410a-9d5d-5f5fdc098620` | sentia-manufacturing-dashboard-development.up.railway.app |
-| Testing | `02e0c7f6-9ca1-4355-af52-ee9eec0b3545` | sentiatest.financeflo.ai |
-| Production | `3e0053fc-ea90-49ec-9708-e09d58cad4a0` | web-production-1f10.up.railway.app |
+| Testing     | `02e0c7f6-9ca1-4355-af52-ee9eec0b3545` | sentiatest.financeflo.ai                                  |
+| Production  | `3e0053fc-ea90-49ec-9708-e09d58cad4a0` | web-production-1f10.up.railway.app                        |
 
 #### MCP Server Project (AI Central Nervous System)
+
 **Project ID:** `3adb1ac4-84d8-473b-885f-3a9790fe6140`
 
-| Service | Service ID | URL |
-|---------|------------|-----|
+| Service    | Service ID                             | URL                                    |
+| ---------- | -------------------------------------- | -------------------------------------- |
 | MCP Server | `99691282-de66-45b2-98cf-317083dd11ba` | web-production-99691282.up.railway.app |
 
 ### Build Performance Metrics
+
 - **Build Time:** 9-11 seconds consistently
 - **Bundle Size:** ~1.7MB total, ~450KB gzipped
 - **Code Splitting:** 12+ optimized chunks
@@ -578,30 +613,33 @@ cmd = 'npm start'
 ### Test Configuration
 
 #### Vitest (Unit Testing)
+
 ```javascript
 // vitest.config.js
 export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
-    setupFiles: './src/test/setup.js'
-  }
+    setupFiles: './src/test/setup.js',
+  },
 })
 ```
 
 #### Playwright (E2E Testing)
+
 ```javascript
 // playwright.config.js
 export default {
   testDir: './tests',
   projects: [
     { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
-    { name: 'webkit', use: { ...devices['Desktop Safari'] } }
-  ]
+    { name: 'webkit', use: { ...devices['Desktop Safari'] } },
+  ],
 }
 ```
 
 ### Test Scripts
+
 ```json
 {
   "test": "vitest",
@@ -614,6 +652,7 @@ export default {
 ```
 
 ### Test Structure
+
 ```
 tests/
 ├── 📁 unit/                      # Unit tests
@@ -626,6 +665,7 @@ tests/
 ```
 
 ### Autonomous Testing System
+
 - **`tests/autonomous/autonomous-scheduler.js`** - AI-powered test orchestration
 - **`tests/autonomous/master-test-suite.js`** - Comprehensive test coverage
 - **24/7 Testing Service** - Continuous quality assurance
@@ -636,6 +676,7 @@ tests/
 ### Production Dependencies (Key Highlights) - 220+ Total Packages
 
 #### Frontend Framework & UI
+
 ```json
 {
   "react": "^18.2.0",
@@ -649,6 +690,7 @@ tests/
 ```
 
 #### Authentication & Security
+
 ```json
 {
   "@clerk/clerk-react": "^5.46.1",
@@ -661,6 +703,7 @@ tests/
 ```
 
 #### Database & ORM
+
 ```json
 {
   "@prisma/client": "^6.15.0",
@@ -670,6 +713,7 @@ tests/
 ```
 
 #### AI & Machine Learning
+
 ```json
 {
   "openai": "^4.20.0",
@@ -680,6 +724,7 @@ tests/
 ```
 
 #### External API Integrations
+
 ```json
 {
   "amazon-sp-api": "^1.1.6",
@@ -690,6 +735,7 @@ tests/
 ```
 
 #### Charts & Visualization
+
 ```json
 {
   "recharts": "^2.15.4",
@@ -702,6 +748,7 @@ tests/
 ### Development Dependencies
 
 #### Build Tools & Bundling
+
 ```json
 {
   "vite": "^7.1.5",
@@ -711,6 +758,7 @@ tests/
 ```
 
 #### Testing Framework
+
 ```json
 {
   "vitest": "^3.2.4",
@@ -721,6 +769,7 @@ tests/
 ```
 
 #### Code Quality & Linting
+
 ```json
 {
   "eslint": "^8.57.1",
@@ -731,6 +780,7 @@ tests/
 ```
 
 ### Dependency Summary
+
 - **Total Dependencies:** 220+ packages
 - **Production Dependencies:** 115+ packages
 - **Development Dependencies:** 65+ packages
@@ -740,12 +790,14 @@ tests/
 ## 💻 Development Environment
 
 ### Prerequisites
+
 - **Node.js:** >=20.19.0 (specified in package.json)
 - **npm:** Latest version (comes with Node.js)
 - **PostgreSQL:** Neon cloud database
 - **Git:** Version control
 
 ### Development Setup
+
 ```bash
 # 1. Install dependencies
 npm install
@@ -767,6 +819,7 @@ npm run mcp:start            # MCP server only (port 3001)
 ```
 
 ### Development Commands
+
 ```bash
 # Development
 npm run dev                   # Start full-stack development
@@ -790,16 +843,18 @@ npm run test:e2e            # End-to-end tests
 ```
 
 ### Port Configuration
-| Service | Port | Purpose |
-|---------|------|---------|
-| Vite Dev Server | 3000 | React frontend development |
-| Express API | 5000 | Backend API server |
-| MCP Server | 3001 | AI Central Nervous System |
-| Prisma Studio | 5555 | Database GUI (when running) |
+
+| Service         | Port | Purpose                     |
+| --------------- | ---- | --------------------------- |
+| Vite Dev Server | 3000 | React frontend development  |
+| Express API     | 5000 | Backend API server          |
+| MCP Server      | 3001 | AI Central Nervous System   |
+| Prisma Studio   | 5555 | Database GUI (when running) |
 
 ### IDE Configuration
 
 #### VSCode Extensions (Recommended)
+
 - **ESLint** - Code quality and consistency
 - **Prettier** - Code formatting
 - **Prisma** - Database schema support
@@ -807,6 +862,7 @@ npm run test:e2e            # End-to-end tests
 - **ES7+ React/Redux/React-Native snippets** - React snippets
 
 #### VSCode Settings
+
 ```json
 {
   "editor.formatOnSave": true,
@@ -822,6 +878,7 @@ npm run test:e2e            # End-to-end tests
 ### Current Status (September 18, 2025)
 
 #### ✅ Ready for Client Delivery
+
 - ✅ **Enterprise Navigation System** - Complete with 9-section sidebar
 - ✅ **Functional Buttons** - All Export, Save, Share buttons working
 - ✅ **What-If Analysis** - Accessible at `/what-if` route
@@ -833,6 +890,7 @@ npm run test:e2e            # End-to-end tests
 - ✅ **Performance Optimization** - Build time 9-11 seconds, optimized bundles
 
 #### ⚠️ Issues Requiring Resolution
+
 - ❌ **Render Production Deployments** - Service connectivity issues in production
 - ❌ **API Endpoints** - Environment variable loading issues in production
 - ❌ **External Services** - Service integration verification needed
@@ -842,6 +900,7 @@ npm run test:e2e            # End-to-end tests
 ### Deployment Checklist
 
 #### Pre-Deployment
+
 - [ ] Environment variables configured
 - [ ] Database migrations applied
 - [ ] Security vulnerabilities addressed
@@ -849,6 +908,7 @@ npm run test:e2e            # End-to-end tests
 - [ ] External service integrations verified
 
 #### Production Readiness
+
 - [ ] Railway environment configuration fixed
 - [ ] Health checks returning proper JSON responses
 - [ ] All external APIs connected (Xero, Shopify, Amazon)
@@ -858,6 +918,7 @@ npm run test:e2e            # End-to-end tests
 ### Enterprise Git Workflow
 
 #### Branch Strategy (Render Platform)
+
 - **`development`** - Primary development branch
   - URL: sentia-manufacturing-development.onrender.com
 - **`test`** - User acceptance testing environment
@@ -868,6 +929,7 @@ npm run test:e2e            # End-to-end tests
   - URL: mcp-server-tkyu.onrender.com
 
 #### Quality Gates
+
 ```
 Development → Test:
 ✅ All features implemented and functional
@@ -887,12 +949,14 @@ Test → Production:
 ## 📞 Support & Documentation
 
 ### Additional Documentation
+
 - **`CLAUDE.md`** - Comprehensive development guidelines (35KB)
 - **`README.md`** - Project overview and setup (20KB)
 - **`ENTERPRISE_GIT_WORKFLOW.md`** - Git workflow documentation
 - **`context/`** - Technical specifications and business requirements
 
 ### Development Guidelines
+
 - Follow structured logging patterns (no console.log in production)
 - Use ASCII-compatible characters in console output
 - Implement proper error boundaries and fallback mechanisms
@@ -900,6 +964,7 @@ Test → Production:
 - Regular security audits and dependency updates
 
 ### Architecture Principles
+
 - **Context-Driven Development** - Reference context files for consistency
 - **Enterprise Security** - RBAC, audit logging, security middleware
 - **Global Readiness** - Multi-entity, multi-currency, multi-region support
@@ -908,9 +973,10 @@ Test → Production:
 
 ---
 
-*This comprehensive codebase index reflects the state of the Sentia Manufacturing Dashboard as of September 18, 2025, including complete analysis of 180+ React components, 25+ API endpoints, 47+ database models, and 7 external integrations. For the most current information, refer to the git commit history and deployment logs.*
+_This comprehensive codebase index reflects the state of the Sentia Manufacturing Dashboard as of September 18, 2025, including complete analysis of 180+ React components, 25+ API endpoints, 47+ database models, and 7 external integrations. For the most current information, refer to the git commit history and deployment logs._
 
 **Key Statistics:**
+
 - **180+ React Components** across 15 feature areas
 - **25+ API Endpoints** with full CRUD operations
 - **47+ Database Models** with comprehensive relationships

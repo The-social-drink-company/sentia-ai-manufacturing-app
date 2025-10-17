@@ -17,11 +17,14 @@
    https://sentia-mcp-server.onrender.com
 
 ## API Endpoints:
+
 - Health: https://sentia-mcp-server.onrender.com/health
 - MCP Status: https://sentia-mcp-server.onrender.com/mcp/status
 - AI Request: https://sentia-mcp-server.onrender.com/mcp/ai/request
 
 ## Connection from Main App:
+
 Update these environment variables in your main services:
+
 - MCP_SERVER_URL=https://sentia-mcp-server.onrender.com
 - MCP_JWT_SECRET=[same as MCP server]

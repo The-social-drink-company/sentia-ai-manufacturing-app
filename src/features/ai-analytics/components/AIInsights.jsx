@@ -7,7 +7,7 @@ import {
   EyeIcon,
   PlayIcon,
   ClockIcon,
-  FireIcon
+  FireIcon,
 } from '@heroicons/react/24/solid'
 import { useAIMetrics } from '../hooks/useAIMetrics'
 
@@ -16,7 +16,7 @@ const AIInsights = memo(function AIInsights({ onInsightClick, onActionClick }) {
   const [selectedSeverity, setSelectedSeverity] = useState('all')
   const { data: aiMetrics, loading, error } = useAIMetrics()
 
-  const getSeverityIcon = (severity) => {
+  const getSeverityIcon = severity => {
     switch (severity) {
       case 'high':
         return <ExclamationTriangleIcon className="h-5 w-5 text-red-500" />
@@ -29,7 +29,7 @@ const AIInsights = memo(function AIInsights({ onInsightClick, onActionClick }) {
     }
   }
 
-  const getTypeIcon = (type) => {
+  const getTypeIcon = type => {
     switch (type) {
       case 'anomaly':
         return <ExclamationTriangleIcon className="h-4 w-4" />
@@ -44,7 +44,7 @@ const AIInsights = memo(function AIInsights({ onInsightClick, onActionClick }) {
     }
   }
 
-  const getSeverityColor = (severity) => {
+  const getSeverityColor = severity => {
     switch (severity) {
       case 'high':
         return 'border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-900/20'
@@ -57,19 +57,20 @@ const AIInsights = memo(function AIInsights({ onInsightClick, onActionClick }) {
     }
   }
 
-  const getConfidenceColor = (confidence) => {
+  const getConfidenceColor = confidence => {
     if (confidence >= 90) return 'text-green-600 dark:text-green-400'
     if (confidence >= 70) return 'text-blue-600 dark:text-blue-400'
     return 'text-yellow-600 dark:text-yellow-400'
   }
 
-  const filteredInsights = aiMetrics?.insights?.filter(insight => {
-    const categoryMatch = selectedCategory === 'all' || insight.category === selectedCategory
-    const severityMatch = selectedSeverity === 'all' || insight.severity === selectedSeverity
-    return categoryMatch && severityMatch
-  }) || []
+  const filteredInsights =
+    aiMetrics?.insights?.filter(insight => {
+      const categoryMatch = selectedCategory === 'all' || insight.category === selectedCategory
+      const severityMatch = selectedSeverity === 'all' || insight.severity === selectedSeverity
+      return categoryMatch && severityMatch
+    }) || []
 
-  const getTimeAgo = (_timestamp) => {
+  const getTimeAgo = _timestamp => {
     const now = new Date()
     const time = new Date(timestamp)
     const diffInMinutes = Math.floor((now - time) / (1000 * 60))
@@ -153,8 +154,12 @@ const AIInsights = memo(function AIInsights({ onInsightClick, onActionClick }) {
               <p className="text-sm text-gray-600 dark:text-gray-400">Avg Confidence</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">
                 {aiMetrics?.insights?.length > 0
-                  ? Math.round(aiMetrics.insights.reduce((sum, i) => sum + i.confidence, 0) / aiMetrics.insights.length)
-                  : 0}%
+                  ? Math.round(
+                      aiMetrics.insights.reduce((sum, i) => sum + i.confidence, 0) /
+                        aiMetrics.insights.length
+                    )
+                  : 0}
+                %
               </p>
             </div>
           </div>
@@ -169,7 +174,7 @@ const AIInsights = memo(function AIInsights({ onInsightClick, onActionClick }) {
             </label>
             <select
               value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
+              onChange={e => setSelectedCategory(e.target.value)}
               className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-sm"
             >
               <option value="all">All Categories</option>
@@ -187,7 +192,7 @@ const AIInsights = memo(function AIInsights({ onInsightClick, onActionClick }) {
             </label>
             <select
               value={selectedSeverity}
-              onChange={(e) => setSelectedSeverity(e.target.value)}
+              onChange={e => setSelectedSeverity(e.target.value)}
               className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-sm"
             >
               <option value="all">All Severities</option>
@@ -209,13 +214,15 @@ const AIInsights = memo(function AIInsights({ onInsightClick, onActionClick }) {
         {filteredInsights.length === 0 ? (
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-8 text-center">
             <EyeIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No insights found</h3>
+            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+              No insights found
+            </h3>
             <p className="text-gray-600 dark:text-gray-400">
               Try adjusting your filters or check back later for new insights.
             </p>
           </div>
         ) : (
-          filteredInsights.map((insight) => (
+          filteredInsights.map(insight => (
             <div
               key={insight.id}
               className={`border rounded-lg p-6 ${getSeverityColor(insight.severity)} hover:shadow-md transition-shadow cursor-pointer`}
@@ -255,7 +262,7 @@ const AIInsights = memo(function AIInsights({ onInsightClick, onActionClick }) {
                   </div>
 
                   <button
-                    onClick={(e) => {
+                    onClick={e => {
                       e.stopPropagation()
                       onActionClick && onActionClick(insight)
                     }}
@@ -267,17 +274,13 @@ const AIInsights = memo(function AIInsights({ onInsightClick, onActionClick }) {
                 </div>
               </div>
 
-              <p className="text-gray-700 dark:text-gray-300 mb-4">
-                {insight.description}
-              </p>
+              <p className="text-gray-700 dark:text-gray-300 mb-4">{insight.description}</p>
 
               <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
                 <h4 className="text-sm font-medium text-blue-800 dark:text-blue-200 mb-1">
                   Recommended Action:
                 </h4>
-                <p className="text-sm text-blue-700 dark:text-blue-300">
-                  {insight.recommendation}
-                </p>
+                <p className="text-sm text-blue-700 dark:text-blue-300">{insight.recommendation}</p>
               </div>
             </div>
           ))

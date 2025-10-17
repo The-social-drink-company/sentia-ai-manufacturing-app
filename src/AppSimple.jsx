@@ -9,12 +9,8 @@ function AppSimple() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       <div className="container mx-auto px-4 py-16">
         <div className="text-center mb-12">
-          <h1 className="text-5xl font-bold text-gray-900 mb-4">
-            Sentia Manufacturing Dashboard
-          </h1>
-          <p className="text-xl text-gray-600">
-            Enterprise Working Capital Intelligence Platform
-          </p>
+          <h1 className="text-5xl font-bold text-gray-900 mb-4">Sentia Manufacturing Dashboard</h1>
+          <p className="text-xl text-gray-600">Enterprise Working Capital Intelligence Platform</p>
         </div>
 
         <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-xl p-8">
@@ -40,9 +36,7 @@ function AppSimple() {
             >
               Access Dashboard
             </button>
-            <p className="mt-4 text-sm text-gray-500">
-              No authentication required (Demo Mode)
-            </p>
+            <p className="mt-4 text-sm text-gray-500">No authentication required (Demo Mode)</p>
           </div>
         </div>
 
@@ -118,8 +112,8 @@ function AppSimple() {
 
         <div className="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-4">
           <p className="text-sm text-blue-800">
-            <strong>Demo Mode:</strong> This is a simplified version without authentication.
-            Full features available in production mode.
+            <strong>Demo Mode:</strong> This is a simplified version without authentication. Full
+            features available in production mode.
           </p>
         </div>
       </main>

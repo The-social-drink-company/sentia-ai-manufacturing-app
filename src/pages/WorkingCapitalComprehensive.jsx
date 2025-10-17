@@ -1,17 +1,61 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  LineChart, Line, AreaChart, Area, BarChart, Bar, ScatterChart, Scatter,
-  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
-  ComposedChart, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar,
-  PieChart, Pie, Cell, Treemap
-} from 'recharts';
-import { 
-  DollarSign, TrendingUp, TrendingDown, Calculator, Brain, Target,
-  Settings, Download, RefreshCw, AlertTriangle, CheckCircle, Play,
-  BarChart3, PieChart as PieChartIcon, Activity, Users, Package,
-  ArrowUpRight, ArrowDownRight, Lightbulb, Save, RotateCcw,
-  Sliders, Zap, Calendar, Filter, Search, Eye, EyeOff
-} from 'lucide-react';
+import React, { useState, useEffect } from 'react'
+import {
+  LineChart,
+  Line,
+  AreaChart,
+  Area,
+  BarChart,
+  Bar,
+  ScatterChart,
+  Scatter,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  ComposedChart,
+  RadarChart,
+  PolarGrid,
+  PolarAngleAxis,
+  PolarRadiusAxis,
+  Radar,
+  PieChart,
+  Pie,
+  Cell,
+  Treemap,
+} from 'recharts'
+import {
+  DollarSign,
+  TrendingUp,
+  TrendingDown,
+  Calculator,
+  Brain,
+  Target,
+  Settings,
+  Download,
+  RefreshCw,
+  AlertTriangle,
+  CheckCircle,
+  Play,
+  BarChart3,
+  PieChart as PieChartIcon,
+  Activity,
+  Users,
+  Package,
+  ArrowUpRight,
+  ArrowDownRight,
+  Lightbulb,
+  Save,
+  RotateCcw,
+  Sliders,
+  Zap,
+  Calendar,
+  Filter,
+  Search,
+  Eye,
+  EyeOff,
+} from 'lucide-react'
 
 const WorkingCapitalComprehensive = () => {
   const [scenarios, setScenarios] = useState({
@@ -24,31 +68,31 @@ const WorkingCapitalComprehensive = () => {
     creditTerms: 30,
     supplierTerms: 45,
     inventoryTurnover: 6.1,
-    cashConversionCycle: 75
-  });
+    cashConversionCycle: 75,
+  })
 
-  const [analysisData, setAnalysisData] = useState(null);
-  const [activeView, setActiveView] = useState('overview');
-  const [loading, setLoading] = useState(true);
-  const [calculating, setCalculating] = useState(false);
-  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [analysisData, setAnalysisData] = useState(null)
+  const [activeView, setActiveView] = useState('overview')
+  const [loading, setLoading] = useState(true)
+  const [calculating, setCalculating] = useState(false)
+  const [showAdvanced, setShowAdvanced] = useState(false)
 
   useEffect(() => {
-    loadWorkingCapitalData();
-  }, []);
+    loadWorkingCapitalData()
+  }, [])
 
   useEffect(() => {
     if (analysisData) {
-      calculateScenarioImpact();
+      calculateScenarioImpact()
     }
-  }, [scenarios, analysisData]);
+  }, [scenarios, analysisData])
 
   const loadWorkingCapitalData = async () => {
-    setLoading(true);
+    setLoading(true)
     try {
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      await new Promise(resolve => setTimeout(resolve, 1000))
+
       const data = {
         current: {
           cash: 285000,
@@ -58,43 +102,44 @@ const WorkingCapitalComprehensive = () => {
           workingCapital: 1070000,
           cashConversionCycle: 75,
           currentRatio: 2.1,
-          quickRatio: 1.4
+          quickRatio: 1.4,
         },
         historical: generateHistoricalData(),
         benchmarks: generateBenchmarkData(),
         cashFlow: generateCashFlowData(),
         components: generateComponentAnalysis(),
         forecasts: generateForecastData(),
-        risks: generateRiskAnalysis()
-      };
-      
-      setAnalysisData(data);
+        risks: generateRiskAnalysis(),
+      }
+
+      setAnalysisData(data)
     } catch (error) {
-      console.error('Failed to load working capital data:', error);
+      console.error('Failed to load working capital data:', error)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   const calculateScenarioImpact = async () => {
-    setCalculating(true);
-    
+    setCalculating(true)
+
     try {
-      await new Promise(resolve => setTimeout(resolve, 300));
-      
-      const current = analysisData.current;
-      const dailySales = (3170000 / 365); // Annual revenue / 365
-      
+      await new Promise(resolve => setTimeout(resolve, 300))
+
+      const current = analysisData.current
+      const dailySales = 3170000 / 365 // Annual revenue / 365
+
       // Calculate new working capital components
-      const newReceivables = dailySales * scenarios.receivablesDays;
-      const newInventory = (dailySales * scenarios.inventoryDays) * 0.7; // Cost of goods
-      const newPayables = (dailySales * scenarios.payablesDays) * 0.7;
-      
-      const newWorkingCapital = newReceivables + newInventory - newPayables;
-      const workingCapitalChange = newWorkingCapital - current.workingCapital;
-      
-      const newCashConversionCycle = scenarios.receivablesDays + scenarios.inventoryDays - scenarios.payablesDays;
-      
+      const newReceivables = dailySales * scenarios.receivablesDays
+      const newInventory = dailySales * scenarios.inventoryDays * 0.7 // Cost of goods
+      const newPayables = dailySales * scenarios.payablesDays * 0.7
+
+      const newWorkingCapital = newReceivables + newInventory - newPayables
+      const workingCapitalChange = newWorkingCapital - current.workingCapital
+
+      const newCashConversionCycle =
+        scenarios.receivablesDays + scenarios.inventoryDays - scenarios.payablesDays
+
       setAnalysisData(prev => ({
         ...prev,
         scenario: {
@@ -105,111 +150,111 @@ const WorkingCapitalComprehensive = () => {
           workingCapitalChange: workingCapitalChange,
           cashConversionCycle: newCashConversionCycle,
           cashImpact: -workingCapitalChange, // Negative WC change = positive cash impact
-          roi: (workingCapitalChange / current.workingCapital) * 100
-        }
-      }));
+          roi: (workingCapitalChange / current.workingCapital) * 100,
+        },
+      }))
     } catch (error) {
-      console.error('Failed to calculate scenario impact:', error);
+      console.error('Failed to calculate scenario impact:', error)
     } finally {
-      setCalculating(false);
+      setCalculating(false)
     }
-  };
+  }
 
   const generateHistoricalData = () => {
-    const months = [];
+    const months = []
     for (let i = 11; i >= 0; i--) {
-      const date = new Date();
-      date.setMonth(date.getMonth() - i);
-      
-      const baseWC = 1000000;
-      const seasonal = Math.sin((date.getMonth() / 12) * 2 * Math.PI) * 100000;
-      const trend = i * 5000;
-      const noise = (Math.random() - 0.5) * 50000;
-      
+      const date = new Date()
+      date.setMonth(date.getMonth() - i)
+
+      const baseWC = 1000000
+      const seasonal = Math.sin((date.getMonth() / 12) * 2 * Math.PI) * 100000
+      const trend = i * 5000
+      const noise = (Math.random() - 0.5) * 50000
+
       months.push({
         month: date.toLocaleString('default', { month: 'short' }),
         workingCapital: baseWC + seasonal + trend + noise,
         receivables: 400000 + seasonal * 0.4 + noise * 0.3,
         inventory: 650000 + seasonal * 0.6 + noise * 0.4,
         payables: 300000 + seasonal * 0.2 + noise * 0.2,
-        cashConversionCycle: 70 + (seasonal / 10000) + (noise / 20000),
-        currentRatio: 2.0 + (seasonal / 500000) + (noise / 1000000)
-      });
+        cashConversionCycle: 70 + seasonal / 10000 + noise / 20000,
+        currentRatio: 2.0 + seasonal / 500000 + noise / 1000000,
+      })
     }
-    return months;
-  };
+    return months
+  }
 
   const generateBenchmarkData = () => [
     { metric: 'Working Capital Ratio', current: 2.1, industry: 1.8, best: 2.5 },
     { metric: 'Cash Conversion Cycle', current: 75, industry: 85, best: 60 },
     { metric: 'Receivables Days', current: 45, industry: 50, best: 35 },
     { metric: 'Inventory Days', current: 60, industry: 70, best: 45 },
-    { metric: 'Payables Days', current: 30, industry: 35, best: 45 }
-  ];
+    { metric: 'Payables Days', current: 30, industry: 35, best: 45 },
+  ]
 
   const generateCashFlowData = () => {
-    const data = [];
+    const data = []
     for (let i = 0; i < 12; i++) {
-      const date = new Date();
-      date.setMonth(date.getMonth() + i);
-      
+      const date = new Date()
+      date.setMonth(date.getMonth() + i)
+
       data.push({
         month: date.toLocaleString('default', { month: 'short' }),
         operatingCashFlow: 180000 + (Math.random() - 0.5) * 40000,
         freeCashFlow: 120000 + (Math.random() - 0.5) * 30000,
         workingCapitalChange: (Math.random() - 0.5) * 50000,
-        capex: -45000 + (Math.random() - 0.5) * 20000
-      });
+        capex: -45000 + (Math.random() - 0.5) * 20000,
+      })
     }
-    return data;
-  };
+    return data
+  }
 
   const generateComponentAnalysis = () => [
-    { 
-      component: 'Accounts Receivable', 
-      current: 420000, 
-      optimal: 350000, 
+    {
+      component: 'Accounts Receivable',
+      current: 420000,
+      optimal: 350000,
       opportunity: 70000,
       days: 45,
       optimalDays: 35,
-      trend: 'stable'
+      trend: 'stable',
     },
-    { 
-      component: 'Inventory', 
-      current: 680000, 
-      optimal: 580000, 
+    {
+      component: 'Inventory',
+      current: 680000,
+      optimal: 580000,
       opportunity: 100000,
       days: 60,
       optimalDays: 45,
-      trend: 'increasing'
+      trend: 'increasing',
     },
-    { 
-      component: 'Accounts Payable', 
-      current: 315000, 
-      optimal: 420000, 
+    {
+      component: 'Accounts Payable',
+      current: 315000,
+      optimal: 420000,
       opportunity: -105000,
       days: 30,
       optimalDays: 40,
-      trend: 'stable'
-    }
-  ];
+      trend: 'stable',
+    },
+  ]
 
   const generateForecastData = () => {
-    const data = [];
+    const data = []
     for (let i = 0; i < 6; i++) {
-      const date = new Date();
-      date.setMonth(date.getMonth() + i);
-      
+      const date = new Date()
+      date.setMonth(date.getMonth() + i)
+
       data.push({
         month: date.toLocaleString('default', { month: 'short' }),
         baseline: 1070000 + i * 15000,
         optimistic: 1070000 + i * 25000,
         pessimistic: 1070000 + i * 5000,
-        target: 1000000
-      });
+        target: 1000000,
+      })
     }
-    return data;
-  };
+    return data
+  }
 
   const generateRiskAnalysis = () => [
     {
@@ -217,36 +262,36 @@ const WorkingCapitalComprehensive = () => {
       level: 'Medium',
       impact: 'High',
       probability: 'Low',
-      mitigation: 'Diversify customer base'
+      mitigation: 'Diversify customer base',
     },
     {
       risk: 'Seasonal Demand',
       level: 'High',
       impact: 'Medium',
       probability: 'High',
-      mitigation: 'Build inventory buffer'
+      mitigation: 'Build inventory buffer',
     },
     {
       risk: 'Supplier Delays',
       level: 'Medium',
       impact: 'Medium',
       probability: 'Medium',
-      mitigation: 'Multiple supplier strategy'
-    }
-  ];
+      mitigation: 'Multiple supplier strategy',
+    },
+  ]
 
-  const formatCurrency = (value) => {
+  const formatCurrency = value => {
     return new Intl.NumberFormat('en-GB', {
       style: 'currency',
       currency: 'GBP',
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
-    }).format(value);
-  };
+    }).format(value)
+  }
 
-  const formatPercent = (value) => {
-    return `${value > 0 ? '+' : ''}${value.toFixed(1)}%`;
-  };
+  const formatPercent = value => {
+    return `${value > 0 ? '+' : ''}${value.toFixed(1)}%`
+  }
 
   const resetScenarios = () => {
     setScenarios({
@@ -259,9 +304,9 @@ const WorkingCapitalComprehensive = () => {
       creditTerms: 30,
       supplierTerms: 45,
       inventoryTurnover: 6.1,
-      cashConversionCycle: 75
-    });
-  };
+      cashConversionCycle: 75,
+    })
+  }
 
   if (loading) {
     return (
@@ -271,10 +316,10 @@ const WorkingCapitalComprehensive = () => {
           <p className="text-gray-600">Loading Working Capital Intelligence...</p>
         </div>
       </div>
-    );
+    )
   }
 
-  const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#06B6D4'];
+  const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#06B6D4']
 
   return (
     <div className="space-y-6 p-6 bg-gray-50 min-h-screen">
@@ -317,8 +362,8 @@ const WorkingCapitalComprehensive = () => {
               { id: 'scenarios', label: 'Scenario Analysis', icon: Sliders },
               { id: 'forecasting', label: 'Cash Flow Forecast', icon: TrendingUp },
               { id: 'optimization', label: 'Optimization', icon: Target },
-              { id: 'benchmarks', label: 'Benchmarks', icon: Activity }
-            ].map((tab) => (
+              { id: 'benchmarks', label: 'Benchmarks', icon: Activity },
+            ].map(tab => (
               <button
                 key={tab.id}
                 onClick={() => setActiveView(tab.id)}
@@ -393,10 +438,9 @@ const WorkingCapitalComprehensive = () => {
                 {analysisData?.scenario ? 'Scenario Impact' : 'Free Cash Flow'}
               </p>
               <p className="text-3xl font-bold text-purple-900">
-                {analysisData?.scenario 
+                {analysisData?.scenario
                   ? formatCurrency(analysisData.scenario.cashImpact)
-                  : formatCurrency(120000)
-                }
+                  : formatCurrency(120000)}
               </p>
               <div className="flex items-center mt-2">
                 {analysisData?.scenario?.cashImpact > 0 ? (
@@ -404,13 +448,16 @@ const WorkingCapitalComprehensive = () => {
                 ) : (
                   <ArrowDownRight className="h-4 w-4 text-red-500" />
                 )}
-                <span className={`text-sm ml-1 ${
-                  analysisData?.scenario?.cashImpact > 0 ? 'text-green-600' : 'text-red-600'
-                }`}>
-                  {analysisData?.scenario 
-                    ? (analysisData.scenario.cashImpact > 0 ? 'Cash Positive' : 'Cash Negative')
-                    : 'Monthly'
-                  }
+                <span
+                  className={`text-sm ml-1 ${
+                    analysisData?.scenario?.cashImpact > 0 ? 'text-green-600' : 'text-red-600'
+                  }`}
+                >
+                  {analysisData?.scenario
+                    ? analysisData.scenario.cashImpact > 0
+                      ? 'Cash Positive'
+                      : 'Cash Negative'
+                    : 'Monthly'}
                 </span>
               </div>
             </div>
@@ -428,35 +475,35 @@ const WorkingCapitalComprehensive = () => {
               <ComposedChart data={analysisData?.historical || []}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="month" />
-                <YAxis tickFormatter={(value) => formatCurrency(value)} />
-                <Tooltip formatter={(value) => formatCurrency(value)} />
+                <YAxis tickFormatter={value => formatCurrency(value)} />
+                <Tooltip formatter={value => formatCurrency(value)} />
                 <Legend />
-                <Area 
-                  type="monotone" 
-                  dataKey="workingCapital" 
-                  stroke="#3B82F6" 
-                  fill="#3B82F6" 
+                <Area
+                  type="monotone"
+                  dataKey="workingCapital"
+                  stroke="#3B82F6"
+                  fill="#3B82F6"
                   fillOpacity={0.3}
                   name="Working Capital"
                 />
-                <Line 
-                  type="monotone" 
-                  dataKey="receivables" 
-                  stroke="#10B981" 
+                <Line
+                  type="monotone"
+                  dataKey="receivables"
+                  stroke="#10B981"
                   strokeWidth={2}
                   name="Receivables"
                 />
-                <Line 
-                  type="monotone" 
-                  dataKey="inventory" 
-                  stroke="#F59E0B" 
+                <Line
+                  type="monotone"
+                  dataKey="inventory"
+                  stroke="#F59E0B"
                   strokeWidth={2}
                   name="Inventory"
                 />
-                <Line 
-                  type="monotone" 
-                  dataKey="payables" 
-                  stroke="#EF4444" 
+                <Line
+                  type="monotone"
+                  dataKey="payables"
+                  stroke="#EF4444"
                   strokeWidth={2}
                   name="Payables"
                 />
@@ -471,11 +518,15 @@ const WorkingCapitalComprehensive = () => {
                 <div key={component.component} className="p-4 bg-gray-50 rounded-lg">
                   <div className="flex items-center justify-between mb-2">
                     <h4 className="font-semibold text-gray-900">{component.component}</h4>
-                    <span className={`px-2 py-1 rounded text-xs font-medium ${
-                      component.trend === 'increasing' ? 'bg-red-100 text-red-800' :
-                      component.trend === 'decreasing' ? 'bg-green-100 text-green-800' :
-                      'bg-gray-100 text-gray-800'
-                    }`}>
+                    <span
+                      className={`px-2 py-1 rounded text-xs font-medium ${
+                        component.trend === 'increasing'
+                          ? 'bg-red-100 text-red-800'
+                          : component.trend === 'decreasing'
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-gray-100 text-gray-800'
+                      }`}
+                    >
                       {component.trend}
                     </span>
                   </div>
@@ -493,10 +544,12 @@ const WorkingCapitalComprehensive = () => {
                   </div>
                   <div className="mt-2">
                     <p className="text-xs text-gray-600">Opportunity</p>
-                    <p className={`font-semibold ${
-                      component.opportunity > 0 ? 'text-green-600' : 'text-red-600'
-                    }`}>
-                      {formatCurrency(Math.abs(component.opportunity))} 
+                    <p
+                      className={`font-semibold ${
+                        component.opportunity > 0 ? 'text-green-600' : 'text-red-600'
+                      }`}
+                    >
+                      {formatCurrency(Math.abs(component.opportunity))}
                       {component.opportunity > 0 ? ' savings' : ' investment'}
                     </p>
                   </div>
@@ -526,8 +579,10 @@ const WorkingCapitalComprehensive = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {/* Working Capital Components */}
               <div className="space-y-4">
-                <h4 className="font-medium text-gray-900 border-b pb-2">Working Capital Components</h4>
-                
+                <h4 className="font-medium text-gray-900 border-b pb-2">
+                  Working Capital Components
+                </h4>
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Receivables Days: {scenarios.receivablesDays}
@@ -537,7 +592,9 @@ const WorkingCapitalComprehensive = () => {
                     min="20"
                     max="90"
                     value={scenarios.receivablesDays}
-                    onChange={(e) => setScenarios(prev => ({ ...prev, receivablesDays: parseInt(e.target.value) }))}
+                    onChange={e =>
+                      setScenarios(prev => ({ ...prev, receivablesDays: parseInt(e.target.value) }))
+                    }
                     className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                   />
                   <div className="flex justify-between text-xs text-gray-500 mt-1">
@@ -555,7 +612,9 @@ const WorkingCapitalComprehensive = () => {
                     min="30"
                     max="120"
                     value={scenarios.inventoryDays}
-                    onChange={(e) => setScenarios(prev => ({ ...prev, inventoryDays: parseInt(e.target.value) }))}
+                    onChange={e =>
+                      setScenarios(prev => ({ ...prev, inventoryDays: parseInt(e.target.value) }))
+                    }
                     className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                   />
                   <div className="flex justify-between text-xs text-gray-500 mt-1">
@@ -573,7 +632,9 @@ const WorkingCapitalComprehensive = () => {
                     min="15"
                     max="60"
                     value={scenarios.payablesDays}
-                    onChange={(e) => setScenarios(prev => ({ ...prev, payablesDays: parseInt(e.target.value) }))}
+                    onChange={e =>
+                      setScenarios(prev => ({ ...prev, payablesDays: parseInt(e.target.value) }))
+                    }
                     className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                   />
                   <div className="flex justify-between text-xs text-gray-500 mt-1">
@@ -586,7 +647,7 @@ const WorkingCapitalComprehensive = () => {
               {/* Business Parameters */}
               <div className="space-y-4">
                 <h4 className="font-medium text-gray-900 border-b pb-2">Business Parameters</h4>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Sales Growth: {scenarios.salesGrowth}%
@@ -596,7 +657,9 @@ const WorkingCapitalComprehensive = () => {
                     min="-10"
                     max="50"
                     value={scenarios.salesGrowth}
-                    onChange={(e) => setScenarios(prev => ({ ...prev, salesGrowth: parseInt(e.target.value) }))}
+                    onChange={e =>
+                      setScenarios(prev => ({ ...prev, salesGrowth: parseInt(e.target.value) }))
+                    }
                     className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                   />
                   <div className="flex justify-between text-xs text-gray-500 mt-1">
@@ -614,7 +677,12 @@ const WorkingCapitalComprehensive = () => {
                     min="-5"
                     max="10"
                     value={scenarios.marginImprovement}
-                    onChange={(e) => setScenarios(prev => ({ ...prev, marginImprovement: parseInt(e.target.value) }))}
+                    onChange={e =>
+                      setScenarios(prev => ({
+                        ...prev,
+                        marginImprovement: parseInt(e.target.value),
+                      }))
+                    }
                     className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                   />
                   <div className="flex justify-between text-xs text-gray-500 mt-1">
@@ -633,7 +701,12 @@ const WorkingCapitalComprehensive = () => {
                     max="2.0"
                     step="0.1"
                     value={scenarios.seasonalityFactor}
-                    onChange={(e) => setScenarios(prev => ({ ...prev, seasonalityFactor: parseFloat(e.target.value) }))}
+                    onChange={e =>
+                      setScenarios(prev => ({
+                        ...prev,
+                        seasonalityFactor: parseFloat(e.target.value),
+                      }))
+                    }
                     className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                   />
                   <div className="flex justify-between text-xs text-gray-500 mt-1">
@@ -647,7 +720,7 @@ const WorkingCapitalComprehensive = () => {
               {showAdvanced && (
                 <div className="space-y-4">
                   <h4 className="font-medium text-gray-900 border-b pb-2">Advanced Parameters</h4>
-                  
+
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Credit Terms: {scenarios.creditTerms} days
@@ -657,7 +730,9 @@ const WorkingCapitalComprehensive = () => {
                       min="15"
                       max="90"
                       value={scenarios.creditTerms}
-                      onChange={(e) => setScenarios(prev => ({ ...prev, creditTerms: parseInt(e.target.value) }))}
+                      onChange={e =>
+                        setScenarios(prev => ({ ...prev, creditTerms: parseInt(e.target.value) }))
+                      }
                       className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                     />
                   </div>
@@ -671,7 +746,9 @@ const WorkingCapitalComprehensive = () => {
                       min="15"
                       max="90"
                       value={scenarios.supplierTerms}
-                      onChange={(e) => setScenarios(prev => ({ ...prev, supplierTerms: parseInt(e.target.value) }))}
+                      onChange={e =>
+                        setScenarios(prev => ({ ...prev, supplierTerms: parseInt(e.target.value) }))
+                      }
                       className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                     />
                   </div>
@@ -686,7 +763,12 @@ const WorkingCapitalComprehensive = () => {
                       max="12"
                       step="0.1"
                       value={scenarios.inventoryTurnover}
-                      onChange={(e) => setScenarios(prev => ({ ...prev, inventoryTurnover: parseFloat(e.target.value) }))}
+                      onChange={e =>
+                        setScenarios(prev => ({
+                          ...prev,
+                          inventoryTurnover: parseFloat(e.target.value),
+                        }))
+                      }
                       className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                     />
                   </div>
@@ -706,7 +788,11 @@ const WorkingCapitalComprehensive = () => {
                     {formatCurrency(analysisData.scenario.workingCapitalChange)}
                   </p>
                   <p className="text-sm text-blue-600">
-                    {formatPercent((analysisData.scenario.workingCapitalChange / analysisData.current.workingCapital) * 100)}
+                    {formatPercent(
+                      (analysisData.scenario.workingCapitalChange /
+                        analysisData.current.workingCapital) *
+                        100
+                    )}
                   </p>
                 </div>
 
@@ -726,8 +812,14 @@ const WorkingCapitalComprehensive = () => {
                     {analysisData.scenario.cashConversionCycle} days
                   </p>
                   <p className="text-sm text-orange-600">
-                    {analysisData.scenario.cashConversionCycle - analysisData.current.cashConversionCycle > 0 ? '+' : ''}
-                    {analysisData.scenario.cashConversionCycle - analysisData.current.cashConversionCycle} days
+                    {analysisData.scenario.cashConversionCycle -
+                      analysisData.current.cashConversionCycle >
+                    0
+                      ? '+'
+                      : ''}
+                    {analysisData.scenario.cashConversionCycle -
+                      analysisData.current.cashConversionCycle}{' '}
+                    days
                   </p>
                 </div>
 
@@ -753,23 +845,23 @@ const WorkingCapitalComprehensive = () => {
             <ComposedChart data={analysisData?.cashFlow || []}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="month" />
-              <YAxis tickFormatter={(value) => formatCurrency(value)} />
-              <Tooltip formatter={(value) => formatCurrency(value)} />
+              <YAxis tickFormatter={value => formatCurrency(value)} />
+              <Tooltip formatter={value => formatCurrency(value)} />
               <Legend />
               <Bar dataKey="operatingCashFlow" fill="#3B82F6" name="Operating Cash Flow" />
               <Bar dataKey="capex" fill="#EF4444" name="Capital Expenditure" />
-              <Line 
-                type="monotone" 
-                dataKey="freeCashFlow" 
-                stroke="#10B981" 
+              <Line
+                type="monotone"
+                dataKey="freeCashFlow"
+                stroke="#10B981"
                 strokeWidth={3}
                 name="Free Cash Flow"
               />
-              <Area 
-                type="monotone" 
-                dataKey="workingCapitalChange" 
-                stroke="#F59E0B" 
-                fill="#F59E0B" 
+              <Area
+                type="monotone"
+                dataKey="workingCapitalChange"
+                stroke="#F59E0B"
+                fill="#F59E0B"
                 fillOpacity={0.3}
                 name="Working Capital Change"
               />
@@ -785,8 +877,8 @@ const WorkingCapitalComprehensive = () => {
             <BarChart data={analysisData?.components || []}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="component" />
-              <YAxis tickFormatter={(value) => formatCurrency(value)} />
-              <Tooltip formatter={(value) => formatCurrency(value)} />
+              <YAxis tickFormatter={value => formatCurrency(value)} />
+              <Tooltip formatter={value => formatCurrency(value)} />
               <Legend />
               <Bar dataKey="current" fill="#94A3B8" name="Current" />
               <Bar dataKey="optimal" fill="#3B82F6" name="Optimal" />
@@ -801,9 +893,12 @@ const WorkingCapitalComprehensive = () => {
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Industry Benchmarks</h3>
           <div className="space-y-4">
             {(analysisData?.benchmarks || []).map((benchmark, index) => (
-              <div key={benchmark.metric} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+              <div
+                key={benchmark.metric}
+                className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
+              >
                 <div className="flex items-center space-x-3">
-                  <div 
+                  <div
                     className="w-4 h-4 rounded-full"
                     style={{ backgroundColor: COLORS[index % COLORS.length] }}
                   />
@@ -829,7 +924,7 @@ const WorkingCapitalComprehensive = () => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default WorkingCapitalComprehensive;
+export default WorkingCapitalComprehensive

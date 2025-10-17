@@ -16,12 +16,12 @@ const StockLevelsWidget = () => {
       try {
         setLoading(true)
         setError(null)
-        
+
         const [stockLevels, summary] = await Promise.all([
           stockLevelsApi.getGABAStockLevels(),
-          stockLevelsApi.getStockSummary()
+          stockLevelsApi.getStockSummary(),
         ])
-        
+
         setStockData(stockLevels)
         setStockSummary(summary)
       } catch (err) {
@@ -35,7 +35,7 @@ const StockLevelsWidget = () => {
     fetchStockData()
   }, [])
 
-  const getStatusBadgeColor = (status) => {
+  const getStatusBadgeColor = status => {
     switch (status) {
       case 'in-stock':
         return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
@@ -51,9 +51,7 @@ const StockLevelsWidget = () => {
   const renderStockStatusIndicator = () => {
     if (!stockSummary) return null
 
-    const criticalProducts = stockData.filter(item => 
-      item.currentStock <= item.reorderLevel
-    )
+    const criticalProducts = stockData.filter(item => item.currentStock <= item.reorderLevel)
 
     return (
       <div className="flex items-center space-x-2">
@@ -74,9 +72,7 @@ const StockLevelsWidget = () => {
       <Card>
         <CardHeader>
           <CardTitle>Current Stock Levels</CardTitle>
-          <CardDescription>
-            Loading GABA product inventory...
-          </CardDescription>
+          <CardDescription>Loading GABA product inventory...</CardDescription>
         </CardHeader>
         <CardContent className="h-64">
           <div className="flex items-center justify-center h-full">
@@ -92,9 +88,7 @@ const StockLevelsWidget = () => {
       <Card>
         <CardHeader>
           <CardTitle>Current Stock Levels</CardTitle>
-          <CardDescription>
-            Unable to load stock data
-          </CardDescription>
+          <CardDescription>Unable to load stock data</CardDescription>
         </CardHeader>
         <CardContent className="h-64">
           <div className="flex items-center justify-center h-full text-red-500">
@@ -111,15 +105,13 @@ const StockLevelsWidget = () => {
         <div className="flex items-center justify-between">
           <div>
             <CardTitle>Current Stock Levels</CardTitle>
-            <CardDescription>
-              GABA product inventory with reorder indicators
-            </CardDescription>
+            <CardDescription>GABA product inventory with reorder indicators</CardDescription>
           </div>
           {renderStockStatusIndicator()}
         </div>
       </CardHeader>
       <CardContent className="h-64">
-        <Suspense 
+        <Suspense
           fallback={
             <div className="flex items-center justify-center h-full">
               <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
@@ -128,25 +120,23 @@ const StockLevelsWidget = () => {
         >
           <StockLevelsChart data={stockData} />
         </Suspense>
-        
+
         {/* Stock Status Summary */}
         <div className="mt-4 flex justify-between items-center text-sm text-gray-600 dark:text-gray-400">
           <div className="flex space-x-4">
-            {stockData.map((item) => (
+            {stockData.map(item => (
               <div key={item.sku} className="flex items-center space-x-1">
-                <div 
+                <div
                   className="w-3 h-3 rounded-full"
-                  style={{ 
-                    backgroundColor: item.currentStock <= item.reorderLevel ? '#f59e0b' : '#10b981' 
+                  style={{
+                    backgroundColor: item.currentStock <= item.reorderLevel ? '#f59e0b' : '#10b981',
                   }}
                 />
                 <span className="text-xs">{item.product}</span>
               </div>
             ))}
           </div>
-          <div className="text-xs">
-            Last updated: {new Date().toLocaleTimeString()}
-          </div>
+          <div className="text-xs">Last updated: {new Date().toLocaleTimeString()}</div>
         </div>
       </CardContent>
     </Card>

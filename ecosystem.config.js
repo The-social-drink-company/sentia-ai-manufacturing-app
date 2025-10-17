@@ -9,15 +9,15 @@ export default {
       exec_mode: 'cluster',
       env: {
         NODE_ENV: 'production',
-        PORT: process.env.PORT || 3000
+        PORT: process.env.PORT || 3000,
       },
       env_development: {
         NODE_ENV: 'development',
-        PORT: 5000
+        PORT: 5000,
       },
       env_test: {
         NODE_ENV: 'test',
-        PORT: 5001
+        PORT: 5001,
       },
       error_file: './logs/err.log',
       out_file: './logs/out.log',
@@ -26,19 +26,19 @@ export default {
       max_memory_restart: '1G',
       max_restarts: 10,
       min_uptime: '10s',
-      
+
       // Graceful shutdown
       kill_timeout: 5000,
       listen_timeout: 3000,
-      
+
       // Auto-restart on file changes (development only)
       watch: false,
       ignore_watch: ['node_modules', 'logs', 'dist', '.git'],
-      
+
       // Advanced features
       merge_logs: true,
       autorestart: true,
-      vizion: true
+      vizion: true,
     },
     {
       name: 'agent-orchestrator',
@@ -49,14 +49,14 @@ export default {
       env: {
         NODE_ENV: 'production',
         AGENT_MODE: 'autonomous',
-        CYCLE_INTERVAL: 300000 // 5 minutes
+        CYCLE_INTERVAL: 300000, // 5 minutes
       },
       error_file: './logs/agents-err.log',
       out_file: './logs/agents-out.log',
       time: true,
       max_memory_restart: '500M',
-      autorestart: true
-    }
+      autorestart: true,
+    },
   ],
 
   deploy: {
@@ -67,7 +67,7 @@ export default {
       repo: 'git@github.com:The-social-drink-company/sentia-manufacturing-dashboard.git',
       path: '/app',
       'post-deploy': 'npm install --production && pm2 reload ecosystem.config.js --env production',
-      'pre-deploy-local': 'npm test'
+      'pre-deploy-local': 'npm test',
     },
     test: {
       user: 'deploy',
@@ -75,7 +75,7 @@ export default {
       ref: 'origin/test',
       repo: 'git@github.com:The-social-drink-company/sentia-manufacturing-dashboard.git',
       path: '/app',
-      'post-deploy': 'npm install && pm2 reload ecosystem.config.js --env test'
+      'post-deploy': 'npm install && pm2 reload ecosystem.config.js --env test',
     },
     development: {
       user: 'deploy',
@@ -83,7 +83,7 @@ export default {
       ref: 'origin/development',
       repo: 'git@github.com:The-social-drink-company/sentia-manufacturing-dashboard.git',
       path: '/app',
-      'post-deploy': 'npm install && pm2 reload ecosystem.config.js --env development'
-    }
-  }
-};
+      'post-deploy': 'npm install && pm2 reload ecosystem.config.js --env development',
+    },
+  },
+}

@@ -1,5 +1,5 @@
-import React from 'react';
-import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
+import React from 'react'
+import { ExclamationTriangleIcon } from '@heroicons/react/24/outline'
 
 const ErrorFallback = ({ error, resetErrorBoundary }) => {
   return (
@@ -14,7 +14,8 @@ const ErrorFallback = ({ error, resetErrorBoundary }) => {
         </h2>
 
         <p className="mt-2 text-sm text-center text-gray-600 dark:text-gray-400">
-          An unexpected error occurred. Please try refreshing the page or contact support if the problem persists.
+          An unexpected error occurred. Please try refreshing the page or contact support if the
+          problem persists.
         </p>
 
         {error?.message && (
@@ -34,7 +35,7 @@ const ErrorFallback = ({ error, resetErrorBoundary }) => {
           </button>
 
           <button
-            onClick={() => window.location.href = '/dashboard'}
+            onClick={() => (window.location.href = '/dashboard')}
             className="w-full px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200 font-medium"
           >
             Go to Dashboard
@@ -42,7 +43,7 @@ const ErrorFallback = ({ error, resetErrorBoundary }) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default ErrorFallback;
+export default ErrorFallback

@@ -7,15 +7,15 @@ import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { 
-  BugIcon, 
-  DatabaseIcon, 
-  ServerIcon, 
-  WifiIcon, 
+import {
+  BugIcon,
+  DatabaseIcon,
+  ServerIcon,
+  WifiIcon,
   RefreshCwIcon,
   TerminalIcon,
   ChevronDownIcon,
-  ChevronRightIcon
+  ChevronRightIcon,
 } from 'lucide-react'
 import { useQueryClient } from '@tanstack/react-query'
 
@@ -31,8 +31,8 @@ const DebugPanel = () => {
   const connectionDetails = { readyState: 'N/A', reconnectAttempts: 0 }
 
   // Only show in development mode
-  const isDevelopmentMode = import.meta.env.VITE_DEVELOPMENT_MODE === 'true' ||
-                           import.meta.env.NODE_ENV === 'development'
+  const isDevelopmentMode =
+    import.meta.env.VITE_DEVELOPMENT_MODE === 'true' || import.meta.env.NODE_ENV === 'development'
 
   // Check API health
   const checkApiHealth = async () => {
@@ -73,7 +73,6 @@ const DebugPanel = () => {
       checkApiHealth()
       getSystemInfo()
     }
-   
   }, [isOpen])
 
   // Clear all React Query cache
@@ -128,7 +127,7 @@ const DebugPanel = () => {
               Development mode debugging tools
             </CardDescription>
           </CardHeader>
-          
+
           <CardContent className="space-y-4">
             {/* Environment Info */}
             <div>
@@ -142,8 +141,10 @@ const DebugPanel = () => {
                 </div>
                 <div className="flex justify-between">
                   <span>Development Mode:</span>
-                  <Badge 
-                    variant={import.meta.env.VITE_DEVELOPMENT_MODE === 'true' ? 'default' : 'secondary'}
+                  <Badge
+                    variant={
+                      import.meta.env.VITE_DEVELOPMENT_MODE === 'true' ? 'default' : 'secondary'
+                    }
                     className="text-xs"
                   >
                     {import.meta.env.VITE_DEVELOPMENT_MODE || 'false'}
@@ -239,7 +240,7 @@ const DebugPanel = () => {
               <div className="text-xs space-y-1">
                 <div className="flex justify-between">
                   <span>Status:</span>
-                  <Badge 
+                  <Badge
                     variant={sseStatus === 'connected' ? 'default' : 'secondary'}
                     className="text-xs"
                   >
@@ -287,10 +288,7 @@ const DebugPanel = () => {
               <div className="text-xs space-y-1">
                 <div className="flex justify-between">
                   <span>Online:</span>
-                  <Badge 
-                    variant={systemInfo.onLine ? 'default' : 'secondary'}
-                    className="text-xs"
-                  >
+                  <Badge variant={systemInfo.onLine ? 'default' : 'secondary'} className="text-xs">
                     {systemInfo.onLine ? 'Yes' : 'No'}
                   </Badge>
                 </div>
@@ -300,7 +298,7 @@ const DebugPanel = () => {
                 </div>
                 <div className="flex justify-between">
                   <span>LocalStorage:</span>
-                  <Badge 
+                  <Badge
                     variant={systemInfo.localStorage ? 'default' : 'secondary'}
                     className="text-xs"
                   >
@@ -309,7 +307,7 @@ const DebugPanel = () => {
                 </div>
                 <div className="flex justify-between">
                   <span>EventSource:</span>
-                  <Badge 
+                  <Badge
                     variant={systemInfo.eventSource ? 'default' : 'secondary'}
                     className="text-xs"
                   >
@@ -323,18 +321,18 @@ const DebugPanel = () => {
             <div>
               <h4 className="font-medium text-sm mb-2">Actions</h4>
               <div className="space-y-2">
-                <Button 
-                  onClick={clearLocalStorage} 
-                  variant="outline" 
-                  size="sm" 
+                <Button
+                  onClick={clearLocalStorage}
+                  variant="outline"
+                  size="sm"
                   className="w-full text-xs"
                 >
                   Clear LocalStorage
                 </Button>
-                <Button 
-                  onClick={() => window.location.reload()} 
-                  variant="outline" 
-                  size="sm" 
+                <Button
+                  onClick={() => window.location.reload()}
+                  variant="outline"
+                  size="sm"
                   className="w-full text-xs"
                 >
                   Reload Page

@@ -6,7 +6,7 @@ const useAuthRole = () => {
   const [authData, setAuthData] = useState({
     isAuthorized: isDevelopmentMode,
     role: isDevelopmentMode ? 'admin' : 'guest',
-    loading: !isDevelopmentMode
+    loading: !isDevelopmentMode,
   })
 
   useEffect(() => {
@@ -18,7 +18,7 @@ const useAuthRole = () => {
           isAuthorized: true,
           role: mockUser.publicMetadata.role || 'admin',
           user: mockUser,
-          loading: false
+          loading: false,
         })
       } else {
         // Production mode - use real Clerk auth
@@ -27,16 +27,16 @@ const useAuthRole = () => {
           const { isSignedIn, user } = useAuth()
           setAuthData({
             isAuthorized: Boolean(isSignedIn),
-            role: isSignedIn ? (user?.publicMetadata?.role || 'member') : 'guest',
+            role: isSignedIn ? user?.publicMetadata?.role || 'member' : 'guest',
             user: user,
-            loading: false
+            loading: false,
           })
         } catch (error) {
           console.error('[useAuthRole] Failed to load Clerk auth:', error)
           setAuthData({
             isAuthorized: false,
             role: 'guest',
-            loading: false
+            loading: false,
           })
         }
       }

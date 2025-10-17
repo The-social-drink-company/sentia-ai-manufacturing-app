@@ -19,7 +19,7 @@ console.log('=== MINIMAL BUILD (Canonical) ===')
 console.log('Memory Limit:', `${MAX_MEMORY}MB`)
 
 const mainJsxPath = path.join(__dirname, 'src', 'main.jsx')
-const canonicalImport = "import App from \"./App-enterprise.jsx\""
+const canonicalImport = 'import App from "./App-enterprise.jsx"'
 const importPattern = /import App from ['\"].+?['\"]/
 
 let mainContent = fs.readFileSync(mainJsxPath, 'utf8')
@@ -42,8 +42,8 @@ try {
     stdio: 'inherit',
     env: {
       ...process.env,
-      NODE_OPTIONS: `--max-old-space-size=${MAX_MEMORY}`
-    }
+      NODE_OPTIONS: `--max-old-space-size=${MAX_MEMORY}`,
+    },
   })
   console.log('Minimal build completed successfully!')
 

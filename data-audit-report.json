@@ -98,50 +98,34 @@
         {
           "name": "Shopify",
           "status": "Configured",
-          "keys": [
-            "SHOPIFY_API_KEY"
-          ]
+          "keys": ["SHOPIFY_API_KEY"]
         },
         {
           "name": "Unleashed ERP",
           "status": "Configured",
-          "keys": [
-            "UNLEASHED_API_KEY"
-          ]
+          "keys": ["UNLEASHED_API_KEY"]
         },
         {
           "name": "Xero Accounting",
           "status": "Configured",
-          "keys": [
-            "XERO_CLIENT_ID",
-            "XERO_CLIENT_SECRET"
-          ]
+          "keys": ["XERO_CLIENT_ID", "XERO_CLIENT_SECRET"]
         },
         {
           "name": "Database",
           "status": "Configured",
-          "keys": [
-            "DATABASE_URL"
-          ]
+          "keys": ["DATABASE_URL"]
         },
         {
           "name": "Clerk Auth",
           "status": "Configured",
-          "keys": [
-            "CLERK_SECRET_KEY",
-            "VITE_CLERK_PUBLISHABLE_KEY"
-          ]
+          "keys": ["CLERK_SECRET_KEY", "VITE_CLERK_PUBLISHABLE_KEY"]
         }
       ],
       "fake": [
         {
           "name": "Amazon SP-API",
           "status": "Not configured or using placeholder",
-          "keys": [
-            "AMAZON_SELLER_ID",
-            "AMAZON_MARKETPLACE_ID",
-            "AMAZON_ACCESS_KEY"
-          ]
+          "keys": ["AMAZON_SELLER_ID", "AMAZON_MARKETPLACE_ID", "AMAZON_ACCESS_KEY"]
         }
       ],
       "total": 0

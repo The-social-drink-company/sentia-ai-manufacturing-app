@@ -1,6 +1,7 @@
 # MCP Integration User Guide
 
 ## Table of Contents
+
 1. [Overview](#overview)
 2. [Getting Started](#getting-started)
 3. [Features](#features)
@@ -16,6 +17,7 @@
 The MCP (Model Context Protocol) Server integration provides centralized AI orchestration and API management for the Sentia Manufacturing Dashboard. It connects all external services (Xero, Shopify, Amazon) through a unified interface and provides AI-powered manufacturing intelligence.
 
 ### Key Benefits
+
 - 🤖 **AI-Powered Analytics**: Advanced manufacturing intelligence using multiple LLMs
 - 🔄 **Automatic Synchronization**: Keep all data sources up-to-date automatically
 - 📊 **Real-time Monitoring**: Track system health and performance in real-time
@@ -29,6 +31,7 @@ The MCP (Model Context Protocol) Server integration provides centralized AI orch
 ### Accessing MCP Features
 
 The MCP integration is available at:
+
 - **Development**: https://sentia-manufacturing-development.up.railway.app
 - **Testing**: https://sentia-manufacturing-testing.up.railway.app
 - **Production**: https://sentia-manufacturing-production.up.railway.app
@@ -36,6 +39,7 @@ The MCP integration is available at:
 ### Required Permissions
 
 To access MCP features, users need:
+
 - `api:read` - View API data and status
 - `api:write` - Trigger manual syncs
 - `admin:system` - Configure auto-sync and monitoring
@@ -65,12 +69,12 @@ To access MCP features, users need:
 
 The system automatically synchronizes data from multiple sources:
 
-| Service | Default Interval | Data Synced |
-|---------|-----------------|-------------|
-| Xero | Every 30 minutes | Invoices, Contacts, Transactions |
-| Shopify | Every 15 minutes | Orders, Products, Inventory |
-| Amazon | Every hour | Orders, Inventory |
-| Database | Every 6 hours | Branch synchronization |
+| Service  | Default Interval | Data Synced                      |
+| -------- | ---------------- | -------------------------------- |
+| Xero     | Every 30 minutes | Invoices, Contacts, Transactions |
+| Shopify  | Every 15 minutes | Orders, Products, Inventory      |
+| Amazon   | Every hour       | Orders, Inventory                |
+| Database | Every 6 hours    | Branch synchronization           |
 
 **Manual Sync**: Click "Sync Now" button for any service in the monitoring dashboard.
 
@@ -79,16 +83,19 @@ The system automatically synchronizes data from multiple sources:
 Access AI-powered features through the dashboard:
 
 #### Demand Forecasting
+
 - Navigate to **Analytics → Demand Forecasting**
 - AI analyzes historical data to predict future demand
 - Provides recommendations for inventory optimization
 
 #### Quality Analysis
+
 - Go to **Analytics → Quality Control**
 - AI identifies quality patterns and anomalies
 - Suggests preventive measures
 
 #### Inventory Optimization
+
 - Access via **Inventory → Optimization**
 - AI calculates optimal stock levels
 - Reduces carrying costs while preventing stockouts
@@ -96,6 +103,7 @@ Access AI-powered features through the dashboard:
 ### 3. WebSocket Real-time Updates
 
 The dashboard receives real-time updates for:
+
 - Manufacturing alerts
 - AI analysis results
 - API synchronization status
@@ -104,6 +112,7 @@ The dashboard receives real-time updates for:
 ### 4. Unified API Access
 
 All external services are accessible through a single interface:
+
 ```
 /api/mcp/xero/*      - Xero accounting data
 /api/mcp/shopify/*   - Shopify e-commerce data
@@ -119,6 +128,7 @@ All external services are accessible through a single interface:
 Access the MCP Monitoring Dashboard at `/mcp-monitor`
 
 #### Status Cards
+
 - **MCP Server**: Shows connection status to the AI orchestration server
 - **WebSocket**: Real-time connection status and uptime
 - **Database**: Current database branch (development/testing/production)
@@ -150,23 +160,27 @@ Access the MCP Monitoring Dashboard at `/mcp-monitor`
 ### Common Tasks
 
 #### Enable/Disable Auto-Sync
+
 1. Go to Synchronization tab
 2. Click "Enable Auto-Sync" or "Disable Auto-Sync"
 3. System will confirm the change
 
 #### Trigger Manual Sync
+
 1. Navigate to Synchronization tab
 2. Find the service you want to sync
 3. Click "Sync Now" button
 4. Monitor progress in the status indicator
 
 #### Reconnect WebSocket
+
 1. Go to WebSocket tab
 2. Click "Reconnect" button
 3. Wait for connection to re-establish
 4. Check status shows "Connected"
 
 #### View Sync History
+
 1. Open API Status tab
 2. Check "Last Sync" timestamps
 3. Review error counts if any
@@ -178,43 +192,48 @@ Access the MCP Monitoring Dashboard at `/mcp-monitor`
 ### Making API Calls
 
 #### Get Xero Invoices
+
 ```javascript
 fetch('/api/mcp/xero/invoices')
   .then(res => res.json())
   .then(data => {
-    console.log('Invoices:', data);
-  });
+    console.log('Invoices:', data)
+  })
 ```
 
 #### Get Shopify Orders
+
 ```javascript
 fetch('/api/mcp/shopify/orders?limit=10')
   .then(res => res.json())
   .then(data => {
-    console.log('Recent orders:', data);
-  });
+    console.log('Recent orders:', data)
+  })
 ```
 
 #### Trigger Sync
+
 ```javascript
 fetch('/api/mcp/sync/trigger/xero', {
-  method: 'POST'
+  method: 'POST',
 })
   .then(res => res.json())
   .then(result => {
-    console.log('Sync result:', result);
-  });
+    console.log('Sync result:', result)
+  })
 ```
 
 ### Available Endpoints
 
 #### Health & Monitoring
+
 - `GET /api/mcp/health` - System health check
 - `GET /api/mcp/status` - Comprehensive status
 - `GET /api/mcp/websocket/stats` - WebSocket statistics
 - `GET /api/mcp/sync/status` - Sync status
 
 #### Data Access
+
 - `GET /api/mcp/xero/invoices` - Xero invoices
 - `GET /api/mcp/xero/contacts` - Xero contacts
 - `GET /api/mcp/shopify/orders` - Shopify orders
@@ -223,6 +242,7 @@ fetch('/api/mcp/sync/trigger/xero', {
 - `GET /api/mcp/amazon/orders` - Amazon orders
 
 #### Control
+
 - `POST /api/mcp/sync/trigger/:service` - Trigger sync
 - `POST /api/mcp/sync/enable` - Enable auto-sync
 - `POST /api/mcp/sync/disable` - Disable auto-sync
@@ -241,13 +261,13 @@ fetch('/api/mcp/ai/manufacturing-request', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
-    request: "Analyze production efficiency for last month"
-  })
+    request: 'Analyze production efficiency for last month',
+  }),
 })
   .then(res => res.json())
   .then(analysis => {
-    console.log('AI Analysis:', analysis);
-  });
+    console.log('AI Analysis:', analysis)
+  })
 ```
 
 ### 2. Inventory Optimization
@@ -260,13 +280,13 @@ fetch('/api/mcp/ai/optimize-inventory', {
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
     products: ['SKU001', 'SKU002'],
-    timeframe: '30days'
-  })
+    timeframe: '30days',
+  }),
 })
   .then(res => res.json())
   .then(recommendations => {
-    console.log('Optimization:', recommendations);
-  });
+    console.log('Optimization:', recommendations)
+  })
 ```
 
 ### 3. Demand Forecasting
@@ -279,13 +299,13 @@ fetch('/api/mcp/ai/forecast-demand', {
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
     product: 'SKU001',
-    periods: 12
-  })
+    periods: 12,
+  }),
 })
   .then(res => res.json())
   .then(forecast => {
-    console.log('Forecast:', forecast);
-  });
+    console.log('Forecast:', forecast)
+  })
 ```
 
 ### 4. Quality Analysis
@@ -297,13 +317,13 @@ fetch('/api/mcp/ai/analyze-quality', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
-    data: qualityMetrics
-  })
+    data: qualityMetrics,
+  }),
 })
   .then(res => res.json())
   .then(analysis => {
-    console.log('Quality Analysis:', analysis);
-  });
+    console.log('Quality Analysis:', analysis)
+  })
 ```
 
 ---
@@ -317,6 +337,7 @@ fetch('/api/mcp/ai/analyze-quality', {
 **Symptoms**: Status card shows disconnected, no real-time updates
 
 **Solutions**:
+
 1. Check internet connection
 2. Click "Reconnect" in WebSocket tab
 3. Refresh the page
@@ -327,6 +348,7 @@ fetch('/api/mcp/ai/analyze-quality', {
 **Symptoms**: Data not updating automatically
 
 **Solutions**:
+
 1. Verify auto-sync is enabled
 2. Check individual service status
 3. Look for error messages in sync status
@@ -338,6 +360,7 @@ fetch('/api/mcp/ai/analyze-quality', {
 **Symptoms**: Frequent disconnections, missed updates
 
 **Solutions**:
+
 1. Check network stability
 2. Review firewall settings
 3. Enable auto-reconnect in settings
@@ -348,6 +371,7 @@ fetch('/api/mcp/ai/analyze-quality', {
 **Symptoms**: Empty data sets, loading errors
 
 **Solutions**:
+
 1. Check service sync status
 2. Verify API credentials are valid
 3. Try manual sync
@@ -356,12 +380,12 @@ fetch('/api/mcp/ai/analyze-quality', {
 
 ### Error Messages
 
-| Error | Meaning | Solution |
-|-------|---------|----------|
-| "MCP Server unreachable" | Cannot connect to MCP Server | Check server status, network connection |
-| "Authentication failed" | Invalid API credentials | Update API keys in settings |
-| "Sync timeout" | Sync taking too long | Check data volume, try again later |
-| "Rate limit exceeded" | Too many API calls | Wait before retrying, check sync intervals |
+| Error                       | Meaning                      | Solution                                          |
+| --------------------------- | ---------------------------- | ------------------------------------------------- |
+| "MCP Server unreachable"    | Cannot connect to MCP Server | Check server status, network connection           |
+| "Authentication failed"     | Invalid API credentials      | Update API keys in settings                       |
+| "Sync timeout"              | Sync taking too long         | Check data volume, try again later                |
+| "Rate limit exceeded"       | Too many API calls           | Wait before retrying, check sync intervals        |
 | "WebSocket connection lost" | Real-time connection dropped | Auto-reconnect will engage, or manually reconnect |
 
 ### Getting Help
@@ -450,31 +474,31 @@ fetch('/api/mcp/ai/analyze-quality', {
 
 ### Sync Intervals Reference
 
-| Service | Minimum | Default | Maximum |
-|---------|---------|---------|---------|
-| Xero | 15 min | 30 min | 2 hours |
-| Shopify | 5 min | 15 min | 1 hour |
-| Amazon | 30 min | 1 hour | 4 hours |
-| Database | 1 hour | 6 hours | 24 hours |
+| Service  | Minimum | Default | Maximum  |
+| -------- | ------- | ------- | -------- |
+| Xero     | 15 min  | 30 min  | 2 hours  |
+| Shopify  | 5 min   | 15 min  | 1 hour   |
+| Amazon   | 30 min  | 1 hour  | 4 hours  |
+| Database | 1 hour  | 6 hours | 24 hours |
 
 ### API Rate Limits
 
-| Service | Requests/Hour | Burst Limit |
-|---------|--------------|-------------|
-| Xero | 5000 | 60/min |
-| Shopify | 2/sec | 40/10sec |
-| Amazon | 18000 | 30/sec |
-| MCP Server | Unlimited | N/A |
+| Service    | Requests/Hour | Burst Limit |
+| ---------- | ------------- | ----------- |
+| Xero       | 5000          | 60/min      |
+| Shopify    | 2/sec         | 40/10sec    |
+| Amazon     | 18000         | 30/sec      |
+| MCP Server | Unlimited     | N/A         |
 
 ### Keyboard Shortcuts
 
-| Shortcut | Action |
-|----------|--------|
-| `R` | Refresh data |
-| `S` | Open sync panel |
-| `W` | WebSocket status |
-| `M` | Toggle monitoring |
-| `Ctrl+R` | Force reconnect |
+| Shortcut | Action            |
+| -------- | ----------------- |
+| `R`      | Refresh data      |
+| `S`      | Open sync panel   |
+| `W`      | WebSocket status  |
+| `M`      | Toggle monitoring |
+| `Ctrl+R` | Force reconnect   |
 
 ---
 

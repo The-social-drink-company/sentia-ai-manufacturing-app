@@ -1,4 +1,5 @@
 # Render Complete Deployment Guide - All Environments
+
 ## Full Migration from Neon to Render PostgreSQL
 
 This guide ensures 100% correct deployment of all three environments (development, testing, production) with Render PostgreSQL databases and all required APIs.
@@ -8,6 +9,7 @@ This guide ensures 100% correct deployment of all three environments (developmen
 ## ✅ Environment Status
 
 ### Development Environment
+
 - **URL**: `https://sentia-manufacturing-development.onrender.com`
 - **Branch**: `development`
 - **Database**: `sentia-db-development` (Render PostgreSQL)
@@ -15,6 +17,7 @@ This guide ensures 100% correct deployment of all three environments (developmen
 - **Status**: ✅ Ready for deployment
 
 ### Testing Environment
+
 - **URL**: `https://sentia-manufacturing-testing.onrender.com`
 - **Branch**: `test`
 - **Database**: `sentia-db-testing` (Render PostgreSQL)
@@ -22,6 +25,7 @@ This guide ensures 100% correct deployment of all three environments (developmen
 - **Status**: ✅ Ready for deployment
 
 ### Production Environment
+
 - **URL**: `https://sentia-manufacturing-production.onrender.com`
 - **Branch**: `production`
 - **Database**: `sentia-db-production` (Render PostgreSQL)
@@ -33,12 +37,14 @@ This guide ensures 100% correct deployment of all three environments (developmen
 ## 🔑 All API Integrations Configured
 
 ### ✅ Authentication Services
+
 - **Clerk**: Authentication and user management
   - Public Key: `pk_test_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk`
   - Secret Key: Configured in all environments
   - Webhook Secret: Configured for secure webhooks
 
 ### ✅ E-Commerce Integrations
+
 - **Xero Accounting**
   - Client ID: `9C0CAB921C134476A249E48BBECB8C4B`
   - Redirect URIs configured for each environment
@@ -60,12 +66,14 @@ This guide ensures 100% correct deployment of all three environments (developmen
   - Credentials securely stored
 
 ### ✅ ERP & Manufacturing
+
 - **Unleashed ERP**
   - API ID: `d5313df6-db35-430c-a69e-ae27dffe0c5a`
   - API URL: `https://api.unleashedsoftware.com`
   - Full inventory sync enabled
 
 ### ✅ AI & Machine Learning
+
 - **OpenAI GPT-4**
   - API Key configured
   - Used for demand forecasting and analytics
@@ -80,6 +88,7 @@ This guide ensures 100% correct deployment of all three environments (developmen
   - AI orchestration ready
 
 ### ✅ Microsoft Integration
+
 - **Microsoft Graph API**
   - Client ID: `c16d6fba-0e6b-45ea-a016-eb697ff7a7ae`
   - Email integration configured
@@ -114,6 +123,7 @@ git push origin production
 5. Click **"Apply"**
 
 Render will automatically create:
+
 - 3 Web Services (dev, test, prod)
 - 3 PostgreSQL databases
 - All environment variables
@@ -134,6 +144,7 @@ cd scripts
 ```
 
 When prompted, enter the Render database URL for each environment:
+
 1. Development: Get from `sentia-db-development` → Connect
 2. Testing: Get from `sentia-db-testing` → Connect
 3. Production: Get from `sentia-db-production` → Connect
@@ -145,6 +156,7 @@ When prompted, enter the Render database URL for each environment:
 ### For Each Environment, Verify:
 
 #### Database Connection
+
 ```bash
 # Check database is connected
 curl https://sentia-manufacturing-[environment].onrender.com/api/health/database
@@ -158,6 +170,7 @@ curl https://sentia-manufacturing-[environment].onrender.com/api/health/database
 ```
 
 #### API Integrations
+
 ```bash
 # Check all integrations status
 curl https://sentia-manufacturing-[environment].onrender.com/api/integrations/status
@@ -173,12 +186,14 @@ curl https://sentia-manufacturing-[environment].onrender.com/api/integrations/st
 ```
 
 #### Authentication
+
 ```bash
 # Check Clerk is working
 curl https://sentia-manufacturing-[environment].onrender.com/api/auth/status
 ```
 
 #### MCP AI Server
+
 ```bash
 # Check AI server
 curl https://sentia-manufacturing-[environment].onrender.com/api/mcp/health
@@ -217,18 +232,21 @@ Features:
 ## 🚀 Environment-Specific Features
 
 ### Development
+
 - **Auto-deploy**: Enabled from `development` branch
 - **Feature flags**: All experimental features ON
 - **Logging**: Verbose (info level)
 - **Auto-sync**: Every 15-30 minutes
 
 ### Testing
+
 - **Auto-deploy**: Enabled from `test` branch
 - **Feature flags**: Testing features only
 - **Logging**: Standard (info level)
 - **Auto-sync**: Every 30-60 minutes
 
 ### Production
+
 - **Auto-deploy**: Disabled (manual deployment only)
 - **Feature flags**: Stable features only
 - **Logging**: Errors only
@@ -240,21 +258,25 @@ Features:
 ## 💰 Total Cost Breakdown
 
 ### Development Environment
+
 - Web Service: $0 (Free tier)
 - Database: $0 (Free tier)
 - **Total**: $0/month
 
 ### Testing Environment
+
 - Web Service: $7 (Starter)
 - Database: $0 (Free) or $7 (Starter)
 - **Total**: $7-14/month
 
 ### Production Environment
+
 - Web Service: $25 (Standard)
 - Database: $7 (Starter)
 - **Total**: $32/month
 
 ### Grand Total
+
 - **Minimum** (Free dev/test): $32/month
 - **Recommended** (Paid test): $39/month
 - **Previous (Neon + Render)**: $40-60/month
@@ -265,16 +287,19 @@ Features:
 ## ⚠️ Important Notes
 
 ### Database Migration
+
 - Keep Neon running for 48 hours after migration
 - Save backup files locally
 - Test all critical functions before canceling Neon
 
 ### Environment Variables
+
 - All API keys are included in render YAML files
 - Sensitive values should be moved to Render Dashboard secrets
 - Generate new JWT secrets for each environment
 
 ### Branch Protection
+
 - Set up branch protection rules on GitHub
 - Require PR reviews for production branch
 - Enable automatic deployments carefully
@@ -284,12 +309,14 @@ Features:
 ## 📞 Support & Monitoring
 
 ### Health Endpoints
+
 - `/health` - Basic health check
 - `/api/health/database` - Database connectivity
 - `/api/integrations/status` - All integrations
 - `/api/mcp/health` - AI server status
 
 ### Monitoring Commands
+
 ```bash
 # Watch logs
 render logs --service sentia-manufacturing-development --tail
@@ -302,6 +329,7 @@ render db:info sentia-db-development
 ```
 
 ### Support Resources
+
 - **Render Status**: https://status.render.com
 - **Render Docs**: https://render.com/docs
 - **Community**: https://community.render.com
@@ -311,6 +339,7 @@ render db:info sentia-db-development
 ## ✅ Final Confirmation
 
 All three environments are now configured with:
+
 - ✅ Render PostgreSQL databases (no more Neon!)
 - ✅ All API integrations (Xero, Shopify, Amazon, Unleashed)
 - ✅ AI services (OpenAI, Anthropic, MCP)
@@ -324,5 +353,5 @@ All three environments are now configured with:
 
 ---
 
-*Configuration completed: December 2024*
-*Ready for production deployment*
+_Configuration completed: December 2024_
+_Ready for production deployment_

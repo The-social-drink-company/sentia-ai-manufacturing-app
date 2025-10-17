@@ -14,8 +14,8 @@ globalThis.performance = {
   memory: {
     usedJSHeapSize: 1024 * 1024 * 50, // 50MB
     totalJSHeapSize: 1024 * 1024 * 100, // 100MB
-    jsHeapSizeLimit: 1024 * 1024 * 200 // 200MB
-  }
+    jsHeapSizeLimit: 1024 * 1024 * 200, // 200MB
+  },
 }
 
 describe('HealthMonitor', () => {
@@ -26,7 +26,7 @@ describe('HealthMonitor', () => {
     monitor = new HealthMonitor({
       checkInterval: 1000, // 1 second for testing
       criticalThreshold: 2000,
-      warningThreshold: 1000
+      warningThreshold: 1000,
     })
   })
 
@@ -57,7 +57,7 @@ describe('HealthMonitor', () => {
 
       monitor.registerHealthCheck('test-check', checkFunction, {
         timeout: 3000,
-        critical: true
+        critical: true,
       })
 
       expect(monitor.healthChecks.size).toBe(1)
@@ -87,11 +87,13 @@ describe('HealthMonitor', () => {
 
   describe('Health Check Execution', () => {
     it('should execute a successful health check', async () => {
-      const checkFunction = vi.fn(() => Promise.resolve({
-        healthy: true,
-        status: 'good',
-        responseTime: 150
-      }))
+      const checkFunction = vi.fn(() =>
+        Promise.resolve({
+          healthy: true,
+          status: 'good',
+          responseTime: 150,
+        })
+      )
 
       monitor.registerHealthCheck('test-check', checkFunction)
 
@@ -118,9 +120,12 @@ describe('HealthMonitor', () => {
     })
 
     it('should handle health check timeout', async () => {
-      const checkFunction = vi.fn(() => new Promise(resolve => {
-        setTimeout(() => resolve({ healthy: true }), 10000) // 10 seconds
-      }))
+      const checkFunction = vi.fn(
+        () =>
+          new Promise(resolve => {
+            setTimeout(() => resolve({ healthy: true }), 10000) // 10 seconds
+          })
+      )
 
       monitor.registerHealthCheck('test-check', checkFunction, { timeout: 100 })
 
@@ -136,7 +141,7 @@ describe('HealthMonitor', () => {
     it('should check database connectivity successfully', async () => {
       fetch.mockResolvedValueOnce({
         ok: true,
-        status: 200
+        status: 200,
       })
 
       monitor.start()
@@ -148,7 +153,7 @@ describe('HealthMonitor', () => {
       expect(result.responseTime).toBeDefined()
       expect(fetch).toHaveBeenCalledWith('/api/health/database', {
         method: 'GET',
-        timeout: 3000
+        timeout: 3000,
       })
     })
 
@@ -257,7 +262,7 @@ describe('HealthMonitor', () => {
       const results = new Map([
         ['test1', { healthy: true, name: 'test1' }],
         ['test2', { healthy: false, name: 'test2' }],
-        ['test3', { healthy: true, name: 'test3' }]
+        ['test3', { healthy: true, name: 'test3' }],
       ])
 
       monitor.updateSystemMetrics(results)
@@ -277,7 +282,7 @@ describe('HealthMonitor', () => {
 
       const results = new Map([
         ['critical1', { healthy: false, name: 'critical1' }],
-        ['normal1', { healthy: true, name: 'normal1' }]
+        ['normal1', { healthy: true, name: 'normal1' }],
       ])
 
       monitor.updateSystemMetrics(results)
@@ -292,13 +297,11 @@ describe('HealthMonitor', () => {
       const alertHandler = vi.fn()
       monitor.onAlert(alertHandler)
 
-      const results = new Map([
-        ['critical-test', { healthy: false, error: 'Test failure' }]
-      ])
+      const results = new Map([['critical-test', { healthy: false, error: 'Test failure' }]])
 
       monitor.healthChecks.set('critical-test', {
         options: { critical: true },
-        lastResult: { healthy: false, error: 'Test failure' }
+        lastResult: { healthy: false, error: 'Test failure' },
       })
 
       monitor.processAlerts(results)
@@ -307,7 +310,7 @@ describe('HealthMonitor', () => {
         expect.objectContaining({
           type: 'health_check_failed',
           severity: 'critical',
-          source: 'critical-test'
+          source: 'critical-test',
         })
       )
     })
@@ -316,16 +319,14 @@ describe('HealthMonitor', () => {
       const alertHandler = vi.fn()
       monitor.onAlert(alertHandler)
 
-      const results = new Map([
-        ['slow-check', { healthy: true, responseTime: 5000 }]
-      ])
+      const results = new Map([['slow-check', { healthy: true, responseTime: 5000 }]])
 
       monitor.processAlerts(results)
 
       expect(alertHandler).toHaveBeenCalledWith(
         expect.objectContaining({
           type: 'performance_degradation',
-          severity: 'warning'
+          severity: 'warning',
         })
       )
     })
@@ -411,14 +412,17 @@ describe('HealthMonitor', () => {
 
     it('should clear old metrics', () => {
       const now = Date.now()
-      const oldTimestamp = now - (25 * 60 * 60 * 1000) // 25 hours ago
-      const recentTimestamp = now - (1 * 60 * 60 * 1000) // 1 hour ago
+      const oldTimestamp = now - 25 * 60 * 60 * 1000 // 25 hours ago
+      const recentTimestamp = now - 1 * 60 * 60 * 1000 // 1 hour ago
 
       // Add old and recent metrics
-      monitor.metrics.set('test', new Map([
-        ['old_metric', [{ timestamp: oldTimestamp, value: 'old' }]],
-        ['recent_metric', [{ timestamp: recentTimestamp, value: 'recent' }]]
-      ]))
+      monitor.metrics.set(
+        'test',
+        new Map([
+          ['old_metric', [{ timestamp: oldTimestamp, value: 'old' }]],
+          ['recent_metric', [{ timestamp: recentTimestamp, value: 'recent' }]],
+        ])
+      )
 
       monitor.clearMetrics('test', 24 * 60 * 60 * 1000) // 24 hours
 

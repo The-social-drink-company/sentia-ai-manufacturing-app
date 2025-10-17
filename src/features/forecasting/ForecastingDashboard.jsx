@@ -8,7 +8,7 @@ import {
   ArrowDownTrayIcon,
   AdjustmentsHorizontalIcon,
   BoltIcon,
-  ClockIcon
+  ClockIcon,
 } from '@heroicons/react/24/solid'
 import { useAuth } from '../../hooks/useAuth'
 import TimeSeriesAnalysis from './components/TimeSeriesAnalysis'
@@ -32,23 +32,23 @@ export default function ForecastingDashboard() {
     demand: {
       name: 'Product Demand',
       description: 'Historical product demand data from real sales analytics',
-      endpoint: '/api/analytics/demand'
+      endpoint: '/api/analytics/demand',
     },
     inventory: {
       name: 'Inventory Levels',
       description: 'Real-time inventory level trends across all locations',
-      endpoint: '/api/inventory/levels'
+      endpoint: '/api/inventory/levels',
     },
     production: {
       name: 'Production Volume',
       description: 'Manufacturing production volumes from shop floor systems',
-      endpoint: '/api/production/volume'
+      endpoint: '/api/production/volume',
     },
     revenue: {
       name: 'Revenue',
       description: 'Revenue trends from financial systems integration',
-      endpoint: '/api/financial/revenue'
-    }
+      endpoint: '/api/financial/revenue',
+    },
   }
 
   // Role-based access control
@@ -61,7 +61,7 @@ export default function ForecastingDashboard() {
       try {
         setLoading(true)
         setError(null)
-        
+
         const selectedSource = dataSources[selectedDataSource]
         if (!selectedSource?.endpoint) {
           throw new Error('No endpoint configured for selected data source')
@@ -86,11 +86,11 @@ export default function ForecastingDashboard() {
     fetchData()
   }, [selectedDataSource])
 
-  const handleForecastUpdate = (forecastResult) => {
+  const handleForecastUpdate = forecastResult => {
     setAnalysis(forecastResult)
   }
 
-  const handleExport = async (format) => {
+  const handleExport = async format => {
     try {
       if (!analysis) {
         throw new Error('No analysis data to export')
@@ -103,12 +103,12 @@ export default function ForecastingDashboard() {
         analysis,
         metadata: {
           user: user?.firstName || 'Unknown',
-          version: '1.0'
-        }
+          version: '1.0',
+        },
       }
 
       const blob = new Blob([JSON.stringify(exportData, null, 2)], {
-        type: format === 'json' ? 'application/json' : 'text/plain'
+        type: format === 'json' ? 'application/json' : 'text/plain',
       })
 
       const url = URL.createObjectURL(blob)
@@ -159,18 +159,20 @@ export default function ForecastingDashboard() {
               {/* Data Source Selector */}
               <select
                 value={selectedDataSource}
-                onChange={(e) => setSelectedDataSource(e.target.value)}
+                onChange={e => setSelectedDataSource(e.target.value)}
                 className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-sm"
               >
                 {Object.entries(dataSources).map(([key, source]) => (
-                  <option key={key} value={key}>{source.name}</option>
+                  <option key={key} value={key}>
+                    {source.name}
+                  </option>
                 ))}
               </select>
 
               {/* Period Selector */}
               <select
                 value={selectedPeriod}
-                onChange={(e) => setSelectedPeriod(parseInt(e.target.value))}
+                onChange={e => setSelectedPeriod(parseInt(e.target.value))}
                 className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-sm"
               >
                 <option value={6}>6 Months</option>
@@ -326,7 +328,10 @@ export default function ForecastingDashboard() {
               <CardContent>
                 <div className="space-y-4">
                   {Object.entries(analysis.accuracy || {}).map(([method, metrics]) => (
-                    <div key={method} className="border-b border-gray-200 dark:border-gray-700 pb-3 last:border-b-0">
+                    <div
+                      key={method}
+                      className="border-b border-gray-200 dark:border-gray-700 pb-3 last:border-b-0"
+                    >
                       <h4 className="font-semibold capitalize text-gray-900 dark:text-white mb-2">
                         {method.replace('_', ' ')}
                       </h4>
@@ -364,8 +369,11 @@ export default function ForecastingDashboard() {
                         <div className="w-20 bg-gray-200 rounded-full h-2 mr-3">
                           <div
                             className={`h-2 rounded-full ${
-                              analysis.dataAnalysis.dataQuality.score > 0.8 ? 'bg-green-500' :
-                              analysis.dataAnalysis.dataQuality.score > 0.6 ? 'bg-yellow-500' : 'bg-red-500'
+                              analysis.dataAnalysis.dataQuality.score > 0.8
+                                ? 'bg-green-500'
+                                : analysis.dataAnalysis.dataQuality.score > 0.6
+                                  ? 'bg-yellow-500'
+                                  : 'bg-red-500'
                             }`}
                             style={{ width: `${analysis.dataAnalysis.dataQuality.score * 100}%` }}
                           />
@@ -384,7 +392,9 @@ export default function ForecastingDashboard() {
                         </span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-gray-600 dark:text-gray-400">Interpolated Points:</span>
+                        <span className="text-gray-600 dark:text-gray-400">
+                          Interpolated Points:
+                        </span>
                         <span className="font-semibold">
                           {analysis.dataAnalysis.dataQuality.interpolatedPoints}
                         </span>
@@ -400,7 +410,8 @@ export default function ForecastingDashboard() {
                     {analysis.dataAnalysis.dataQuality.recommendation && (
                       <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
                         <p className="text-sm text-blue-800 dark:text-blue-200">
-                          <strong>Recommendation:</strong> {analysis.dataAnalysis.dataQuality.recommendation}
+                          <strong>Recommendation:</strong>{' '}
+                          {analysis.dataAnalysis.dataQuality.recommendation}
                         </p>
                       </div>
                     )}
@@ -413,10 +424,12 @@ export default function ForecastingDashboard() {
 
         {/* Footer */}
         <div className="text-center text-sm text-gray-500 dark:text-gray-400 pt-8 border-t border-gray-200 dark:border-gray-700">
-          <p>Powered by AI Central Nervous System • Advanced Time Series Analysis • Real-time Forecasting</p>
+          <p>
+            Powered by AI Central Nervous System • Advanced Time Series Analysis • Real-time
+            Forecasting
+          </p>
         </div>
       </div>
     </div>
   )
 }
-

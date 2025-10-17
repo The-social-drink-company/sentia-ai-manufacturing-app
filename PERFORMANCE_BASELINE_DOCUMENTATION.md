@@ -1,4 +1,5 @@
 # PERFORMANCE BASELINE DOCUMENTATION
+
 ## Sentia Manufacturing Dashboard - Enterprise Performance Standards
 
 Version: 1.0.0
@@ -10,6 +11,7 @@ Status: **ACTIVE**
 ## 1. EXECUTIVE SUMMARY
 
 ### Current Performance Achievements
+
 - **Response Time**: P95 < 1.5 seconds ✅
 - **Concurrent Users**: 500+ supported ✅
 - **Uptime**: 99.9% achieved ✅
@@ -17,13 +19,14 @@ Status: **ACTIVE**
 - **AI Forecast Accuracy**: 88%+ validated ✅
 
 ### Performance Targets
-| Metric | Current | Target | Status |
-|--------|---------|--------|--------|
-| P50 Response Time | 450ms | <500ms | ✅ Achieved |
-| P95 Response Time | 1.2s | <1.5s | ✅ Achieved |
-| P99 Response Time | 2.1s | <3s | ✅ Achieved |
-| Throughput | 1,000 req/s | 1,500 req/s | 🔄 In Progress |
-| Error Rate | 0.1% | <0.5% | ✅ Achieved |
+
+| Metric            | Current     | Target      | Status         |
+| ----------------- | ----------- | ----------- | -------------- |
+| P50 Response Time | 450ms       | <500ms      | ✅ Achieved    |
+| P95 Response Time | 1.2s        | <1.5s       | ✅ Achieved    |
+| P99 Response Time | 2.1s        | <3s         | ✅ Achieved    |
+| Throughput        | 1,000 req/s | 1,500 req/s | 🔄 In Progress |
+| Error Rate        | 0.1%        | <0.5%       | ✅ Achieved    |
 
 ---
 
@@ -35,36 +38,36 @@ Status: **ACTIVE**
 // Current Performance Baseline (September 2025)
 const performanceBaseline = {
   responseTime: {
-    p50: 450,  // milliseconds
+    p50: 450, // milliseconds
     p75: 750,
     p95: 1200,
-    p99: 2100
+    p99: 2100,
   },
   throughput: {
-    average: 1000,  // requests per second
+    average: 1000, // requests per second
     peak: 1500,
-    sustained: 800
+    sustained: 800,
   },
   errorRates: {
-    http4xx: 0.05,  // percentage
+    http4xx: 0.05, // percentage
     http5xx: 0.01,
-    timeout: 0.02
+    timeout: 0.02,
   },
   resourceUtilization: {
     cpu: {
-      average: 45,  // percentage
-      peak: 75
+      average: 45, // percentage
+      peak: 75,
     },
     memory: {
-      average: 60,  // percentage
-      peak: 85
+      average: 60, // percentage
+      peak: 85,
     },
     network: {
-      inbound: 100,  // Mbps
-      outbound: 150
-    }
-  }
-};
+      inbound: 100, // Mbps
+      outbound: 150,
+    },
+  },
+}
 ```
 
 ### 2.2 Database Performance
@@ -89,14 +92,14 @@ WHERE query_type = 'critical';
 
 ### 2.3 API Endpoint Performance
 
-| Endpoint | Method | Avg Response | P95 Response | Throughput |
-|----------|--------|--------------|--------------|------------|
-| /api/auth/login | POST | 120ms | 250ms | 100 req/s |
-| /api/dashboard | GET | 450ms | 1200ms | 200 req/s |
-| /api/forecasting | POST | 850ms | 1500ms | 50 req/s |
-| /api/inventory | GET | 200ms | 450ms | 300 req/s |
-| /api/orders | GET | 150ms | 350ms | 250 req/s |
-| /api/analytics | POST | 650ms | 1100ms | 100 req/s |
+| Endpoint         | Method | Avg Response | P95 Response | Throughput |
+| ---------------- | ------ | ------------ | ------------ | ---------- |
+| /api/auth/login  | POST   | 120ms        | 250ms        | 100 req/s  |
+| /api/dashboard   | GET    | 450ms        | 1200ms       | 200 req/s  |
+| /api/forecasting | POST   | 850ms        | 1500ms       | 50 req/s   |
+| /api/inventory   | GET    | 200ms        | 450ms        | 300 req/s  |
+| /api/orders      | GET    | 150ms        | 350ms        | 250 req/s  |
+| /api/analytics   | POST   | 650ms        | 1100ms       | 100 req/s  |
 
 ---
 
@@ -106,39 +109,39 @@ WHERE query_type = 'critical';
 
 ```javascript
 // k6-load-test.js
-import http from 'k6/http';
-import { check, sleep } from 'k6';
+import http from 'k6/http'
+import { check, sleep } from 'k6'
 
 export const options = {
   stages: [
-    { duration: '2m', target: 100 },  // Ramp up
-    { duration: '5m', target: 500 },  // Stay at 500 users
+    { duration: '2m', target: 100 }, // Ramp up
+    { duration: '5m', target: 500 }, // Stay at 500 users
     { duration: '2m', target: 1000 }, // Peak load
-    { duration: '5m', target: 500 },  // Back to normal
-    { duration: '2m', target: 0 },    // Ramp down
+    { duration: '5m', target: 500 }, // Back to normal
+    { duration: '2m', target: 0 }, // Ramp down
   ],
   thresholds: {
     http_req_duration: ['p(95)<1500'],
     http_req_failed: ['rate<0.01'],
   },
-};
+}
 
-export default function() {
+export default function () {
   // Test scenarios
   const responses = http.batch([
     ['GET', 'https://sentia.app/api/dashboard'],
     ['GET', 'https://sentia.app/api/inventory'],
     ['POST', 'https://sentia.app/api/forecasting'],
-  ]);
+  ])
 
   responses.forEach(response => {
     check(response, {
-      'status is 200': (r) => r.status === 200,
-      'response time < 1500ms': (r) => r.timings.duration < 1500,
-    });
-  });
+      'status is 200': r => r.status === 200,
+      'response time < 1500ms': r => r.timings.duration < 1500,
+    })
+  })
 
-  sleep(1);
+  sleep(1)
 }
 ```
 
@@ -146,8 +149,8 @@ export default function() {
 
 ```yaml
 load_test_results:
-  test_date: "2025-09-14"
-  duration: "20 minutes"
+  test_date: '2025-09-14'
+  duration: '20 minutes'
 
   summary:
     total_requests: 145000
@@ -214,7 +217,7 @@ const capacityProjections = {
       throughput: 5280,
       storage: 528,
       compute: 16,
-    }
+    },
   },
 
   scalingStrategy: {
@@ -232,20 +235,20 @@ const capacityProjections = {
       maxReplicas: 5,
       connectionPooling: true,
       maxConnections: 100,
-    }
-  }
-};
+    },
+  },
+}
 ```
 
 ### 4.2 Resource Requirements Matrix
 
 | Time Period | Users | CPU (vCores) | Memory (GB) | Storage (GB) | Bandwidth (Mbps) |
-|-------------|-------|--------------|-------------|--------------|------------------|
-| Current | 500 | 4 | 8 | 100 | 100 |
-| 3 Months | 760 | 6 | 12 | 152 | 150 |
-| 6 Months | 1,150 | 8 | 16 | 230 | 225 |
-| 9 Months | 1,740 | 12 | 24 | 348 | 340 |
-| 12 Months | 2,640 | 16 | 32 | 528 | 515 |
+| ----------- | ----- | ------------ | ----------- | ------------ | ---------------- |
+| Current     | 500   | 4            | 8           | 100          | 100              |
+| 3 Months    | 760   | 6            | 12          | 152          | 150              |
+| 6 Months    | 1,150 | 8            | 16          | 230          | 225              |
+| 9 Months    | 1,740 | 12           | 24          | 348          | 340              |
+| 12 Months   | 2,640 | 16           | 32          | 528          | 515              |
 
 ### 4.3 Cost Optimization Strategies
 
@@ -290,7 +293,7 @@ export const monitoringConfig = {
         responseTime: { threshold: 2000, severity: 'warning' },
         errorRate: { threshold: 0.01, severity: 'critical' },
         throughput: { threshold: 100, severity: 'info' },
-      }
+      },
     },
 
     infrastructure: {
@@ -301,7 +304,7 @@ export const monitoringConfig = {
         cpu: { threshold: 80, severity: 'warning' },
         memory: { threshold: 90, severity: 'critical' },
         disk: { threshold: 85, severity: 'warning' },
-      }
+      },
     },
 
     business: {
@@ -313,8 +316,8 @@ export const monitoringConfig = {
         'order_processing_time',
         'inventory_turnover',
         'user_engagement',
-      ]
-    }
+      ],
+    },
   },
 
   dashboards: {
@@ -328,20 +331,20 @@ export const monitoringConfig = {
     shipper: 'fluentd',
     retention: '30d',
     level: 'info',
-  }
-};
+  },
+}
 ```
 
 ### 5.2 Alert Thresholds
 
-| Metric | Warning | Critical | Action |
-|--------|---------|----------|--------|
-| Response Time P95 | >2s | >3s | Scale up instances |
-| Error Rate | >1% | >5% | Investigate immediately |
-| CPU Usage | >70% | >90% | Add compute resources |
-| Memory Usage | >80% | >95% | Increase memory allocation |
-| Disk Usage | >75% | >90% | Clean up or expand storage |
-| Queue Depth | >1000 | >5000 | Scale workers |
+| Metric            | Warning | Critical | Action                     |
+| ----------------- | ------- | -------- | -------------------------- |
+| Response Time P95 | >2s     | >3s      | Scale up instances         |
+| Error Rate        | >1%     | >5%      | Investigate immediately    |
+| CPU Usage         | >70%    | >90%     | Add compute resources      |
+| Memory Usage      | >80%    | >95%     | Increase memory allocation |
+| Disk Usage        | >75%    | >90%     | Clean up or expand storage |
+| Queue Depth       | >1000   | >5000    | Scale workers              |
 
 ---
 
@@ -356,19 +359,19 @@ export default {
     rollupOptions: {
       output: {
         manualChunks: {
-          'vendor': ['react', 'react-dom'],
-          'ui': ['@mui/material', '@emotion/react'],
-          'charts': ['recharts', 'd3'],
-          'utils': ['lodash', 'axios'],
-        }
-      }
+          vendor: ['react', 'react-dom'],
+          ui: ['@mui/material', '@emotion/react'],
+          charts: ['recharts', 'd3'],
+          utils: ['lodash', 'axios'],
+        },
+      },
     },
     minify: 'terser',
     terserOptions: {
       compress: {
         drop_console: true,
         drop_debugger: true,
-      }
+      },
     },
     cssCodeSplit: true,
     sourcemap: false,
@@ -377,16 +380,16 @@ export default {
   optimizeDeps: {
     include: ['react', 'react-dom'],
     exclude: ['@testing-library'],
-  }
-};
+  },
+}
 ```
 
 ### 6.2 Backend Optimizations
 
 ```javascript
 // performance-middleware.js
-import compression from 'compression';
-import cache from 'memory-cache';
+import compression from 'compression'
+import cache from 'memory-cache'
 
 export const performanceMiddleware = {
   // Response compression
@@ -394,29 +397,29 @@ export const performanceMiddleware = {
     level: 6,
     threshold: 1024,
     filter: (req, res) => {
-      if (req.headers['x-no-compression']) return false;
-      return compression.filter(req, res);
-    }
+      if (req.headers['x-no-compression']) return false
+      return compression.filter(req, res)
+    },
   }),
 
   // In-memory caching
   caching: (duration = 60) => {
     return (req, res, next) => {
-      const key = '__express__' + req.originalUrl;
-      const cachedBody = cache.get(key);
+      const key = '__express__' + req.originalUrl
+      const cachedBody = cache.get(key)
 
       if (cachedBody) {
-        res.send(cachedBody);
-        return;
+        res.send(cachedBody)
+        return
       }
 
-      res.sendResponse = res.send;
-      res.send = (body) => {
-        cache.put(key, body, duration * 1000);
-        res.sendResponse(body);
-      };
-      next();
-    };
+      res.sendResponse = res.send
+      res.send = body => {
+        cache.put(key, body, duration * 1000)
+        res.sendResponse(body)
+      }
+      next()
+    }
   },
 
   // Request pooling
@@ -425,8 +428,8 @@ export const performanceMiddleware = {
     min: 5,
     idleTimeoutMillis: 30000,
     connectionTimeoutMillis: 2000,
-  }
-};
+  },
+}
 ```
 
 ### 6.3 Database Optimizations
@@ -498,15 +501,15 @@ const performanceTests = {
       duration: '2h',
       rampUp: '5m',
       expectedP95: 1200,
-    }
+    },
   ],
 
   validationCriteria: {
     responseTime: 'p95 < expectedP95',
     errorRate: 'rate < 0.01',
     availability: 'uptime > 0.999',
-  }
-};
+  },
+}
 ```
 
 ### 7.2 Performance Test Checklist
@@ -540,13 +543,13 @@ const performanceTests = {
 // degradation-detector.js
 class PerformanceDegradationDetector {
   constructor(thresholds) {
-    this.thresholds = thresholds;
-    this.baseline = null;
-    this.alerts = [];
+    this.thresholds = thresholds
+    this.baseline = null
+    this.alerts = []
   }
 
   detectDegradation(currentMetrics) {
-    const degradations = [];
+    const degradations = []
 
     // Response time degradation
     if (currentMetrics.p95 > this.baseline.p95 * 1.5) {
@@ -555,8 +558,8 @@ class PerformanceDegradationDetector {
         severity: 'high',
         current: currentMetrics.p95,
         baseline: this.baseline.p95,
-        increase: ((currentMetrics.p95 / this.baseline.p95 - 1) * 100).toFixed(2) + '%'
-      });
+        increase: ((currentMetrics.p95 / this.baseline.p95 - 1) * 100).toFixed(2) + '%',
+      })
     }
 
     // Throughput degradation
@@ -566,8 +569,9 @@ class PerformanceDegradationDetector {
         severity: 'medium',
         current: currentMetrics.throughput,
         baseline: this.baseline.throughput,
-        decrease: ((1 - currentMetrics.throughput / this.baseline.throughput) * 100).toFixed(2) + '%'
-      });
+        decrease:
+          ((1 - currentMetrics.throughput / this.baseline.throughput) * 100).toFixed(2) + '%',
+      })
     }
 
     // Error rate increase
@@ -577,24 +581,24 @@ class PerformanceDegradationDetector {
         severity: 'critical',
         current: currentMetrics.errorRate,
         baseline: this.baseline.errorRate,
-        increase: ((currentMetrics.errorRate / this.baseline.errorRate - 1) * 100).toFixed(2) + '%'
-      });
+        increase: ((currentMetrics.errorRate / this.baseline.errorRate - 1) * 100).toFixed(2) + '%',
+      })
     }
 
-    return degradations;
+    return degradations
   }
 }
 ```
 
 ### 8.2 Response Procedures
 
-| Degradation Type | Immediate Action | Short-term Fix | Long-term Solution |
-|-----------------|------------------|----------------|-------------------|
-| Response Time | Scale up instances | Optimize queries | Refactor code |
-| High Error Rate | Roll back deployment | Fix bugs | Improve testing |
-| Memory Leak | Restart services | Patch memory leaks | Code review |
-| Database Slow | Add read replicas | Optimize indexes | Shard database |
-| Network Latency | Enable CDN | Optimize payloads | Multi-region deploy |
+| Degradation Type | Immediate Action     | Short-term Fix     | Long-term Solution  |
+| ---------------- | -------------------- | ------------------ | ------------------- |
+| Response Time    | Scale up instances   | Optimize queries   | Refactor code       |
+| High Error Rate  | Roll back deployment | Fix bugs           | Improve testing     |
+| Memory Leak      | Restart services     | Patch memory leaks | Code review         |
+| Database Slow    | Add read replicas    | Optimize indexes   | Shard database      |
+| Network Latency  | Enable CDN           | Optimize payloads  | Multi-region deploy |
 
 ---
 
@@ -619,26 +623,31 @@ graph LR
 # Monthly Performance Report - [Month Year]
 
 ## Executive Summary
+
 - Overall Performance Score: [X/100]
 - Key Achievements: [List]
 - Critical Issues: [List]
 
 ## Metrics Summary
-| Metric | Target | Actual | Status |
-|--------|--------|--------|--------|
-| P95 Response Time | <1.5s | Xs | ✅/❌ |
-| Availability | 99.9% | X% | ✅/❌ |
-| Error Rate | <0.5% | X% | ✅/❌ |
+
+| Metric            | Target | Actual | Status |
+| ----------------- | ------ | ------ | ------ |
+| P95 Response Time | <1.5s  | Xs     | ✅/❌  |
+| Availability      | 99.9%  | X%     | ✅/❌  |
+| Error Rate        | <0.5%  | X%     | ✅/❌  |
 
 ## Improvements Implemented
+
 1. [Improvement 1] - [Impact]
 2. [Improvement 2] - [Impact]
 
 ## Upcoming Optimizations
+
 1. [Planned optimization 1]
 2. [Planned optimization 2]
 
 ## Recommendations
+
 - [Recommendation 1]
 - [Recommendation 2]
 ```
@@ -649,12 +658,12 @@ graph LR
 
 ### 10.1 Service Level Agreements
 
-| Service | Availability | Response Time | Error Rate | Penalty |
-|---------|-------------|---------------|------------|---------|
-| API Gateway | 99.95% | P95 < 1s | <0.1% | 10% credit |
-| Dashboard | 99.9% | P95 < 2s | <0.5% | 5% credit |
-| Forecasting | 99.5% | P95 < 3s | <1% | 5% credit |
-| Reporting | 99% | P95 < 5s | <2% | 2% credit |
+| Service     | Availability | Response Time | Error Rate | Penalty    |
+| ----------- | ------------ | ------------- | ---------- | ---------- |
+| API Gateway | 99.95%       | P95 < 1s      | <0.1%      | 10% credit |
+| Dashboard   | 99.9%        | P95 < 2s      | <0.5%      | 5% credit  |
+| Forecasting | 99.5%        | P95 < 3s      | <1%        | 5% credit  |
+| Reporting   | 99%          | P95 < 5s      | <2%        | 2% credit  |
 
 ### 10.2 SLA Monitoring
 
@@ -676,31 +685,32 @@ const SLAMonitor = {
       target: 0.005,
       measurement: 'error_percentage',
       window: '1_hour',
-    }
+    },
   },
 
   calculateCompliance(metrics) {
-    const compliance = {};
+    const compliance = {}
 
     Object.keys(this.agreements).forEach(sla => {
-      const target = this.agreements[sla].target;
-      const actual = metrics[sla];
+      const target = this.agreements[sla].target
+      const actual = metrics[sla]
       compliance[sla] = {
         target,
         actual,
         compliant: this.isCompliant(sla, actual, target),
-        percentage: this.compliancePercentage(actual, target)
-      };
-    });
+        percentage: this.compliancePercentage(actual, target),
+      }
+    })
 
-    return compliance;
-  }
-};
+    return compliance
+  },
+}
 ```
 
 ---
 
 **Document Control**:
+
 - **Version**: 1.0.0
 - **Last Updated**: 2025-09-14
 - **Next Review**: 2025-10-14
@@ -709,4 +719,4 @@ const SLAMonitor = {
 
 ---
 
-*This performance baseline documentation establishes the foundation for continuous performance monitoring and optimization.*
+_This performance baseline documentation establishes the foundation for continuous performance monitoring and optimization._

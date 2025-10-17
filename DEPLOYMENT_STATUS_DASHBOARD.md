@@ -7,22 +7,24 @@
 
 ## 📊 REAL-TIME STATUS
 
-| Service | Status | Health Check | Notes |
-|---------|--------|--------------|-------|
-| **Production** | 🔴 502 Error | ❌ Bad Gateway | Awaiting env vars + deployment |
-| **Development** | 🟢 Running | ✅ 200 OK | Missing auth keys |
-| **MCP Server** | 🟢 Running | ✅ 200 OK | Fully operational |
+| Service         | Status       | Health Check   | Notes                          |
+| --------------- | ------------ | -------------- | ------------------------------ |
+| **Production**  | 🔴 502 Error | ❌ Bad Gateway | Awaiting env vars + deployment |
+| **Development** | 🟢 Running   | ✅ 200 OK      | Missing auth keys              |
+| **MCP Server**  | 🟢 Running   | ✅ 200 OK      | Fully operational              |
 
 ---
 
 ## 🔄 DEPLOYMENT TIMELINE
 
 ### ✅ Completed Actions
+
 - **17:55**: Git push to production branch completed
 - **17:56**: Simplified server code deployed to GitHub
 - **17:57**: Render webhook should have triggered
 
 ### 🚨 Pending Actions
+
 1. **Add environment variables to Production** (CRITICAL)
 2. **Wait for Render deployment** (2-5 minutes after env vars)
 3. **Add environment variables to Development**
@@ -60,6 +62,7 @@ JWT_EXPIRES_IN=24h
 ```
 
 ### Already Present Variables (DO NOT REMOVE):
+
 - ✅ NODE_ENV=production
 - ✅ PORT=5000
 - ✅ DATABASE_URL
@@ -89,23 +92,28 @@ JWT_EXPIRES_IN=24h
 ## 🚀 IMMEDIATE ACTIONS (In Order)
 
 ### Step 1: Open Render Dashboard
+
 ```
 https://dashboard.render.com
 ```
 
 ### Step 2: Check Deployment Status
+
 1. Go to `sentia-manufacturing-production`
 2. Check "Events" or "Deploy" tab
 3. Look for recent deployment (should be within last 15 minutes)
 
 ### Step 3: Add Environment Variables
+
 1. Go to "Environment" tab
 2. Click "Add Environment Variable"
 3. Add each variable from the list above
 4. Click "Save Changes"
 
 ### Step 4: Trigger Manual Deploy (if needed)
+
 If no recent deployment shows:
+
 1. Go to "Manual Deploy"
 2. Select "Deploy latest commit"
 3. Check "Clear build cache"
@@ -135,6 +143,7 @@ bash monitor-deployment.sh
 You'll know it's working when:
 
 1. **Health Check Returns JSON**:
+
 ```json
 {
   "status": "healthy",
@@ -145,10 +154,12 @@ You'll know it's working when:
 ```
 
 2. **Main Site Loads**:
+
 - Visit: https://sentia-manufacturing-production.onrender.com
 - See: Login page or dashboard (not 502 error)
 
 3. **No Console Errors**:
+
 - Open browser DevTools
 - No authentication errors
 - No API connection errors
@@ -179,14 +190,17 @@ You'll know it's working when:
 ## 📱 CONTACT & SUPPORT
 
 ### Render Dashboard
+
 - URL: https://dashboard.render.com
 - Service: sentia-manufacturing-production
 
 ### GitHub Repository
+
 - URL: https://github.com/The-social-drink-company/sentia-manufacturing-dashboard
 - Branch: production (simplified server deployed)
 
 ### Test URLs
+
 - Production: https://sentia-manufacturing-production.onrender.com
 - Development: https://sentia-manufacturing-development.onrender.com
 - MCP Server: https://mcp-server-tkyu.onrender.com
@@ -204,5 +218,3 @@ You'll know it's working when:
 
 **Auto-refresh**: Check status every 5 minutes until resolved
 **Expected Resolution**: Within 15 minutes of adding environment variables
-
-

@@ -4,12 +4,12 @@ import './index.css'
 import App from './App-simple-environment.jsx'
 
 // Global error handler
-window.addEventListener('error', (event) => {
+window.addEventListener('error', event => {
   console.error('[Global Error]', event.error)
   showErrorFallback('JavaScript Error', event.error.message)
 })
 
-window.addEventListener('unhandledrejection', (event) => {
+window.addEventListener('unhandledrejection', event => {
   console.error('[Unhandled Promise Rejection]', event.reason)
   showErrorFallback('Promise Rejection', event.reason)
 })

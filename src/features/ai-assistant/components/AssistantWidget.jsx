@@ -8,7 +8,7 @@ import {
   ChatBubbleOvalLeftEllipsisIcon,
   XMarkIcon,
   PaperAirplaneIcon,
-  SparklesIcon
+  SparklesIcon,
 } from '@heroicons/react/24/outline'
 import { useAssistantStore } from '../state/assistantStore'
 
@@ -17,13 +17,7 @@ const AssistantWidget = () => {
   const [inputValue, setInputValue] = useState('')
   const messagesEndRef = useRef(null)
 
-  const {
-    messages,
-    isProcessing,
-    error,
-    addUserMessage,
-    reset
-  } = useAssistantStore()
+  const { messages, isProcessing, error, addUserMessage, reset } = useAssistantStore()
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -33,7 +27,7 @@ const AssistantWidget = () => {
     scrollToBottom()
   }, [messages])
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault()
     if (!inputValue.trim() || isProcessing) return
 
@@ -46,7 +40,7 @@ const AssistantWidget = () => {
       timestamp: new Date().toISOString(),
       userAgent: navigator.userAgent,
       viewportWidth: window.innerWidth,
-      viewportHeight: window.innerHeight
+      viewportHeight: window.innerHeight,
     }
 
     await addUserMessage(message, context)
@@ -54,20 +48,22 @@ const AssistantWidget = () => {
 
   const quickActions = [
     {
-      text: "Show production metrics",
-      icon: "📊",
-      action: () => addUserMessage("Show me current production metrics and KPIs")
+      text: 'Show production metrics',
+      icon: '📊',
+      action: () => addUserMessage('Show me current production metrics and KPIs'),
     },
     {
-      text: "Analyze working capital",
-      icon: "💰",
-      action: () => addUserMessage("Analyze our working capital situation and provide recommendations")
+      text: 'Analyze working capital',
+      icon: '💰',
+      action: () =>
+        addUserMessage('Analyze our working capital situation and provide recommendations'),
     },
     {
-      text: "Forecast demand trends",
-      icon: "📈",
-      action: () => addUserMessage("What are the demand trends and forecasts for our key products?")
-    }
+      text: 'Forecast demand trends',
+      icon: '📈',
+      action: () =>
+        addUserMessage('What are the demand trends and forecasts for our key products?'),
+    },
   ]
 
   if (!isOpen) {
@@ -130,7 +126,7 @@ const AssistantWidget = () => {
           </div>
         )}
 
-        {messages.map((message) => (
+        {messages.map(message => (
           <div
             key={message.id}
             className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
@@ -166,8 +162,14 @@ const AssistantWidget = () => {
             <div className="bg-gray-100 dark:bg-gray-800 p-3 rounded-lg">
               <div className="flex space-x-1">
                 <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                <div
+                  className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                  style={{ animationDelay: '0.1s' }}
+                ></div>
+                <div
+                  className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                  style={{ animationDelay: '0.2s' }}
+                ></div>
               </div>
             </div>
           </div>
@@ -176,10 +178,7 @@ const AssistantWidget = () => {
         {error && (
           <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3">
             <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
-            <button
-              onClick={reset}
-              className="text-xs text-red-500 hover:text-red-600 mt-1"
-            >
+            <button onClick={reset} className="text-xs text-red-500 hover:text-red-600 mt-1">
               Reset conversation
             </button>
           </div>
@@ -194,7 +193,7 @@ const AssistantWidget = () => {
           <input
             type="text"
             value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
+            onChange={e => setInputValue(e.target.value)}
             placeholder="Ask about production, forecasts, or analytics..."
             className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             disabled={isProcessing}

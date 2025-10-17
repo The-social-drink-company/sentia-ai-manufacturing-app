@@ -7,7 +7,7 @@ const ClerkSignInEnvironmentAware = () => {
   const location = useLocation()
   const [authComponents, setAuthComponents] = useState(null)
   const [loading, setLoading] = useState(!isDevelopmentMode)
-  
+
   // In development mode, redirect immediately to dashboard
   if (isDevelopmentMode) {
     console.log('[Development] Sign-in bypassed, redirecting to dashboard')
@@ -21,7 +21,7 @@ const ClerkSignInEnvironmentAware = () => {
         const clerkAuth = await import('@clerk/clerk-react')
         setAuthComponents({
           SignIn: clerkAuth.SignIn,
-          SignUp: clerkAuth.SignUp
+          SignUp: clerkAuth.SignUp,
         })
       } catch (error) {
         console.error('[ClerkSignIn] Failed to load Clerk components:', error)
@@ -44,7 +44,9 @@ const ClerkSignInEnvironmentAware = () => {
       <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
         <div className="text-center">
           <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
-          <p className="text-xs uppercase tracking-[0.3em] text-slate-300">Loading Authentication...</p>
+          <p className="text-xs uppercase tracking-[0.3em] text-slate-300">
+            Loading Authentication...
+          </p>
         </div>
       </div>
     )
@@ -61,8 +63,8 @@ const ClerkSignInEnvironmentAware = () => {
           <p className="text-gray-600 text-center mb-4">
             Authentication system is not available. Please try again later.
           </p>
-          <button 
-            onClick={() => window.location.href = '/app/dashboard'}
+          <button
+            onClick={() => (window.location.href = '/app/dashboard')}
             className="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
           >
             Continue to Dashboard
@@ -80,7 +82,8 @@ const ClerkSignInEnvironmentAware = () => {
         <p className="text-xs uppercase tracking-[0.4em] text-sky-400">Sentia Manufacturing</p>
         <h1 className="text-4xl font-semibold tracking-tight">Welcome back</h1>
         <p className="max-w-md text-sm text-slate-300">
-          Secure access to the manufacturing command centre. Review liquidity, production, and quality metrics with AI-powered guidance.
+          Secure access to the manufacturing command centre. Review liquidity, production, and
+          quality metrics with AI-powered guidance.
         </p>
         <ul className="space-y-2 text-sm text-slate-300">
           <li>• Real-time working capital analytics</li>
@@ -90,11 +93,7 @@ const ClerkSignInEnvironmentAware = () => {
       </div>
       <div className="flex flex-1 items-center justify-center bg-slate-900/80 p-10">
         <div className="w-full max-w-md rounded-2xl border border-white/10 bg-slate-950/90 p-6 shadow-2xl">
-          {isSignUp ? (
-            <SignUp />
-          ) : (
-            <SignIn />
-          )}
+          {isSignUp ? <SignUp /> : <SignIn />}
         </div>
       </div>
     </div>

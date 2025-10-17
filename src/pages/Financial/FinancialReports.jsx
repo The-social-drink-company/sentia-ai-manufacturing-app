@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { 
-  DocumentChartBarIcon, 
-  ArrowPathIcon, 
+import {
+  DocumentChartBarIcon,
+  ArrowPathIcon,
   CalendarIcon,
   FunnelIcon,
-  ExclamationTriangleIcon
+  ExclamationTriangleIcon,
 } from '@heroicons/react/24/outline'
 import FinancialKPIStrip from '@/components/financial/FinancialKPIStrip'
 import FinancialCharts from '@/components/financial/FinancialCharts'
@@ -19,20 +19,22 @@ const TimeRangeSelector = ({ value, onChange, className }) => {
     { key: 'month', label: 'This Month' },
     { key: 'quarter', label: 'This Quarter' },
     { key: 'year', label: 'This Year' },
-    { key: 'all', label: 'All Time' }
+    { key: 'all', label: 'All Time' },
   ]
 
   return (
-    <div className={cn("flex items-center space-x-1 border border-border rounded-lg p-1", className)}>
-      {ranges.map((range) => (
+    <div
+      className={cn('flex items-center space-x-1 border border-border rounded-lg p-1', className)}
+    >
+      {ranges.map(range => (
         <button
           key={range.key}
           onClick={() => onChange(range.key)}
           className={cn(
-            "px-3 py-1.5 text-sm rounded-md transition-colors",
+            'px-3 py-1.5 text-sm rounded-md transition-colors',
             value === range.key
-              ? "bg-primary text-primary-foreground shadow-sm"
-              : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+              ? 'bg-primary text-primary-foreground shadow-sm'
+              : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
           )}
         >
           {range.label}
@@ -42,13 +44,7 @@ const TimeRangeSelector = ({ value, onChange, className }) => {
   )
 }
 
-const PageHeader = ({ 
-  timeRange, 
-  onTimeRangeChange, 
-  isLoading, 
-  onRefresh, 
-  lastUpdated 
-}) => {
+const PageHeader = ({ timeRange, onTimeRangeChange, isLoading, onRefresh, lastUpdated }) => {
   return (
     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
       <div className="flex items-center space-x-3">
@@ -62,28 +58,25 @@ const PageHeader = ({
           </p>
         </div>
       </div>
-      
+
       <div className="flex items-center gap-3">
-        <TimeRangeSelector 
+        <TimeRangeSelector
           value={timeRange}
           onChange={onTimeRangeChange}
           className="hidden sm:flex"
         />
-        
+
         <button
           onClick={onRefresh}
           disabled={isLoading}
           className={cn(
-            "inline-flex items-center px-3 py-2 text-sm font-medium rounded-md",
-            "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-            "transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
-            isLoading && "opacity-50 cursor-not-allowed"
+            'inline-flex items-center px-3 py-2 text-sm font-medium rounded-md',
+            'bg-secondary text-secondary-foreground hover:bg-secondary/80',
+            'transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2',
+            isLoading && 'opacity-50 cursor-not-allowed'
           )}
         >
-          <ArrowPathIcon className={cn(
-            "w-4 h-4 mr-2",
-            isLoading && "animate-spin"
-          )} />
+          <ArrowPathIcon className={cn('w-4 h-4 mr-2', isLoading && 'animate-spin')} />
           Refresh
         </button>
       </div>
@@ -130,7 +123,7 @@ const LoadingState = () => (
         </Card>
       ))}
     </div>
-    
+
     {Array.from({ length: 3 }).map((_, i) => (
       <Card key={i}>
         <CardHeader>
@@ -146,12 +139,12 @@ const LoadingState = () => (
 
 const FinancialReports = () => {
   console.log('[Navigation Debug] FinancialReports component rendering')
-  
+
   const [timeRange, setTimeRange] = useState('year')
   const [filters, setFilters] = useState({})
-  
+
   console.log('[Navigation Debug] FinancialReports state initialized:', { timeRange, filters })
-  
+
   const {
     kpiData,
     revenueData,
@@ -160,24 +153,24 @@ const FinancialReports = () => {
     insightsData,
     isLoading,
     error,
-    refetch
+    refetch,
   } = useFinancialReportsData({
     timeRange,
-    filters
+    filters,
   })
-  
-  console.log('[Navigation Debug] Hook data:', { 
-    kpiData: !!kpiData, 
-    revenueData: !!revenueData, 
-    isLoading, 
-    error: error?.message 
+
+  console.log('[Navigation Debug] Hook data:', {
+    kpiData: !!kpiData,
+    revenueData: !!revenueData,
+    isLoading,
+    error: error?.message,
   })
 
   const handleRefresh = () => {
     refetch()
   }
 
-  const handleTimeRangeChange = (newRange) => {
+  const handleTimeRangeChange = newRange => {
     setTimeRange(newRange)
   }
 
@@ -185,7 +178,7 @@ const FinancialReports = () => {
     console.log('[Navigation Debug] FinancialReports rendering error state:', error)
     return (
       <div className="p-6">
-        <PageHeader 
+        <PageHeader
           timeRange={timeRange}
           onTimeRangeChange={handleTimeRangeChange}
           isLoading={isLoading}
@@ -197,10 +190,10 @@ const FinancialReports = () => {
   }
 
   console.log('[Navigation Debug] FinancialReports rendering main content')
-  
+
   return (
     <div className="p-6 space-y-6">
-      <PageHeader 
+      <PageHeader
         timeRange={timeRange}
         onTimeRangeChange={handleTimeRangeChange}
         isLoading={isLoading}
@@ -210,10 +203,7 @@ const FinancialReports = () => {
 
       {/* Mobile Time Range Selector */}
       <div className="sm:hidden">
-        <TimeRangeSelector 
-          value={timeRange}
-          onChange={handleTimeRangeChange}
-        />
+        <TimeRangeSelector value={timeRange} onChange={handleTimeRangeChange} />
       </div>
 
       {isLoading ? (
@@ -221,14 +211,10 @@ const FinancialReports = () => {
       ) : (
         <>
           {/* Financial KPI Strip */}
-          <FinancialKPIStrip 
-            data={kpiData}
-            loading={isLoading}
-            error={error}
-          />
+          <FinancialKPIStrip data={kpiData} loading={isLoading} error={error} />
 
           {/* Financial Charts */}
-          <FinancialCharts 
+          <FinancialCharts
             revenueData={revenueData}
             profitMarginData={profitMarginData}
             loading={isLoading}
@@ -237,17 +223,9 @@ const FinancialReports = () => {
 
           {/* Two Column Layout for Insights and Product Performance */}
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-            <FinancialInsights 
-              data={insightsData}
-              loading={isLoading}
-              error={error}
-            />
-            
-            <ProductPerformanceTable 
-              data={productData}
-              loading={isLoading}
-              error={error}
-            />
+            <FinancialInsights data={insightsData} loading={isLoading} error={error} />
+
+            <ProductPerformanceTable data={productData} loading={isLoading} error={error} />
           </div>
 
           {/* Footer Information */}
@@ -257,15 +235,18 @@ const FinancialReports = () => {
                 <div className="flex items-center space-x-2">
                   <CalendarIcon className="w-4 h-4" />
                   <span>
-                    Showing data for: {timeRange === 'year' ? 'Current Year' : 
-                                     timeRange === 'quarter' ? 'Current Quarter' :
-                                     timeRange === 'month' ? 'Current Month' : 'All Time'}
+                    Showing data for:{' '}
+                    {timeRange === 'year'
+                      ? 'Current Year'
+                      : timeRange === 'quarter'
+                        ? 'Current Quarter'
+                        : timeRange === 'month'
+                          ? 'Current Month'
+                          : 'All Time'}
                   </span>
                 </div>
                 {insightsData?.lastUpdated && (
-                  <span>
-                    Last updated: {new Date(insightsData.lastUpdated).toLocaleString()}
-                  </span>
+                  <span>Last updated: {new Date(insightsData.lastUpdated).toLocaleString()}</span>
                 )}
               </div>
             </CardContent>

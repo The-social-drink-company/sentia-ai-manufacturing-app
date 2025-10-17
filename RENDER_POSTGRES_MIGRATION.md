@@ -7,6 +7,7 @@ This guide documents the complete migration from Neon PostgreSQL to Render's int
 ## Migration Overview
 
 ### What Changed
+
 - **Before**: External Neon PostgreSQL database + Render hosting
 - **After**: Single Render application with integrated PostgreSQL database
 - **Benefits**: Lower latency, simplified billing, unified monitoring, better integration
@@ -14,11 +15,12 @@ This guide documents the complete migration from Neon PostgreSQL to Render's int
 ## Files Updated
 
 ### 1. Main Application Configuration (`render.yaml`)
+
 ```yaml
 # Added integrated PostgreSQL database
 databases:
   - name: sentia-db
-    plan: starter  # $7/month for production (or 'free' for development)
+    plan: starter # $7/month for production (or 'free' for development)
     region: oregon
     databaseName: sentia_manufacturing
     user: sentia_admin
@@ -32,25 +34,30 @@ envVars:
 ```
 
 ### 2. MCP Server Configuration (`mcp-server/render.yaml`)
+
 ```yaml
 # Updated to use shared Render PostgreSQL
 - key: DATABASE_URL
-  sync: false  # Will be set from Render environment group
+  sync: false # Will be set from Render environment group
 ```
 
 ### 3. Environment Variables (`.env`)
+
 - Removed all Neon connection strings
 - Added placeholders for Render PostgreSQL connection strings
 - These will be automatically populated by Render during deployment
 
 ### 4. Migration Scripts Created
+
 - `scripts/migrate-neon-to-render.sh` (Linux/Mac)
 - `scripts/migrate-neon-to-render.bat` (Windows)
 
 ## Deployment Steps
 
 ### Step 1: Deploy to Render
+
 1. Push your changes to GitHub:
+
    ```bash
    git add .
    git commit -m "Migrate from Neon to Render PostgreSQL"
@@ -64,6 +71,7 @@ envVars:
    - Render will automatically create both the web service and PostgreSQL database
 
 ### Step 2: Get Database Connection String
+
 1. Once deployment completes, go to your database service (`sentia-db`) in Render
 2. Click on "Connect" button
 3. Copy the "External Connection String" for migration
@@ -72,12 +80,14 @@ envVars:
 ### Step 3: Migrate Data from Neon
 
 #### For Windows Users:
+
 ```bash
 cd scripts
 migrate-neon-to-render.bat
 ```
 
 #### For Mac/Linux Users:
+
 ```bash
 cd scripts
 chmod +x migrate-neon-to-render.sh
@@ -87,6 +97,7 @@ chmod +x migrate-neon-to-render.sh
 Follow the prompts and paste your Render connection string when asked.
 
 ### Step 4: Update MCP Server Database Connection
+
 1. In Render Dashboard, go to your MCP server service
 2. Add environment variable:
    - Key: `DATABASE_URL`
@@ -94,6 +105,7 @@ Follow the prompts and paste your Render connection string when asked.
 3. Redeploy the MCP server
 
 ### Step 5: Verify Migration
+
 1. Check application logs in Render Dashboard
 2. Test critical features:
    - User authentication
@@ -106,6 +118,7 @@ Follow the prompts and paste your Render connection string when asked.
 ### Render PostgreSQL Options
 
 #### Free Tier (Development)
+
 - **Cost**: $0/month
 - **Storage**: 1GB
 - **RAM**: 256MB
@@ -113,6 +126,7 @@ Follow the prompts and paste your Render connection string when asked.
 - **Use Case**: Development and testing
 
 #### Starter Plan (Recommended for Production)
+
 - **Cost**: $7/month
 - **Storage**: 1GB (expandable at $0.30/GB)
 - **RAM**: 256MB
@@ -120,6 +134,7 @@ Follow the prompts and paste your Render connection string when asked.
 - **Use Case**: Small to medium production applications
 
 #### Standard Plan (Scale-up Option)
+
 - **Cost**: $25/month
 - **Storage**: 15GB (expandable)
 - **RAM**: 1GB
@@ -140,11 +155,13 @@ Follow the prompts and paste your Render connection string when asked.
 ## Monitoring & Maintenance
 
 ### Database Monitoring in Render
+
 - Go to your database service in Render Dashboard
 - Monitor metrics: CPU, Memory, Storage usage
 - Set up alerts for resource usage
 
 ### Backup Strategy
+
 1. **Automatic Backups**: Enabled on paid plans (daily)
 2. **Manual Backups**: Use migration script to create local backups
 3. **Keep Neon Active**: For 24-48 hours as fallback
@@ -152,6 +169,7 @@ Follow the prompts and paste your Render connection string when asked.
 ## Rollback Plan
 
 If issues arise:
+
 1. Update DATABASE_URL back to Neon connection string
 2. Redeploy application
 3. Investigate and fix issues
@@ -160,6 +178,7 @@ If issues arise:
 ## Canceling Neon
 
 Once migration is verified (after 24-48 hours):
+
 1. Download final backup from Neon
 2. Go to [Neon Console](https://console.neon.tech)
 3. Navigate to Settings → Billing
@@ -169,11 +188,13 @@ Once migration is verified (after 24-48 hours):
 ## Cost Comparison
 
 ### Previous Setup (Neon + Render)
+
 - Neon: $0-20/month (depending on usage)
 - Render Web Service: $7/month
 - **Total**: $7-27/month
 
 ### New Setup (Render Only)
+
 - Render Web Service: $7/month
 - Render PostgreSQL: $7/month (Starter)
 - **Total**: $14/month (fixed, predictable)
@@ -191,16 +212,19 @@ Once migration is verified (after 24-48 hours):
 ### Common Issues
 
 #### Connection Refused
+
 - Ensure database is running in Render Dashboard
 - Check connection string format
 - Verify firewall/security settings
 
 #### Migration Fails
+
 - Check PostgreSQL client tools are installed
 - Verify connection strings are correct
 - Ensure sufficient permissions
 
 #### Application Can't Connect
+
 - Check DATABASE_URL environment variable
 - Verify database is in same region as app
 - Review application logs for errors
@@ -214,5 +238,5 @@ Once migration is verified (after 24-48 hours):
 
 ---
 
-*Migration completed on: [Date will be updated after migration]*
-*Neon subscription can be canceled after: [Date + 48 hours]*
+_Migration completed on: [Date will be updated after migration]_
+_Neon subscription can be canceled after: [Date + 48 hours]_

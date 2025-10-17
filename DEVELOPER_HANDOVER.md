@@ -1,11 +1,15 @@
 # SENTIA MANUFACTURING DASHBOARD - DEVELOPER HANDOVER DOCUMENTATION
+
 ## Comprehensive Technical Specification & Codebase Overview
+
 ### Date: September 24, 2025
+
 ### Version: 1.0.10
 
 ---
 
 ## TABLE OF CONTENTS
+
 1. [Executive Summary](#executive-summary)
 2. [System Architecture](#system-architecture)
 3. [Technology Stack](#technology-stack)
@@ -30,9 +34,11 @@
 ## EXECUTIVE SUMMARY
 
 ### Project Overview
+
 **Sentia Manufacturing Dashboard** is a world-class enterprise manufacturing intelligence platform designed for real-time production monitoring, financial management, and predictive analytics. The system provides comprehensive working capital management, cash flow forecasting, inventory optimization, and AI-powered decision support.
 
 ### Business Value
+
 - **Real-time Manufacturing Intelligence**: Monitor production, quality, inventory across facilities
 - **Financial Planning & Analysis**: Advanced working capital optimization and cash flow management
 - **Predictive Analytics**: AI-powered demand forecasting and production planning
@@ -40,6 +46,7 @@
 - **Enterprise Integration**: Connects with Xero, Shopify, Amazon SP-API, and other systems
 
 ### Current Status
+
 - **Development**: Fully functional with all features operational
 - **Testing**: Ready for UAT (User Acceptance Testing)
 - **Production**: Deployed on Render with auto-scaling capabilities
@@ -50,6 +57,7 @@
 ## SYSTEM ARCHITECTURE
 
 ### High-Level Architecture
+
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                         FRONTEND                              │
@@ -76,6 +84,7 @@
 ```
 
 ### Microservices Architecture
+
 - **Main Application**: Monolithic React + Express application
 - **MCP Server**: Separate AI orchestration service
 - **Background Jobs**: Autonomous testing and monitoring services
@@ -86,6 +95,7 @@
 ## TECHNOLOGY STACK
 
 ### Frontend Technologies
+
 ```javascript
 {
   "framework": "React 18.3.1",
@@ -110,6 +120,7 @@
 ```
 
 ### Backend Technologies
+
 ```javascript
 {
   "runtime": "Node.js 18+",
@@ -136,6 +147,7 @@
 ```
 
 ### Development Tools
+
 ```javascript
 {
   "versionControl": "Git + GitHub",
@@ -153,6 +165,7 @@
 ## PROJECT STRUCTURE
 
 ### Directory Structure
+
 ```
 sentia-manufacturing-dashboard/
 ├── src/                          # Frontend source code
@@ -203,19 +216,33 @@ sentia-manufacturing-dashboard/
 ## CORE FEATURES & CAPABILITIES
 
 ### 1. Dashboard System
+
 ```javascript
 // Multiple dashboard variations for different use cases
 {
   dashboards: [
     { path: '/dashboard', name: 'Main Dashboard', features: 'KPI widgets, real-time charts' },
-    { path: '/dashboard/enhanced', name: 'Enhanced Dashboard', features: 'Drag-drop grid, SSE updates' },
-    { path: '/dashboard/enterprise', name: 'Enterprise Dashboard', features: 'Role-based, advanced analytics' },
-    { path: '/dashboard/world-class', name: 'World-Class Dashboard', features: 'AI insights, 3D visualizations' }
+    {
+      path: '/dashboard/enhanced',
+      name: 'Enhanced Dashboard',
+      features: 'Drag-drop grid, SSE updates',
+    },
+    {
+      path: '/dashboard/enterprise',
+      name: 'Enterprise Dashboard',
+      features: 'Role-based, advanced analytics',
+    },
+    {
+      path: '/dashboard/world-class',
+      name: 'World-Class Dashboard',
+      features: 'AI insights, 3D visualizations',
+    },
   ]
 }
 ```
 
 ### 2. Financial Management
+
 ```javascript
 // Comprehensive financial planning tools
 {
@@ -239,6 +266,7 @@ sentia-manufacturing-dashboard/
 ```
 
 ### 3. Manufacturing Operations
+
 ```javascript
 {
   production: {
@@ -256,6 +284,7 @@ sentia-manufacturing-dashboard/
 ```
 
 ### 4. Analytics & Forecasting
+
 ```javascript
 {
   analytics: {
@@ -273,6 +302,7 @@ sentia-manufacturing-dashboard/
 ```
 
 ### 5. Mobile Experience
+
 ```javascript
 {
   mobile: {
@@ -294,6 +324,7 @@ sentia-manufacturing-dashboard/
 ## AUTHENTICATION & SECURITY
 
 ### Current Implementation
+
 ```javascript
 // IMPORTANT: Authentication is currently MOCKED for demo purposes
 // File: src/lib/clerk-mock.js
@@ -302,7 +333,7 @@ export const useAuth = () => ({
   isLoaded: true,
   isSignedIn: true,
   userId: 'admin',
-  getToken: async () => 'mock-token'
+  getToken: async () => 'mock-token',
 })
 
 // Production Clerk configuration ready but disabled
@@ -310,32 +341,36 @@ export const useAuth = () => ({
 ```
 
 ### Security Headers (server.js)
+
 ```javascript
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'"],
-      scriptSrc: ["'self'", "'unsafe-eval'"],
-      connectSrc: ["'self'", "https://mcp-server-tkyu.onrender.com"]
-    }
-  },
-  hsts: {
-    maxAge: 31536000,
-    includeSubDomains: true,
-    preload: true
-  }
-}))
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        scriptSrc: ["'self'", "'unsafe-eval'"],
+        connectSrc: ["'self'", 'https://mcp-server-tkyu.onrender.com'],
+      },
+    },
+    hsts: {
+      maxAge: 31536000,
+      includeSubDomains: true,
+      preload: true,
+    },
+  })
+)
 ```
 
 ### Role-Based Access Control (RBAC)
+
 ```javascript
 // Defined roles with permissions
 const roles = {
   admin: ['*'], // Full access
   manager: ['dashboard.*', 'reports.*', 'analytics.*'],
   operator: ['production.*', 'quality.*', 'inventory.*'],
-  viewer: ['dashboard.view', 'reports.view']
+  viewer: ['dashboard.view', 'reports.view'],
 }
 ```
 
@@ -344,6 +379,7 @@ const roles = {
 ## DATABASE ARCHITECTURE
 
 ### Prisma Schema Overview
+
 ```prisma
 // Key models from schema.prisma
 model User {
@@ -390,9 +426,11 @@ model AIInsight {
 ```
 
 ### Database Connections
+
 ```javascript
 // Production database URL structure
-DATABASE_URL="postgresql://user:password@host/database?schema=public&pgbouncer=true&sslmode=require"
+DATABASE_URL =
+  'postgresql://user:password@host/database?schema=public&pgbouncer=true&sslmode=require'
 
 // Includes pgvector extension for AI embeddings
 // Automatic connection pooling via pgBouncer
@@ -404,6 +442,7 @@ DATABASE_URL="postgresql://user:password@host/database?schema=public&pgbouncer=t
 ## API ENDPOINTS
 
 ### Core API Routes
+
 ```javascript
 // Backend API endpoints (server.js & server-fixed.js)
 
@@ -453,6 +492,7 @@ GET  /api/mcp/status           // MCP server status
 ## FRONTEND COMPONENTS
 
 ### Key Component Architecture
+
 ```javascript
 // Component hierarchy and responsibilities
 
@@ -492,6 +532,7 @@ GET  /api/mcp/status           // MCP server status
 ```
 
 ### Component Patterns
+
 ```javascript
 // Standard component structure
 import React, { useState, useEffect } from 'react'
@@ -505,7 +546,7 @@ const ComponentName = () => {
   // Data fetching
   const { data, isLoading, error } = useQuery({
     queryKey: ['dataKey'],
-    queryFn: fetchData
+    queryFn: fetchData,
   })
 
   // Role-based rendering
@@ -524,54 +565,59 @@ const ComponentName = () => {
 ## STATE MANAGEMENT
 
 ### Zustand Stores
+
 ```javascript
 // Global state management stores
 
 // Layout Store (src/stores/layoutStore.js)
-const useLayoutStore = create((set) => ({
+const useLayoutStore = create(set => ({
   sidebarCollapsed: false,
   darkMode: false,
-  toggleSidebar: () => set((state) => ({
-    sidebarCollapsed: !state.sidebarCollapsed
-  })),
-  toggleDarkMode: () => set((state) => ({
-    darkMode: !state.darkMode
-  }))
+  toggleSidebar: () =>
+    set(state => ({
+      sidebarCollapsed: !state.sidebarCollapsed,
+    })),
+  toggleDarkMode: () =>
+    set(state => ({
+      darkMode: !state.darkMode,
+    })),
 }))
 
 // Dashboard Store (src/stores/dashboardStore.js)
-const useDashboardStore = create((set) => ({
+const useDashboardStore = create(set => ({
   layouts: {},
   widgets: [],
-  setLayout: (layout) => set({ layouts: layout }),
-  addWidget: (widget) => set((state) => ({
-    widgets: [...state.widgets, widget]
-  }))
+  setLayout: layout => set({ layouts: layout }),
+  addWidget: widget =>
+    set(state => ({
+      widgets: [...state.widgets, widget],
+    })),
 }))
 
 // Working Capital Store
-const useWorkingCapitalStore = create((set) => ({
+const useWorkingCapitalStore = create(set => ({
   metrics: {
     dso: 45,
     dpo: 30,
-    dio: 60
+    dio: 60,
   },
-  updateMetrics: (metrics) => set({ metrics })
+  updateMetrics: metrics => set({ metrics }),
 }))
 ```
 
 ### TanStack Query Configuration
+
 ```javascript
 // Query client configuration (src/App.jsx)
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 60 * 5,      // 5 minutes
-      gcTime: 1000 * 60 * 10,        // 10 minutes
+      staleTime: 1000 * 60 * 5, // 5 minutes
+      gcTime: 1000 * 60 * 10, // 10 minutes
       retry: 1,
-      refetchOnWindowFocus: false
-    }
-  }
+      refetchOnWindowFocus: false,
+    },
+  },
 })
 ```
 
@@ -580,6 +626,7 @@ const queryClient = new QueryClient({
 ## DEPLOYMENT CONFIGURATION
 
 ### Render Deployment (Primary)
+
 ```yaml
 # render.yaml configuration
 services:
@@ -605,24 +652,26 @@ databases:
 ```
 
 ### Environment-Specific URLs
+
 ```javascript
 // Deployment URLs
 const environments = {
   development: 'https://sentia-manufacturing-development.onrender.com',
   testing: 'https://sentia-manufacturing-testing.onrender.com',
   production: 'https://sentia-manufacturing-production.onrender.com',
-  mcp_server: 'https://mcp-server-tkyu.onrender.com'
+  mcp_server: 'https://mcp-server-tkyu.onrender.com',
 }
 
 // Railway backup deployments
 const railwayEnvironments = {
   development: 'https://sentia-manufacturing-development.up.railway.app',
   testing: 'https://sentia-manufacturing-testing.up.railway.app',
-  production: 'https://web-production-1f10.up.railway.app'
+  production: 'https://web-production-1f10.up.railway.app',
 }
 ```
 
 ### Build Configuration
+
 ```javascript
 // vite.config.js
 export default defineConfig({
@@ -633,9 +682,9 @@ export default defineConfig({
     proxy: {
       '/api': {
         target: 'http://localhost:5000',
-        changeOrigin: true
-      }
-    }
+        changeOrigin: true,
+      },
+    },
   },
   build: {
     outDir: 'dist',
@@ -647,10 +696,10 @@ export default defineConfig({
             if (id.includes('@clerk')) return 'clerk'
             return 'vendor'
           }
-        }
-      }
-    }
-  }
+        },
+      },
+    },
+  },
 })
 ```
 
@@ -659,6 +708,7 @@ export default defineConfig({
 ## ENVIRONMENT VARIABLES
 
 ### Required Environment Variables
+
 ```bash
 # Backend Server
 NODE_ENV=production
@@ -694,27 +744,29 @@ VITE_MCP_SERVER_URL=https://mcp-server-tkyu.onrender.com
 ## KNOWN ISSUES & SOLUTIONS
 
 ### Current Issues
+
 ```javascript
 // 1. Authentication is mocked
-Solution: "Enable Clerk when ready for production"
+Solution: 'Enable Clerk when ready for production'
 
 // 2. API proxy errors in development
-Issue: "ECONNREFUSED errors for /api endpoints"
-Solution: "Ensure backend server is running on port 5000"
+Issue: 'ECONNREFUSED errors for /api endpoints'
+Solution: 'Ensure backend server is running on port 5000'
 
 // 3. MCP Server port conflicts
-Issue: "EADDRINUSE error on port 3001"
-Solution: "Kill existing process or use different port"
+Issue: 'EADDRINUSE error on port 3001'
+Solution: 'Kill existing process or use different port'
 
 // 4. Build warnings about chunk size
-Solution: "Configured manual chunks in vite.config.js"
+Solution: 'Configured manual chunks in vite.config.js'
 
 // 5. Missing NotificationSystem exports
-File: "src/components/ui/NotificationSystem.jsx"
-Solution: "Export notifySuccess and notifyInfo functions"
+File: 'src/components/ui/NotificationSystem.jsx'
+Solution: 'Export notifySuccess and notifyInfo functions'
 ```
 
 ### Security Vulnerabilities
+
 ```yaml
 # From npm audit (September 2025)
 High: xlsx package - prototype pollution (no fix available)
@@ -729,6 +781,7 @@ Solution: Run 'npm audit fix' regularly
 ## DEVELOPMENT WORKFLOW
 
 ### Git Workflow
+
 ```bash
 # Branch strategy
 development  -> Active development (default branch)
@@ -746,6 +799,7 @@ test -> production (after UAT approval)
 ```
 
 ### Local Development
+
 ```bash
 # Setup
 git clone https://github.com/The-social-drink-company/sentia-manufacturing-dashboard.git
@@ -768,6 +822,7 @@ npm run preview     # Preview production build
 ```
 
 ### Code Standards
+
 ```javascript
 // File naming
 - Components: PascalCase.jsx
@@ -796,6 +851,7 @@ npm run preview     # Preview production build
 ## TESTING STRATEGY
 
 ### Test Coverage
+
 ```javascript
 // Current test setup
 {
@@ -818,6 +874,7 @@ npm run preview     # Preview production build
 ```
 
 ### Test Examples
+
 ```javascript
 // Unit test example
 describe('CashRunwayEngine', () => {
@@ -844,6 +901,7 @@ describe('API /api/working-capital', () => {
 ## PERFORMANCE OPTIMIZATIONS
 
 ### Frontend Optimizations
+
 ```javascript
 // 1. Code splitting
 const Dashboard = lazy(() => import('./pages/Dashboard'))
@@ -866,6 +924,7 @@ import { FixedSizeList } from 'react-window'
 ```
 
 ### Backend Optimizations
+
 ```javascript
 // 1. Memory management
 process.env.NODE_OPTIONS = '--max-old-space-size=128'
@@ -893,6 +952,7 @@ app.use(express.static('dist', {
 ## AI/ML INTEGRATION
 
 ### MCP Server Architecture
+
 ```javascript
 // MCP (Model Context Protocol) Server
 // Location: mcp-server/enterprise-server-simple.js
@@ -921,20 +981,21 @@ app.use(express.static('dist', {
 ```
 
 ### AI Features in Application
+
 ```javascript
 // 1. AI Chatbot
-<SentiaAIChatbot />  // Always visible, context-aware assistance
+;<SentiaAIChatbot /> // Always visible, context-aware assistance
 
 // 2. Predictive Analytics
 const forecast = await mcpClient.request({
   tool: 'demand-forecast',
-  params: { horizon: 90, confidence: 0.95 }
+  params: { horizon: 90, confidence: 0.95 },
 })
 
 // 3. Optimization Recommendations
 const optimization = await mcpClient.request({
   tool: 'working-capital-optimization',
-  params: { currentMetrics, targetCCC: 45 }
+  params: { currentMetrics, targetCCC: 45 },
 })
 ```
 
@@ -943,6 +1004,7 @@ const optimization = await mcpClient.request({
 ## RECENT MAJOR CHANGES
 
 ### September 24, 2025 - Cash Flow Management System
+
 ```javascript
 // NEW FEATURES ADDED TODAY
 1. Cash Runway Dashboard (/cash-runway)
@@ -971,6 +1033,7 @@ const optimization = await mcpClient.request({
 ```
 
 ### Previous Major Updates
+
 ```javascript
 // Authentication Removal (September 2025)
 - Removed all Clerk authentication dependencies
@@ -995,6 +1058,7 @@ const optimization = await mcpClient.request({
 ## CRITICAL PATHS & USER JOURNEYS
 
 ### Primary User Journey
+
 ```
 1. Landing Page (/)
    -> 2. Dashboard (/dashboard)
@@ -1004,6 +1068,7 @@ const optimization = await mcpClient.request({
 ```
 
 ### Key Features by Role
+
 ```javascript
 // Executive
 - Dashboard overview
@@ -1035,6 +1100,7 @@ const optimization = await mcpClient.request({
 ## DEPLOYMENT CHECKLIST
 
 ### Pre-Deployment
+
 - [ ] Run `npm audit` and fix vulnerabilities
 - [ ] Run `npm run build` successfully
 - [ ] Run `npm run test` - all tests pass
@@ -1044,6 +1110,7 @@ const optimization = await mcpClient.request({
 - [ ] Review security headers
 
 ### Deployment Steps
+
 1. `git add -A && git commit -m "DEPLOY: Description"`
 2. `git push origin development` (auto-deploys to dev)
 3. Test on development URL
@@ -1054,6 +1121,7 @@ const optimization = await mcpClient.request({
 8. `git push origin production` (auto-deploys to prod)
 
 ### Post-Deployment
+
 - [ ] Verify all pages load correctly
 - [ ] Test critical user journeys
 - [ ] Check API endpoints return data
@@ -1067,17 +1135,20 @@ const optimization = await mcpClient.request({
 ## SUPPORT & RESOURCES
 
 ### Documentation
+
 - **CLAUDE.md**: Development guidelines and lessons learned
 - **ENTERPRISE_GIT_WORKFLOW.md**: Git workflow documentation
 - **SENTIA_CODEBASE_INDEX.md**: Complete file index
 - **API_DOCUMENTATION.md**: Detailed API specs
 
 ### External Resources
+
 - GitHub: https://github.com/The-social-drink-company/sentia-manufacturing-dashboard
 - Render Dashboard: https://dashboard.render.com
 - Railway Dashboard: https://railway.app (backup)
 
 ### Contact & Support
+
 - Report Issues: GitHub Issues
 - Security: See SECURITY.md
 - Contributing: See CONTRIBUTING.md
@@ -1087,6 +1158,7 @@ const optimization = await mcpClient.request({
 ## HANDOVER NOTES
 
 ### Immediate Priorities
+
 1. **Enable Authentication**: Uncomment Clerk integration when ready
 2. **Complete UAT**: Test all features in test environment
 3. **Performance Testing**: Load test with expected user volume
@@ -1094,6 +1166,7 @@ const optimization = await mcpClient.request({
 5. **Documentation**: Update API documentation with new endpoints
 
 ### Technical Debt
+
 1. **Test Coverage**: Increase to 80% for critical paths
 2. **Error Handling**: Implement comprehensive error boundaries
 3. **Logging**: Enhance structured logging across application
@@ -1101,6 +1174,7 @@ const optimization = await mcpClient.request({
 5. **Backup Strategy**: Implement automated database backups
 
 ### Future Enhancements
+
 1. **Advanced AI Features**: Expand MCP server capabilities
 2. **Mobile Native App**: Consider React Native for mobile
 3. **Multi-tenancy**: Implement organization-level separation

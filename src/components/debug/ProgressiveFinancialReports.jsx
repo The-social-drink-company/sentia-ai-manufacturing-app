@@ -1,62 +1,62 @@
 import { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { 
-  DocumentChartBarIcon, 
+import {
+  DocumentChartBarIcon,
   ExclamationTriangleIcon,
-  CheckCircleIcon
+  CheckCircleIcon,
 } from '@heroicons/react/24/outline'
 
 // Progressive testing component for Financial Reports
 const ProgressiveFinancialReports = () => {
   console.log('[DEBUG] ProgressiveFinancialReports component rendering...')
-  
+
   const [currentStep, setCurrentStep] = useState(1)
   const [errors, setErrors] = useState([])
-  
+
   const steps = [
-    { 
-      id: 1, 
-      name: 'Basic Component Structure', 
+    {
+      id: 1,
+      name: 'Basic Component Structure',
       description: 'Basic page layout and structure',
-      status: 'completed'
+      status: 'completed',
     },
-    { 
-      id: 2, 
-      name: 'Import useFinancialData Hook', 
+    {
+      id: 2,
+      name: 'Import useFinancialData Hook',
       description: 'Test the custom data hook',
-      status: currentStep >= 2 ? 'testing' : 'pending'
+      status: currentStep >= 2 ? 'testing' : 'pending',
     },
-    { 
-      id: 3, 
-      name: 'Import FinancialKPIStrip', 
+    {
+      id: 3,
+      name: 'Import FinancialKPIStrip',
       description: 'KPI metrics component',
-      status: currentStep >= 3 ? 'testing' : 'pending'
+      status: currentStep >= 3 ? 'testing' : 'pending',
     },
-    { 
-      id: 4, 
-      name: 'Import FinancialCharts', 
+    {
+      id: 4,
+      name: 'Import FinancialCharts',
       description: 'Charts component with Recharts',
-      status: currentStep >= 4 ? 'testing' : 'pending'
+      status: currentStep >= 4 ? 'testing' : 'pending',
     },
-    { 
-      id: 5, 
-      name: 'Import FinancialInsights', 
+    {
+      id: 5,
+      name: 'Import FinancialInsights',
       description: 'AI insights component',
-      status: currentStep >= 5 ? 'testing' : 'pending'
+      status: currentStep >= 5 ? 'testing' : 'pending',
     },
-    { 
-      id: 6, 
-      name: 'Import ProductPerformanceTable', 
+    {
+      id: 6,
+      name: 'Import ProductPerformanceTable',
       description: 'Product performance table',
-      status: currentStep >= 6 ? 'testing' : 'pending'
-    }
+      status: currentStep >= 6 ? 'testing' : 'pending',
+    },
   ]
 
   const runNextStep = async () => {
     try {
       console.log(`[DEBUG] Running step ${currentStep + 1}...`)
-      
-      switch(currentStep + 1) {
+
+      switch (currentStep + 1) {
         case 2: {
           // Test importing the hook
           const hookModule = await import('@/hooks/useFinancialData')
@@ -95,16 +95,18 @@ const ProgressiveFinancialReports = () => {
         default:
           console.log('[DEBUG] All components imported successfully!')
       }
-      
+
       setCurrentStep(prev => prev + 1)
-      
     } catch (error) {
       console.error(`[DEBUG] Step ${currentStep + 1} failed:`, error)
-      setErrors(prev => [...prev, {
-        step: currentStep + 1,
-        error: error.message,
-        stack: error.stack
-      }])
+      setErrors(prev => [
+        ...prev,
+        {
+          step: currentStep + 1,
+          error: error.message,
+          stack: error.stack,
+        },
+      ])
     }
   }
 
@@ -132,13 +134,15 @@ const ProgressiveFinancialReports = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {steps.map((step) => (
-                <div 
-                  key={step.id} 
+              {steps.map(step => (
+                <div
+                  key={step.id}
                   className={`flex items-center space-x-3 p-3 rounded-lg ${
-                    step.status === 'completed' ? 'bg-green-50 border border-green-200' :
-                    step.status === 'testing' ? 'bg-yellow-50 border border-yellow-200' :
-                    'bg-gray-50 border border-gray-200'
+                    step.status === 'completed'
+                      ? 'bg-green-50 border border-green-200'
+                      : step.status === 'testing'
+                        ? 'bg-yellow-50 border border-yellow-200'
+                        : 'bg-gray-50 border border-gray-200'
                   }`}
                 >
                   <div className="flex-shrink-0">
@@ -152,27 +156,35 @@ const ProgressiveFinancialReports = () => {
                       <div className="w-5 h-5 border-2 border-gray-300 rounded-full" />
                     )}
                   </div>
-                  
+
                   <div className="flex-1">
-                    <h3 className={`font-medium ${
-                      step.status === 'completed' ? 'text-green-800' :
-                      step.status === 'testing' ? 'text-yellow-800' :
-                      'text-gray-600'
-                    }`}>
+                    <h3
+                      className={`font-medium ${
+                        step.status === 'completed'
+                          ? 'text-green-800'
+                          : step.status === 'testing'
+                            ? 'text-yellow-800'
+                            : 'text-gray-600'
+                      }`}
+                    >
                       Step {step.id}: {step.name}
                     </h3>
-                    <p className={`text-sm ${
-                      step.status === 'completed' ? 'text-green-600' :
-                      step.status === 'testing' ? 'text-yellow-600' :
-                      'text-gray-500'
-                    }`}>
+                    <p
+                      className={`text-sm ${
+                        step.status === 'completed'
+                          ? 'text-green-600'
+                          : step.status === 'testing'
+                            ? 'text-yellow-600'
+                            : 'text-gray-500'
+                      }`}
+                    >
                       {step.description}
                     </p>
                   </div>
                 </div>
               ))}
             </div>
-            
+
             {currentStep <= steps.length && (
               <div className="mt-6">
                 <button
@@ -183,7 +195,7 @@ const ProgressiveFinancialReports = () => {
                 </button>
               </div>
             )}
-            
+
             {currentStep > steps.length && (
               <div className="mt-6 p-4 bg-green-100 border border-green-300 rounded-lg">
                 <p className="text-green-800 font-medium">
@@ -210,12 +222,8 @@ const ProgressiveFinancialReports = () => {
               <div className="space-y-4">
                 {errors.map((errorInfo, index) => (
                   <div key={index} className="p-3 bg-red-100 border border-red-300 rounded">
-                    <h4 className="font-medium text-red-800">
-                      Step {errorInfo.step} Failed
-                    </h4>
-                    <p className="text-red-700 text-sm mt-1">
-                      {errorInfo.error}
-                    </p>
+                    <h4 className="font-medium text-red-800">Step {errorInfo.step} Failed</h4>
+                    <p className="text-red-700 text-sm mt-1">{errorInfo.error}</p>
                     <details className="mt-2">
                       <summary className="text-red-600 text-xs cursor-pointer hover:text-red-800">
                         Show Stack Trace
@@ -238,7 +246,9 @@ const ProgressiveFinancialReports = () => {
           </CardHeader>
           <CardContent>
             <ul className="text-sm text-blue-600 space-y-1">
-              <li>• Current Step: {currentStep} / {steps.length}</li>
+              <li>
+                • Current Step: {currentStep} / {steps.length}
+              </li>
               <li>• Route: /app/reports</li>
               <li>• Component: ProgressiveFinancialReports</li>
               <li>• Errors Count: {errors.length}</li>

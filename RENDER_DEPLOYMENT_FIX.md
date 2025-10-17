@@ -3,9 +3,11 @@
 ## Current Issues & Solutions
 
 ### 1. ❌ Database Tables Missing
+
 **Error**: `The table 'public.users' does not exist`
 
 **Solution**:
+
 1. Go to Render Dashboard → `sentia-manufacturing-development`
 2. Update **Build Command** to include database setup:
    ```
@@ -15,10 +17,13 @@
 4. Redeploy with **Clear build cache & deploy**
 
 ### 2. ✅ Module Import Error (Fixed)
+
 **Error**: `require is not defined`
+
 - Already fixed in code - will work after next deployment
 
 ### 3. ✅ MCP Server URL Updated
+
 Your MCP server is now live at: `https://mcp-server-tkyu.onrender.com`
 
 ## Quick Fix Steps
@@ -28,11 +33,13 @@ Your MCP server is now live at: `https://mcp-server-tkyu.onrender.com`
 1. **Update Build Command**:
    - Go to Settings
    - Change Build Command to:
+
    ```
    npm ci --legacy-peer-deps && npm run build && npx prisma generate && npx prisma db push --skip-generate
    ```
 
 2. **Verify Environment Variables**:
+
    ```
    DATABASE_URL=[Your database connection string]
    NODE_ENV=development
@@ -46,11 +53,13 @@ Your MCP server is now live at: `https://mcp-server-tkyu.onrender.com`
 ### Option B: Run Database Setup Locally First
 
 1. **Set DATABASE_URL locally**:
+
    ```bash
    export DATABASE_URL="your-render-database-url"
    ```
 
 2. **Run setup script**:
+
    ```bash
    node scripts/render-db-setup.js
    ```
@@ -86,15 +95,18 @@ After deployment, check:
 ## If Still Having Issues
 
 ### Database Connection Failed
+
 - Copy **Internal Database URL** from `sentia-db-development`
 - Format: `postgresql://user:password@dpg-xxx.render.com/dbname`
 - Don't use External URL
 
 ### Build Timeout
+
 - Split build command if needed
 - Run database setup separately
 
 ### Application Not Loading
+
 - Check if `dist/` folder was created
 - Verify React build completed
 - Check browser console for errors

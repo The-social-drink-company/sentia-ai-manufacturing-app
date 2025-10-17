@@ -20,6 +20,7 @@ Test timestamp: $(date)
 Test purpose: Verify GitHub push triggers Railway deployment
 
 Expected behavior:
+
 1. Push to development branch triggers Railway build
 2. Railway builds using Nixpacks
 3. New deployment becomes available at https://sentiadeploy.financeflo.ai

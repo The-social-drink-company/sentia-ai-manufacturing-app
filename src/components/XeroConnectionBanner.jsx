@@ -1,6 +1,6 @@
 /**
  * Xero Connection Banner Component
- * 
+ *
  * Shows connection prompts and status across all pages that require Xero data.
  * Provides one-click connection flow and real-time status updates.
  */
@@ -11,22 +11,17 @@ import {
   LinkIcon,
   CheckCircleIcon,
   XMarkIcon,
-  ArrowPathIcon
+  ArrowPathIcon,
 } from '@heroicons/react/24/outline'
 import { useXero } from '../contexts/XeroContext'
 
-const XeroConnectionBanner = ({ 
-  onDismiss = null, 
+const XeroConnectionBanner = ({
+  onDismiss = null,
   variant = 'full', // 'full', 'compact', 'minimal'
   showDismiss = true,
-  className = '' 
+  className = '',
 }) => {
-  const { 
-    isConnected, 
-    isLoading,
-    lastError,
-    retry
-  } = useXero()
+  const { isConnected, isLoading, lastError, retry } = useXero()
 
   const [isDismissed, setIsDismissed] = useState(false)
 
@@ -49,15 +44,10 @@ const XeroConnectionBanner = ({
         <div className="flex items-center">
           <ArrowPathIcon className="h-5 w-5 text-blue-400 animate-spin mr-3" />
           <div className="flex-1">
-            <p className="text-sm text-blue-700">
-              Checking Xero connection...
-            </p>
+            <p className="text-sm text-blue-700">Checking Xero connection...</p>
           </div>
           {showDismiss && (
-            <button
-              onClick={handleDismiss}
-              className="ml-3 text-blue-400 hover:text-blue-600"
-            >
+            <button onClick={handleDismiss} className="ml-3 text-blue-400 hover:text-blue-600">
               <XMarkIcon className="h-4 w-4" />
             </button>
           )}
@@ -73,12 +63,8 @@ const XeroConnectionBanner = ({
         <div className="flex">
           <ExclamationTriangleIcon className="h-5 w-5 text-red-400 flex-shrink-0" />
           <div className="ml-3 flex-1">
-            <h3 className="text-sm font-medium text-red-800">
-              Xero Connection Error
-            </h3>
-            <p className="mt-1 text-sm text-red-700">
-              {lastError}
-            </p>
+            <h3 className="text-sm font-medium text-red-800">Xero Connection Error</h3>
+            <p className="mt-1 text-sm text-red-700">{lastError}</p>
             <div className="mt-3">
               <button
                 onClick={handleRetry}
@@ -89,10 +75,7 @@ const XeroConnectionBanner = ({
             </div>
           </div>
           {showDismiss && (
-            <button
-              onClick={handleDismiss}
-              className="ml-3 text-red-400 hover:text-red-600"
-            >
+            <button onClick={handleDismiss} className="ml-3 text-red-400 hover:text-red-600">
               <XMarkIcon className="h-4 w-4" />
             </button>
           )}
@@ -127,13 +110,12 @@ const XeroConnectionBanner = ({
   // Minimal variant - just a small notice
   if (variant === 'minimal') {
     return (
-      <div className={`flex items-center justify-center py-2 px-4 bg-yellow-100 text-yellow-800 text-sm ${className}`}>
+      <div
+        className={`flex items-center justify-center py-2 px-4 bg-yellow-100 text-yellow-800 text-sm ${className}`}
+      >
         <ExclamationTriangleIcon className="h-4 w-4 mr-2" />
         <span>Xero credentials required for financial data</span>
-        <button
-          onClick={handleRetry}
-          className="ml-2 underline hover:no-underline"
-        >
+        <button onClick={handleRetry} className="ml-2 underline hover:no-underline">
           Check connection
         </button>
       </div>
@@ -146,13 +128,11 @@ const XeroConnectionBanner = ({
       <div className="flex">
         <ExclamationTriangleIcon className="h-5 w-5 text-yellow-400 flex-shrink-0" />
         <div className="ml-3 flex-1">
-          <h3 className="text-sm font-medium text-yellow-800">
-            Xero Credentials Required
-          </h3>
+          <h3 className="text-sm font-medium text-yellow-800">Xero Credentials Required</h3>
           <div className="mt-2 text-sm text-yellow-700">
             <p>
-              To display real-time financial data, invoices, and cash flow information, 
-              please configure your Xero credentials in the environment settings.
+              To display real-time financial data, invoices, and cash flow information, please
+              configure your Xero credentials in the environment settings.
             </p>
           </div>
           <div className="mt-4">
@@ -165,7 +145,12 @@ const XeroConnectionBanner = ({
                 Check Connection
               </button>
               <button
-                onClick={() => window.open('https://developer.xero.com/documentation/custom-connections/overview', '_blank')}
+                onClick={() =>
+                  window.open(
+                    'https://developer.xero.com/documentation/custom-connections/overview',
+                    '_blank'
+                  )
+                }
                 className="inline-flex items-center px-4 py-2 border border-yellow-300 text-sm font-medium rounded-md text-yellow-700 bg-yellow-50 hover:bg-yellow-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500"
               >
                 Learn More
@@ -174,10 +159,7 @@ const XeroConnectionBanner = ({
           </div>
         </div>
         {showDismiss && (
-          <button
-            onClick={handleDismiss}
-            className="ml-3 text-yellow-400 hover:text-yellow-600"
-          >
+          <button onClick={handleDismiss} className="ml-3 text-yellow-400 hover:text-yellow-600">
             <XMarkIcon className="h-4 w-4" />
           </button>
         )}
@@ -187,4 +169,3 @@ const XeroConnectionBanner = ({
 }
 
 export default XeroConnectionBanner
-

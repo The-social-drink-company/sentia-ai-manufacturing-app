@@ -80,3 +80,11 @@
 - [x] Complete end-to-end testing
 - [x] Deploy to Netlify production environment
 - [x] Verify all enterprise features are accessible
+
+## Lint/Test Backlog
+
+- [ ] Resolve unused imports/constants across working capital pages ('src/pages/WorkingCapitalEnterprise.jsx', 'src/pages/WorkingCapitalDashboard.jsx', 'src/features/working-capital/services/exportService.js') flagged by 'no-unused-vars' in the current lint report.
+- [ ] Fix undefined identifiers in the what-if scenario builder ('src/features/what-if/components/ScenarioBuilder.jsx' lines 58-88) so 'scenarioId' and 'variable' are sourced from component state.
+- [x] Unblock hook-order violations in forecasting/inventory auth flows ('src/features/forecasting/ForecastingDashboard.jsx' line 59, 'src/features/inventory/components/ABCAnalysis.jsx' lines 43/83, 'src/pages/ClerkSignIn.jsx' lines 22-23).
+- [ ] Restore missing helpers in the working capital API ('server/api/working-capital.js' lines 47-108) to clear 'no-undef' errors for 'calculateChange', 'getPeriodCount', etc.
+

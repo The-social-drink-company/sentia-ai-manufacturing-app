@@ -123,7 +123,6 @@ const ProductRow = ({ product, rank }) => {
 
 const SortButton = ({ column, currentSort, onSort }) => {
   const isActive = currentSort.column === column
-  const isAsc = isActive && currentSort.direction === 'asc'
 
   return (
     <button

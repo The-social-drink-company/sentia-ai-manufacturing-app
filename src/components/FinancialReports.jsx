@@ -29,60 +29,7 @@ const FinancialReports = () => {
   const [lastUpdated, setLastUpdated] = useState(null)
 
   const apiBase = import.meta.env.VITE_API_BASE_URL || '/api'
-
-  const fetchFinancialData = useCallback(async () => {
-    try {
-      setLoading(true)
-      setError(null)
-
-      // Fetch current and historical data
-      const [workingCapitalRes, kpiRes, plRes, cashFlowRes, historicalRes] = await Promise.allSettled([
-        fetch(`${apiBase}/financial/working-capital`),
-        fetch(`${apiBase}/financial/kpi-summary`),
-        fetch(`${apiBase}/financial/pl-analysis`),
-        fetch(`${apiBase}/financial/cash-flow`),
-        // Fetch historical sales data for trend analysis
-        fetch(`${apiBase}/sales/product-performance?period=6months`)
-      ])
-
-      const results = {}
-      
-      // Process working capital data
-      if (workingCapitalRes.status === 'fulfilled' && workingCapitalRes.value.ok) {
-        results.workingCapital = await workingCapitalRes.value.json()
-      }
-      
-      // Process KPI data
-      if (kpiRes.status === 'fulfilled' && kpiRes.value.ok) {
-        results.kpiSummary = await kpiRes.value.json()
-      }
-      
-      // Process P&L data
-      if (plRes.status === 'fulfilled' && plRes.value.ok) {
-        results.plAnalysis = await plRes.value.json()
-      }
-      
-      // Process cash flow data
-      if (cashFlowRes.status === 'fulfilled' && cashFlowRes.value.ok) {
-        results.cashFlow = await cashFlowRes.value.json()
-      }
-
-      // Process historical data for trends
-      if (historicalRes.status === 'fulfilled' && historicalRes.value.ok) {
-        const historical = await historicalRes.value.json()
-        setHistoricalData(calculateTrends(historical))
-      }
-
-      setData(results)
-      setLastUpdated(new Date())
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  useEffect(() => {
+  const fetchFinancialData = useCallback(async () => {  }, [apiBase])  useEffect(() => {
     fetchFinancialData()
   }, [fetchFinancialData])
 
@@ -488,6 +435,9 @@ const MetricCard = ({ title, value, icon: IconComponent, trend, description, col
 }
 
 export default FinancialReports
+
+
+
 
 
 

@@ -57,7 +57,7 @@ class APIClient {
    */
   async request(endpoint, options = {}) {
     // Determine if this should go to MCP server
-    const shouldUseMCP = this.shouldUseMCPServer(endpoint)
+    const shouldUseMCP = this.shouldUseMCPServer()
 
     if (shouldUseMCP) {
       try {
@@ -80,7 +80,7 @@ class APIClient {
    * TODO: Re-enable MCP server routing once integrations are fixed
    * Currently disabled to use working main server integrations
    */
-  shouldUseMCPServer(endpoint) {
+  shouldUseMCPServer() {
     // Temporarily disable MCP routing - all requests go to main server
     return false
 
@@ -255,3 +255,4 @@ class APIClient {
 const apiClient = new APIClient()
 
 export default apiClient
+

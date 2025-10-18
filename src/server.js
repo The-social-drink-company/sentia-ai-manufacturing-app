@@ -28,7 +28,7 @@ import jwt from 'jsonwebtoken'
 import { config } from 'dotenv'
 import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
-import { readdirSync, statSync } from 'fs'
+import { readdirSync } from 'fs'
 import winston from 'winston'
 import { v4 as uuidv4 } from 'uuid'
 import { Pool } from 'pg'
@@ -1102,7 +1102,9 @@ class SentiaMCPServer {
       for (const [connectionId, res] of this.connections) {
         try {
           res.end()
+        // eslint-disable-next-line no-unused-vars
         } catch (error) {
+          // Error intentionally caught to prevent shutdown failure
           logger.warn('Error closing SSE connection', { connectionId })
         }
       }

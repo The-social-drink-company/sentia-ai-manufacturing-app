@@ -19,12 +19,13 @@ _Last updated: 2025-02-15 00:00 UTC_
 - RoleManagement.jsx implemented with permission matrix editing, MFA gating, and assignment audit trail.
 - FeatureFlags.jsx implemented with environment-aware toggles and live audit history.
 - IntegrationManagement.jsx implemented for health monitoring, manual syncs, and credential rotation.
-1. **QueueManagement.jsx** - Connect to BullMQ status endpoints for depth and throughput insights.
-2. **AuditLogs.jsx** - Render immutable log stream with filters and export flow.
-3. **SystemHealth.jsx** - Expand metrics into dedicated page with alert configuration.
-4. **EnvironmentConfig.jsx** - Secure configuration editor with secret masking and step-up MFA.
-5. **ApprovalRequest.jsx** - Form to initiate multi-step approval workflows.
-6. **ApprovalQueue.jsx** - Reviewer dashboard with approve/deny actions and audit trail updates.
+- QueueManagement.jsx implemented for BullMQ depth monitoring, MFA retries, and cleanup workflows.
+1. **AuditLogs.jsx** - Connect to BullMQ status endpoints for depth and throughput insights.
+1. **AuditLogs.jsx** - Render immutable log stream with filters and export flow.
+2. **SystemHealth.jsx** - Expand metrics into dedicated page with alert configuration.
+3. **EnvironmentConfig.jsx** - Secure configuration editor with secret masking and step-up MFA.
+4. **ApprovalRequest.jsx** - Form to initiate multi-step approval workflows.
+5. **ApprovalQueue.jsx** - Reviewer dashboard with approve/deny actions and audit trail updates.
 
 ## Backend Dependencies
 - Implement the admin API endpoints mapped in `src/services/api/adminApi.js`.

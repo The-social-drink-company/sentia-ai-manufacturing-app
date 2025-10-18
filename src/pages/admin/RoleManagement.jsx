@@ -95,8 +95,7 @@ const PermissionToggle = ({ permission, onToggle }) => {
   )
 }
 
-// eslint-disable-next-line no-unused-vars
-const RoleSummaryCard = ({ icon, label, value, helper, tone = 'default' }) => {
+const RoleSummaryCard = ({ icon: Icon, label, value, helper, tone = 'default' }) => {
   const palette =
     tone === 'success'
       ? 'text-green-600'
@@ -110,7 +109,7 @@ const RoleSummaryCard = ({ icon, label, value, helper, tone = 'default' }) => {
     <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
       <div className="flex items-center gap-3">
         <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
-          {icon ? <icon className="h-5 w-5" /> : null}
+          {Icon ? <Icon className="h-5 w-5" /> : null}
         </span>
         <div>
           <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">{label}</p>
@@ -199,8 +198,6 @@ export default function RoleManagement() {
   }
 
   const selectedRole = roles.find(role => (role.id || role.handle || role.value) === selectedRoleId)
-  // eslint-disable-next-line no-unused-vars
-  const roleStatus = selectedRole?.status || 'active' // TODO: Display role status badge in UI
   const roleLabel = selectedRole?.name || selectedRole?.label || selectedRoleId
   const roleDescription = selectedRole?.description || 'No description provided.'
 

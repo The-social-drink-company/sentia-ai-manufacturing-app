@@ -401,6 +401,7 @@ function WhatIfAnalysis() {
 /**
  * ParameterSlider Component
  */
+// eslint-disable-next-line no-unused-vars
 function ParameterSlider({ label, value, min, max, step, baseline, format, onChange, icon: IconComponent }) {
   const percentChange = ((value - baseline) / baseline) * 100;
   const isIncreased = value > baseline;

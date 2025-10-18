@@ -2979,6 +2979,7 @@ function broadcastSSE(eventType, data) {
     try {
       client.write(message)
     } catch (error) {
+      logger.error('Failed to broadcast SSE message:', error)
       sseClients.delete(client)
     }
   }

@@ -685,7 +685,7 @@ function validateFieldType(fieldName, value, schema) {
 export function getToolCategories() {
   const categories = new Set()
 
-  for (const [toolName, schema] of Object.entries(TOOL_SCHEMAS)) {
+  for (const toolName of Object.keys(TOOL_SCHEMAS)) {
     // Extract category from tool name or use 'general' as default
     const parts = toolName.split('-')
     if (parts.length > 1) {

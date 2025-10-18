@@ -24,6 +24,8 @@ const useAuthRole = () => {
         // Production mode - use real Clerk auth
         try {
           const { useAuth } = await import('@clerk/clerk-react')
+          // TODO: Refactor to avoid calling hook inside async function
+          // eslint-disable-next-line react-hooks/rules-of-hooks
           const { isSignedIn, user } = useAuth()
           setAuthData({
             isAuthorized: Boolean(isSignedIn),

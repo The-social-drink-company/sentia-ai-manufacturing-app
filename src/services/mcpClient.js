@@ -346,6 +346,8 @@ class MCPClient {
     // Implementation depends on the specific WebSocket setup
 
     return {
+      // TODO: Implement WebSocket subscription when backend is ready
+      // eslint-disable-next-line no-unused-vars
       subscribe: callback => {
         console.log('Subscribing to real-time updates')
         // TODO: Implement subscription logic

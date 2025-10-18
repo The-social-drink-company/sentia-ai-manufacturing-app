@@ -1,0 +1,15 @@
+# BMAD Removal Candidates
+
+| Path | Why it can be removed | Evidence |
+| --- | --- | --- |
+| `ai/advanced-orchestration/AIOrchestrationEngine.jsx` | Legacy orchestration prototype; never imported by runtime code. | `rg "AIOrchestrationEngine" --glob "*.{js,jsx,ts,tsx}"` only returns this file. |
+| `analytics/advanced-engine/AdvancedAnalyticsEngine.jsx` | Duplicate analytics engine with no consumers. | `rg "AdvancedAnalyticsEngine" --glob "*.{js,jsx,ts,tsx}"` only returns this file. |
+| `iot/sensor-integration/IoTSensorPlatform.jsx` | Historic IoT integration demo; unused in app. | `rg "IoTSensorPlatform" --glob "*.{js,jsx,ts,tsx}"` only returns this file. |
+| `monitoring/` | Contains `health-monitor.js` and alert dashboards that are no longer referenced by code. | `rg 'health-monitor\.js'` returns no matches outside the folder. |
+| `archive/` | Obsolete server and service variants superseded by `server.js`. | `Get-ChildItem archive` shows only legacy scripts (`server-basic.js`, `server-real.js`, etc.). |
+| `backup_20250916_080022/` | Snapshot of migration scripts already present under `scripts/`. | Directory listing shows only duplicate `migrate-neon-to-render.*` files. |
+| `backup_20250916_080048/` | Emergency instructions duplicate live docs; no code references. | Directory contains only markdown copies of prior runbooks. |
+| `dist/` | Vite build artefacts; regenerated per build. | `Get-ChildItem dist` shows compiled JS/CSS bundles. |
+| `playwright-report/` | Output from earlier Playwright runs. | Generated HTML/JSON only; no imports. |
+| `test-results/` | Legacy test result JSON from past runs. | `Get-ChildItem test-results` shows static result files. |
+| `analysis/ROADMAP.md` & `analysis/SYNTHESIS_REPORT.md` | Empty placeholders; superseded by BMAD documentation elsewhere. | File lengths are 0 bytes (`Get-ChildItem analysis | Format-Table Name,Length`). Consider deleting if no longer required. |

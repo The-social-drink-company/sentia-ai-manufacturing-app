@@ -41,7 +41,6 @@ function ProductionDashboard() {
   });
 
   // SSE for real-time production updates
-  // eslint-disable-next-line no-unused-vars
   const { connected } = useSSE('production', {
     enabled: true,
     onMessage: (message) => {
@@ -344,7 +343,6 @@ function ProductionDashboard() {
 /**
  * OEECard Component
  */
-// eslint-disable-next-line no-unused-vars
 function OEECard({ label, value, target, icon: Icon, trend, onClick }) {
   const percentage = value;
   const status = getOEEStatus(percentage, target);
@@ -432,7 +430,6 @@ function JobCard({ job, onClick }) {
 /**
  * MetricCard Component
  */
-// eslint-disable-next-line no-unused-vars
 function MetricCard({ label, value, target, status, inverse = false }) {
   const statusColors = {
     excellent: 'text-green-600',

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useSSE } from '@/services/sse/useSSE';
+import { useSSE } from '@/hooks/useSSE';
 import {
   DollarSign,
   Package,

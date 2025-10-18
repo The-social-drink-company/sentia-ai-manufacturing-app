@@ -6,6 +6,7 @@
  * and validation.
  */
 
+import process from 'node:process'
 import { config } from 'dotenv'
 
 // Load environment variables

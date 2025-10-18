@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { useSSE } from '@/services/sse/useSSE'
+import { useSSE } from '@/hooks/useSSE'
 
 const getStatusMeta = ({ connected, reconnecting, status }) => {
   if (connected) {

@@ -10,7 +10,8 @@
  * Target: <3 second response time for full dashboard load
  */
 
-const express = require('express');
+import express from 'express';
+
 const router = express.Router();
 
 /**
@@ -337,4 +338,4 @@ function generateSparkline(points, min, max) {
   return data;
 }
 
-module.exports = router;
+export default router;

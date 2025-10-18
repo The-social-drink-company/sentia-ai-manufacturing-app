@@ -14,6 +14,7 @@
  * - Tool execution interface
  */
 
+import process from 'node:process'
 import axios from 'axios'
 import { getMCPConfig } from '../../config/database-config.js'
 

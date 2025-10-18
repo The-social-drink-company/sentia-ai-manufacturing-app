@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { useSSE } from '@/services/sse/useSSE';
+import { useSSE } from '@/hooks/useSSE';
 import {
   PlayCircle,
   RefreshCw,

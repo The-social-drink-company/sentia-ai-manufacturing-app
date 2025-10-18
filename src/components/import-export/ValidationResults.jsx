@@ -16,7 +16,9 @@ import {
 
 export default function ValidationResults({ validation }) {
   const [filterType, setFilterType] = useState('all'); // all, errors, warnings
-  const [sortBy, setSort By] = useState('rowNumber'); // rowNumber, type
+  // TODO: Add sort UI when needed
+  // eslint-disable-next-line no-unused-vars
+  const [sortBy, setSortBy] = useState('rowNumber'); // rowNumber, type
 
   if (!validation) {
     return null;

@@ -39,6 +39,8 @@ export default function ColumnMapper({
     onMappingChange(newMapping);
   };
 
+  // TODO: Implement transformation UI when showTransformations is enabled
+  // eslint-disable-next-line no-unused-vars
   const handleTransformationChange = (sourceColumn, transformations) => {
     const newMapping = {
       ...mapping,

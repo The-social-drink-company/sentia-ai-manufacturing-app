@@ -44,7 +44,9 @@ const TimeRangeSelector = ({ value, onChange, className }) => {
   )
 }
 
+// eslint-disable-next-line no-unused-vars
 const PageHeader = ({ timeRange, onTimeRangeChange, isLoading, onRefresh, lastUpdated }) => {
+  // TODO: Display lastUpdated timestamp in header
   return (
     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
       <div className="flex items-center space-x-3">
@@ -141,7 +143,8 @@ const FinancialReports = () => {
   console.log('[Navigation Debug] FinancialReports component rendering')
 
   const [timeRange, setTimeRange] = useState('year')
-  const [filters, setFilters] = useState({})
+  // eslint-disable-next-line no-unused-vars
+  const [filters, setFilters] = useState({}) // TODO: Implement filter controls
 
   console.log('[Navigation Debug] FinancialReports state initialized:', { timeRange, filters })
 

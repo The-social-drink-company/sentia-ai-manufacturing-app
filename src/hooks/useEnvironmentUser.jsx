@@ -41,10 +41,11 @@ const useEnvironmentUser = () => {
       try {
         console.log('[useEnvironmentUser] Loading Clerk user...')
         const clerkAuth = await import('@clerk/clerk-react')
+        // eslint-disable-next-line no-unused-vars
         const { useUser } = clerkAuth
 
-        // This is a simplified implementation
-        // In a real scenario, we'd need proper React context integration
+        // TODO: Integrate useUser hook properly with React context
+        // Current implementation is simplified for demonstration
         console.log('[useEnvironmentUser] Clerk user loaded successfully')
 
         setUserState(prevState => ({

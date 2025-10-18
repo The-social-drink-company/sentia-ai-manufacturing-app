@@ -389,6 +389,7 @@ const DashboardEnterprise = () => {
             }).format(absAmount)
             return amount < 0 ? `-${formatted}` : formatted
           }
+          setCapitalKpis([
             {
               metric: 'workingCapitalTotal',
               label: 'Global working capital',
@@ -398,7 +399,7 @@ const DashboardEnterprise = () => {
             {
               metric: 'cashConversionCycle',
               label: 'Cash coverage',
-              value: data.cashConversionCycle ? ${data.cashConversionCycle} days : '0 days',
+              value: data.cashConversionCycle ? `${data.cashConversionCycle} days` : '0 days',
               helper: 'Cash conversion cycle',
             },
             {

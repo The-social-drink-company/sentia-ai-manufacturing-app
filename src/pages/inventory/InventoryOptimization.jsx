@@ -10,7 +10,7 @@
  * - Purchase order approval workflow
  */
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
@@ -41,7 +41,8 @@ import {
   Area,
   ComposedChart,
 } from 'recharts';
-import { useSSE } from '../../hooks/useSSE';
+// TODO: Add real-time optimization updates via SSE
+// import { useSSE } from '../../hooks/useSSE';
 
 /**
  * EOQ Calculation Card
@@ -126,7 +127,8 @@ function SafetyStockCard({ sku, safetyStockData }) {
     serviceLevel,
     zScore,
     leadTime,
-    leadTimeVariability,
+    // eslint-disable-next-line no-unused-vars
+    leadTimeVariability, // TODO: Display lead time variability in advanced metrics
     demandVariability,
   } = safetyStockData;
 
@@ -413,8 +415,10 @@ export default function InventoryOptimization() {
   const navigate = useNavigate();
 
   // Check if forecast data was passed from Forecasting Dashboard
-  const [forecastData, setForecastData] = useState(location.state?.forecastModel || null);
-  const [selectedSKUs, setSelectedSKUs] = useState([]);
+  // eslint-disable-next-line no-unused-vars
+  const [forecastData, setForecastData] = useState(location.state?.forecastModel || null); // TODO: Use forecast data in optimization
+  // eslint-disable-next-line no-unused-vars
+  const [selectedSKUs, setSelectedSKUs] = useState([]); // TODO: Add SKU selector UI
   const [optimizationConfig, setOptimizationConfig] = useState({
     serviceLevel: 95,
     orderingCost: 50,
@@ -422,7 +426,8 @@ export default function InventoryOptimization() {
   });
 
   // Fetch optimization data
-  const { data, isLoading } = useQuery({
+  // eslint-disable-next-line no-unused-vars
+  const { data, isLoading } = useQuery({ // TODO: Show loading state
     queryKey: ['inventory', 'optimization', selectedSKUs],
     queryFn: async () => {
       const params = new URLSearchParams({ skus: selectedSKUs.join(',') });

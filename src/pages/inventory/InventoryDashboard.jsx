@@ -56,6 +56,7 @@ const WAREHOUSES = {
 /**
  * Inventory Metric Card
  */
+// eslint-disable-next-line no-unused-vars
 function InventoryMetricCard({ label, value, unit, trend, icon: IconComponent, format = 'number' }) {
   const StatusIcon = trend >= 0 ? TrendingUp : TrendingDown;
   const trendColor = trend >= 0 ? 'text-green-600' : 'text-red-600';

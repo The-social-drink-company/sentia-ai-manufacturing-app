@@ -69,8 +69,10 @@ class NotificationWorker {
     }
   }
 
+  // eslint-disable-next-line no-unused-vars
   async sendEmail(userId, title, message) {
     // TODO: Implement actual email sending (SendGrid, AWS SES, etc.)
+    // message parameter will be used once email integration is implemented
     logger.info(`[NotificationWorker] Would send email to user ${userId}: ${title}`);
     return true;
   }

@@ -582,7 +582,7 @@ class ForecastWorker {
    * Save forecast to database
    */
   async saveForecast(data) {
-    const { productId, horizon, ensembleForecast, modelResults, accuracyMetrics, metadata } = data;
+    const { productId, horizon, ensembleForecast, modelResults: _modelResults, accuracyMetrics, metadata: _metadata } = data;
 
     try {
       const forecast = await prisma.demandForecast.create({

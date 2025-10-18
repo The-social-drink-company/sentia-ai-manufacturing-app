@@ -10,7 +10,7 @@
  * - Quick admin actions
  */
 
-import { useState } from 'react';
+import React from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -50,6 +50,7 @@ import { useSSE } from '../../hooks/useSSE';
 /**
  * System Health Metric Card
  */
+// eslint-disable-next-line no-unused-vars
 function HealthMetricCard({ label, value, status, icon: Icon, trend, unit = '' }) {
   const statusColors = {
     healthy: 'border-green-500 bg-green-50',
@@ -291,6 +292,7 @@ function SystemMetricsChart({ metricsData }) {
 /**
  * Quick Action Button
  */
+// eslint-disable-next-line no-unused-vars
 function QuickActionButton({ label, icon: Icon, onClick, variant = 'primary' }) {
   const variants = {
     primary: 'bg-blue-600 hover:bg-blue-700 text-white',

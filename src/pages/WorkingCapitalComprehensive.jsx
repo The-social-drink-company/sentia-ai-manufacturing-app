@@ -514,7 +514,7 @@ const WorkingCapitalComprehensive = () => {
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Component Analysis</h3>
             <div className="space-y-4">
-              {(analysisData?.components || []).map((component, index) => (
+              {(analysisData?.components || []).map((component) => (
                 <div key={component.component} className="p-4 bg-gray-50 rounded-lg">
                   <div className="flex items-center justify-between mb-2">
                     <h4 className="font-semibold text-gray-900">{component.component}</h4>

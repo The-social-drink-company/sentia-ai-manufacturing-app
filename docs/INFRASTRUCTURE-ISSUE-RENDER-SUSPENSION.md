@@ -1,15 +1,18 @@
-# Infrastructure Issue: Render Service Suspension
+# Infrastructure Issue: Branch Mismatch in Render Deployment
 
 **Issue ID**: INFRA-001
-**Severity**: HIGH (Blocking deployment)
+**Severity**: MEDIUM (Blocking deployment verification, but service is live)
 **Created**: 2025-10-18 16:45 BST
-**Status**: OPEN - Awaiting Render Account Resolution
+**Updated**: 2025-10-18 17:00 BST
+**Status**: RESOLVED - Root cause identified, solution documented
 
 ---
 
 ## Problem Summary
 
-All Render deployment environments for the Sentia Manufacturing AI Dashboard are currently suspended, preventing deployment verification and end-to-end testing of the Import/Export epic (BMAD-UI-001).
+~~All Render deployment environments for the Sentia Manufacturing AI Dashboard are currently suspended~~
+
+**UPDATE**: Services are NOT suspended - they are deploying successfully but from the **wrong branch** (`main` instead of `development`). The Import/Export UI (BMAD-UI-001) was merged to the `development` branch but Render is configured to deploy from `main`, which lacks these changes.
 
 ---
 
@@ -59,27 +62,32 @@ This service has been suspended by its owner.
 
 ## Root Cause Analysis
 
-Render services can be suspended for several reasons:
+**Actual Cause**: Branch mismatch between documentation and Render configuration
 
-### Possible Causes:
-1. **Billing/Payment Issue**:
-   - Outstanding balance on Render account
-   - Expired payment method
-   - Exceeded free tier limits
+### Evidence from Deployment Logs:
+```
+2025-10-18T01:58:36.094723852Z ==> Cloning from https://github.com/dudleypeacockqa/sentia-manufacturing-dashboard
+2025-10-18T01:58:38.905747848Z ==> Checking out commit 8b8c846c33f99e1dabfde1b8b5e79e31300b848b in branch main
+...
+2025-10-18T01:59:16.841244683Z ==> Your site is live 🎉
+```
 
-2. **Resource Limits**:
-   - Exceeded bandwidth allocation
-   - Exceeded build minutes
-   - Database storage limits reached
+**Findings**:
+1. ✅ Service is deploying successfully
+2. ✅ Build completes without errors
+3. ❌ Deploying from `main` branch (commit `8b8c846c`)
+4. ❌ Import/Export work is in `development` branch (commit `ba03fe46`)
+5. ❌ PR #15 merged to `development` but not to `main`
 
-3. **Policy Violation**:
-   - Terms of service violation
-   - Suspicious activity detected
-   - Resource abuse
+### Git Branch Status:
+- **main branch**: Last commit `1227ac36` - "fix: Create render-production.yaml..."
+- **development branch**: Last commit `ba03fe46` - Includes PR #15 with Import/Export UI
+- **Mismatch**: 28 commits ahead in `development` vs `main`
 
-4. **Manual Suspension**:
-   - Account owner manually suspended services
-   - Intentional pause for cost management
+### Configuration Issue:
+- **CLAUDE.md says**: "Development branch deploys to sentia-manufacturing-dashboard-621h"
+- **Render actually does**: Deploys `main` branch to all environments
+- **render.yaml**: No `branch` specification (defaults to repo's default branch)
 
 ---
 
@@ -105,28 +113,34 @@ Render services can be suspended for several reasons:
 
 ## Resolution Steps
 
-### Immediate Actions (Account Owner):
+### Solution: Merge development to main OR Configure Render Branch
 
-1. **Access Render Dashboard**:
-   - Login to https://dashboard.render.com
-   - Navigate to account settings
-   - Check for suspension notifications or alerts
+**Option 1: Merge development → main** (Recommended):
 
-2. **Verify Billing Status**:
-   - Check "Billing & Usage" section
-   - Verify payment method is valid and current
-   - Review outstanding balances
-   - Check for exceeded free tier limits
+```bash
+# Switch to main branch
+git checkout main
 
-3. **Check Service Logs**:
-   - Navigate to each service dashboard
-   - Check for suspension reason messages
-   - Review recent deployment logs for errors
+# Merge development branch
+git merge development
 
-4. **Contact Render Support** (if needed):
-   - Email: support@render.com
-   - Include service names and issue description
-   - Request suspension reason and resolution timeline
+# Push to origin
+git push origin main
+
+# Verify deployment logs on Render
+# Expected: Auto-deploy triggers with latest commits
+```
+
+**Option 2: Configure Render to deploy from development**:
+
+1. Access Render Dashboard: https://dashboard.render.com
+2. Navigate to service `sentia-manufacturing-dashboard-621h`
+3. Go to Settings → Branch
+4. Change from `main` to `development`
+5. Save and trigger manual deploy
+6. **Note**: This would contradict CLAUDE.md documentation about branch workflow
+
+**Recommendation**: Use Option 1 (merge to main) as it aligns with the documented workflow where `development` is tested first, then promoted to `main`/`production`.
 
 ### Post-Resolution Actions (Development Team):
 

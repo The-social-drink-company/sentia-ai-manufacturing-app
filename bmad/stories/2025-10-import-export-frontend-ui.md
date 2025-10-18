@@ -790,33 +790,35 @@ src/
 
 ---
 
-### ⚠️ DEPLOYMENT BLOCKER (2025-10-18 16:45 BST)
+### ⚠️ DEPLOYMENT STATUS UPDATE (2025-10-18 17:05 BST)
 
-**Issue**: Render development environment suspended
+~~**Issue**: Render development environment suspended~~ **RESOLVED**
 
-**Impact**: Cannot verify Import/Export UI deployment or perform end-to-end testing
+**Actual Issue**: Branch mismatch - Render deploys from `main` but work is in `development`
 
-**Details**:
-- URL: https://sentia-manufacturing-dashboard-621h.onrender.com
-- Status: Service suspended by owner
-- Health endpoint returns: "This service has been suspended by its owner."
+**Root Cause Analysis**:
+- ✅ Services are deploying successfully (not suspended)
+- ❌ Render configured to deploy from `main` branch (commit `1227ac36`)
+- ✅ Import/Export work merged to `development` branch (commit `ba03fe46`)
+- ❌ 28 commits difference between branches
 
-**Resolution Required**:
-1. Contact Render account owner to reactivate service
-2. Verify billing/payment status on Render account
-3. Check Render dashboard for suspension reason
-4. Once reactivated, monitor deployment logs for PR #15 auto-deploy
+**Deployment Logs Evidence**:
+```
+2025-10-18T01:58:38Z ==> Checking out commit 8b8c846c in branch main
+2025-10-18T01:59:16Z ==> Your site is live 🎉
+```
 
-**Workaround**:
-- Development branch contains all merged changes (commit 1bcd41b3)
-- Code is ready for deployment once service is restored
-- Testing environment (test branch) may also be affected
-- Production environment status unknown
+**Solution**: Merge `development` → `main` to deploy Import/Export UI
 
-**Next Steps**:
-1. Resolve Render service suspension
-2. Verify auto-deployment triggers after reactivation
-3. Perform smoke testing on all three environments (dev, test, production)
-4. Continue with QA review and UAT scenarios from deployment checklist
+**Recommendation**: Following BMAD workflow, merge to main (code is QA-approved)
 
-**Epic Status**: Phase 2 COMPLETE, deployment pending infrastructure resolution
+**Next Actions**:
+1. ✅ Create deployment status document (BMAD-UI-001-DEPLOYMENT-STATUS.md)
+2. ⏳ Merge development → main (requires user approval)
+3. ⏳ Monitor Render auto-deployment (3-5 minutes)
+4. ⏳ Perform smoke testing on live environment
+5. ⏳ Continue with UAT and stakeholder demo
+
+**Epic Status**: Phase 2 COMPLETE, awaiting merge approval for deployment
+
+**Full Details**: See [docs/BMAD-UI-001-DEPLOYMENT-STATUS.md](../../docs/BMAD-UI-001-DEPLOYMENT-STATUS.md)

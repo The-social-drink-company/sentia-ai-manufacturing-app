@@ -233,7 +233,8 @@ class QueueManager {
     });
 
     // Job completed
-    queueEvents.on('completed', ({ jobId, returnvalue }) => {
+    queueEvents.on('completed', ({ jobId }) => {
+      // returnvalue available in event but not logged for brevity
       logger.info(`[Queue:${key}] Job completed: ${jobId}`);
     });
 

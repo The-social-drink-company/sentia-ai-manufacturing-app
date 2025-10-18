@@ -269,20 +269,17 @@ function CCCStatusBadge({ status }) {
  * Runway Status Badge Component
  */
 function RunwayStatusBadge({ months }) {
-  let status = 'good';
+  // TODO: Add status-based icon (like CCCStatusBadge)
   let label = 'Healthy';
   let className = 'bg-green-100 text-green-800';
 
   if (months < 3) {
-    status = 'critical';
     label = 'Critical';
     className = 'bg-red-100 text-red-800';
   } else if (months < 6) {
-    status = 'warning';
     label = 'Warning';
     className = 'bg-yellow-100 text-yellow-800';
   } else if (months < 12) {
-    status = 'good';
     label = 'Good';
     className = 'bg-blue-100 text-blue-800';
   }
@@ -304,7 +301,8 @@ function MiniRunwayChart({ data, breaches = [], currentBalance }) {
   }
 
   // Calculate chart dimensions
-  const width = 100; // percentage
+  // eslint-disable-next-line no-unused-vars
+  const width = 100; // percentage (reserved for future responsive calculations)
   const height = 60; // pixels
   const maxValue = Math.max(...data.map(d => d.balance), currentBalance || 0);
   const minValue = Math.min(...data.map(d => d.balance), 0);

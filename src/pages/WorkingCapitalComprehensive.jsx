@@ -79,12 +79,14 @@ const WorkingCapitalComprehensive = () => {
 
   useEffect(() => {
     loadWorkingCapitalData()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
     if (analysisData) {
       calculateScenarioImpact()
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scenarios, analysisData])
 
   const loadWorkingCapitalData = async () => {

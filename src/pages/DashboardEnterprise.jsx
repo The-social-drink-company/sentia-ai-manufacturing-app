@@ -38,8 +38,7 @@ const DashboardEnterprise = () => {
   const [capitalLoading, setCapitalLoading] = useState(true)
   const [capitalError, setCapitalError] = useState(null)
   // TODO: Re-enable if Xero connection banner is needed
-  // eslint-disable-next-line no-unused-vars
-  const [requiresXeroConnection, setRequiresXeroConnection] = useState(false)
+  const [, setRequiresXeroConnection] = useState(false)
 
     const resolveMetricLabel = (metric = '') =>
     (metric || '')

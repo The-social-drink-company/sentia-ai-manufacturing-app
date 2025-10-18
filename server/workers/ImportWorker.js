@@ -2,7 +2,7 @@ const { Worker } = require('bullmq');
 const { createBullMQConnection } = require('../lib/redis');
 const prisma = require('../lib/prisma');
 const logger = require('../utils/logger');
-const { emitSSEEvent } = require('../services/sse');
+const { emitSSEEvent } = require('../services/sse/index.cjs');
 const csv = require('csv-parser');
 const fs = require('fs');
 

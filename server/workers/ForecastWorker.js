@@ -2,7 +2,12 @@ const { Worker } = require('bullmq');
 const { createBullMQConnection } = require('../lib/redis');
 const prisma = require('../lib/prisma');
 const logger = require('../utils/logger');
-const { emitSSEEvent } = require('../services/sse');
+const {
+  emitSSEEvent,
+  emitForecastProgress,
+  emitForecastComplete,
+  emitForecastError,
+} = require('../services/sse/index.cjs');
 
 /**
  * ForecastWorker
@@ -621,6 +626,13 @@ class ForecastWorker {
         message,
       });
     }
+
+    emitForecastProgress({
+      jobId,
+      userId: userId ?? null,
+      progress,
+      message,
+    });
   }
 
   /**
@@ -635,6 +647,13 @@ class ForecastWorker {
         message: 'Forecast completed successfully',
       });
     }
+
+    emitForecastComplete({
+      jobId,
+      userId: userId ?? null,
+      forecastId: forecast.id,
+      metrics: forecast.metrics ?? null,
+    });
   }
 
   /**
@@ -645,6 +664,12 @@ class ForecastWorker {
       jobId,
       type: 'forecast',
       error,
+    });
+
+    emitForecastError({
+      jobId,
+      userId: userId ?? null,
+      error: error?.message ?? 'Forecast job failed',
     });
   }
 

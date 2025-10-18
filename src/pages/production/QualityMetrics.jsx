@@ -47,6 +47,7 @@ import { useSSE } from '../../hooks/useSSE';
 /**
  * Quality Metric Card
  */
+// eslint-disable-next-line no-unused-vars
 function QualityMetricCard({ label, value, target, unit, trend, icon: IconComponent, status }) {
   const statusColors = {
     good: 'border-green-500 bg-green-50',

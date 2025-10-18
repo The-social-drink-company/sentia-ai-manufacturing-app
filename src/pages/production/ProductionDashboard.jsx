@@ -42,7 +42,7 @@ function ProductionDashboard() {
 
   // SSE for real-time production updates
   // eslint-disable-next-line no-unused-vars
-  const { connected, lastMessage } = useSSE('production', {
+  const { connected } = useSSE('production', {
     enabled: true,
     onMessage: (message) => {
       // Invalidate queries based on update type
@@ -433,7 +433,7 @@ function JobCard({ job, onClick }) {
  * MetricCard Component
  */
 // eslint-disable-next-line no-unused-vars
-function MetricCard({ label, value, target, actual, status, inverse = false }) {
+function MetricCard({ label, value, target, status, inverse = false }) {
   const statusColors = {
     excellent: 'text-green-600',
     good: 'text-blue-600',

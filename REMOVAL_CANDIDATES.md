@@ -1,0 +1,15 @@
+# Removal Candidates
+
+These paths are not referenced by the current application and can be safely deleted to reduce clutter. Evidence is drawn from repository searches (`rg`) and directory inspections.
+
+| Path | Reason for Removal | Evidence |
+| --- | --- | --- |
+| `ai/advanced-orchestration/AIOrchestrationEngine.jsx` | Legacy AI orchestrator implementation never imported by runtime code. | `rg "AIOrchestrationEngine" --glob "*.{js,jsx,ts,tsx}"` only returns this file. |
+| `analytics/advanced-engine/AdvancedAnalyticsEngine.jsx` | Unused analytics engine duplicate; not referenced anywhere else. | `rg "AdvancedAnalyticsEngine" --glob "*.{js,jsx,ts,tsx}"` returns only this file. |
+| `iot/sensor-integration/IoTSensorPlatform.jsx` | Legacy IoT integration prototype; not wired into application. | `rg "IoTSensorPlatform" --glob "*.{js,jsx,ts,tsx}"` returns only this file. |
+| `monitoring/` (folder) | Contains standalone `health-monitor.js` and JSON dashboards. No imports outside docs. | `rg "health-monitor"` shows doc references only; no runtime usage. |
+| `archive/` (folder) | Collection of obsolete server variants (`server-basic.js`, `server-real.js`, etc.). Superseded by `server.js`. | Directory inspection (`Get-ChildItem archive`) shows only legacy files. |
+| `backup_20250916_080022/` & `backup_20250916_080048/` | Duplicated migration scripts and emergency notes kept as backups. Superseded by live docs/scripts. | Directory listings show only redundant copies of `migrate-neon-to-render.*` and emergency docs. |
+| `dist/` | Vite build output. Regenerated on demand; should not live in source tree. | Contains compiled assets (verified via `Get-ChildItem dist`). |
+| `playwright-report/` | Generated Playwright HTML report. | Directory contains only test artifacts. |
+| `test-results/` | Legacy Jest/Vitest result dumps. | Directory holds JSON result files (`Get-ChildItem test-results`). |

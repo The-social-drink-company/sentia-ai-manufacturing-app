@@ -56,7 +56,8 @@ const WAREHOUSES = {
 /**
  * Inventory Metric Card
  */
-function InventoryMetricCard({ label, value, unit, trend, icon: Icon, format = 'number' }) {
+// eslint-disable-next-line no-unused-vars
+function InventoryMetricCard({ label, value, unit, trend, icon: IconComponent, format = 'number' }) {
   const StatusIcon = trend >= 0 ? TrendingUp : TrendingDown;
   const trendColor = trend >= 0 ? 'text-green-600' : 'text-red-600';
 
@@ -71,7 +72,7 @@ function InventoryMetricCard({ label, value, unit, trend, icon: Icon, format = '
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           <div className="p-3 bg-blue-100 rounded-lg">
-            <Icon className="w-6 h-6 text-blue-600" />
+            <IconComponent className="w-6 h-6 text-blue-600" />
           </div>
           <div>
             <p className="text-sm font-medium text-gray-600">{label}</p>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useSSE } from '@/hooks/useSSE';
@@ -40,7 +40,8 @@ function ForecastingDashboard() {
   const [currentJob, setCurrentJob] = useState(null);
   const [jobProgress, setJobProgress] = useState(0);
   const [jobStatus, setJobStatus] = useState(null);
-  const [completedForecasts, setCompletedForecasts] = useState([]);
+  // eslint-disable-next-line no-unused-vars
+  const [completedForecasts, setCompletedForecasts] = useState([]); // TODO: Display in completed jobs section
 
   // Fetch available products
   const { data: products = [], isLoading: productsLoading } = useQuery({
@@ -89,6 +90,7 @@ function ForecastingDashboard() {
   });
 
   // SSE for job progress
+  // eslint-disable-next-line no-unused-vars
   const { lastMessage } = useSSE('forecast', {
     enabled: !!currentJob,
     onMessage: (message) => {

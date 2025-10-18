@@ -25,6 +25,8 @@ import {
   ServerStackIcon,
   ShieldCheckIcon,
   ArrowTrendingUpIcon,
+  ArrowUpTrayIcon,
+  ArrowDownTrayIcon,
 } from '@heroicons/react/24/outline'
 import useAuthRole from '@/hooks/useAuthRole'
 import { cn } from '@/utils/cn'
@@ -93,6 +95,20 @@ const navigation = [
   {
     title: 'Data Management',
     items: [
+      {
+        name: 'Import Wizard',
+        href: '/app/admin/import',
+        icon: ArrowUpTrayIcon,
+        badge: 'New',
+        roles: ['manager', 'admin', 'master_admin'],
+      },
+      {
+        name: 'Export Builder',
+        href: '/app/admin/export',
+        icon: ArrowDownTrayIcon,
+        badge: 'New',
+        roles: ['manager', 'admin', 'master_admin'],
+      },
       {
         name: 'Data Import',
         href: '/app/data-import',

@@ -70,7 +70,10 @@
       "Bash(npx bmad-method install)",
       "Bash(git clone:*)",
       "Bash(npx eslint:*)",
-      "Bash(git mv:*)"
+      "Bash(git mv:*)",
+      "Bash(pnpm eslint:*)",
+      "Bash(pnpm update:*)",
+      "Bash(pnpm vitest run:*)"
     ],
     "deny": [],
     "ask": []

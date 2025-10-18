@@ -51,6 +51,7 @@ import { useSSE } from '../../hooks/useSSE';
 /**
  * OEE Metric Card Component
  */
+// eslint-disable-next-line no-unused-vars
 function OEEMetricCard({ label, value, target, formula, breakdown, icon: Icon, color }) {
   const [showBreakdown, setShowBreakdown] = useState(false);
 

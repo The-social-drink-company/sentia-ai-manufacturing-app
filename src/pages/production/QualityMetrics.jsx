@@ -47,7 +47,8 @@ import { useSSE } from '../../hooks/useSSE';
 /**
  * Quality Metric Card
  */
-function QualityMetricCard({ label, value, target, unit, trend, icon: Icon, status }) {
+// eslint-disable-next-line no-unused-vars
+function QualityMetricCard({ label, value, target, unit, trend, icon: IconComponent, status }) {
   const statusColors = {
     good: 'border-green-500 bg-green-50',
     warning: 'border-yellow-500 bg-yellow-50',
@@ -66,7 +67,7 @@ function QualityMetricCard({ label, value, target, unit, trend, icon: Icon, stat
             status === 'warning' ? 'bg-yellow-600' :
             'bg-red-600'
           }`}>
-            <Icon className="w-6 h-6 text-white" />
+            <IconComponent className="w-6 h-6 text-white" />
           </div>
           <div>
             <p className="text-sm font-medium text-gray-600">{label}</p>
@@ -167,7 +168,7 @@ function ParetoChart({ defectTypes }) {
 
       {/* Defect Summary */}
       <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
-        {paretoData.slice(0, 4).map((defect, index) => (
+        {paretoData.slice(0, 4).map((defect) => (
           <div key={defect.type} className="text-center p-3 bg-gray-50 rounded-lg">
             <div className="text-2xl font-bold text-gray-900">{defect.count}</div>
             <div className="text-xs text-gray-600 mt-1">{defect.type}</div>

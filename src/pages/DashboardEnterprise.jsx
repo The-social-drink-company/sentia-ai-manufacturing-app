@@ -37,7 +37,8 @@ const DashboardEnterprise = () => {
   const [capitalKpis, setCapitalKpis] = useState([])
   const [capitalLoading, setCapitalLoading] = useState(true)
   const [capitalError, setCapitalError] = useState(null)
-  const [requiresXeroConnection, setRequiresXeroConnection] = useState(false)
+  // TODO: Re-enable if Xero connection banner is needed
+  const [, setRequiresXeroConnection] = useState(false)
 
     const resolveMetricLabel = (metric = '') =>
     (metric || '')
@@ -389,6 +390,7 @@ const DashboardEnterprise = () => {
             }).format(absAmount)
             return amount < 0 ? `-${formatted}` : formatted
           }
+          setCapitalKpis([
             {
               metric: 'workingCapitalTotal',
               label: 'Global working capital',
@@ -398,7 +400,7 @@ const DashboardEnterprise = () => {
             {
               metric: 'cashConversionCycle',
               label: 'Cash coverage',
-              value: data.cashConversionCycle ? ${data.cashConversionCycle} days : '0 days',
+              value: data.cashConversionCycle ? `${data.cashConversionCycle} days` : '0 days',
               helper: 'Cash conversion cycle',
             },
             {

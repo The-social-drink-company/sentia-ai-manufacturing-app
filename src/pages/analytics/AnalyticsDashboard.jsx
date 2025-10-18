@@ -585,7 +585,9 @@ function ReportVisualization({ data, type, metrics, dimensions }) {
 /**
  * Modal Component
  */
+// eslint-disable-next-line no-unused-vars
 function Modal({ children, onClose }) {
+  // TODO: Add close button or backdrop click to use onClose
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6">

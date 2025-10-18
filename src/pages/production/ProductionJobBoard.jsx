@@ -22,7 +22,7 @@ import {
 } from '@dnd-kit/core';
 import {
   SortableContext,
-  arrayMove,
+
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
@@ -255,9 +255,7 @@ function JobColumn({ status, jobs }) {
  * Job Details Modal
  */
 function JobDetailsModal({ job, onClose, onUpdate }) {
-  const [isEditing, setIsEditing] = useState(false);
-
-  if (!job) return null;
+    if (!job) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
@@ -460,7 +458,7 @@ export default function ProductionJobBoard() {
   });
 
   // SSE for real-time job updates
-  const { connected, lastMessage } = useSSE('production', {
+  const { connected } = useSSE('production', {
     enabled: true,
     onMessage: (message) => {
       if (message.type === 'job:status' || message.type === 'job:progress') {

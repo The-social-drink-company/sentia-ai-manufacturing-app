@@ -36,6 +36,7 @@ import {
  */
 function KPIStrip({ data, onKPIClick }) {
   // SSE integration for real-time updates
+  // eslint-disable-next-line no-unused-vars
   const { lastMessage } = useSSE('dashboard', {
     enabled: true,
     onMessage: (message) => {

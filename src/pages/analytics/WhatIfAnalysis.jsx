@@ -401,7 +401,8 @@ function WhatIfAnalysis() {
 /**
  * ParameterSlider Component
  */
-function ParameterSlider({ label, value, min, max, step, baseline, format, onChange, icon: Icon }) {
+// eslint-disable-next-line no-unused-vars
+function ParameterSlider({ label, value, min, max, step, baseline, format, onChange, icon: IconComponent }) {
   const percentChange = ((value - baseline) / baseline) * 100;
   const isIncreased = value > baseline;
   const isDecreased = value < baseline;
@@ -410,7 +411,7 @@ function ParameterSlider({ label, value, min, max, step, baseline, format, onCha
     <div>
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
-          <Icon className="w-4 h-4 text-gray-600" />
+          <IconComponent className="w-4 h-4 text-gray-600" />
           <label className="text-sm font-medium text-gray-700">{label}</label>
         </div>
         <span className="text-sm font-semibold text-gray-900">{format(value)}</span>

@@ -104,7 +104,8 @@ router.get('/kpis', async (req, res) => {
  */
 
 function generateKPIData() {
-  const now = new Date();
+  // TODO: Use real date for time-based calculations when implementing actual data fetching
+  // const now = new Date();
 
   return {
     revenue: {

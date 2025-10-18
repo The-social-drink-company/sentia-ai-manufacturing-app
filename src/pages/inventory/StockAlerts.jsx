@@ -447,6 +447,7 @@ export default function StockAlerts() {
   });
 
   // SSE for real-time alerts
+  // eslint-disable-next-line no-unused-vars
   const { connected, lastMessage } = useSSE('inventory', {
     enabled: true,
     onMessage: (message) => {

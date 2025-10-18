@@ -129,7 +129,9 @@ function DrilldownModal({ kpi, onClose }) {
 /**
  * MarketBreakdown Component
  */
+// eslint-disable-next-line no-unused-vars
 function MarketBreakdown({ kpi, timeRange }) {
+  // TODO: Use kpi and timeRange to fetch actual market data
   const markets = [
     { id: 'uk', name: 'United Kingdom', value: 42500, change: 12.5, share: 45 },
     { id: 'eu', name: 'European Union', value: 35200, change: 8.2, share: 37 },
@@ -168,7 +170,9 @@ function MarketBreakdown({ kpi, timeRange }) {
 /**
  * ChannelBreakdown Component
  */
+// eslint-disable-next-line no-unused-vars
 function ChannelBreakdown({ kpi, timeRange }) {
+  // TODO: Use kpi and timeRange to fetch actual channel data
   const channels = [
     { id: 'amazon-fba', name: 'Amazon FBA', value: 58200, change: 15.3, share: 61 },
     { id: 'shopify-dtc', name: 'Shopify DTC', value: 36800, change: 9.7, share: 39 },
@@ -218,7 +222,9 @@ function ChannelBreakdown({ kpi, timeRange }) {
 /**
  * ProductBreakdown Component
  */
+// eslint-disable-next-line no-unused-vars
 function ProductBreakdown({ kpi, timeRange }) {
+  // TODO: Use kpi and timeRange to fetch actual product data
   const products = [
     { sku: 'PROD-001', name: 'Product A', value: 12500, change: 18.2 },
     { sku: 'PROD-002', name: 'Product B', value: 11200, change: 12.5 },
@@ -247,7 +253,7 @@ function ProductBreakdown({ kpi, timeRange }) {
             </tr>
           </thead>
           <tbody>
-            {products.map((product, index) => {
+            {products.map((product) => {
               const totalValue = products.reduce((sum, p) => sum + p.value, 0);
               const share = ((product.value / totalValue) * 100).toFixed(1);
 

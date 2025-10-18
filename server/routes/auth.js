@@ -4,7 +4,7 @@ import { verifyUserCredentials, initializeDefaultUsers } from '../../lib/user-se
 import { logInfo, logError, logWarn } from '../../services/observability/structuredLogger.js'
 import authMiddleware from '../middleware/authMiddleware.js'
 import mfaMiddleware from '../middleware/mfaMiddleware.js'
-import sessionMiddleware from '../middleware/sessionMiddleware.js'
+// import sessionMiddleware from '../middleware/sessionMiddleware.js' // TODO: Implement session validation endpoints
 import auditMiddleware from '../middleware/auditMiddleware.js'
 
 const router = express.Router()

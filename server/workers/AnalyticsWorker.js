@@ -56,7 +56,7 @@ class AnalyticsWorker {
   }
 
   async calculateInventoryTurnover(params) {
-    const { organizationId, startDate, endDate } = params;
+    const { organizationId, startDate: _startDate, endDate: _endDate } = params;
 
     // Calculate COGS and average inventory
     const products = await prisma.product.findMany({
@@ -82,8 +82,10 @@ class AnalyticsWorker {
     };
   }
 
+  // eslint-disable-next-line no-unused-vars
   async calculateCashConversionCycle(params) {
     // Simplified CCC calculation
+    // TODO: Implement actual CCC calculation using params (organizationId, dateRange)
     return {
       dso: 45, // Days Sales Outstanding
       dio: 60, // Days Inventory Outstanding

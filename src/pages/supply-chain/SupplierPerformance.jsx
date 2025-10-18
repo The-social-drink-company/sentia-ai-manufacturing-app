@@ -379,7 +379,7 @@ function LeadTimeCostScatter({ scatterData }) {
         </div>
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-full bg-red-500" />
-          <span className="text-gray-600">Low Rating (<3★)</span>
+          <span className="text-gray-600">Low Rating (&lt;3★)</span>
         </div>
       </div>
     </div>

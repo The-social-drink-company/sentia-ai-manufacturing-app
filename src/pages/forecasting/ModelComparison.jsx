@@ -422,21 +422,17 @@ function MetricBadge({ label, value }) {
  * AccuracyBadge Component
  */
 function AccuracyBadge({ value, type }) {
-  let status = 'good';
+  // TODO: Use status for icon/tooltip
   let className = 'bg-green-100 text-green-800';
 
   if (type === 'mape') {
     if (value > 20) {
-      status = 'poor';
       className = 'bg-red-100 text-red-800';
     } else if (value > 15) {
-      status = 'fair';
       className = 'bg-yellow-100 text-yellow-800';
     } else if (value > 10) {
-      status = 'good';
       className = 'bg-green-100 text-green-800';
     } else {
-      status = 'excellent';
       className = 'bg-blue-100 text-blue-800';
     }
   }

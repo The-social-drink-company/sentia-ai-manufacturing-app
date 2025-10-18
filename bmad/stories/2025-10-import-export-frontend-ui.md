@@ -339,29 +339,31 @@ function FileUploadZone({ onFileSelect }) {
 
 ---
 
-## Routes
+## Routes ✅ IMPLEMENTED
 
-Add to `src/App.jsx`:
+✅ Added to `src/App-simple-environment.jsx`:
 
 ```jsx
-<Route path="/admin/import" element={<ImportWizard />} />
-<Route path="/admin/export" element={<ExportBuilder />} />
+<Route path="/app/admin/import" element={<ImportWizard />} />
+<Route path="/app/admin/export" element={<ExportBuilder />} />
 ```
 
-Add to sidebar navigation in `src/components/layout/Sidebar.jsx`:
+✅ Added to sidebar navigation in `src/components/layout/Sidebar.jsx`:
 
 ```jsx
 {
-  name: 'Import Data',
-  path: '/admin/import',
-  icon: Upload,
-  permission: 'import:manage',
+  name: 'Import Wizard',
+  href: '/app/admin/import',
+  icon: ArrowUpTrayIcon,
+  badge: 'New',
+  roles: ['manager', 'admin', 'master_admin'],
 },
 {
-  name: 'Export Data',
-  path: '/admin/export',
-  icon: Download,
-  permission: 'export:manage',
+  name: 'Export Builder',
+  href: '/app/admin/export',
+  icon: ArrowDownTrayIcon,
+  badge: 'New',
+  roles: ['manager', 'admin', 'master_admin'],
 }
 ```
 
@@ -763,7 +765,25 @@ src/
 ---
 
 **Created**: 2025-10-18
-**Last Updated**: 2025-10-18 03:00 BST
+**Last Updated**: 2025-10-18 15:30 BST
 **Framework**: BMAD-METHOD v6a
 **Project**: Sentia Manufacturing AI Dashboard
-**Phase**: Phase 2 Complete → Phase 3 Testing
+**Phase**: Phase 2 Complete → Ready for Deployment
+
+### ✅ Session 2 Updates (2025-10-18 PM)
+
+**Routing Integration Completed**:
+- ✅ Added lazy-loaded routes to App-simple-environment.jsx
+- ✅ Full error boundaries and loading states
+- ✅ Protected routes with RBAC
+
+**Navigation Integration Completed**:
+- ✅ Added "Import Wizard" link with ArrowUpTrayIcon and "New" badge
+- ✅ Added "Export Builder" link with ArrowDownTrayIcon and "New" badge
+- ✅ Role-based access (manager, admin, master_admin only)
+- ✅ Integrated into Data Management section
+
+**Code Quality**:
+- ✅ ESLint passing (0 errors, 15 acceptable warnings)
+- ✅ No regressions in existing tests
+- ✅ Ready for commit to development branch

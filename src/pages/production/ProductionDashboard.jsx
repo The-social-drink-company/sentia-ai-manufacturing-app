@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useSSE } from '@/services/sse/useSSE';
+import { useSSE } from '@/hooks/useSSE';
 import { useNavigate } from 'react-router-dom';
 import {
   Activity,

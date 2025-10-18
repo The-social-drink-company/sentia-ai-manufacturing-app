@@ -2,6 +2,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { useXero } from '@/contexts/XeroContext'
+import { useSSE } from '@/services/sse/useSSE'
 
 const RegionalContributionChart = lazy(
   () => import('@/components/dashboard/RegionalContributionChart')
@@ -37,44 +38,76 @@ const DashboardEnterprise = () => {
   const [capitalLoading, setCapitalLoading] = useState(true)
   const [capitalError, setCapitalError] = useState(null)
   const [requiresXeroConnection, setRequiresXeroConnection] = useState(false)
-const handleDashboardMessage = useCallback(event => {
-  if (!event || !event.type) {
-    return;
-  }
 
-  if (event.type === 'kpi:update') {
-    setPerformanceKpis(previous => mergeMetricUpdates(previous, [event]));
-    return;
-  }
+    const resolveMetricLabel = (metric = '') =>
+    (metric || '')
+      .toString()
+      .replace(/[\s_-]+/g, ' ')
+      .trim()
+      .replace(/\b\w/g, char => char.toUpperCase())
 
-  if (event.type === 'kpi:batch') {
-    const updates = Array.isArray(event.metrics) ? event.metrics : [];
-    if (updates.length > 0) {
-      setPerformanceKpis(previous => mergeMetricUpdates(previous, updates));
+  const updatePerformanceKpis = useCallback((metric, value, helper, label) => {
+    if (!metric) {
+      return
     }
-    return;
-  }
 
-  if (event.type === 'capital:update' || event.type === 'working_capital:update') {
-    const updates = Array.isArray(event.metrics) ? event.metrics : [event];
-    const filtered = updates.filter(item => item && item.metric);
-    if (filtered.length > 0) {
-      setCapitalKpis(previous => mergeMetricUpdates(previous, filtered));
+    setPerformanceKpis(previous => {
+      const list = Array.isArray(previous) ? [...previous] : []
+      const index = list.findIndex(item => item.metric === metric || item.label === label)
+      const resolvedLabel = label || resolveMetricLabel(metric)
+      const nextItem = {
+        ...(index > -1 ? list[index] : {}),
+        metric,
+        label: resolvedLabel,
+        value: value ?? (index > -1 ? list[index].value : 'N/A'),
+        helper: helper ?? (index > -1 ? list[index].helper : ''),
+      }
+
+      if (index > -1) {
+        list[index] = nextItem
+      } else {
+        list.push(nextItem)
+      }
+
+      return list
+    })
+  }, [])
+
+  const handleDashboardMessage = useCallback((event) => {
+    if (!event || !event.type) {
+      return
     }
-    return;
-  }
 
-  if (Array.isArray(event.metrics) && event.scope === 'capital') {
-    const filtered = event.metrics.filter(item => item && item.metric);
-    if (filtered.length > 0) {
-      setCapitalKpis(previous => mergeMetricUpdates(previous, filtered));
+    if (event.type === 'kpi:update') {
+      updatePerformanceKpis(event.metric, event.value, event.helper, event.label)
+      return
     }
-  }
-}, []);
 
-const { connected: dashboardConnected, latency: dashboardLatency } = useSSE('dashboard', {
-  onMessage: handleDashboardMessage,
-});
+    if (event.type === 'kpi:batch' && Array.isArray(event.metrics)) {
+      event.metrics.forEach(item =>
+        updatePerformanceKpis(item.metric, item.value, item.helper, item.label)
+      )
+      return
+    }
+
+    if (event.type === 'working_capital:update') {
+      const metrics = Array.isArray(event.metrics) ? event.metrics : []
+      if (metrics.length) {
+        setCapitalKpis(() =>
+          metrics.map(item => ({
+            metric: item.metric || item.label || '',
+            label: item.label || resolveMetricLabel(item.metric || ''),
+            value: item.value ?? 'N/A',
+            helper: item.helper ?? '',
+          }))
+        )
+      }
+    }
+  }, [updatePerformanceKpis])
+
+  const { connected: dashboardConnected, latency: dashboardLatency } = useSSE('dashboard', {
+    onMessage: handleDashboardMessage,
+  })
 
   // Fetch P&L analysis data
   useEffect(() => {

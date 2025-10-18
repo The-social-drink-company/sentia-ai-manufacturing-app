@@ -144,6 +144,8 @@ class DashboardApi {
     return this.getSummary()
   }
 
+  // TODO: Use timeRange parameter when backend supports it
+  // eslint-disable-next-line no-unused-vars
   async getKPIs(timeRange = '30d') {
     return this.getAnalyticsKPIs()
   }

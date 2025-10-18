@@ -1,7 +1,8 @@
-﻿import { Suspense, lazy, useState, useEffect } from 'react'
+﻿import { Suspense, lazy, useState, useEffect, useCallback } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { useXero } from '@/contexts/XeroContext'
+import { useSSE } from '@/services/sse/useSSE'
 
 const RegionalContributionChart = lazy(
   () => import('@/components/dashboard/RegionalContributionChart')
@@ -36,7 +37,78 @@ const DashboardEnterprise = () => {
   const [capitalKpis, setCapitalKpis] = useState([])
   const [capitalLoading, setCapitalLoading] = useState(true)
   const [capitalError, setCapitalError] = useState(null)
-  const [requiresXeroConnection, setRequiresXeroConnection] = useState(false)
+  // TODO: Re-enable if Xero connection banner is needed
+  const [, setRequiresXeroConnection] = useState(false)
+
+    const resolveMetricLabel = (metric = '') =>
+    (metric || '')
+      .toString()
+      .replace(/[\s_-]+/g, ' ')
+      .trim()
+      .replace(/\b\w/g, char => char.toUpperCase())
+
+  const updatePerformanceKpis = useCallback((metric, value, helper, label) => {
+    if (!metric) {
+      return
+    }
+
+    setPerformanceKpis(previous => {
+      const list = Array.isArray(previous) ? [...previous] : []
+      const index = list.findIndex(item => item.metric === metric || item.label === label)
+      const resolvedLabel = label || resolveMetricLabel(metric)
+      const nextItem = {
+        ...(index > -1 ? list[index] : {}),
+        metric,
+        label: resolvedLabel,
+        value: value ?? (index > -1 ? list[index].value : 'N/A'),
+        helper: helper ?? (index > -1 ? list[index].helper : ''),
+      }
+
+      if (index > -1) {
+        list[index] = nextItem
+      } else {
+        list.push(nextItem)
+      }
+
+      return list
+    })
+  }, [])
+
+  const handleDashboardMessage = useCallback((event) => {
+    if (!event || !event.type) {
+      return
+    }
+
+    if (event.type === 'kpi:update') {
+      updatePerformanceKpis(event.metric, event.value, event.helper, event.label)
+      return
+    }
+
+    if (event.type === 'kpi:batch' && Array.isArray(event.metrics)) {
+      event.metrics.forEach(item =>
+        updatePerformanceKpis(item.metric, item.value, item.helper, item.label)
+      )
+      return
+    }
+
+    if (event.type === 'working_capital:update') {
+      const metrics = Array.isArray(event.metrics) ? event.metrics : []
+      if (metrics.length) {
+        setCapitalKpis(() =>
+          metrics.map(item => ({
+            metric: item.metric || item.label || '',
+            label: item.label || resolveMetricLabel(item.metric || ''),
+            value: item.value ?? 'N/A',
+            helper: item.helper ?? '',
+          }))
+        )
+      }
+    }
+  }, [updatePerformanceKpis])
+
+  const { connected: dashboardConnected, latency: dashboardLatency } = useSSE('dashboard', {
+    onMessage: handleDashboardMessage,
+  })
 
   // Fetch P&L analysis data
   useEffect(() => {
@@ -102,19 +174,22 @@ const DashboardEnterprise = () => {
           const kpiData = response.data
           setPerformanceKpis([
             {
+              metric: 'annualRevenue',
               label: 'Annual revenue',
-              value: kpiData.annualRevenue?.value || 'N/A',
-              helper: kpiData.annualRevenue?.helper || '',
+              value: kpiData.annualRevenue?.value ?? 'N/A',
+              helper: kpiData.annualRevenue?.helper ?? '',
             },
             {
+              metric: 'unitsSold',
               label: 'Units sold',
-              value: kpiData.unitsSold?.value || 'N/A',
-              helper: kpiData.unitsSold?.helper || '',
+              value: kpiData.unitsSold?.value ?? 'N/A',
+              helper: kpiData.unitsSold?.helper ?? '',
             },
             {
+              metric: 'grossMargin',
               label: 'Gross margin',
-              value: kpiData.grossMargin?.value || 'N/A',
-              helper: kpiData.grossMargin?.helper || '',
+              value: kpiData.grossMargin?.value ?? 'N/A',
+              helper: kpiData.grossMargin?.helper ?? '',
             },
           ])
         } else if (response && !response.success) {
@@ -315,24 +390,27 @@ const DashboardEnterprise = () => {
             }).format(absAmount)
             return amount < 0 ? `-${formatted}` : formatted
           }
-
           setCapitalKpis([
             {
+              metric: 'workingCapitalTotal',
               label: 'Global working capital',
               value: formatCurrency(data.workingCapital),
               helper: 'Across all subsidiaries',
             },
             {
+              metric: 'cashConversionCycle',
               label: 'Cash coverage',
               value: data.cashConversionCycle ? `${data.cashConversionCycle} days` : '0 days',
               helper: 'Cash conversion cycle',
             },
             {
+              metric: 'currentRatio',
               label: 'Current ratio',
               value: data.currentRatio ? data.currentRatio.toFixed(2) : '0.00',
               helper: 'Current assets / Current liabilities',
             },
             {
+              metric: 'quickRatio',
               label: 'Quick ratio',
               value: data.quickRatio ? data.quickRatio.toFixed(2) : '0.00',
               helper: 'Liquid assets / Current liabilities',
@@ -385,7 +463,23 @@ const DashboardEnterprise = () => {
             Consolidated liquidity and performance outlook across all regions.
           </p>
         </div>
-        <Badge variant="outline">Global view</Badge>
+        <div className="flex flex-col items-start gap-2 sm:items-end">
+          <Badge variant="outline">Global view</Badge>
+          <div className="flex items-center gap-3 text-xs text-muted-foreground">
+            <span
+              className={[
+                'flex items-center gap-1 font-medium',
+                dashboardConnected ? 'text-emerald-500' : 'text-destructive',
+              ].join(' ')}
+            >
+              <span aria-hidden="true">{dashboardConnected ? '🟢' : '🔴'}</span>
+              <span>{dashboardConnected ? 'Live' : 'Offline'}</span>
+            </span>
+            {typeof dashboardLatency === 'number' && (
+              <span>{`${Math.round(dashboardLatency)}ms`}</span>
+            )}
+          </div>
+        </div>
       </header>
 
       <Card>
@@ -418,7 +512,7 @@ const DashboardEnterprise = () => {
             </div>
           ) : (
             (capitalKpis || []).map(item => (
-              <div key={item.label} className="rounded-lg border border-border bg-muted/30 p-4">
+              <div key={item.metric || item.label} className="rounded-lg border border-border bg-muted/30 p-4">
                 <p className="text-xs text-muted-foreground uppercase tracking-wide font-medium">
                   {item.label}
                 </p>
@@ -506,7 +600,7 @@ const DashboardEnterprise = () => {
             </div>
           ) : (
             (performanceKpis || []).map(item => (
-              <div key={item.label} className="rounded-lg border border-border bg-muted/30 p-4">
+              <div key={item.metric || item.label} className="rounded-lg border border-border bg-muted/30 p-4">
                 <p className="text-xs text-muted-foreground uppercase tracking-wide font-medium">
                   {item.label}
                 </p>

@@ -2,9 +2,15 @@
 import axios from 'axios'
 import { PrismaClient } from '@prisma/client'
 import { authenticateToken } from '../middleware/auth.js'
+import ScenarioModeler from '../services/finance/ScenarioModeler.js'
+import ApprovalEngine from '../services/finance/ApprovalEngine.js'
+import MitigationPlanner from '../services/finance/MitigationPlanner.js'
 
 const router = express.Router()
 const prisma = new PrismaClient()
+const scenarioModeler = new ScenarioModeler()
+const approvalEngine = new ApprovalEngine()
+const mitigationPlanner = new MitigationPlanner()
 
 const XERO_API_URL = 'https://api.xero.com/api.xro/2.0'
 
@@ -587,6 +593,93 @@ router.get('/inventory/turnover', authenticateToken, async (_req, res) => {
   } catch (error) {
     console.error('Inventory metrics error:', error)
     return res.status(500).json({ error: 'Failed to compute inventory metrics' })
+  }
+})
+
+router.get('/optimization/summary', authenticateToken, async (_req, res) => {
+  try {
+    const result = await scenarioModeler.generateScenarioSet()
+    const plan = mitigationPlanner.generatePlan(result.baseline.metrics, {
+      scenarios: result.scenarios,
+    })
+
+    return res.json({
+      baseline: result.baseline,
+      scenarios: result.scenarios,
+      plan,
+    })
+  } catch (error) {
+    console.error('Optimization summary error:', error)
+    return res.status(500).json({ error: 'Failed to build optimization summary' })
+  }
+})
+
+router.post('/optimization/scenarios', authenticateToken, async (req, res) => {
+  try {
+    const { adjustments = {}, overrides = {} } = req.body || {}
+    const baseline = await scenarioModeler.generateBaseline(overrides)
+    const scenario = await scenarioModeler.runScenario(baseline, {
+      key: 'custom',
+      label: 'Custom scenario',
+      adjustments,
+    })
+
+    return res.json({ baseline, scenario })
+  } catch (error) {
+    console.error('Scenario run error:', error)
+    return res.status(500).json({ error: 'Failed to run scenario' })
+  }
+})
+
+router.post('/optimization/approvals', authenticateToken, async (req, res) => {
+  try {
+    const { request = {}, scenarioKey, adjustments, overrides = {} } = req.body || {}
+
+    const scenarioSet = await scenarioModeler.generateScenarioSet({ overrides })
+    const baseline = scenarioSet.baseline
+
+    let scenario = scenarioSet.scenarios.find(item => item.key === scenarioKey) || baseline
+
+    if (adjustments) {
+      scenario = await scenarioModeler.runScenario(baseline, {
+        key: 'custom',
+        label: 'Custom scenario',
+        adjustments,
+      })
+    }
+
+    const evaluation = approvalEngine.evaluate(request, {
+      metrics: scenario.metrics,
+      scenario: scenario.label,
+    })
+
+    return res.json({ evaluation })
+  } catch (error) {
+    console.error('Approval evaluation error:', error)
+    return res.status(500).json({ error: 'Failed to evaluate approval' })
+  }
+})
+
+router.post('/optimization/mitigations', authenticateToken, async (req, res) => {
+  try {
+    const { metrics, scenarios, overrides = {} } = req.body || {}
+    let sourceMetrics = metrics
+    let referenceScenarios = scenarios
+
+    if (!sourceMetrics) {
+      const scenarioSet = await scenarioModeler.generateScenarioSet({ overrides })
+      sourceMetrics = scenarioSet.baseline.metrics
+      referenceScenarios = scenarioSet.scenarios
+    }
+
+    const plan = mitigationPlanner.generatePlan(sourceMetrics, {
+      scenarios: referenceScenarios,
+    })
+
+    return res.json({ plan })
+  } catch (error) {
+    console.error('Mitigation plan error:', error)
+    return res.status(500).json({ error: 'Failed to generate mitigation plan' })
   }
 })
 

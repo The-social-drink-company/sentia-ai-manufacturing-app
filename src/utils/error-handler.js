@@ -374,6 +374,8 @@ export class ErrorHandler {
    * Express middleware for error handling
    */
   expressMiddleware() {
+    // TODO: Implement next parameter when middleware chain is needed
+    // eslint-disable-next-line no-unused-vars
     return (error, req, res, next) => {
       const mcpError = this.handle(error, {
         correlationId: req.correlationId,
@@ -426,6 +428,7 @@ export class ErrorHandler {
    * Circuit breaker pattern implementation
    */
   createCircuitBreaker(operation, options = {}) {
+    // eslint-disable-next-line no-unused-vars
     const { failureThreshold = 5, resetTimeout = 60000, monitoringPeriod = 10000 } = options
 
     let failures = 0

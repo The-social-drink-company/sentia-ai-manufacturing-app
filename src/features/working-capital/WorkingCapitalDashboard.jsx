@@ -16,6 +16,10 @@ import AgingChart from './components/AgingChart'
 import CashConversionCycle from './components/CashConversionCycle'
 import CashFlowForecast from './components/CashFlowForecast'
 import OptimizationRecommendations from './components/OptimizationRecommendations'
+import ScenarioPlanner from './components/ScenarioPlanner'
+import ApprovalInsights from './components/ApprovalInsights'
+import MitigationPlan from './components/MitigationPlan'
+import useWorkingCapitalOptimization from './hooks/useWorkingCapitalOptimization'
 import { logError, devLog } from '../../utils/structuredLogger'
 
 const SUPPORTED_EXPORTS = ['csv', 'json']
@@ -35,6 +39,20 @@ export default function WorkingCapitalDashboard() {
   } = useWorkingCapitalMetrics(selectedPeriod)
 
   const audit = useDashboardAudit()
+
+  const {
+    baseline: optimizationBaseline,
+    scenarios: optimizationScenarios,
+    plan: optimizationPlan,
+    summaryQuery: optimizationSummaryQuery,
+    scenarioMutation,
+    approvalMutation,
+    mitigationMutation,
+    refetchSummary,
+  } = useWorkingCapitalOptimization()
+
+  const [customScenario, setCustomScenario] = useState(null)
+  const [approvalEvaluation, setApprovalEvaluation] = useState(null)
 
   const currencyFormatter = useMemo(
     () =>
@@ -62,6 +80,47 @@ export default function WorkingCapitalDashboard() {
       }
     }
     return null
+  }
+
+  const runScenarioAsync = scenarioMutation.mutateAsync
+  const evaluateApprovalAsync = approvalMutation.mutateAsync
+  const mitigationAsync = mitigationMutation.mutateAsync
+
+  const handleScenarioSimulation = async payload => {
+    try {
+      const response = await runScenarioAsync(payload)
+      let plan = null
+
+      if (response?.scenario?.metrics) {
+        try {
+          const mitigation = await mitigationAsync({
+            metrics: response.scenario.metrics,
+            scenarios: [response.scenario],
+          })
+          plan = mitigation?.plan || null
+        } catch (error) {
+          logError('Mitigation plan generation failed', error)
+        }
+      }
+
+      setCustomScenario({ ...response, plan })
+      setApprovalEvaluation(null)
+      refetchSummary()
+    } catch (error) {
+      logError('Scenario modelling failed', error)
+    }
+  }
+
+  const handleApprovalEvaluation = async payload => {
+    try {
+      const response = await evaluateApprovalAsync({
+        ...payload,
+        scenarioKey: payload?.scenarioKey || customScenario?.scenario?.key,
+      })
+      setApprovalEvaluation(response?.evaluation || null)
+    } catch (error) {
+      logError('Approval evaluation failed', error)
+    }
   }
 
   useEffect(() => {
@@ -133,6 +192,15 @@ export default function WorkingCapitalDashboard() {
   }
 
   const { summary, receivables, payables, inventory, cashFlow, recommendations, alerts, cccHistory } = metrics
+
+  const plannerBaseline = customScenario?.baseline || optimizationBaseline
+  const baseScenarioList = Array.isArray(optimizationScenarios) ? optimizationScenarios : []
+  const plannerScenarios = customScenario?.scenario
+    ? [...baseScenarioList.filter(item => item.key !== 'custom'), { ...customScenario.scenario, key: customScenario.scenario.key || 'custom' }]
+    : baseScenarioList
+
+  const mitigationPlan = customScenario?.plan || optimizationPlan
+  const isScenarioRunning = scenarioMutation.isPending || mitigationMutation.isPending
 
   const receivablesTotal = getMonetaryTotal(receivables)
   const payablesTotal = getMonetaryTotal(payables)
@@ -417,6 +485,35 @@ export default function WorkingCapitalDashboard() {
           recommendations={recommendations}
           onActionClick={action => devLog.log('Recommendation action clicked', action)}
         />
+
+        {optimizationSummaryQuery.isLoading ? (
+          <div className="mt-8 rounded-lg border border-dashed border-border dark:border-gray-700 p-6 text-sm text-gray-600 dark:text-gray-400">
+            Running optimisation analysis…
+          </div>
+        ) : (
+          <div className="mt-8 space-y-6">
+            {plannerBaseline && (
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                <ScenarioPlanner
+                  baseline={plannerBaseline}
+                  scenarios={plannerScenarios}
+                  onRunScenario={handleScenarioSimulation}
+                  isRunning={isScenarioRunning}
+                />
+                <ApprovalInsights
+                  onEvaluate={payload => handleApprovalEvaluation({
+                    ...payload,
+                    scenarioKey: customScenario?.scenario?.key,
+                  })}
+                  evaluation={approvalEvaluation}
+                  isLoading={approvalMutation.isPending}
+                />
+              </div>
+            )}
+
+            {mitigationPlan && <MitigationPlan plan={mitigationPlan} />}
+          </div>
+        )}
       </div>
     </div>
   )

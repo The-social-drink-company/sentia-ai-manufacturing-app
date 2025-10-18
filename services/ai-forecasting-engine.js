@@ -1,5 +1,5 @@
 import * as tf from '@tensorflow/tfjs-node';
-import redisCacheService from './redis-cache.js';
+import forecastCacheService from './forecast-cache-service.js';
 import { logDebug, logInfo, logWarn, logError } from '../src/utils/logger';
 
 
@@ -28,6 +28,7 @@ class AIForecastingEngine {
   async initializeModels() {
     logDebug('AI Forecasting: Initializing forecasting models...');
     
+    await this.#hydrateCachedPerformance();
     // Initialize LSTM model for time series forecasting
     await this.initializeLSTMModel();
     
@@ -435,9 +436,14 @@ class AIForecastingEngine {
         lastTrained: new Date().toISOString()
       });
 
-      // Cache the trained model
-      await this.saveModelToCache(modelName);
-      
+      const cacheSignature = forecastCacheService.generateDatasetSignature(data, {
+        modelName,
+        training: true
+      });
+      await this.saveModelToCache(modelName, cacheSignature, {
+        metadata: processedData.metadata
+      });
+
       logDebug(`AI Forecasting: ${modelName} training completed. MSE: ${evaluation.mse.toFixed(4)}, MAE: ${evaluation.mae.toFixed(4)}`);
       
       // Cleanup tensors
@@ -530,7 +536,22 @@ class AIForecastingEngine {
     }
 
     logDebug(`AI Forecasting: Generating ${horizon}-day forecast...`);
-    
+
+    const datasetSignature = forecastCacheService.generateDatasetSignature(data, {
+      horizon,
+      options
+    });
+
+    const cachedForecast = await forecastCacheService.getForecast({
+      datasetSignature,
+      horizon
+    });
+
+    if (cachedForecast) {
+      logDebug('AI Forecasting: Returning forecast from cache');
+      return cachedForecast;
+    }
+
     const forecasts = new Map();
     
     // Generate individual model forecasts
@@ -560,9 +581,8 @@ class AIForecastingEngine {
       options.confidenceLevel || 0.95
     );
 
-    // Cache the forecast
-    await this.cacheForecast(forecastWithConfidence, horizon);
-    
+    await this.cacheForecast(datasetSignature, horizon, forecastWithConfidence, options.cacheTtlSeconds);
+
     logDebug('AI Forecasting: Forecast generation completed');
     
     return forecastWithConfidence;
@@ -788,17 +808,16 @@ class AIForecastingEngine {
     };
   }
 
-  async saveModelToCache(modelName) {
+  async saveModelToCache(modelName, datasetSignature, metadata = {}) {
     try {
-      const model = this.models.get(modelName);
       const performance = this.modelPerformance.get(modelName);
-      
-      if (model && performance) {
-        await redisCacheService.set(
-          `ai_model_performance:${modelName}`,
-          performance,
-          86400 // 24 hours
-        );
+
+      if (performance) {
+        await forecastCacheService.setModelPerformance(modelName, {
+          ...performance,
+          datasetSignature,
+          metadata
+        });
         logDebug(`AI Forecasting: Model ${modelName} cached`);
       }
     } catch (error) {
@@ -806,13 +825,39 @@ class AIForecastingEngine {
     }
   }
 
-  async cacheForecast(forecast, horizon) {
+  async cacheForecast(datasetSignature, horizon, forecast, ttlSeconds) {
     try {
-      const cacheKey = `ai_forecast:${horizon}d:${Date.now()}`;
-      await redisCacheService.set(cacheKey, forecast, 3600); // 1 hour
-      logDebug(`AI Forecasting: Forecast cached with key ${cacheKey}`);
+      await forecastCacheService.setForecast(
+        {
+          datasetSignature,
+          horizon,
+          forecast
+        },
+        ttlSeconds
+      );
+      logDebug('AI Forecasting: Forecast cached via forecast cache service');
     } catch (error) {
       logWarn('AI Forecasting: Failed to cache forecast:', error.message);
+    }
+  }
+
+  async #hydrateCachedPerformance() {
+    try {
+      const entries = await Promise.all(
+        Array.from(this.models.keys()).map(async (modelName) => ({
+          modelName,
+          performance: await forecastCacheService.getModelPerformance(modelName)
+        }))
+      );
+
+      for (const { modelName, performance } of entries) {
+        if (performance) {
+          this.modelPerformance.set(modelName, performance);
+          logDebug(`AI Forecasting: Hydrated performance for ${modelName} from cache`);
+        }
+      }
+    } catch (error) {
+      logWarn('AI Forecasting: Failed to hydrate cached performance', error.message);
     }
   }
 

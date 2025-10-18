@@ -35,6 +35,8 @@ const StockLevelsWidget = () => {
     fetchStockData()
   }, [])
 
+  // TODO: Use getStatusBadgeColor for stock status badges when implementing table view
+  // eslint-disable-next-line no-unused-vars
   const getStatusBadgeColor = status => {
     switch (status) {
       case 'in-stock':

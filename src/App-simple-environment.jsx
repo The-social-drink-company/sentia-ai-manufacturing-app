@@ -17,6 +17,8 @@ const Analytics = lazy(() => import('@/pages/Analytics'))
 const Inventory = lazy(() => import('@/components/inventory/InventoryDashboard'))
 const DataImport = lazy(() => import('@/components/data/DataImportWidget'))
 const AdminPanel = lazy(() => import('@/pages/AdminPanelEnhanced'))
+const ImportWizard = lazy(() => import('@/pages/admin/ImportWizard'))
+const ExportBuilder = lazy(() => import('@/pages/admin/ExportBuilder'))
 const WhatIf = lazy(() => import('@/components/analytics/WhatIfAnalysis'))
 const ScenarioPlanner = lazy(() => import('@/features/forecasting/ScenarioPlanner.jsx'))
 const AssistantPanel = lazy(() => import('@/features/ai-assistant/AssistantPanel.jsx'))
@@ -293,6 +295,32 @@ const App = () => {
                     <ProtectedRoute>
                       <Suspense fallback={<Loader />}>
                         <AdminPanel />
+                      </Suspense>
+                    </ProtectedRoute>
+                  </ErrorBoundary>
+                }
+              />
+
+              <Route
+                path="/app/admin/import"
+                element={
+                  <ErrorBoundary fallbackMessage="Import Wizard failed to load.">
+                    <ProtectedRoute>
+                      <Suspense fallback={<Loader />}>
+                        <ImportWizard />
+                      </Suspense>
+                    </ProtectedRoute>
+                  </ErrorBoundary>
+                }
+              />
+
+              <Route
+                path="/app/admin/export"
+                element={
+                  <ErrorBoundary fallbackMessage="Export Builder failed to load.">
+                    <ProtectedRoute>
+                      <Suspense fallback={<Loader />}>
+                        <ExportBuilder />
                       </Suspense>
                     </ProtectedRoute>
                   </ErrorBoundary>

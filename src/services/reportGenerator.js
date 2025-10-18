@@ -297,6 +297,8 @@ const generateExecutiveSummary = (sections, dateRange) => {
 /**
  * Generate summary for P&L analysis
  */
+// TODO: Use summaryData parameter for enhanced analysis when available
+// eslint-disable-next-line no-unused-vars
 const generatePLSummary = (plData, summaryData) => {
   if (!plData || !Array.isArray(plData) || plData.length === 0) {
     return { status: 'Data unavailable', message: 'P&L analysis data not accessible' }

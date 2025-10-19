@@ -79,8 +79,8 @@ export default defineConfig(({ command, mode }) => {
       outDir: 'dist', // Explicitly set output directory
       emptyOutDir: true,
       rollupOptions: {
-        // Exclude Clerk from development builds entirely
-        external: isDevelopmentMode ? ['@clerk/clerk-react'] : [],
+        // REMOVED: external configuration that was causing Clerk bundling issues
+        // Clerk should always be bundled in production builds
         output: {
           manualChunks(id) {
             if (!id.includes('node_modules')) {
@@ -92,11 +92,7 @@ export default defineConfig(({ command, mode }) => {
               return
             }
 
-            // Don't create clerk chunk in development mode since it's excluded
-            if (packageName.startsWith('@clerk') && !isDevelopmentMode) {
-              return 'clerk'
-            }
-
+            // Always bundle Clerk in a separate chunk for better caching
             if (packageName.startsWith('@clerk')) {
               return 'clerk'
             }

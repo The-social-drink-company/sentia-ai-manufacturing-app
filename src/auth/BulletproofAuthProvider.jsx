@@ -101,7 +101,7 @@ function FallbackAuthProvider({ children }) {
 }
 
 // Main bulletproof auth provider
-export function BulletproofAuthProvider({ children }) {
+function BulletproofAuthProvider({ children }) {
   const [authMode, setAuthMode] = useState('initializing')
   const [error, setError] = useState(null)
   const [retryCount, setRetryCount] = useState(0)

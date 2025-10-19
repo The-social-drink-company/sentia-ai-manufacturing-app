@@ -3,7 +3,7 @@
  * Mocks Clerk authentication for development environment
  */
 
-import React, { createContext, useContext } from 'react'
+import React from 'react'\nimport { AuthContext, UserContext, SessionContext, OrganizationContext } from './developmentContext'
 import { mockAuthState, mockUser, mockSession, mockOrganization } from './MockUser'
 
 // Create contexts that match Clerk's structure
@@ -13,12 +13,12 @@ const SessionContext = createContext(mockSession)
 const OrganizationContext = createContext(mockOrganization)
 
 // Mock useAuth hook
-export const useAuth = () => {
+export function useAuth() {
   return useContext(AuthContext)
 }
 
 // Mock useUser hook
-export const useUser = () => {
+export function useUser() {
   return {
     isLoaded: true,
     isSignedIn: true,
@@ -27,7 +27,7 @@ export const useUser = () => {
 }
 
 // Mock useSession hook
-export const useSession = () => {
+export function useSession() {
   return {
     isLoaded: true,
     session: useContext(SessionContext),
@@ -35,7 +35,7 @@ export const useSession = () => {
 }
 
 // Mock useOrganization hook
-export const useOrganization = () => {
+export function useOrganization() {
   return {
     isLoaded: true,
     organization: useContext(OrganizationContext),
@@ -48,23 +48,23 @@ export const useOrganization = () => {
 }
 
 // Mock SignedIn component
-export const SignedIn = ({ children }) => {
+export function SignedIn({ children }) {
   return children
 }
 
 // Mock SignedOut component
-export const SignedOut = () => {
+export function SignedOut() {
   return null // Never show signed out content in development
 }
 
 // Mock RedirectToSignIn component
-export const RedirectToSignIn = () => {
+export function RedirectToSignIn() {
   console.warn('[Development Mode] RedirectToSignIn called - bypassing authentication')
   return null
 }
 
 // Mock SignIn component
-export const SignIn = () => {
+export function SignIn() {
   console.warn('[Development Mode] SignIn component rendered - authentication bypassed')
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-50">
@@ -82,7 +82,7 @@ export const SignIn = () => {
 }
 
 // Mock SignUp component
-export const SignUp = () => {
+export function SignUp() {
   console.warn('[Development Mode] SignUp component rendered - authentication bypassed')
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-50">
@@ -100,7 +100,7 @@ export const SignUp = () => {
 }
 
 // Mock UserButton component
-export const UserButton = () => {
+export function UserButton() {
   return (
     <div className="flex items-center space-x-2 bg-blue-100 px-3 py-2 rounded-lg">
       <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
@@ -115,7 +115,7 @@ export const UserButton = () => {
 }
 
 // Mock OrganizationSwitcher component
-export const OrganizationSwitcher = () => {
+export function OrganizationSwitcher() {
   return (
     <div className="text-sm text-gray-600 bg-gray-100 px-3 py-2 rounded">
       {mockOrganization.name} (Dev)
@@ -124,7 +124,7 @@ export const OrganizationSwitcher = () => {
 }
 
 // Main Development Auth Provider
-export const DevelopmentAuthProvider = ({ children }) => {
+export function DevelopmentAuthProvider({ children }) {
   console.log('[Development Mode] Authentication provider initialized with mock data')
 
   return (

@@ -9,16 +9,17 @@
  *
  * Target: <3 second response time for full dashboard load
  *
- * STATUS: Sprint 1 Complete
+ * STATUS: Sprint 2 In Progress
  * - ✅ Xero financial data integration (BMAD-MOCK-001)
  * - ✅ Shopify sales data integration (BMAD-MOCK-002)
- * - ⏳ Amazon SP-API integration (BMAD-MOCK-003)
+ * - 🔄 Amazon SP-API integration (BMAD-MOCK-003) - In Progress
  * - ⏳ Unleashed ERP inventory integration (BMAD-MOCK-004)
  */
 
 import express from 'express';
 import xeroService from '../../services/xeroService.js';
 import shopifyMultiStoreService from '../../services/shopify-multistore.js';
+import amazonSPAPIService from '../../services/amazon-sp-api.js';
 import { logInfo, logError, logDebug, logWarn } from '../../src/utils/logger.js';
 
 const router = express.Router();
@@ -230,6 +231,7 @@ router.get('/setup-status', async (req, res) => {
     logDebug('[Dashboard] Checking setup status...');
     const xeroHealth = await xeroService.healthCheck();
     const shopifyStatus = shopifyMultiStoreService.getConnectionStatus();
+    const amazonConnected = amazonSPAPIService.isConnected;
 
     const setupStatus = {
       integrations: {
@@ -254,8 +256,11 @@ router.get('/setup-status', async (req, res) => {
           story: 'BMAD-MOCK-002'
         },
         amazonSpApi: {
-          connected: false,
-          status: 'pending',
+          connected: amazonConnected,
+          status: amazonConnected ? 'connected' : 'pending',
+          message: amazonConnected
+            ? 'Amazon SP-API connected successfully'
+            : 'Not configured. Add AMAZON_REFRESH_TOKEN, AMAZON_LWA_APP_ID, AMAZON_LWA_CLIENT_SECRET, AMAZON_SP_ROLE_ARN environment variables.',
           required: false,
           story: 'BMAD-MOCK-003'
         },

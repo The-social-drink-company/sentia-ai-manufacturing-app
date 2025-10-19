@@ -230,7 +230,13 @@ const AuthProvider = ({ children }) => {
 }
 
 const App = () => {
-  console.log('[App] Starting with development mode:', isDevelopmentMode)
+  console.log('[App] Environment Configuration:', {
+    isDevelopmentMode,
+    isProductionBuild,
+    VITE_DEVELOPMENT_MODE: import.meta.env.VITE_DEVELOPMENT_MODE,
+    PROD: import.meta.env.PROD,
+    authMode: isDevelopmentMode ? 'development-bypass' : 'production-clerk',
+  })
 
   return (
     <ErrorBoundary fallbackMessage="The Sentia Manufacturing Dashboard encountered an unexpected error. Please try refreshing the page.">

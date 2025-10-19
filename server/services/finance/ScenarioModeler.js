@@ -242,4 +242,4 @@ class ScenarioModeler {
   }
 }
 
-module.exports = ScenarioModeler
+export default ScenarioModeler

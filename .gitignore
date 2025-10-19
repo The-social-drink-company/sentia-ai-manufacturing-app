@@ -33,6 +33,14 @@ build/
 .env.autonomous
 .env.enterprise
 
+# Config environment files (SECURITY: contain real credentials)
+config/environments/*.env
+config/environments/.env*
+CORRECTED-*.env
+add-to-*.env
+missing-*.env
+*-ENV-*.env
+
 # Logs
 logs/
 *.log

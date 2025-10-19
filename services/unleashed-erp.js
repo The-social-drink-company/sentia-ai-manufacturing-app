@@ -167,7 +167,7 @@ class UnleashedERPService {
       logDebug('UNLEASHED ERP: Sync completed successfully');
 
       // Send SSE event: sync completed
-      sseService.broadcast('unleashed-sync-completed', {
+      emitUnleashedSyncCompleted({
         production: {
           activeBatches: consolidatedData.production.activeBatches,
           completedToday: consolidatedData.production.completedToday,
@@ -192,7 +192,7 @@ class UnleashedERPService {
       logError('UNLEASHED ERP: Sync failed:', error);
 
       // Send SSE event: sync error
-      sseService.broadcast('unleashed-sync-error', {
+      emitUnleashedSyncError({
         error: error.message,
         timestamp: new Date().toISOString()
       });

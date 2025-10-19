@@ -40,9 +40,14 @@ router.get('/executive', async (req, res) => {
   try {
     logDebug('[Dashboard] Fetching executive dashboard data...');
 
-    // Check Xero health first
+    // Check integration health
     const xeroHealth = await xeroService.healthCheck();
-    logDebug('[Dashboard] Xero health check:', xeroHealth.status);
+    const shopifyStatus = shopifyMultiStoreService.getConnectionStatus();
+
+    logDebug('[Dashboard] Integration health:', {
+      xero: xeroHealth.status,
+      shopify: shopifyStatus.connected ? `${shopifyStatus.activeStores}/${shopifyStatus.totalStores} stores` : 'not connected'
+    });
 
     if (xeroHealth.status !== 'connected') {
       logInfo('[Dashboard] Xero not connected, returning setup instructions');
@@ -54,14 +59,16 @@ router.get('/executive', async (req, res) => {
           workingCapital: null,
           setupRequired: true,
           xeroStatus: xeroHealth,
+          shopifyStatus: shopifyStatus,
           metadata: {
             timestamp: new Date().toISOString(),
             responseTime: Date.now() - startTime,
             dataAvailable: false,
             message: 'Connect Xero to view real financial data',
             requiredIntegrations: [
-              { name: 'Xero', status: xeroHealth.status, required: true },
-              { name: 'Shopify', status: 'pending', required: false, story: 'BMAD-MOCK-002' },
+              { name: 'Xero', status: xeroHealth.status, required: true, story: 'BMAD-MOCK-001' },
+              { name: 'Shopify', status: shopifyStatus.connected ? 'connected' : 'pending',
+                required: false, activeStores: shopifyStatus.activeStores, story: 'BMAD-MOCK-002' },
               { name: 'Amazon SP-API', status: 'pending', required: false, story: 'BMAD-MOCK-003' },
               { name: 'Unleashed ERP', status: 'pending', required: false, story: 'BMAD-MOCK-004' }
             ]
@@ -70,18 +77,20 @@ router.get('/executive', async (req, res) => {
       });
     }
 
-    // Fetch real data from Xero in parallel
-    logDebug('[Dashboard] Fetching Xero financial data...');
-    const [wcData, plData, cfData] = await Promise.all([
+    // Fetch real data from Xero and Shopify in parallel
+    logDebug('[Dashboard] Fetching data from Xero and Shopify...');
+    const [wcData, plData, cfData, shopifyData] = await Promise.all([
       xeroService.calculateWorkingCapital(),
       xeroService.getProfitAndLoss(3), // Last 3 months
-      xeroService.getCashFlow(3)
+      xeroService.getCashFlow(3),
+      shopifyStatus.connected
+        ? shopifyMultiStoreService.getConsolidatedSalesData()
+        : Promise.resolve({ success: false, error: 'Not connected' })
     ]);
 
-    logDebug('[Dashboard] Xero data fetched:', {
-      workingCapital: wcData?.success,
-      profitLoss: plData?.length,
-      cashFlow: !!cfData
+    logDebug('[Dashboard] Data fetched:', {
+      xero: { workingCapital: wcData?.success, profitLoss: plData?.length, cashFlow: !!cfData },
+      shopify: { success: shopifyData?.success, stores: shopifyData?.stores?.length }
     });
 
     // Calculate month-over-month change
@@ -93,14 +102,35 @@ router.get('/executive', async (req, res) => {
       return ((current - previous) / previous) * 100;
     };
 
-    // Transform Xero data to dashboard KPI format
+    // Transform Xero and Shopify data to dashboard KPI format
     const kpis = {
       revenue: {
         mtd: plData?.[0]?.totalRevenue || 0,
         ytd: plData?.reduce((sum, p) => sum + (p.totalRevenue || 0), 0) || 0,
         change: calculateChange(plData),
-        sparkline: plData?.map(p => p.totalRevenue || 0).reverse() || []
+        sparkline: plData?.map(p => p.totalRevenue || 0).reverse() || [],
+        // Shopify sales breakdown
+        shopify: shopifyData.success ? {
+          grossRevenue: shopifyData.totalRevenue || 0,
+          netRevenue: shopifyData.netRevenue || 0,
+          transactionFees: shopifyData.transactionFees || 0,
+          feeRate: shopifyData.feeRate || 0.029,
+          orders: shopifyData.totalOrders || 0,
+          avgOrderValue: shopifyData.avgOrderValue || 0,
+          avgNetOrderValue: shopifyData.avgNetOrderValue || 0,
+          storeCount: shopifyData.stores?.length || 0,
+          dataSource: shopifyData.dataSource
+        } : null
       },
+      sales: shopifyData.success ? {
+        totalOrders: shopifyData.totalOrders || 0,
+        totalCustomers: shopifyData.totalCustomers || 0,
+        avgOrderValue: shopifyData.avgOrderValue || 0,
+        avgNetOrderValue: shopifyData.avgNetOrderValue || 0,
+        commission: shopifyData.commission || {},
+        storeCount: shopifyData.stores?.length || 0,
+        dataSource: shopifyData.dataSource
+      } : null,
       workingCapital: {
         value: wcData.data?.workingCapital || 0,
         ccc: wcData.data?.cashConversionCycle || 0,
@@ -199,6 +229,7 @@ router.get('/setup-status', async (req, res) => {
   try {
     logDebug('[Dashboard] Checking setup status...');
     const xeroHealth = await xeroService.healthCheck();
+    const shopifyStatus = shopifyMultiStoreService.getConnectionStatus();
 
     const setupStatus = {
       integrations: {
@@ -212,8 +243,13 @@ router.get('/setup-status', async (req, res) => {
           story: 'BMAD-MOCK-001'
         },
         shopify: {
-          connected: false,
-          status: 'pending',
+          connected: shopifyStatus.connected,
+          status: shopifyStatus.connected ? 'connected' : 'pending',
+          activeStores: shopifyStatus.activeStores || 0,
+          totalStores: shopifyStatus.totalStores || 0,
+          message: shopifyStatus.connected
+            ? `${shopifyStatus.activeStores} of ${shopifyStatus.totalStores} stores connected`
+            : 'Not configured. Add SHOPIFY_UK_SHOP_DOMAIN, SHOPIFY_UK_ACCESS_TOKEN, SHOPIFY_US_SHOP_DOMAIN, SHOPIFY_US_ACCESS_TOKEN.',
           required: false,
           story: 'BMAD-MOCK-002'
         },
@@ -234,7 +270,9 @@ router.get('/setup-status', async (req, res) => {
       nextSteps: xeroHealth.status === 'connected'
         ? [
             'Xero connected successfully! ✅',
-            'Optional: Connect Shopify for sales data (BMAD-MOCK-002)',
+            shopifyStatus.connected
+              ? `Shopify connected successfully! ${shopifyStatus.activeStores} stores active ✅`
+              : 'Optional: Connect Shopify for sales data (BMAD-MOCK-002)',
             'Optional: Connect Amazon SP-API for order data (BMAD-MOCK-003)',
             'Optional: Connect Unleashed ERP for inventory sync (BMAD-MOCK-004)'
           ]
@@ -246,7 +284,7 @@ router.get('/setup-status', async (req, res) => {
           ]
     };
 
-    logInfo(`[Dashboard] Setup status checked: Xero ${xeroHealth.status}`);
+    logInfo(`[Dashboard] Setup status checked: Xero ${xeroHealth.status}, Shopify ${shopifyStatus.connected ? `${shopifyStatus.activeStores} stores` : 'not connected'}`);
 
     res.json({
       success: true,
@@ -258,6 +296,221 @@ router.get('/setup-status', async (req, res) => {
       success: false,
       error: 'setup_check_failed',
       message: error.message,
+    });
+  }
+});
+
+/**
+ * GET /api/v1/dashboard/sales-trends
+ *
+ * Returns sales trends data from Shopify multi-store
+ * Period options: 1month, 3months, 6months, 12months
+ */
+router.get('/sales-trends', async (req, res) => {
+  try {
+    const { period = '12months' } = req.query;
+    logDebug(`[Dashboard] Fetching sales trends (period: ${period})...`);
+
+    const shopifyStatus = shopifyMultiStoreService.getConnectionStatus();
+
+    if (!shopifyStatus.connected) {
+      return res.json({
+        success: false,
+        error: 'shopify_not_connected',
+        data: [],
+        message: 'Shopify stores not configured',
+        setupRequired: true
+      });
+    }
+
+    const trendsData = await shopifyMultiStoreService.getSalesTrends({
+      period,
+      includeQuantity: true
+    });
+
+    if (!trendsData.success) {
+      logWarn('[Dashboard] Sales trends fetch failed:', trendsData.error);
+      return res.json({
+        success: false,
+        error: trendsData.error,
+        data: []
+      });
+    }
+
+    // Transform for frontend charting
+    const chartData = trendsData.data.map(month => ({
+      date: month.date,
+      revenue: month.revenue,
+      quantity: month.quantity,
+      orders: month.orders,
+      avgOrderValue: month.orders > 0 ? month.revenue / month.orders : 0
+    }));
+
+    logInfo(`[Dashboard] Sales trends fetched: ${chartData.length} months`);
+
+    res.json({
+      success: true,
+      data: chartData,
+      period: trendsData.period,
+      dateRange: trendsData.dateRange,
+      lastUpdated: trendsData.lastUpdated
+    });
+
+  } catch (error) {
+    logError('[Dashboard] Error fetching sales trends:', error.message);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      data: []
+    });
+  }
+});
+
+/**
+ * GET /api/v1/dashboard/product-performance
+ *
+ * Returns top products by revenue from Shopify
+ */
+router.get('/product-performance', async (req, res) => {
+  try {
+    const { startDate, endDate, limit = 50 } = req.query;
+    logDebug(`[Dashboard] Fetching product performance (limit: ${limit})...`);
+
+    const shopifyStatus = shopifyMultiStoreService.getConnectionStatus();
+
+    if (!shopifyStatus.connected) {
+      return res.json({
+        success: false,
+        error: 'shopify_not_connected',
+        data: { products: [], summary: {} },
+        message: 'Shopify stores not configured',
+        setupRequired: true
+      });
+    }
+
+    const performanceData = await shopifyMultiStoreService.getProductPerformance({
+      startDate,
+      endDate,
+      limit: parseInt(limit)
+    });
+
+    // Transform for frontend display
+    const topProducts = performanceData.products.map(product => ({
+      id: product.id,
+      title: product.title,
+      sku: product.sku,
+      unitsSold: product.unitsSold,
+      revenue: product.revenue,
+      currency: product.currency,
+      region: product.storeName,
+      avgPrice: product.unitsSold > 0 ? product.revenue / product.unitsSold : 0
+    }));
+
+    logInfo(`[Dashboard] Product performance fetched: ${topProducts.length} products`);
+
+    res.json({
+      success: true,
+      data: {
+        products: topProducts,
+        summary: {
+          totalRevenue: performanceData.totalRevenue,
+          totalOrders: performanceData.totalOrders,
+          totalUnitsSold: performanceData.totalUnitsSold,
+          avgOrderValue: performanceData.averageOrderValue
+        },
+        dateRange: performanceData.dateRange,
+        lastUpdated: performanceData.lastUpdated
+      }
+    });
+
+  } catch (error) {
+    logError('[Dashboard] Error fetching product performance:', error.message);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      data: { products: [], summary: {} }
+    });
+  }
+});
+
+/**
+ * GET /api/v1/dashboard/shopify-sales
+ *
+ * Returns consolidated Shopify sales data with commission tracking
+ */
+router.get('/shopify-sales', async (req, res) => {
+  try {
+    logDebug('[Dashboard] Fetching Shopify sales data...');
+
+    const shopifyStatus = shopifyMultiStoreService.getConnectionStatus();
+
+    if (!shopifyStatus.connected) {
+      return res.json({
+        success: false,
+        error: 'shopify_not_connected',
+        data: null,
+        message: 'Shopify stores not configured. Add SHOPIFY_UK_SHOP_DOMAIN, SHOPIFY_UK_ACCESS_TOKEN, SHOPIFY_US_SHOP_DOMAIN, SHOPIFY_US_ACCESS_TOKEN environment variables.',
+        setupRequired: true,
+        shopifyStatus: shopifyStatus
+      });
+    }
+
+    const salesData = await shopifyMultiStoreService.getConsolidatedSalesData();
+
+    if (!salesData.success) {
+      logWarn('[Dashboard] Shopify sales data fetch failed:', salesData.error);
+      return res.json({
+        success: false,
+        error: salesData.error,
+        errorType: salesData.errorType,
+        data: null,
+        setupRequired: salesData.setupRequired || false
+      });
+    }
+
+    // Regional breakdown
+    const regionalData = (salesData.stores || []).map(store => ({
+      region: store.region,
+      name: store.name,
+      revenue: store.sales || 0,
+      netRevenue: store.netSales || 0,
+      transactionFees: store.transactionFees || 0,
+      orders: store.orders || 0,
+      customers: store.customers || 0,
+      avgOrderValue: store.avgOrderValue || 0,
+      currency: store.currency,
+      status: store.status,
+      productsCount: store.products?.length || 0
+    }));
+
+    logInfo(`[Dashboard] Shopify sales data fetched: ${salesData.totalOrders} orders, ${regionalData.length} stores`);
+
+    res.json({
+      success: true,
+      data: {
+        sales: {
+          totalOrders: salesData.totalOrders || 0,
+          totalRevenue: salesData.totalRevenue || 0,
+          netRevenue: salesData.netRevenue || 0,
+          transactionFees: salesData.transactionFees || 0,
+          feeRate: salesData.feeRate || 0.029,
+          avgOrderValue: salesData.avgOrderValue || 0,
+          avgNetOrderValue: salesData.avgNetOrderValue || 0,
+          customers: salesData.totalCustomers || 0
+        },
+        commission: salesData.commission || {},
+        regionalPerformance: regionalData,
+        shopifyStatus: shopifyStatus,
+        lastUpdated: salesData.lastUpdated
+      }
+    });
+
+  } catch (error) {
+    logError('[Dashboard] Error fetching Shopify sales data:', error.message);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      data: null
     });
   }
 });

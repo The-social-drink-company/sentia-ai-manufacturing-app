@@ -70,10 +70,14 @@ const AIInsights = memo(function AIInsights({ onInsightClick, onActionClick }) {
       return categoryMatch && severityMatch
     }) || []
 
-  const getTimeAgo = _timestamp => {
+  const getTimeAgo = sourceTimestamp => {
+    const time = new Date(sourceTimestamp)
+    if (Number.isNaN(time.getTime())) {
+      return 'Unknown'
+    }
+
     const now = new Date()
-    const time = new Date(timestamp)
-    const diffInMinutes = Math.floor((now - time) / (1000 * 60))
+    const diffInMinutes = Math.floor((now.getTime() - time.getTime()) / (1000 * 60))
 
     if (diffInMinutes < 1) return 'Just now'
     if (diffInMinutes < 60) return `${diffInMinutes}m ago`

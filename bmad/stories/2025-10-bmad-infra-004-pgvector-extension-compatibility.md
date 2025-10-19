@@ -3,7 +3,7 @@
 **Story ID**: BMAD-INFRA-004
 **Epic**: BMAD-INFRA-003 – Deployment Infrastructure Resolution
 **Priority**: 🔥 Blocker
-**Status**: 🚧 In Progress
+**Status**: 🚧 In Progress (Render shell action pending)
 **Created**: 2025-10-19
 **Assignee**: AI Engineering Agent (Codex)
 **Estimated Effort**: 1.5 hours
@@ -42,6 +42,22 @@ Database error: extension "vector" has no installation script nor update path fo
 
 ---
 
+## Implementation Status (2025-10-19 18:50 UTC)
+
+- Latest git commit on `main`: `bc51ac3c` (EPIC-003 completion).
+- Frontend `/health` responds 200; MCP `/health` responds 200.
+- Backend `/api/health` still fails (`connection closed unexpectedly`), confirming no healthy Render deployment.
+- Prisma migration `20251017171256_init` remains marked pending in Render; requires manual `migrate resolve` before redeploy.
+
+### Remediation Plan
+1. **Resolve migration state** – On Render shell for `sentia-backend-prod`, run `corepack enable && pnpm exec prisma migrate resolve --applied 20251017171256_init` to align Prisma history with the existing schema.
+2. **Verify status** – Execute `pnpm exec prisma migrate status` to confirm Prisma reports "Database schema is up to date". If drift is reported, halt and sync schema before proceeding.
+3. **Redeploy backend** – Trigger manual deploy and monitor logs; the migrate step should skip the already-applied init migration.
+4. **Health check** – Call `https://sentia-backend-prod.onrender.com/api/health`. Once 200 OK, update this story and `RENDER_DEPLOYMENT_STATUS.md`.
+5. **Acceptance update** – Mark AC #2 complete and close deployment blocker docs when health is restored.
+
+*Owner action required*: Render dashboard access.
+
 ## Phase Plan (BMAD-METHOD v6a)
 
 ### Phase 2 → Planning Snapshot
@@ -53,11 +69,11 @@ Database error: extension "vector" has no installation script nor update path fo
 - Capture rollback plan (revert schema line, re-run migrate) if needed.
 
 ### Phase 4 → Implementation Tasks
-1. Update `prisma/schema.prisma` datasource extension configuration.
-2. Ensure migration SQL remains compatible (no explicit version strings).
-3. Update Render deployment documentation with vector extension prerequisites.
-4. Verify Prisma formatting/validation locally.
-5. Coordinate production verification run post-merge.
+1. Update `prisma/schema.prisma` datasource extension configuration. ✅
+2. Ensure migration SQL remains compatible (no explicit version strings). ✅
+3. Update Render deployment documentation with vector extension prerequisites. ✅
+4. Verify Prisma formatting/validation locally. ✅
+5. Coordinate production verification run post-merge (Render shell action pending).
 
 ---
 
@@ -66,7 +82,7 @@ Database error: extension "vector" has no installation script nor update path fo
 - [x] `pnpm exec prisma format` succeeds.
 - [ ] `pnpm exec prisma studio --schema prisma/schema.prisma` (optional) launches locally.
 - [ ] `pnpm exec prisma migrate deploy --preview-feature --schema prisma/schema.prisma` dry run (staging or development DB) completes.
-- [ ] Render deploy run reviewed to confirm `prisma migrate deploy` completes without error.
+- [ ] Render deploy run reviewed to confirm `prisma migrate deploy` completes without error (blocked on Render access).
 - [ ] Embedding columns (`vector(1536)`) validated via introspection (`pnpm exec prisma db pull` against development DB).
 
 _Note: Mark staging/production verification as pending if database access is restricted. Capture coordination steps in story updates._
@@ -93,4 +109,5 @@ _Note: Mark staging/production verification as pending if database access is res
 
 - **2025-10-19 16:30 UTC** – Story created, logs captured, remediation plan drafted.
 - **2025-10-19 17:05 UTC** – Removed pgvector version pin, refreshed Render deployment guide, added migration README tip, and ran `pnpm exec prisma format`. Render prod validation pending once deployment reruns.
-- _Next_: Coordinate with infrastructure owner to trigger Render redeploy and capture migration results.
+- **2025-10-19 18:50 UTC** – Verified service health (frontend/mcp 200, backend connection aborted). Documented Render shell remediation steps in deployment reports; awaiting ops partner to execute.
+- _Next_: Coordinate with infrastructure owner to trigger Render shell remediation, redeploy, and capture migration results.

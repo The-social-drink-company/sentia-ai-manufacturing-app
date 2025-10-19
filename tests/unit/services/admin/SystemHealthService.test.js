@@ -42,7 +42,7 @@ vi.mock('../../../../server/utils/logger.js', () => ({
 
 // Mock os module
 vi.mock('os', async () => {
-  const actual = await vi.importActual<typeof import('os')>('os')
+  const actual = await vi.importActual('os')
   return {
     ...actual,
     totalmem: vi.fn(),
@@ -57,7 +57,7 @@ vi.mock('os', async () => {
 describe('SystemHealthService', () => {
   let mockRedisClient
 
-  beforeEach(() => {
+beforeEach(async () => {
     vi.clearAllMocks()
 
     // Mock Redis client
@@ -73,16 +73,16 @@ used_memory_peak_human:3.00M
       `),
     }
 
-    const { getRedisClient } = require('../../../../server/config/redis.js')
+    const { getRedisClient } = await import('../../../../server/config/redis.js')
     getRedisClient.mockResolvedValue(mockRedisClient)
 
     // Mock os module functions
-    ;(os.totalmem as any).mockReturnValue(16 * 1024 * 1024 * 1024) // 16GB
-    ;(os.freemem as any).mockReturnValue(8 * 1024 * 1024 * 1024) // 8GB
-    ;(os.cpus as any).mockReturnValue(new Array(8).fill({ model: 'CPU' })) // 8 cores
-    ;(os.loadavg as any).mockReturnValue([1.5, 1.2, 1.0])
-    ;(os.platform as any).mockReturnValue('linux')
-    ;(os.release as any).mockReturnValue('5.15.0')
+    os.totalmem.mockReturnValue(16 * 1024 * 1024 * 1024)
+    os.freemem.mockReturnValue(8 * 1024 * 1024 * 1024)
+    os.cpus.mockReturnValue(new Array(8).fill({ model: 'CPU' }))
+    os.loadavg.mockReturnValue([1.5, 1.2, 1.0])
+    os.platform.mockReturnValue('linux')
+    os.release.mockReturnValue('5.15.0')
   })
 
   afterEach(() => {

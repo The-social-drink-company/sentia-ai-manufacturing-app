@@ -29,11 +29,11 @@
 
 Report prepared 2025-10-20.
 
-## Git & Deployment Status (2025-10-20)
-- **Git HEAD**: `03c4260f fix(prisma): Remove pgvector version specification to fix P3018 deployment error` (HEAD and origin/development match).
-- **Local Workspace**: Uncommitted documentation updates pending (`docs/lint-backlog.md`, new BMAD status/retrospective/story files) — decision needed before release tasks.
-- **Pull Requests**: CLI cannot query GitHub directly under current sandbox; no local evidence of unpushed commits.
-- **Render Deployment**: Network access restricted. Render dashboard and health endpoint must be checked manually to confirm build state and service health.
+## Git & Deployment Status (2025-10-19)
+- **Git HEAD**: `bc51ac3c feat(EPIC-003): Complete UI/UX Polish & Frontend Integration (8/8 stories, 18.5x velocity)` on `main` (local workspace matches origin/main aside from current documentation edits).
+- **Local Workspace**: Documentation updates in progress (`DEPLOYMENT_STATUS_REPORT.md`, `RENDER_DEPLOYMENT_STATUS.md`, BMAD story/status files); application code unchanged.
+- **Pull Requests**: `gh pr status` reports PR #13 and #14 targeting `development` with 34/86 checks failing; no PR associated with `main`.
+- **Render Deployment**: Frontend `/health` → 200 OK, MCP `/health` → 200 OK, Backend `/api/health` → connection aborted (no healthy deploy). Manual Render shell intervention required.
 
 ## Git & Deployment Status Update (2025-10-20T??)
 - `git status -sb` confirms `development` == `origin/development`; local changes now include `src/App-simple-environment.jsx` in addition to documentation edits and untracked BMAD files.
@@ -56,3 +56,8 @@ Report prepared 2025-10-20.
 ## Lint Status Update (2025-10-20)
 - `pnpm run lint` now passes with zero findings after updating `src/auth/BulletproofAuthProvider.jsx` dependencies and removing unused retry state.
 - `docs/lint-backlog.md` refreshed to reflect clean lint baseline.
+## Frontend Loading Skeleton Update (2025-10-20)
+- Verified shared skeleton variants in `src/components/ui/skeletons/DashboardSkeleton.jsx` cover KPI, chart, table, form, and widget states.
+- Replaced ad-hoc loaders in `ActivityWidget`, `AlertWidget`, `ChartWidget`, `DataTableWidget`, and `StockLevelsWidget` with shared skeletons for consistent UX.
+- Standardized working-capital optimization loading flow to render skeleton grids while React Query fetches summary data.
+- `pnpm run lint` passes with zero findings after cleanup (`src/components/ErrorBoundary.jsx`, `src/components/widgets/StockLevelsWidget.jsx`).

@@ -5,16 +5,22 @@
 
 class FinancialAlgorithms {
   constructor() {
+    const apiBaseURL = import.meta.env.VITE_API_BASE_URL || '/api'
+    const normalizedApiBase = apiBaseURL.endsWith('/') ? apiBaseURL.slice(0, -1) : apiBaseURL
+
     this.apiEndpoints = {
       xero: import.meta.env.VITE_XERO_API_URL || '/api/xero',
       shopifyUK: import.meta.env.VITE_SHOPIFY_UK_API_URL || '/api/shopify-uk',
       shopifyUSA: import.meta.env.VITE_SHOPIFY_USA_API_URL || '/api/shopify-usa',
       unleashed: import.meta.env.VITE_UNLEASHED_API_URL || '/api/unleashed',
       mcp: import.meta.env.VITE_MCP_SERVER_URL || 'https://sentia-mcp-production.onrender.com',
+      api: normalizedApiBase,
     }
 
     this.cache = new Map()
     this.cacheTimeout = 5 * 60 * 1000 // 5 minutes
+    const developmentFlag = import.meta.env.VITE_DEVELOPMENT_MODE
+    this.allowDevFallback = !import.meta.env.PROD ? developmentFlag !== 'false' : developmentFlag === 'true'
   }
 
   /**
@@ -334,27 +340,31 @@ class FinancialAlgorithms {
       return data
     } catch (error) {
       console.error('Failed to fetch inventory data:', error)
-      // Return sample data structure for development
-      return {
-        totalValue: 850000,
-        averageInventory: 750000,
-        cogs: 2500000,
-        turnoverRatio: 3.33,
-        items: [
-          {
-            id: 'SKU001',
-            name: 'Premium Spirit Base',
-            quantity: 1200,
-            unitCost: 45.5,
-            annualDemand: 14400,
-            orderingCost: 250,
-            holdingCost: 9.1,
-            leadTime: 14,
-            dailyDemand: 40,
-            safetyStock: 200,
-          },
-        ],
+      if (this.allowDevFallback) {
+        return {
+          totalValue: 850000,
+          averageInventory: 750000,
+          cogs: 2500000,
+          turnoverRatio: 3.33,
+          items: [
+            {
+              id: 'SKU001',
+              name: 'Premium Spirit Base',
+              quantity: 1200,
+              unitCost: 45.5,
+              annualDemand: 14400,
+              orderingCost: 250,
+              holdingCost: 9.1,
+              leadTime: 14,
+              dailyDemand: 40,
+              safetyStock: 200,
+            },
+          ],
+          dataSource: 'development-fallback',
+        }
       }
+
+      throw new Error('Inventory data unavailable. Please connect Unleashed ERP or seed the database.')
     }
   }
 
@@ -362,19 +372,30 @@ class FinancialAlgorithms {
     try {
       // Try to fetch from working capital API (real Sentia data)
       const response = await fetch(`${this.apiEndpoints.api}/financial/working-capital`)
-      const data = await response.json()
-
-      if (data.success && data.data && data.dataSource === 'sentia_database') {
-        return {
-          totalAmount: data.data.accountsReceivable,
-          dataSource: 'sentia_database',
-          lastUpdated: data.timestamp,
-        }
-      } else {
-        throw new Error('Sentia database data not available')
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`)
       }
+
+      const payload = await response.json()
+      const latest = payload?.latest || (Array.isArray(payload?.data) ? payload.data[0] : null)
+      if (latest && typeof latest.accountsReceivable !== 'undefined') {
+        return {
+          totalAmount: Number(latest.accountsReceivable) || 0,
+          dataSource: payload?.dataSource || 'database',
+          lastUpdated: latest.periodEnd || latest.date || new Date().toISOString(),
+        }
+      }
+
+      throw new Error('No receivables data returned from API')
     } catch (error) {
-      // NO MOCK DATA FALLBACK - return proper error
+      if (this.allowDevFallback) {
+        return {
+          totalAmount: 275000,
+          dataSource: 'development-fallback',
+          lastUpdated: new Date().toISOString(),
+        }
+      }
+
       throw new Error(
         `Receivables data unavailable: ${error.message}. Please ensure Sentia database is connected.`
       )
@@ -385,19 +406,30 @@ class FinancialAlgorithms {
     try {
       // Try to fetch from working capital API (real Sentia data)
       const response = await fetch(`${this.apiEndpoints.api}/financial/working-capital`)
-      const data = await response.json()
-
-      if (data.success && data.data && data.dataSource === 'sentia_database') {
-        return {
-          totalAmount: data.data.accountsPayable,
-          dataSource: 'sentia_database',
-          lastUpdated: data.timestamp,
-        }
-      } else {
-        throw new Error('Sentia database data not available')
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`)
       }
+
+      const payload = await response.json()
+      const latest = payload?.latest || (Array.isArray(payload?.data) ? payload.data[0] : null)
+      if (latest && typeof latest.accountsPayable !== 'undefined') {
+        return {
+          totalAmount: Number(latest.accountsPayable) || 0,
+          dataSource: payload?.dataSource || 'database',
+          lastUpdated: latest.periodEnd || latest.date || new Date().toISOString(),
+        }
+      }
+
+      throw new Error('No payables data returned from API')
     } catch (error) {
-      // NO MOCK DATA FALLBACK - return proper error
+      if (this.allowDevFallback) {
+        return {
+          totalAmount: 198000,
+          dataSource: 'development-fallback',
+          lastUpdated: new Date().toISOString(),
+        }
+      }
+
       throw new Error(
         `Payables data unavailable: ${error.message}. Please ensure Sentia database is connected.`
       )
@@ -406,26 +438,45 @@ class FinancialAlgorithms {
 
   async getCashFlowData() {
     try {
-      // Try to fetch from working capital API (real Sentia data)
-      const response = await fetch(`${this.apiEndpoints.api}/financial/working-capital`)
-      const data = await response.json()
-
-      if (data.success && data.data && data.dataSource === 'sentia_database') {
-        return {
-          currentCash: data.data.cash || 0,
-          currentAssets: data.data.currentAssets,
-          currentLiabilities: data.data.currentLiabilities,
-          workingCapital: data.data.workingCapital,
-          cashConversionCycle: data.data.cashConversionCycle,
-          dataSource: 'sentia_database',
-          lastUpdated: data.timestamp,
-          businessContext: data.businessContext,
-        }
-      } else {
-        throw new Error('Sentia database data not available')
+      const response = await fetch(`${this.apiEndpoints.api}/financial/cash-flow`)
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`)
       }
+
+      const payload = await response.json()
+      const latest = payload?.latest || (Array.isArray(payload?.data) ? payload.data[0] : null)
+      if (latest) {
+        return {
+          currentCash: Number(latest.netCashFlow) || 0,
+          operating: Number(latest.operatingCashFlow) || 0,
+          investing: Number(latest.investingCashFlow) || 0,
+          financing: Number(latest.financingCashFlow) || 0,
+          capitalExpenditures: Number(latest.capitalExpenditures) || 0,
+          currentLiabilities: Number(latest.currentLiabilities) || 0,
+          totalDebt: Number(latest.totalDebt) || 0,
+          historical: Array.isArray(payload?.data) ? payload.data : [],
+          dataSource: payload?.dataSource || 'database',
+          lastUpdated: latest.date || new Date().toISOString(),
+        }
+      }
+
+      throw new Error('No cash flow data returned from API')
     } catch (error) {
-      // NO MOCK DATA FALLBACK - return proper error
+      if (this.allowDevFallback) {
+        return {
+          currentCash: 315000,
+          operating: 125000,
+          investing: -45000,
+          financing: -15000,
+          capitalExpenditures: 30000,
+          currentLiabilities: 210000,
+          totalDebt: 420000,
+          historical: [],
+          dataSource: 'development-fallback',
+          lastUpdated: new Date().toISOString(),
+        }
+      }
+
       throw new Error(
         `Cash flow data unavailable: ${error.message}. Please ensure Sentia database is connected.`
       )

@@ -72,7 +72,7 @@ describe('MfaService', () => {
       expect(result.qrCode).toBeDefined()
       expect(result.qrCode).toContain('otpauth://totp/')
       expect(result.qrCode).toContain('Sentia%20Admin')
-      expect(result.qrCode).toContain('test@example.com')
+      expect(decodeURIComponent(result.qrCode)).toContain('test@example.com')
 
       expect(prisma.user.update).toHaveBeenCalledWith({
         where: { id: 'user-123' },

@@ -287,6 +287,9 @@ describe('ApprovalService', () => {
       })
       prisma.adminApprovalHistory.create.mockResolvedValue({ id: 'history-789' })
 
+      const { addApprovalJob } = await import('../../../../server/queues/approvalQueue.js')
+      addApprovalJob.mockResolvedValue({ id: 'mock-job-id' })
+
       const result = await ApprovalService.approve('approval-789', 'admin-123', true)
 
       expect(result.status).toBe('APPROVED')
@@ -499,5 +502,4 @@ describe('ApprovalService', () => {
     })
   })
 })
-
 

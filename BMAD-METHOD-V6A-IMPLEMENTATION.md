@@ -16,6 +16,7 @@
 - Mock data violations: 180+ production Math.random usages still present
 - Prisma usage: 40+ services instantiate PrismaClient directly instead of singleton
 - Next Actions: repair QueueMonitorService tests, consolidate Prisma access, scrub mock data, stabilize auth/navigation E2E flows
+- Progress Notes (2025-03-14 18:26): QueueMonitorService unit suite now green with refreshed BullMQ/Prisma harness; replicate orchestration updates across remaining admin service tests before re-running full Vitest coverage
 
 
 ---

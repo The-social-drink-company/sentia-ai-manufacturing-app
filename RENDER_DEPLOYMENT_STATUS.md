@@ -4,7 +4,7 @@
 
 **Date**: 2025-10-19
 **Status**: 🔴 **DEGRADED** (2/3 services healthy)
-**Last Check**: 2025-10-19 17:14 GMT
+**Last Check**: 2025-10-19 17:55 GMT
 
 ---
 
@@ -27,19 +27,18 @@ Content-Type: text/html
 
 ### ❌ Backend API Service (DOWN)
 **URL**: https://sentia-backend-prod.onrender.com/api/health
-**Status**: ❌ 502 Bad Gateway
+**Status**: ❌ Connection aborted
 **Branch**: main
-**Health**: NO DEPLOYMENT RUNNING
+**Health**: Render ends TLS socket unexpectedly
 
-```http
-HTTP/1.1 502 Bad Gateway
-rndr-id: 3cfbf0ee-f805-48d8
-x-render-routing: no-deploy  ← CRITICAL: No active deployment
+```
+Invoke-WebRequest : The request was aborted: The connection was closed unexpectedly.
 ```
 
-**Root Cause**: `x-render-routing: no-deploy` indicates **NO ACTIVE DEPLOYMENT**
-- Service not running
-- Not a code error - deployment never started or failed
+**Root Cause**: Prisma migration history still unresolved (`20251017171256_init`); Render requires manual `migrate resolve` before deployment will start cleanly.
+
+- Service currently fails during startup/migrate
+- No healthy deployment running
 
 **Verdict**: ❌ **REQUIRES IMMEDIATE ACTION**
 
@@ -80,41 +79,47 @@ ETag: W/"2ec-ZCRVC8/bpuCKOUiHZtKwouFZdos"
 
 ### IMMEDIATE (Next 15 minutes)
 
-#### 1. Trigger Backend Deployment
+#### 1. Resolve Prisma Migration State (Render Shell)
 
-**Manual Render Dashboard Method**:
-1. Go to https://dashboard.render.com
-2. Navigate to `sentia-backend-prod` service
-3. Click "Manual Deploy" button
-4. Select "Deploy latest commit" (should be `4f3d1f0f`)
-5. Click "Deploy"
-6. Monitor build logs for errors
+1. Go to https://dashboard.render.com → `sentia-backend-prod`
+2. Open **Shell**
+3. Run:
+   ```bash
+   corepack enable
+   pnpm exec prisma migrate resolve --applied 20251017171256_init
+   pnpm exec prisma migrate status
+   ```
+4. Confirm status reports "Database schema is up to date"
+
+#### 2. Trigger Backend Deployment
+
+1. Close shell; click **Manual Deploy**
+2. Deploy latest commit from `main` (bc51ac3c)
+3. Monitor build logs for migration step skipping `20251017171256_init`
 
 **Expected Result**: Service should build and start from latest `main` branch commit
 
 #### 2. Monitor Build Logs
 
 **Watch for**:
-- ✅ `npm install` completing successfully
-- ✅ Build command completing
-- ✅ Start command executing
-- ✅ Health check passing at `/api/health`
+- ✅ `pnpm exec prisma migrate resolve` skipped (already applied)
+- ✅ `pnpm exec prisma migrate deploy` reports no pending migrations
+- ✅ Application starts without crash
+- ✅ Health check returns 200
 
 **Common Errors to Watch For**:
-- ❌ Missing environment variables
-- ❌ Prisma migration failures
+- ❌ Prisma re-attempts `20251017171256_init`
+- ❌ pgvector extension mismatch resurfaces
 - ❌ Database connection errors
 - ❌ Port binding issues
 
 #### 3. Verify Health After Deployment
 
 ```bash
-# Should return 200 OK with health status
+# Expect 200 OK after redeploy
 curl https://sentia-backend-prod.onrender.com/api/health
-
-# Expected response:
-# {"status":"healthy","timestamp":"..."}
 ```
+If the command still reports connection aborted, revisit shell logs.
 
 ---
 

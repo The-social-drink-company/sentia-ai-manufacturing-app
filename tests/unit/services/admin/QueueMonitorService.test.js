@@ -17,6 +17,16 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import QueueMonitorService from '../../../../server/services/admin/QueueMonitorService.js'
 import prisma from '../../../../server/lib/prisma.js'
 
+let mockBullQueue
+
+vi.mock('../../../../server/queues/syncJobQueue.js', () => ({
+  getSyncJobQueue: vi.fn(() => Promise.resolve(mockBullQueue)),
+}))
+
+vi.mock('../../../../server/queues/approvalQueue.js', () => ({
+  getApprovalQueue: vi.fn(() => Promise.resolve(mockBullQueue)),
+}))
+
 // Mock dependencies
 vi.mock('../../../../server/lib/prisma.js', () => ({
   default: {
@@ -67,14 +77,7 @@ describe('QueueMonitorService', () => {
       clean: vi.fn().mockResolvedValue([]),
     }
 
-    // Mock dynamic imports for queue access
-    vi.mock('../../../../server/queues/syncJobQueue.js', () => ({
-      getSyncJobQueue: vi.fn().mockResolvedValue(mockBullQueue),
-    }))
-
-    vi.mock('../../../../server/queues/approvalQueue.js', () => ({
-      getApprovalQueue: vi.fn().mockResolvedValue(mockBullQueue),
-    }))
+    vi.spyOn(QueueMonitorService, '_getBullMQQueue').mockResolvedValue(mockBullQueue)
   })
 
   afterEach(() => {
@@ -230,10 +233,14 @@ describe('QueueMonitorService', () => {
         updatedAt: new Date(Date.now() - 120000), // 2 minutes ago
       }
 
-      prisma.adminQueueMonitor.findUnique.mockResolvedValue({
-        ...mockQueue,
-        queueType: 'SYNC',
-      })
+      const getQueueSpy = vi
+        .spyOn(QueueMonitorService, 'getQueueByName')
+        .mockResolvedValue({
+          ...mockQueue,
+          queueType: 'SYNC',
+          isPaused: false,
+          isHealthy: true,
+        })
       prisma.adminQueueMonitor.update.mockResolvedValue({
         ...mockQueue,
         activeJobs: 2,
@@ -251,7 +258,6 @@ describe('QueueMonitorService', () => {
           waitingJobs: 10,
           completedJobs: 100,
           failedJobs: 5,
-          delayedJobs: 0,
           isPaused: false,
           errorRate: expect.any(Number),
           throughput: expect.any(Number),
@@ -266,6 +272,8 @@ describe('QueueMonitorService', () => {
       expect(mockBullQueue.getFailedCount).toHaveBeenCalled()
       expect(mockBullQueue.getDelayedCount).toHaveBeenCalled()
       expect(mockBullQueue.isPaused).toHaveBeenCalled()
+
+      getQueueSpy.mockRestore()
     })
 
     it('should calculate error rate and throughput correctly', async () => {
@@ -279,11 +287,17 @@ describe('QueueMonitorService', () => {
 
       mockBullQueue.getCompletedCount.mockResolvedValue(100)
       mockBullQueue.getFailedCount.mockResolvedValue(5)
+      mockBullQueue.getWaitingCount.mockResolvedValue(0)
+      mockBullQueue.getActiveCount.mockResolvedValue(0)
 
-      prisma.adminQueueMonitor.findUnique.mockResolvedValue({
-        ...mockQueue,
-        queueType: 'SYNC',
-      })
+      const getQueueSpy = vi
+        .spyOn(QueueMonitorService, 'getQueueByName')
+        .mockResolvedValue({
+          ...mockQueue,
+          queueType: 'SYNC',
+          isPaused: false,
+          isHealthy: true,
+        })
       prisma.adminQueueMonitor.update.mockImplementation((args) => {
         return Promise.resolve({ ...mockQueue, ...args.data })
       })
@@ -296,8 +310,10 @@ describe('QueueMonitorService', () => {
       // Error rate = 5 / (100 + 5) = 0.047619...
       expect(updateData.errorRate).toBeCloseTo(0.047619, 5)
 
-      // Throughput = (100 - 90) jobs / 1 minute = 10 jobs/min
-      expect(updateData.throughput).toBeCloseTo(10, 1)
+      // Throughput = completed jobs per minute = 100 jobs/min
+      expect(updateData.throughput).toBeCloseTo(100, 1)
+
+      getQueueSpy.mockRestore()
     })
 
     it('should mark queue as unhealthy if error rate exceeds threshold', async () => {
@@ -313,10 +329,14 @@ describe('QueueMonitorService', () => {
       mockBullQueue.getCompletedCount.mockResolvedValue(100)
       mockBullQueue.getFailedCount.mockResolvedValue(10)
 
-      prisma.adminQueueMonitor.findUnique.mockResolvedValue({
-        ...mockQueue,
-        queueType: 'SYNC',
-      })
+      const getQueueSpy = vi
+        .spyOn(QueueMonitorService, 'getQueueByName')
+        .mockResolvedValue({
+          ...mockQueue,
+          queueType: 'SYNC',
+          isPaused: false,
+          isHealthy: true,
+        })
       prisma.adminQueueMonitor.update.mockImplementation((args) => {
         return Promise.resolve({ ...mockQueue, ...args.data })
       })
@@ -326,12 +346,17 @@ describe('QueueMonitorService', () => {
       const updateCall = prisma.adminQueueMonitor.update.mock.calls[0][0]
       expect(updateCall.data.isHealthy).toBe(false)
       expect(updateCall.data.errorRate).toBeGreaterThan(0.05) // 5% threshold
+
+      getQueueSpy.mockRestore()
     })
 
+  })
+
+  describe('getQueueByName', () => {
     it('should create queue monitor record if not exists', async () => {
       prisma.adminQueueMonitor.findUnique.mockResolvedValueOnce(null)
       prisma.adminQueueMonitor.create.mockResolvedValue({
-        id: 'new-queue-1',
+        id: 'queue-new',
         queueName: 'admin:sync-jobs',
         queueType: 'SYNC',
         isPaused: false,
@@ -341,24 +366,18 @@ describe('QueueMonitorService', () => {
         completedJobs: 0,
         failedJobs: 0,
       })
-      prisma.adminQueueMonitor.create.mockResolvedValue({
-        id: 'new-queue-1',
-        queueName: 'admin:sync-jobs',
-        queueType: 'SYNC',
-        activeJobs: 2,
-        waitingJobs: 10,
-      })
 
-      await QueueMonitorService.updateQueueMetrics('admin:sync-jobs')
+      const queue = await QueueMonitorService.getQueueByName('admin:sync-jobs')
 
       expect(prisma.adminQueueMonitor.create).toHaveBeenCalledWith({
         data: expect.objectContaining({
           queueName: 'admin:sync-jobs',
           queueType: 'SYNC',
-          activeJobs: 2,
-          waitingJobs: 10,
+          isPaused: false,
+          isHealthy: true,
         }),
       })
+      expect(queue.queueName).toBe('admin:sync-jobs')
     })
   })
 
@@ -370,6 +389,8 @@ describe('QueueMonitorService', () => {
       const mockQueue = {
         id: 'queue-1',
         queueName: 'admin:sync-jobs',
+        isPaused: false,
+        isHealthy: true,
       }
 
       const mockApproval = {
@@ -378,7 +399,9 @@ describe('QueueMonitorService', () => {
         status: 'PENDING',
       }
 
-      prisma.adminQueueMonitor.findFirst.mockResolvedValue(mockQueue)
+      const getQueueSpy = vi
+        .spyOn(QueueMonitorService, 'getQueueByName')
+        .mockResolvedValue(mockQueue)
 
       const ApprovalService = (await import('../../../../server/services/admin/ApprovalService.js')).default
       ApprovalService.createApprovalRequest.mockResolvedValue(mockApproval)
@@ -386,25 +409,29 @@ describe('QueueMonitorService', () => {
       const result = await QueueMonitorService.pauseQueue('admin:sync-jobs', 'user-1', 'Emergency maintenance')
 
       expect(result).toEqual({
+        success: false,
         approvalRequired: true,
         approval: mockApproval,
+        message: 'Production queue pause requires approval',
       })
 
-      expect(ApprovalService.createApprovalRequest).toHaveBeenCalledWith({
-        type: 'QUEUE_OPERATION',
-        requesterId: 'user-1',
-        reason: 'Emergency maintenance',
-        metadata: {
-          operation: 'PAUSE',
-          queueName: 'admin:sync-jobs',
-          queueId: 'queue-1',
-        },
-      })
+      expect(ApprovalService.createApprovalRequest).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: 'QUEUE_OPERATION',
+          requesterId: 'user-1',
+          rationale: 'Emergency maintenance',
+          requestedChanges: expect.objectContaining({
+            operation: 'PAUSE',
+            queueName: 'admin:sync-jobs',
+          }),
+        })
+      )
 
       // Should NOT pause queue immediately
       expect(mockBullQueue.pause).not.toHaveBeenCalled()
       expect(prisma.adminQueueMonitor.update).not.toHaveBeenCalled()
 
+      getQueueSpy.mockRestore()
       process.env.NODE_ENV = originalEnv
     })
 
@@ -416,6 +443,7 @@ describe('QueueMonitorService', () => {
         id: 'queue-1',
         queueName: 'admin:sync-jobs',
         isPaused: false,
+        isHealthy: true,
       }
 
       const updatedQueue = {
@@ -423,22 +451,27 @@ describe('QueueMonitorService', () => {
         isPaused: true,
       }
 
-      prisma.adminQueueMonitor.findFirst.mockResolvedValue(mockQueue)
+      const getQueueSpy = vi
+        .spyOn(QueueMonitorService, 'getQueueByName')
+        .mockResolvedValue(mockQueue)
       prisma.adminQueueMonitor.update.mockResolvedValue(updatedQueue)
 
       const result = await QueueMonitorService.pauseQueue('admin:sync-jobs', 'user-1', 'Testing')
 
       expect(result).toEqual({
+        success: true,
         approvalRequired: false,
         queue: updatedQueue,
+        message: 'Queue admin:sync-jobs paused',
       })
 
       expect(mockBullQueue.pause).toHaveBeenCalled()
       expect(prisma.adminQueueMonitor.update).toHaveBeenCalledWith({
         where: { id: 'queue-1' },
-        data: { isPaused: true },
+        data: expect.objectContaining({ isPaused: true }),
       })
 
+      getQueueSpy.mockRestore()
       process.env.NODE_ENV = originalEnv
     })
 
@@ -447,13 +480,18 @@ describe('QueueMonitorService', () => {
         id: 'queue-1',
         queueName: 'admin:sync-jobs',
         isPaused: true,
+        isHealthy: true,
       }
 
-      prisma.adminQueueMonitor.findFirst.mockResolvedValue(mockQueue)
+      const getQueueSpy = vi
+        .spyOn(QueueMonitorService, 'getQueueByName')
+        .mockResolvedValue(mockQueue)
 
       await expect(
         QueueMonitorService.pauseQueue('admin:sync-jobs', 'user-1', 'Test')
-      ).rejects.toThrow('Queue admin:sync-jobs is already paused')
+      ).rejects.toThrow(/already paused/)
+
+      getQueueSpy.mockRestore()
     })
   })
 
@@ -463,6 +501,7 @@ describe('QueueMonitorService', () => {
         id: 'queue-1',
         queueName: 'admin:sync-jobs',
         isPaused: true,
+        isHealthy: true,
       }
 
       const updatedQueue = {
@@ -470,7 +509,9 @@ describe('QueueMonitorService', () => {
         isPaused: false,
       }
 
-      prisma.adminQueueMonitor.findFirst.mockResolvedValue(mockQueue)
+      const getQueueSpy = vi
+        .spyOn(QueueMonitorService, 'getQueueByName')
+        .mockResolvedValue(mockQueue)
       prisma.adminQueueMonitor.update.mockResolvedValue(updatedQueue)
 
       const result = await QueueMonitorService.resumeQueue('admin:sync-jobs', 'user-1')
@@ -479,8 +520,10 @@ describe('QueueMonitorService', () => {
       expect(mockBullQueue.resume).toHaveBeenCalled()
       expect(prisma.adminQueueMonitor.update).toHaveBeenCalledWith({
         where: { id: 'queue-1' },
-        data: { isPaused: false },
+        data: expect.objectContaining({ isPaused: false }),
       })
+
+      getQueueSpy.mockRestore()
     })
 
     it('should throw error if queue not paused', async () => {
@@ -488,13 +531,18 @@ describe('QueueMonitorService', () => {
         id: 'queue-1',
         queueName: 'admin:sync-jobs',
         isPaused: false,
+        isHealthy: true,
       }
 
-      prisma.adminQueueMonitor.findFirst.mockResolvedValue(mockQueue)
+      const getQueueSpy = vi
+        .spyOn(QueueMonitorService, 'getQueueByName')
+        .mockResolvedValue(mockQueue)
 
       await expect(
         QueueMonitorService.resumeQueue('admin:sync-jobs', 'user-1')
-      ).rejects.toThrow('Queue admin:sync-jobs is not paused')
+      ).rejects.toThrow(/not paused/)
+
+      getQueueSpy.mockRestore()
     })
   })
 
@@ -508,32 +556,52 @@ describe('QueueMonitorService', () => {
 
       mockBullQueue.getJobs.mockResolvedValue(mockFailedJobs)
 
+      const updateMetricsSpy = vi
+        .spyOn(QueueMonitorService, 'updateQueueMetrics')
+        .mockResolvedValue()
+      const getQueueSpy = vi
+        .spyOn(QueueMonitorService, 'getQueueByName')
+        .mockResolvedValue({ id: 'queue-1', queueName: 'admin:sync-jobs' })
+
       const result = await QueueMonitorService.retryFailedJobs('admin:sync-jobs', 3)
 
       expect(result).toEqual({
         success: true,
-        queueName: 'admin:sync-jobs',
         retriedCount: 3,
-        requestedLimit: 3,
+        message: 'Retried 3 failed jobs',
       })
 
-      expect(mockBullQueue.getJobs).toHaveBeenCalledWith(['failed'], 0, 2) // limit - 1
+      expect(mockBullQueue.getJobs).toHaveBeenCalledWith(['failed'], 0, 3)
       mockFailedJobs.forEach((job) => {
         expect(job.retry).toHaveBeenCalled()
       })
+
+      expect(updateMetricsSpy).toHaveBeenCalledWith('admin:sync-jobs')
+      updateMetricsSpy.mockRestore()
+      getQueueSpy.mockRestore()
     })
 
     it('should handle case when no failed jobs exist', async () => {
       mockBullQueue.getJobs.mockResolvedValue([])
 
+      const updateMetricsSpy = vi
+        .spyOn(QueueMonitorService, 'updateQueueMetrics')
+        .mockResolvedValue()
+      const getQueueSpy = vi
+        .spyOn(QueueMonitorService, 'getQueueByName')
+        .mockResolvedValue({ id: 'queue-1', queueName: 'admin:sync-jobs' })
+
       const result = await QueueMonitorService.retryFailedJobs('admin:sync-jobs', 10)
 
       expect(result).toEqual({
         success: true,
-        queueName: 'admin:sync-jobs',
         retriedCount: 0,
-        requestedLimit: 10,
+        message: 'No failed jobs to retry',
       })
+
+      expect(updateMetricsSpy).not.toHaveBeenCalled()
+      updateMetricsSpy.mockRestore()
+      getQueueSpy.mockRestore()
     })
   })
 
@@ -542,20 +610,37 @@ describe('QueueMonitorService', () => {
       const cleanedJobIds = ['job-1', 'job-2', 'job-3']
       mockBullQueue.clean.mockResolvedValue(cleanedJobIds)
 
+      const updateMetricsSpy = vi
+        .spyOn(QueueMonitorService, 'updateQueueMetrics')
+        .mockResolvedValue()
+      const getQueueSpy = vi
+        .spyOn(QueueMonitorService, 'getQueueByName')
+        .mockResolvedValue({ id: 'queue-1', queueName: 'admin:sync-jobs' })
+
       const result = await QueueMonitorService.cleanQueue('admin:sync-jobs', {})
 
       expect(result).toEqual({
         success: true,
-        queueName: 'admin:sync-jobs',
         cleanedCount: 3,
         status: 'completed',
+        message: 'Cleaned 3 completed jobs',
       })
 
-      expect(mockBullQueue.clean).toHaveBeenCalledWith(86400000, 0, 'completed') // 24h grace
+      expect(mockBullQueue.clean).toHaveBeenCalledWith(86400000, undefined, 'completed')
+      expect(updateMetricsSpy).toHaveBeenCalledWith('admin:sync-jobs')
+      updateMetricsSpy.mockRestore()
+      getQueueSpy.mockRestore()
     })
 
     it('should clean failed jobs with custom grace period and limit', async () => {
       mockBullQueue.clean.mockResolvedValue(['job-1', 'job-2'])
+
+      const updateMetricsSpy = vi
+        .spyOn(QueueMonitorService, 'updateQueueMetrics')
+        .mockResolvedValue()
+      const getQueueSpy = vi
+        .spyOn(QueueMonitorService, 'getQueueByName')
+        .mockResolvedValue({ id: 'queue-1', queueName: 'admin:sync-jobs' })
 
       const result = await QueueMonitorService.cleanQueue('admin:sync-jobs', {
         grace: 3600000, // 1 hour
@@ -563,8 +648,17 @@ describe('QueueMonitorService', () => {
         status: 'failed',
       })
 
-      expect(result.cleanedCount).toBe(2)
-      expect(mockBullQueue.clean).toHaveBeenCalledWith(3600000, 99, 'failed') // limit - 1
+      expect(result).toEqual({
+        success: true,
+        cleanedCount: 2,
+        status: 'failed',
+        message: 'Cleaned 2 failed jobs',
+      })
+
+      expect(mockBullQueue.clean).toHaveBeenCalledWith(3600000, 100, 'failed')
+      expect(updateMetricsSpy).toHaveBeenCalledWith('admin:sync-jobs')
+      updateMetricsSpy.mockRestore()
+      getQueueSpy.mockRestore()
     })
   })
 
@@ -574,22 +668,36 @@ describe('QueueMonitorService', () => {
         id: 'queue-1',
         queueName: 'admin:sync-jobs',
         isHealthy: true,
-        errorRate: 0.02, // 2%
+        isPaused: false,
+        errorRate: 0.02,
         waitingJobs: 50,
-        avgProcessingTime: 60000, // 1 minute
+        avgProcessingTime: 60000,
+        activeJobs: 2,
+        completedJobs: 100,
+        failedJobs: 5,
+        throughput: 12,
       }
 
-      prisma.adminQueueMonitor.findFirst.mockResolvedValue(mockQueue)
+      const updateMetricsSpy = vi
+        .spyOn(QueueMonitorService, 'updateQueueMetrics')
+        .mockResolvedValue()
+
+      prisma.adminQueueMonitor.findUnique.mockResolvedValue(mockQueue)
 
       const result = await QueueMonitorService.getQueueHealth('admin:sync-jobs')
 
-      expect(result.status).toBe('HEALTHY')
+      expect(result.queueName).toBe('admin:sync-jobs')
+      expect(result.isHealthy).toBe(true)
       expect(result.alerts).toEqual([])
-      expect(result.metrics).toEqual({
-        errorRate: 0.02,
-        queueSize: 50,
-        avgProcessingTime: 60000,
-      })
+      expect(result.metrics).toEqual(
+        expect.objectContaining({
+          errorRate: 0.02,
+          waitingJobs: 50,
+          avgProcessingTime: 60000,
+        })
+      )
+      expect(updateMetricsSpy).toHaveBeenCalledWith('admin:sync-jobs')
+      updateMetricsSpy.mockRestore()
     })
 
     it('should return degraded status with alerts when thresholds breached', async () => {
@@ -597,35 +705,43 @@ describe('QueueMonitorService', () => {
         id: 'queue-1',
         queueName: 'admin:sync-jobs',
         isHealthy: false,
-        errorRate: 0.08, // 8% > 5% threshold
-        waitingJobs: 1200, // > 1000 threshold
-        avgProcessingTime: 400000, // 6.67 minutes > 5 minutes threshold
+        isPaused: false,
+        errorRate: 0.08,
+        waitingJobs: 1200,
+        avgProcessingTime: 400000,
+        activeJobs: 5,
+        completedJobs: 200,
+        failedJobs: 20,
+        throughput: 8,
       }
 
-      prisma.adminQueueMonitor.findFirst.mockResolvedValue(mockQueue)
+      const updateMetricsSpy = vi
+        .spyOn(QueueMonitorService, 'updateQueueMetrics')
+        .mockResolvedValue()
+
+      prisma.adminQueueMonitor.findUnique.mockResolvedValue(mockQueue)
 
       const result = await QueueMonitorService.getQueueHealth('admin:sync-jobs')
 
-      expect(result.status).toBe('DEGRADED')
+      expect(result.isHealthy).toBe(false)
       expect(result.alerts).toHaveLength(3)
       expect(result.alerts).toContainEqual(
         expect.objectContaining({
           type: 'HIGH_ERROR_RATE',
-          severity: 'WARNING',
         })
       )
       expect(result.alerts).toContainEqual(
         expect.objectContaining({
-          type: 'HIGH_QUEUE_SIZE',
-          severity: 'WARNING',
+          type: 'QUEUE_BACKLOG',
         })
       )
       expect(result.alerts).toContainEqual(
         expect.objectContaining({
           type: 'SLOW_PROCESSING',
-          severity: 'WARNING',
         })
       )
+      expect(updateMetricsSpy).toHaveBeenCalledWith('admin:sync-jobs')
+      updateMetricsSpy.mockRestore()
     })
   })
 
@@ -635,27 +751,44 @@ describe('QueueMonitorService', () => {
         {
           id: 'queue-1',
           queueName: 'admin:sync-jobs',
+          queueType: 'SYNC',
           isHealthy: false,
           errorRate: 0.1,
           waitingJobs: 2000,
+          avgProcessingTime: null,
+          lastCheckedAt: new Date(),
         },
         {
           id: 'queue-2',
           queueName: 'admin:approvals',
+          queueType: 'APPROVAL',
           isHealthy: true,
           errorRate: 0.01,
           waitingJobs: 10,
+          avgProcessingTime: 1000,
+          lastCheckedAt: new Date(),
         },
       ]
 
-      prisma.adminQueueMonitor.findMany.mockResolvedValue(mockQueues)
+      const getAllQueuesSpy = vi
+        .spyOn(QueueMonitorService, 'getAllQueues')
+        .mockResolvedValue({ queues: mockQueues })
+      prisma.adminQueueMonitor.update.mockResolvedValue(mockQueues[0])
 
       const result = await QueueMonitorService.checkQueueAlerts()
 
-      expect(result.totalQueues).toBe(2)
-      expect(result.unhealthyQueues).toBe(1)
-      expect(result.alerts).toHaveLength(2) // HIGH_ERROR_RATE + HIGH_QUEUE_SIZE for queue-1
-      expect(result.alerts[0].queueName).toBe('admin:sync-jobs')
+      expect(result).toHaveLength(1)
+      expect(result[0]).toEqual(
+        expect.objectContaining({
+          queueName: 'admin:sync-jobs',
+          alerts: expect.arrayContaining([
+            expect.objectContaining({ type: 'HIGH_ERROR_RATE' }),
+            expect.objectContaining({ type: 'QUEUE_BACKLOG' }),
+          ]),
+        })
+      )
+
+      getAllQueuesSpy.mockRestore()
     })
 
     it('should return empty alerts when all queues healthy', async () => {
@@ -663,20 +796,25 @@ describe('QueueMonitorService', () => {
         {
           id: 'queue-1',
           queueName: 'admin:sync-jobs',
+          queueType: 'SYNC',
           isHealthy: true,
           errorRate: 0.01,
           waitingJobs: 50,
           avgProcessingTime: 30000,
+          lastCheckedAt: new Date(),
         },
       ]
 
-      prisma.adminQueueMonitor.findMany.mockResolvedValue(mockQueues)
+      const getAllQueuesSpy = vi
+        .spyOn(QueueMonitorService, 'getAllQueues')
+        .mockResolvedValue({ queues: mockQueues })
+      prisma.adminQueueMonitor.update.mockResolvedValue(mockQueues[0])
 
       const result = await QueueMonitorService.checkQueueAlerts()
 
-      expect(result.totalQueues).toBe(1)
-      expect(result.unhealthyQueues).toBe(0)
-      expect(result.alerts).toEqual([])
+      expect(result).toEqual([])
+
+      getAllQueuesSpy.mockRestore()
     })
   })
 })

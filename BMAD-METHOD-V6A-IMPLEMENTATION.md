@@ -494,7 +494,7 @@ BMAD-METHOD v6a provides the structured, agentic framework needed to transform t
 
 | Story ID | Status | Estimated | Actual | Completion |
 |----------|--------|-----------|--------|------------|
-| BMAD-MOCK-003-AMAZON | ⏳ IN PROGRESS | 3 days | TBD | - |
+| BMAD-MOCK-003-AMAZON | ✅ COMPLETE | 3 days | 2 hours | 2025-10-19 |
 | BMAD-MOCK-004-UNLEASHED | ⏳ PENDING | 3 days | TBD | - |
 
 **Note**: Original BMAD-MOCK-003 (Math.random removal) and BMAD-MOCK-004 (P&L hardcoded data) were completed in Sprint 1. These Sprint 2 stories are Amazon SP-API and Unleashed ERP integrations.
@@ -512,18 +512,19 @@ BMAD-METHOD v6a provides the structured, agentic framework needed to transform t
 ### Epic Summary
 
 - **Total Stories**: 7 (Original Plan)
-- **Completed**: 5 (71.4%) ✅ Sprint 1 Expanded
+- **Completed**: 6 (85.7%) ✅ Sprint 1 + Sprint 2 (Story 1)
   - BMAD-MOCK-001 (Xero): 3 days
   - BMAD-MOCK-002 (Shopify): 6 hours
   - BMAD-MOCK-003 (Math.random): Pre-existing (0 days)
   - BMAD-MOCK-004 (P&L hardcoded): Pre-existing (0 days)
+  - BMAD-MOCK-003-AMAZON (Amazon SP-API): 2 hours
   - BMAD-MOCK-007 (Working capital): Pre-existing (0 days)
-- **In Progress**: 1 (Amazon SP-API)
-- **Remaining**: 1 (BMAD-MOCK-004-UNLEASHED or other)
+- **In Progress**: 0
+- **Remaining**: 1 (BMAD-MOCK-004-UNLEASHED)
 - **Total Estimated**: 17 days (~3.5 weeks)
-- **Actual Spent**: 3.25 days
-- **Projected Remaining**: ~3-4 days (based on 169% velocity)
-- **Projected Total**: ~6-7 days (vs 17 days estimated = 65% faster)
+- **Actual Spent**: 3.33 days (3.25 + 0.08)
+- **Projected Remaining**: ~2-3 hours (Unleashed following Amazon pattern)
+- **Projected Total**: ~3.5 days (vs 17 days estimated = 79% faster)
 
 ### Key Learnings from Sprint 1 (All Stories)
 

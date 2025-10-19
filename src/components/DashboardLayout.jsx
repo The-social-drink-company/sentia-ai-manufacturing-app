@@ -1,132 +1,78 @@
-import { useMemo, useState } from 'react'
-import { Outlet, useLocation, useNavigate } from 'react-router-dom'
-import UserButtonEnvironmentAware from '@/components/auth/UserButtonEnvironmentAware'
-import {
-  LayoutDashboardIcon,
-  LineChartIcon,
-  Package2Icon,
-  FactoryIcon,
-  FlaskConicalIcon,
-  BrainIcon,
-  DollarSignIcon,
-  LayersIcon,
-  DatabaseIcon,
-  ShieldCheckIcon,
-  FileBarChartIcon,
-} from 'lucide-react'
+import { useState } from 'react'
+import { Outlet } from 'react-router-dom'
+import DashboardSidebar from '@/components/layout/DashboardSidebar'
+import DashboardHeader from '@/components/layout/DashboardHeader'
 import EnterpriseAIChatbot from '@/components/EnterpriseAIChatbot'
 import CommandPalette from '@/components/dashboard/CommandPalette'
 
-const NAV_SECTIONS = [
-  {
-    title: 'Overview',
-    items: [{ to: '/app/dashboard', label: 'Executive Dashboard', icon: LayoutDashboardIcon }],
-  },
-  {
-    title: 'Planning & Analytics',
-    items: [
-      { to: '/app/forecasting', label: 'Demand Forecasting', icon: LineChartIcon },
-      { to: '/app/inventory', label: 'Inventory Management', icon: Package2Icon },
-      { to: '/app/analytics', label: 'AI Analytics', icon: BrainIcon },
-    ],
-  },
-  {
-    title: 'Financial',
-    items: [
-      { to: '/app/working-capital', label: 'Working Capital', icon: DollarSignIcon },
-      { to: '/app/what-if', label: 'What-If Analysis', icon: LayersIcon },
-      { to: '/app/reports', label: 'Financial Reports', icon: FileBarChartIcon },
-    ],
-  },
-  {
-    title: 'Operations',
-    items: [
-      { to: '/app/data-import', label: 'Data Import', icon: DatabaseIcon },
-      { to: '/app/admin', label: 'Admin Panel', icon: ShieldCheckIcon },
-    ],
-  },
-]
-
+/**
+ * DashboardLayout Component
+ * Main layout wrapper for authenticated dashboard pages
+ *
+ * Features:
+ * - Dark-themed sidebar navigation (DashboardSidebar)
+ * - Professional header with breadcrumbs, status, notifications (DashboardHeader)
+ * - Responsive mobile menu with overlay
+ * - Command palette integration (⌘K)
+ * - AI chatbot integration
+ * - Flexible content area with Outlet for routing
+ *
+ * Layout Structure:
+ * - Desktop (lg+): Sidebar always visible, content area with left margin
+ * - Mobile (<lg): Sidebar hidden, hamburger menu, overlay when open
+ */
 const DashboardLayout = ({ children }) => {
-  const location = useLocation()
-  const navigate = useNavigate()
+  // Mobile menu state
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+
+  // Command palette state
   const [commandOpen, setCommandOpen] = useState(false)
 
-  const activePath = useMemo(() => location.pathname, [location.pathname])
+  /**
+   * Close mobile menu
+   */
+  const closeMobileMenu = () => {
+    setMobileMenuOpen(false)
+  }
+
+  /**
+   * Toggle mobile menu
+   */
+  const toggleMobileMenu = () => {
+    setMobileMenuOpen(prev => !prev)
+  }
 
   return (
-    <div className="flex min-h-screen bg-white text-gray-900">
-      <aside className="relative w-72 flex-col border-r border-gray-200 bg-white px-4 py-6 flex shadow-sm">
-        <div className="mb-8 flex items-center gap-3 pl-2">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-sky-500 to-cyan-400 text-2xl font-bold text-white">
-            S
-          </div>
-          <div>
-            <p className="text-sm uppercase tracking-widest text-gray-500">Sentia</p>
-            <p className="text-lg font-semibold text-gray-900">Manufacturing</p>
-          </div>
-        </div>
-        <nav className="space-y-8 overflow-y-auto pr-2">
-          {NAV_SECTIONS.map(section => (
-            <div key={section.title}>
-              <p className="mb-3 pl-2 text-xs uppercase tracking-[0.3em] text-gray-500">
-                {section.title}
-              </p>
-              <div className="space-y-1">
-                {section.items.map(item => {
-                  const Icon = item.icon
-                  const active = activePath.startsWith(item.to)
-                  return (
-                    <button
-                      key={item.to}
-                      type="button"
-                      onClick={() => navigate(item.to)}
-                      className={`group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${
-                        active
-                          ? 'bg-blue-50 text-blue-700 ring-1 ring-blue-200 shadow-sm'
-                          : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                      }`}
-                    >
-                      <span
-                        className={`flex h-9 w-9 items-center justify-center rounded-lg border ${active ? 'border-blue-200 bg-blue-100 text-blue-600' : 'border-gray-200 bg-gray-50 text-gray-500'}`}
-                      >
-                        <Icon className="h-4 w-4" />
-                      </span>
-                      <span>{item.label}</span>
-                    </button>
-                  )
-                })}
-              </div>
-            </div>
-          ))}
-        </nav>
-      </aside>
+    <div className="flex min-h-screen bg-slate-50">
+      {/* Dark Sidebar Navigation */}
+      <DashboardSidebar isOpen={mobileMenuOpen} onClose={closeMobileMenu} />
 
-      <div className="flex flex-1 flex-col">
-        <header className="sticky top-0 z-20 flex items-center justify-between border-b border-gray-200 bg-white/95 px-6 py-4 backdrop-blur">
-          <div>
-            <p className="text-xs uppercase tracking-[0.3em] text-gray-500">Dashboard</p>
-            <p className="text-lg font-semibold text-gray-900">Manufacturing Intelligence</p>
-          </div>
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={() => setCommandOpen(true)}
-              className="hidden items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-600 hover:bg-gray-100 sm:flex"
-            >
-              <span>Search</span>
-              <span className="rounded border border-gray-200 bg-gray-100 px-1">⌘K</span>
-            </button>
-            <UserButtonEnvironmentAware />
-          </div>
-        </header>
+      {/* Main Content Area */}
+      <div className="flex min-h-screen flex-1 flex-col lg:ml-56">
+        {/* Dashboard Header with Breadcrumbs, Status, Notifications, User Profile */}
+        <DashboardHeader mobileMenuOpen={mobileMenuOpen} onMenuClick={toggleMobileMenu} />
 
-        <main className="flex-1 bg-gray-50 px-6 py-8 min-w-0">
-          <div className="mx-auto max-w-6xl space-y-8">{children ?? <Outlet />}</div>
+        {/* Main Content */}
+        <main className="flex-1 bg-slate-50 px-4 py-6 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-7xl space-y-6">
+            {children ?? <Outlet />}
+          </div>
         </main>
+
+        {/* Footer (Optional) */}
+        <footer className="border-t border-slate-200 bg-white px-4 py-4 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-7xl">
+            <p className="text-center text-xs text-slate-500">
+              © {new Date().getFullYear()} Sentia Spirits. All rights reserved.
+            </p>
+          </div>
+        </footer>
       </div>
 
+      {/* Command Palette */}
       <CommandPalette open={commandOpen} onClose={() => setCommandOpen(false)} />
+
+      {/* AI Chatbot */}
       <EnterpriseAIChatbot />
     </div>
   )

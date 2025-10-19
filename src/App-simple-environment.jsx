@@ -18,7 +18,7 @@ const Analytics = lazy(() => import('@/pages/Analytics'))
 const Inventory = lazy(() => import('@/components/inventory/InventoryDashboard'))
 const DataImport = lazy(() => import('@/components/data/DataImportWidget'))
 const AdminPanel = lazy(() => import('@/pages/AdminPanelEnhanced'))
-const ImportWizard = lazy(() => import('@/pages/admin/ImportWizard'))
+// const ImportWizard = lazy(() => import('@/pages/admin/ImportWizard')) // TODO: Create ImportWizard component
 // const ExportBuilder = lazy(() => import('@/pages/admin/ExportBuilder')) // TODO: Create ExportBuilder component
 const WhatIf = lazy(() => import('@/components/analytics/WhatIfAnalysis'))
 const ScenarioPlanner = lazy(() => import('@/features/forecasting/ScenarioPlanner.jsx'))
@@ -318,6 +318,7 @@ const App = () => {
                 }
               />
 
+              {/* TODO: Implement ImportWizard component
               <Route
                 path="/app/admin/import"
                 element={
@@ -330,6 +331,7 @@ const App = () => {
                   </ErrorBoundary>
                 }
               />
+              */}
 
               {/* TODO: Implement ExportBuilder component
               <Route

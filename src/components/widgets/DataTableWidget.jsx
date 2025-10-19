@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { MagnifyingGlassIcon, ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/24/solid'
 import { cn } from '@/lib/utils'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { TableSkeleton } from '@/components/ui/skeletons'
 
 const DataTableWidget = ({
   title = 'Key Items',
@@ -73,26 +74,19 @@ const DataTableWidget = ({
     }
   }
 
-  const renderLoadingState = () => (
-    <Card className={cn('bg-white dark:bg-gray-800 shadow-sm', className)}>
-      <CardHeader>
-        <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
-          {title}
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-3">
-        {[...Array(6)].map((_, index) => (
-          <div
-            key={index}
-            className="h-10 w-full animate-pulse rounded-md bg-gray-200 dark:bg-gray-700"
-          />
-        ))}
-      </CardContent>
-    </Card>
-  )
-
   if (loading) {
-    return renderLoadingState()
+    return (
+      <Card className={cn('bg-white dark:bg-gray-800 shadow-sm', className)}>
+        <CardHeader>
+          <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
+            {title}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <TableSkeleton rows={Math.min(pageSize, 6)} columns={activeColumns.length || 4} />
+        </CardContent>
+      </Card>
+    )
   }
 
   return (

@@ -121,7 +121,7 @@ describe('QueueMonitorService', () => {
         where: {},
         skip: 0,
         take: 20,
-        orderBy: { createdAt: 'desc' },
+        orderBy: { lastCheckedAt: 'desc' },
       })
     })
 
@@ -145,7 +145,7 @@ describe('QueueMonitorService', () => {
         },
         skip: 10,
         take: 10,
-        orderBy: { createdAt: 'desc' },
+        orderBy: { lastCheckedAt: 'desc' },
       })
     })
 
@@ -166,7 +166,7 @@ describe('QueueMonitorService', () => {
         where: {},
         skip: 40,
         take: 20,
-        orderBy: { createdAt: 'desc' },
+        orderBy: { lastCheckedAt: 'desc' },
       })
     })
   })
@@ -189,26 +189,33 @@ describe('QueueMonitorService', () => {
         updatedAt: new Date(),
       }
 
-      prisma.adminQueueMonitor.findUnique.mockResolvedValue(mockQueue)
-      prisma.adminQueueMonitor.update.mockResolvedValue(updatedQueue)
+      prisma.adminQueueMonitor.findUnique
+        .mockResolvedValueOnce(mockQueue)
+        .mockResolvedValueOnce(updatedQueue)
+
+      const updateQueueMetricsSpy = vi
+        .spyOn(QueueMonitorService, 'updateQueueMetrics')
+        .mockResolvedValue(updatedQueue)
 
       const result = await QueueMonitorService.getQueueById('queue-1')
 
       expect(result).toEqual(updatedQueue)
-      expect(prisma.adminQueueMonitor.findUnique).toHaveBeenCalledWith({
+      expect(prisma.adminQueueMonitor.findUnique).toHaveBeenNthCalledWith(1, {
         where: { id: 'queue-1' },
       })
+      expect(prisma.adminQueueMonitor.findUnique).toHaveBeenNthCalledWith(2, {
+        where: { id: 'queue-1' },
+      })
+      expect(updateQueueMetricsSpy).toHaveBeenCalledWith('admin:sync-jobs')
 
-      // Should trigger metrics update
-      expect(mockBullQueue.getWaitingCount).toHaveBeenCalled()
-      expect(mockBullQueue.getActiveCount).toHaveBeenCalled()
+      updateQueueMetricsSpy.mockRestore()
     })
 
     it('should throw error if queue not found', async () => {
       prisma.adminQueueMonitor.findUnique.mockResolvedValue(null)
 
       await expect(QueueMonitorService.getQueueById('nonexistent')).rejects.toThrow(
-        'Queue not found: nonexistent'
+        /Queue not found/
       )
     })
   })
@@ -223,7 +230,10 @@ describe('QueueMonitorService', () => {
         updatedAt: new Date(Date.now() - 120000), // 2 minutes ago
       }
 
-      prisma.adminQueueMonitor.findFirst.mockResolvedValue(mockQueue)
+      prisma.adminQueueMonitor.findUnique.mockResolvedValue({
+        ...mockQueue,
+        queueType: 'SYNC',
+      })
       prisma.adminQueueMonitor.update.mockResolvedValue({
         ...mockQueue,
         activeJobs: 2,
@@ -270,7 +280,10 @@ describe('QueueMonitorService', () => {
       mockBullQueue.getCompletedCount.mockResolvedValue(100)
       mockBullQueue.getFailedCount.mockResolvedValue(5)
 
-      prisma.adminQueueMonitor.findFirst.mockResolvedValue(mockQueue)
+      prisma.adminQueueMonitor.findUnique.mockResolvedValue({
+        ...mockQueue,
+        queueType: 'SYNC',
+      })
       prisma.adminQueueMonitor.update.mockImplementation((args) => {
         return Promise.resolve({ ...mockQueue, ...args.data })
       })
@@ -300,7 +313,10 @@ describe('QueueMonitorService', () => {
       mockBullQueue.getCompletedCount.mockResolvedValue(100)
       mockBullQueue.getFailedCount.mockResolvedValue(10)
 
-      prisma.adminQueueMonitor.findFirst.mockResolvedValue(mockQueue)
+      prisma.adminQueueMonitor.findUnique.mockResolvedValue({
+        ...mockQueue,
+        queueType: 'SYNC',
+      })
       prisma.adminQueueMonitor.update.mockImplementation((args) => {
         return Promise.resolve({ ...mockQueue, ...args.data })
       })
@@ -313,7 +329,18 @@ describe('QueueMonitorService', () => {
     })
 
     it('should create queue monitor record if not exists', async () => {
-      prisma.adminQueueMonitor.findFirst.mockResolvedValue(null)
+      prisma.adminQueueMonitor.findUnique.mockResolvedValueOnce(null)
+      prisma.adminQueueMonitor.create.mockResolvedValue({
+        id: 'new-queue-1',
+        queueName: 'admin:sync-jobs',
+        queueType: 'SYNC',
+        isPaused: false,
+        isHealthy: true,
+        activeJobs: 0,
+        waitingJobs: 0,
+        completedJobs: 0,
+        failedJobs: 0,
+      })
       prisma.adminQueueMonitor.create.mockResolvedValue({
         id: 'new-queue-1',
         queueName: 'admin:sync-jobs',

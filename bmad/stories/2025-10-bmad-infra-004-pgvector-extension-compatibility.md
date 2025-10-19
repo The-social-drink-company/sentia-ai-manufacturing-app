@@ -63,7 +63,7 @@ Database error: extension "vector" has no installation script nor update path fo
 
 ## QA Checklist
 
-- [ ] `pnpm exec prisma format` succeeds.
+- [x] `pnpm exec prisma format` succeeds.
 - [ ] `pnpm exec prisma studio --schema prisma/schema.prisma` (optional) launches locally.
 - [ ] `pnpm exec prisma migrate deploy --preview-feature --schema prisma/schema.prisma` dry run (staging or development DB) completes.
 - [ ] Render deploy run reviewed to confirm `prisma migrate deploy` completes without error.

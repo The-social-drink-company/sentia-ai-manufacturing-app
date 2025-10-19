@@ -1,0 +1,96 @@
+# BMAD-METHOD Core Configuration
+# Merged from v6-alpha core-config.yaml and custom config.yaml
+# Updated: 2025-10-19
+# Project: Sentia Manufacturing AI Dashboard
+
+# <!-- Powered by BMAD™ Core -->
+
+# Markdown processing
+markdownExploder: true
+
+# User settings (from original config.yaml)
+user_name: BMad
+communication_language: English
+
+# QA Configuration
+qa:
+  qaLocation: bmad/qa
+
+# PRD Configuration
+prd:
+  prdFile: bmad/planning/prd.md
+  prdVersion: v4
+  prdSharded: true
+  prdShardedLocation: bmad/planning/prd
+  epicFilePattern: epic-{n}*.md
+
+# Architecture Configuration
+architecture:
+  architectureFile: bmad/solutioning/architecture.md
+  architectureVersion: v4
+  architectureSharded: true
+  architectureShardedLocation: bmad/solutioning/architecture
+
+# Custom technical documents
+customTechnicalDocuments:
+  - context/development-standards.md
+  - context/security-guidelines.md
+  - context/performance-testing.md
+  - CLAUDE.md
+
+# Developer agent configuration
+devLoadAlwaysFiles:
+  - bmad/solutioning/architecture/coding-standards.md
+  - bmad/solutioning/architecture/tech-stack.md
+  - bmad/solutioning/architecture/source-tree.md
+  - context/development-standards.md
+
+# Developer debug logging
+devDebugLog: .ai/debug-log.md
+
+# Story location
+devStoryLocation: bmad/stories
+
+# Epic location
+epicLocation: bmad/epics
+
+# Retrospective location
+retrospectiveLocation: bmad/retrospectives
+
+# Audit location
+auditLocation: bmad/audit
+
+# Status tracking
+statusLocation: bmad/status
+
+# Progress tracking
+progressLocation: bmad/progress
+
+# Reports location
+reportsLocation: bmad/reports
+
+# Planning location
+planningLocation: bmad/planning
+
+# Solutioning location
+solutioningLocation: bmad/solutioning
+
+# Slash command prefix
+slashPrefix: BMad
+
+# Output folder (from original config.yaml)
+output_folder: "{project-root}/docs"
+
+# Project-specific settings
+project:
+  name: Sentia Manufacturing AI Dashboard
+  type: brownfield-fullstack
+  scale: level-4
+  domain: manufacturing-intelligence
+
+# Integration settings
+integrations:
+  - xero
+  - shopify
+  - amazon-sp-api
+  - unleashed-erp

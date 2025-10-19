@@ -129,6 +129,7 @@ grep -A 3 "name: sentia-mcp-prod" render.yaml
 - Render deploy logs show `Database schema is up to date!` after the migration step.
 - Optional: run `pnpm exec prisma migrate deploy --preview-feature --schema prisma/schema.prisma` against staging/dev database.
 - Confirm AI features relying on `vector(1536)` columns remain accessible.
+- Reference story: [BMAD-INFRA-004](../bmad/stories/2025-10-bmad-infra-004-pgvector-extension-compatibility.md)
 ---
 
 ### Issue #4: Environment Variables Missing

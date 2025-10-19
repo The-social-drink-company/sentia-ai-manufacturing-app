@@ -1,6 +1,7 @@
 import { Suspense, lazy, useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { ChartSkeleton, LoadingSkeleton } from '@/components/ui/skeletons'
 import stockLevelsApi from '@/services/api/stockLevelsApi'
 
 const StockLevelsChart = lazy(() => import('@/components/dashboard/StockLevelsChart'))
@@ -35,8 +36,6 @@ const StockLevelsWidget = () => {
     fetchStockData()
   }, [])
 
-  // TODO: Use getStatusBadgeColor for stock status badges when implementing table view
-  // eslint-disable-next-line no-unused-vars
   const getStatusBadgeColor = status => {
     switch (status) {
       case 'in-stock':
@@ -71,17 +70,11 @@ const StockLevelsWidget = () => {
 
   if (loading) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Current Stock Levels</CardTitle>
-          <CardDescription>Loading GABA product inventory...</CardDescription>
-        </CardHeader>
-        <CardContent className="h-64">
-          <div className="flex items-center justify-center h-full">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-          </div>
-        </CardContent>
-      </Card>
+      <ChartSkeleton
+        height={256}
+        title="Current Stock Levels"
+        subtitle="Loading GABA product inventory..."
+      />
     )
   }
 
@@ -116,14 +109,13 @@ const StockLevelsWidget = () => {
         <Suspense
           fallback={
             <div className="flex items-center justify-center h-full">
-              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+              <LoadingSkeleton className="h-6 w-6 rounded-full" />
             </div>
           }
         >
           <StockLevelsChart data={stockData} />
         </Suspense>
 
-        {/* Stock Status Summary */}
         <div className="mt-4 flex justify-between items-center text-sm text-gray-600 dark:text-gray-400">
           <div className="flex space-x-4">
             {stockData.map(item => (

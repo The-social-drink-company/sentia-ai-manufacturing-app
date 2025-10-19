@@ -1,4 +1,5 @@
-﻿import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { ChartSkeleton } from '@/components/ui/skeletons'
 import {
   ResponsiveContainer,
   LineChart,
@@ -19,16 +20,7 @@ const ChartWidget = ({
   className = '',
 }) => {
   if (loading) {
-    return (
-      <Card className={className}>
-        <CardHeader>
-          <CardTitle>{title}</CardTitle>
-        </CardHeader>
-        <CardContent className="h-48">
-          <div className="animate-pulse h-full w-full bg-gray-200 dark:bg-gray-700 rounded"></div>
-        </CardContent>
-      </Card>
-    )
+    return <ChartSkeleton height={192} title={title} />
   }
 
   if (!data || data.length === 0) {

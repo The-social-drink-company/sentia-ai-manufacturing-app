@@ -1,5 +1,6 @@
-﻿import { useQuery } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { TableSkeleton } from '@/components/ui/skeletons'
 
 const fetchRecentActivity = async () => {
   const response = await fetch('/api/system/activity', {
@@ -33,15 +34,7 @@ const ActivityWidget = ({ limit = 5 }) => {
           <CardTitle>Recent activity</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3 text-sm">
-          {[...Array(3)].map((_, index) => (
-            <div
-              key={index}
-              className="animate-pulse rounded-lg border border-border bg-muted/30 p-3"
-            >
-              <div className="h-3 w-12 bg-gray-300 rounded mb-2"></div>
-              <div className="h-4 w-full bg-gray-300 rounded"></div>
-            </div>
-          ))}
+          <TableSkeleton rows={3} columns={2} />
         </CardContent>
       </Card>
     )

@@ -1,6 +1,7 @@
-﻿import { useQuery } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { TableSkeleton } from '@/components/ui/skeletons'
 
 const fetchSystemAlerts = async () => {
   const response = await fetch('/api/system/alerts', {
@@ -49,19 +50,7 @@ const AlertWidget = ({ limit = 5 }) => {
           <CardTitle>Alerts</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3 text-sm">
-          {[...Array(3)].map((_, index) => (
-            <div
-              key={index}
-              className="animate-pulse rounded-lg border border-border bg-muted/30 p-3"
-            >
-              <div className="flex items-center justify-between mb-2">
-                <div className="h-4 w-3/4 bg-gray-300 rounded"></div>
-                <div className="h-5 w-16 bg-gray-300 rounded"></div>
-              </div>
-              <div className="h-3 w-1/2 bg-gray-300 rounded mb-1"></div>
-              <div className="h-3 w-1/3 bg-gray-300 rounded"></div>
-            </div>
-          ))}
+          <TableSkeleton rows={3} columns={3} />
         </CardContent>
       </Card>
     )

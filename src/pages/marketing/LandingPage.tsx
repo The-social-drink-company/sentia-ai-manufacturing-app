@@ -78,9 +78,9 @@ const Header = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            <a href="#features" className="text-gray-700 hover:text-blue-600 transition-colors">
+            <Link to="/features" className="text-gray-700 hover:text-blue-600 transition-colors">
               Features
-            </a>
+            </Link>
             <a href="#pricing" className="text-gray-700 hover:text-blue-600 transition-colors">
               Pricing
             </a>
@@ -119,9 +119,10 @@ const Header = () => {
         {/* Mobile Menu */}
         {mobileMenuOpen && (
           <div className="md:hidden py-4 space-y-4">
-            <a href="#features" className="block text-gray-700">Features</a>
+            <Link to="/features" className="block text-gray-700">Features</Link>
             <a href="#pricing" className="block text-gray-700">Pricing</a>
             <a href="#testimonials" className="block text-gray-700">Customers</a>
+            <Link to="/blog" className="block text-gray-700">Blog</Link>
             <Link to="/sign-in" className="block text-gray-700">Sign In</Link>
             <Link
               to="/sign-up"

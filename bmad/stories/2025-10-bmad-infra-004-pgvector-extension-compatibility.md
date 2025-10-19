@@ -34,9 +34,9 @@ Database error: extension "vector" has no installation script nor update path fo
 
 ## Acceptance Criteria
 
-- [ ] Prisma datasource configuration no longer pins pgvector to an unavailable version.
+- [x] Prisma datasource configuration no longer pins pgvector to an unavailable version.
 - [ ] Database migrations execute successfully on Render (no pgvector version mismatch).
-- [ ] Documentation updated with Render-compatible pgvector guidance and verification steps.
+- [x] Documentation updated with Render-compatible pgvector guidance and verification steps.
 - [ ] BMAD story updated with investigation notes, implemented changes, and QA verification checklist.
 - [ ] Follow-up task recorded if production validation requires coordination with another developer.
 
@@ -92,4 +92,4 @@ _Note: Mark staging/production verification as pending if database access is res
 ## Updates
 
 - **2025-10-19 16:30 UTC** – Story created, logs captured, remediation plan drafted.
-- _Next_: Implement schema adjustment and documentation update.
+- _Next_: Implement schema adjustment and documentation update.- **2025-10-19 17:05 UTC** – Removed pgvector version pin, refreshed Render deployment guide, added migration README tip, and ran  `pnpm exec prisma format`. Render prod validation pending once deployment reruns. 

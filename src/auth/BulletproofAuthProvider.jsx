@@ -104,7 +104,6 @@ function FallbackAuthProvider({ children }) {
 function BulletproofAuthProvider({ children }) {
   const [authMode, setAuthMode] = useState('initializing')
   const [error, setError] = useState(null)
-  const [retryCount, setRetryCount] = useState(0)
 
   // Get and validate Clerk key
   const clerkKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
@@ -154,14 +153,13 @@ function BulletproofAuthProvider({ children }) {
     }
 
     return () => clearTimeout(timeout)
-  }, [isValidKey, retryCount])
+  }, [clerkKey, isValidKey])
 
   useEffect(() => {
     initialize()
   }, [initialize])
 
   const handleRetry = () => {
-    setRetryCount(prev => prev + 1)
     initialize()
   }
 

@@ -7,15 +7,16 @@
 **Repository**: https://github.com/bmad-code-org/BMAD-METHOD
 **Status**: Phase 4 (Implementation) - QA/Automation in progress
 
-### Quality Metrics (2025-10-19)
+### Quality Metrics (2025-03-14)
 
-- TestArch automation: full + ci_cd attempts FAILED (dependencies missing)
-- Unit tests passing: 12/13 (1 skipped)
-- Coverage tooling: missing `@vitest/coverage-v8`
-- E2E tooling: missing `@playwright/test`
-- Mock data violations: ~80 production files using `Math.random()`
-- Architecture compliance: API fallbacks degrade with synthetic data
-- Next Actions: install coverage/E2E deps, replace mock data sources, add type/docs coverage
+- TestArch automation: full run FAILED (vitest 41 fails, Playwright 128 fails, coverage aborted)
+- Unit tests passing: 47/89 (41 failing, 1 skipped)
+- Coverage tooling: @vitest/coverage-v8 installed but no report produced while suite failing
+- E2E tooling: @playwright/test executing; 32 passed / 128 failed across browsers and viewports
+- Mock data violations: 180+ production Math.random usages still present
+- Prisma usage: 40+ services instantiate PrismaClient directly instead of singleton
+- Next Actions: repair QueueMonitorService tests, consolidate Prisma access, scrub mock data, stabilize auth/navigation E2E flows
+
 
 ---
 

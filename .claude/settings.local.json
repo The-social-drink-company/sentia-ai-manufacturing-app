@@ -85,7 +85,8 @@
       "Bash(gh pr edit:*)",
       "Bash(git symbolic-ref:*)",
       "Bash(gh pr checkout:*)",
-      "Bash(gh pr close:*)"
+      "Bash(gh pr close:*)",
+      "Bash(git ls-tree:*)"
     ],
     "deny": [],
     "ask": []

@@ -26,17 +26,26 @@ resolve_known_issues() {
   # Known problematic migration: 20251017171256_init (P3018 - tables already exist)
   local INIT_MIGRATION="20251017171256_init"
 
-  if is_migration_applied "$INIT_MIGRATION"; then
-    echo -e "${GREEN}✓${NC} Migration $INIT_MIGRATION already applied"
-  else
-    echo -e "${YELLOW}⚠${NC}  Migration $INIT_MIGRATION not in history, attempting to resolve..."
+  echo "🔍 Checking migration status for $INIT_MIGRATION..."
 
-    # Try to mark as applied if tables already exist
+  # Get migration status
+  local migration_status=$(pnpm exec prisma migrate status 2>&1 || true)
+
+  if echo "$migration_status" | grep -q "Database schema is up to date"; then
+    echo -e "${GREEN}✓${NC} Database schema is up to date"
+  elif echo "$migration_status" | grep -q "$INIT_MIGRATION.*applied"; then
+    echo -e "${GREEN}✓${NC} Migration $INIT_MIGRATION already applied"
+  elif echo "$migration_status" | grep -q "$INIT_MIGRATION.*pending\|$INIT_MIGRATION.*failed"; then
+    echo -e "${YELLOW}⚠${NC}  Migration $INIT_MIGRATION is pending or failed, marking as applied..."
+
+    # Force mark as applied since tables already exist (this is safe for P3018 errors)
     if pnpm exec prisma migrate resolve --applied "$INIT_MIGRATION" 2>&1; then
       echo -e "${GREEN}✓${NC} Successfully marked $INIT_MIGRATION as applied"
     else
-      echo -e "${YELLOW}⚠${NC}  Could not mark $INIT_MIGRATION as applied (may not be needed)"
+      echo -e "${YELLOW}⚠${NC}  Could not mark as applied, will attempt migration deploy anyway"
     fi
+  else
+    echo -e "${YELLOW}⚠${NC}  Migration $INIT_MIGRATION status unclear, will attempt migration deploy"
   fi
 }
 

@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react'
 
-const isDevelopmentMode = import.meta.env.VITE_DEVELOPMENT_MODE === 'true'
+// TEMPORARY FIX (Issue #12): Hardcode development mode until Sentia Clerk app is created
+// Current Clerk key is for capliquify.com domain and cannot work with sentia-frontend-prod.onrender.com
+// TODO: Remove this hardcode when Sentia-specific Clerk application is configured
+const isDevelopmentMode = true // import.meta.env.VITE_DEVELOPMENT_MODE === 'true'
 
 /**
  * Master Authentication Hook - Environment Aware

@@ -2,7 +2,7 @@
 
 **Epic ID**: BMAD-INFRA-003
 **Created**: 2025-10-19
-**Status**: Phase 1 - Analysis
+**Status**: Phase 1 - Analysis COMPLETE
 **Framework**: BMAD-METHOD v6a
 **Priority**: CRITICAL (Blocking all deployments)
 
@@ -19,7 +19,7 @@
 - ❌ All future development blocked from deployment
 - ❌ Stakeholders cannot see or approve completed work
 
-**Goal**: Establish a working deployment pipeline that is not blocked by service suspension.
+**Goal**: Restore working deployment pipeline on Render platform.
 
 ---
 
@@ -76,6 +76,9 @@ ROOT PROBLEM: Cannot deploy or verify completed features
 - ✅ Existing configuration preserved
 - ✅ render.yaml already set up
 - ✅ Auto-deploy already configured
+- ✅ PostgreSQL database preserved
+- ✅ Environment variables already configured
+- ✅ No migration needed
 
 **Cons**:
 - ❌ Unknown timeline (requires account owner)
@@ -85,30 +88,32 @@ ROOT PROBLEM: Cannot deploy or verify completed features
 - ❌ No alternative if owner unavailable
 
 **Estimated Timeline**: Unknown (1 hour - 2 weeks)
-**Risk Level**: HIGH (no control)
-**Recommendation**: ❌ NOT RECOMMENDED as sole strategy
+**Risk Level**: HIGH (no control over timeline)
+**Recommendation**: ✅ RECOMMENDED if account owner can be contacted
 
 ---
 
-#### **Option 2: Deploy to Alternative Platform (Temporary)** 🔄
-**Platforms**: Vercel, Netlify, Railway, Fly.io, Heroku
+#### **Option 2: Create New Render Service** 🆕
+**Setup**: New Render account or service under different account
 
 **Pros**:
-- ✅ Immediate deployment possible (1-2 hours)
-- ✅ Verify completed work immediately
-- ✅ Unblocks development workflow
-- ✅ Provides backup deployment option
-- ✅ Can switch back to Render when reactivated
+- ✅ Familiar platform (Render)
+- ✅ Existing render.yaml works
+- ✅ Quick setup (2-3 hours)
+- ✅ Production-ready
+- ✅ Same deployment workflow
+- ✅ Can reuse PostgreSQL connection or create new database
 
 **Cons**:
-- ⚠️ Requires configuration changes
-- ⚠️ May need environment variable reconfiguration
-- ⚠️ Database connection changes needed
-- ⚠️ Temporary solution (may need to migrate back)
+- ⚠️ Requires different Render account (or access granted)
+- ⚠️ May hit same suspension issue
+- ⚠️ Database migration needed (if creating new DB)
+- ⚠️ Environment variable reconfiguration
+- ⚠️ New deployment URLs (need to update docs)
 
-**Estimated Timeline**: 2-4 hours
-**Risk Level**: MEDIUM (configuration complexity)
-**Recommendation**: ✅ RECOMMENDED (while waiting for Option 1)
+**Estimated Timeline**: 2-3 hours
+**Risk Level**: MEDIUM (may repeat suspension)
+**Recommendation**: ✅ RECOMMENDED (best alternative if owner unavailable)
 
 ---
 
@@ -121,72 +126,85 @@ ROOT PROBLEM: Cannot deploy or verify completed features
 - ✅ Fast feedback loop
 - ✅ Works offline
 - ✅ Good for development workflow
+- ✅ No deployment costs
 
 **Cons**:
 - ❌ Not accessible to stakeholders
 - ❌ Cannot demo to clients
 - ❌ Not a production deployment
 - ❌ Setup complexity (Docker, PostgreSQL, Redis)
+- ❌ Doesn't solve deployment blocker
 
 **Estimated Timeline**: 4-6 hours
 **Risk Level**: LOW (development only)
-**Recommendation**: ✅ RECOMMENDED (long-term improvement)
+**Recommendation**: ✅ RECOMMENDED (long-term improvement, not immediate solution)
 
 ---
 
-#### **Option 4: Create New Render Service** 🆕
-**Setup**: New Render account or service under different account
+#### **Option 4: Alternative Platform (Railway, Fly.io)** 🔄
+**Platforms**: Railway, Fly.io, Heroku (NOT Vercel - project doesn't use it)
 
 **Pros**:
-- ✅ Familiar platform (Render)
-- ✅ Existing render.yaml works
-- ✅ Quick setup if account available
-- ✅ Production-ready
+- ✅ Immediate deployment possible (2-4 hours)
+- ✅ Verify completed work immediately
+- ✅ Unblocks development workflow
+- ✅ Provides backup deployment option
 
 **Cons**:
-- ⚠️ Requires different Render account
-- ⚠️ May hit same suspension issue
-- ⚠️ Database migration needed
-- ⚠️ Environment variable reconfiguration
+- ❌ Requires new configuration (not compatible with render.yaml)
+- ❌ Different platform learning curve
+- ❌ Environment variable reconfiguration
+- ❌ Database migration required
+- ❌ May need to revert back to Render later
+- ❌ Not aligned with project's Render-only strategy
 
-**Estimated Timeline**: 2-3 hours
-**Risk Level**: MEDIUM (may repeat issue)
-**Recommendation**: ⚠️ CONDITIONAL (if new account available)
+**Estimated Timeline**: 4-6 hours
+**Risk Level**: HIGH (platform switching complexity)
+**Recommendation**: ❌ NOT RECOMMENDED (violates project deployment strategy)
 
 ---
 
 ### Decision Matrix
 
-| Option | Timeline | Risk | Cost | Control | Stakeholder Access | Score |
-|--------|----------|------|------|---------|-------------------|-------|
-| Wait for Render | Unknown | HIGH | $0 | LOW | NO | 2/10 |
-| **Alternative Platform** | **2-4h** | **MED** | **$0-20/mo** | **HIGH** | **YES** | **9/10** |
-| Local Dev | 4-6h | LOW | $0 | HIGH | NO | 6/10 |
-| New Render Service | 2-3h | MED | $0-10/mo | MED | YES | 7/10 |
+| Option | Timeline | Risk | Cost | Alignment | Control | Score |
+|--------|----------|------|------|-----------|---------|-------|
+| **Wait for Render** | **Unknown** | **HIGH** | **$0** | **✅ Perfect** | **LOW** | **6/10** |
+| **New Render Service** | **2-3h** | **MED** | **$0-10/mo** | **✅ Perfect** | **HIGH** | **9/10** |
+| Local Docker | 4-6h | LOW | $0 | N/A | HIGH | 6/10 |
+| Alternative Platform | 4-6h | HIGH | $0-20/mo | ❌ Violates strategy | MED | 3/10 |
 
 ---
 
 ## 🎯 RECOMMENDED STRATEGY
 
-### **Multi-Track Approach** (Parallel execution)
+### **Two-Track Approach** (Parallel execution)
 
-**TRACK 1: IMMEDIATE (Deploy to Alternative Platform)** ⚡
-- **Platform**: Vercel (best for React/Node.js full-stack)
-- **Timeline**: 2-4 hours
+**TRACK 1: PRIMARY (Contact Render Account Owner)** 📧
+- **Action**: Document suspension issue, request service reactivation
+- **Timeline**: Unknown (immediate to 2 weeks)
 - **Priority**: CRITICAL
-- **Outcome**: Unblocks verification of completed work
-
-**TRACK 2: PARALLEL (Contact Render Account Owner)** 📧
-- **Action**: Document issue, request service reactivation
-- **Timeline**: Unknown
-- **Priority**: HIGH
 - **Outcome**: Restore primary deployment pipeline
+- **Requirements**:
+  - Access to Render account owner
+  - Billing/payment resolution
+  - Service reactivation request
 
-**TRACK 3: LONG-TERM (Local Docker Environment)** 🔧
-- **Action**: Create Docker Compose setup
+**TRACK 2: BACKUP (Create New Render Service)** 🆕
+- **Action**: Set up new Render service under different account
+- **Timeline**: 2-3 hours (if account available)
+- **Priority**: HIGH (if Track 1 fails or delayed)
+- **Outcome**: Alternative Render deployment
+- **Requirements**:
+  - New Render account (free tier)
+  - Copy render.yaml configuration
+  - Migrate environment variables
+  - Optional: Create new PostgreSQL database or reuse existing
+
+**TRACK 3: LONG-TERM (Docker Local Environment)** 🔧
+- **Action**: Create Docker Compose setup for local development
 - **Timeline**: Next sprint
 - **Priority**: MEDIUM
-- **Outcome**: Independence from external platforms
+- **Outcome**: Independence from external deployment for testing
 
 ---
 
@@ -194,100 +212,128 @@ ROOT PROBLEM: Cannot deploy or verify completed features
 
 ### Epic Breakdown into Stories
 
-**Story 1**: BMAD-INFRA-003-S1 - Deploy to Vercel (Alternative Platform)
-- Set up Vercel project
+**Story 1**: BMAD-INFRA-003-S1 - Document Render Service Suspension
+- Create detailed suspension report
+- Document timeline and impact
+- Create resolution request template for account owner
+- Document environment variables needed
+- **Estimated**: 30 minutes
+- **Status**: Ready to start
+
+**Story 2**: BMAD-INFRA-003-S2 - Set Up New Render Service (Backup)
+- Create new Render account (if needed)
+- Copy render.yaml configuration
 - Configure environment variables
 - Deploy main branch
-- Verify Import/Export UI
-- Verify Dashboard Layout Components
-- **Estimated**: 2-4 hours
+- Verify Import/Export UI and Dashboard Layout
+- **Estimated**: 2-3 hours
+- **Status**: Contingency (if Track 1 fails)
 
-**Story 2**: BMAD-INFRA-003-S2 - Document Render Service Issue
-- Create service suspension report
-- Document timeline and impact
-- Create resolution request for account owner
-- **Estimated**: 30 minutes
-
-**Story 3**: BMAD-INFRA-003-S3 - Create Local Docker Development Environment
+**Story 3**: BMAD-INFRA-003-S3 - Create Docker Local Development Environment
 - Docker Compose configuration
 - PostgreSQL + Redis setup
 - Full-stack local deployment
 - **Estimated**: 4-6 hours (next sprint)
+- **Status**: Long-term improvement
 
 ---
 
 ## 🚀 IMMEDIATE NEXT STEPS (BMAD Phase 3: Solutioning)
 
-### **Selected Solution: Deploy to Vercel**
+### **Selected Solution: Two-Track Approach**
 
-**Why Vercel**:
-1. ✅ Excellent React + Node.js support
-2. ✅ Free tier suitable for testing
-3. ✅ Fast deployment (< 3 minutes)
-4. ✅ Automatic HTTPS
-5. ✅ Simple environment variable configuration
-6. ✅ GitHub integration (auto-deploy on push)
-7. ✅ PostgreSQL support via Vercel Postgres or external DB
+**Track 1 - Contact Render Owner**:
+1. Document current suspension issue
+2. List required environment variables
+3. Provide Render dashboard access instructions
+4. Create resolution timeline
+5. Monitor for reactivation
 
-**Requirements**:
-- Vercel account (free tier sufficient)
-- GitHub repository access (already have)
-- PostgreSQL database (can use existing Render DB or create new)
-- Environment variables (copy from Render dashboard)
-
-**Implementation Plan** (Phase 4):
-1. Create Vercel project from GitHub repository
-2. Configure build settings for full-stack app
-3. Add environment variables
-4. Deploy main branch (commit `9c41a83d`)
-5. Verify deployment health
-6. Test Import/Export UI routes
-7. Test Dashboard Layout Components
-8. Document Vercel deployment URL
+**Track 2 - Prepare New Render Service** (if needed):
+1. Verify render.yaml configuration is up to date
+2. Document all environment variables
+3. Export database schema (if migration needed)
+4. Create new Render account (if necessary)
+5. Deploy and test
 
 ---
 
 ## 📊 Success Criteria
 
-**Phase 4 Implementation**:
-- [ ] Vercel project created and configured
-- [ ] Main branch deployed successfully
+**Phase 4 Implementation** (Track 1 - Render Reactivation):
+- [ ] Render account owner contacted
+- [ ] Suspension reason identified
+- [ ] Billing/payment issue resolved
+- [ ] Service reactivated
+- [ ] Auto-deployment functional
 - [ ] Health endpoint returns 200 OK
-- [ ] Import/Export UI accessible at /app/admin/import and /app/admin/export
-- [ ] Dashboard loads with new layout components
-- [ ] No console errors
-- [ ] RBAC working correctly
+
+**Phase 4 Implementation** (Track 2 - New Render Service):
+- [ ] New Render account created
+- [ ] render.yaml configuration deployed
+- [ ] Environment variables configured
+- [ ] Main branch deployed successfully
+- [ ] Import/Export UI accessible
+- [ ] Dashboard Layout Components functional
 
 **Phase 5 Verification**:
 - [ ] Smoke testing completed
 - [ ] UAT scenarios documented
 - [ ] Stakeholder demo possible
-- [ ] Alternative deployment documented
+- [ ] Deployment pipeline restored
 
 **Long-term**:
-- [ ] Render service reactivated (when possible)
-- [ ] Dual deployment strategy maintained
+- [ ] Primary Render service reactivated (if suspended)
+- [ ] Backup deployment option documented
 - [ ] Docker local environment created
 
 ---
 
 ## 🎯 DECISION
 
-**APPROVED SOLUTION**: Deploy to Vercel immediately (Track 1)
+**APPROVED SOLUTION**: Two-Track Approach
+
+**Track 1 (Primary)**: Contact Render account owner to resolve suspension
+**Track 2 (Backup)**: Prepare new Render service as fallback
 
 **Rationale**:
-1. Unblocks 2+ weeks of completed work verification
-2. Fast implementation (2-4 hours vs unknown wait time)
-3. Enables stakeholder demos and UAT
-4. Provides backup deployment option
-5. Maintains development velocity
-6. Can switch back to Render when available
+1. Maintains alignment with project's Render-only deployment strategy
+2. Preserves existing configuration (render.yaml, environment variables)
+3. Provides backup option if primary resolution delayed
+4. Unblocks 2+ weeks of completed work verification
+5. Enables stakeholder demos and UAT
+6. Maintains development velocity
 
-**Next Phase**: Phase 3 - Solutioning (Design Vercel deployment architecture)
+**NOT using Vercel**: This project uses Render exclusively for all deployments (development, test, production). Alternative platforms like Vercel violate the established deployment architecture.
+
+---
+
+## 📚 Project Deployment Strategy (from CLAUDE.md)
+
+**Render-Only Deployment**:
+- Development branch → sentia-manufacturing-dashboard-621h.onrender.com
+- Test branch → sentia-manufacturing-dashboard-test.onrender.com
+- Production branch → sentia-manufacturing-dashboard-production.onrender.com
+
+**Infrastructure**:
+- PostgreSQL database with pgvector extension (Render)
+- Redis for caching and sessions (optional)
+- Auto-deployment via render.yaml configuration
+- Environment variables managed in Render dashboard
+
+**NOT using**:
+- ❌ Vercel (not part of project architecture)
+- ❌ Netlify (not part of project architecture)
+- ❌ Heroku (not part of project architecture)
+
+---
+
+**Next Phase**: Phase 3 - Solutioning (Create suspension report and contact account owner)
 
 ---
 
 **Created**: 2025-10-19 09:30 BST
-**Last Updated**: 2025-10-19 09:30 BST
-**Status**: Phase 1 COMPLETE → Moving to Phase 2 (Story Creation)
+**Last Updated**: 2025-10-19 10:15 BST
+**Status**: Phase 1 COMPLETE → Phase 2 (Planning) → Ready for Phase 3 (Solutioning)
 **Framework**: BMAD-METHOD v6a
+**Correction**: Removed incorrect Vercel references, restored Render-only strategy

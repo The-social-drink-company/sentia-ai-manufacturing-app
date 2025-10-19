@@ -428,8 +428,7 @@ export class ErrorHandler {
    * Circuit breaker pattern implementation
    */
   createCircuitBreaker(operation, options = {}) {
-    // eslint-disable-next-line no-unused-vars
-    const { failureThreshold = 5, resetTimeout = 60000, monitoringPeriod = 10000 } = options
+        const { failureThreshold = 5, resetTimeout = 60000 } = options
 
     let failures = 0
     let lastFailureTime = null

@@ -127,7 +127,6 @@ function SafetyStockCard({ sku, safetyStockData }) {
     serviceLevel,
     zScore,
     leadTime,
-    // eslint-disable-next-line no-unused-vars
     leadTimeVariability, // TODO: Display lead time variability in advanced metrics
     demandVariability,
   } = safetyStockData;
@@ -415,9 +414,7 @@ export default function InventoryOptimization() {
   const navigate = useNavigate();
 
   // Check if forecast data was passed from Forecasting Dashboard
-  // eslint-disable-next-line no-unused-vars
   const [forecastData, setForecastData] = useState(location.state?.forecastModel || null); // TODO: Use forecast data in optimization
-  // eslint-disable-next-line no-unused-vars
   const [selectedSKUs, setSelectedSKUs] = useState([]); // TODO: Add SKU selector UI
   const [optimizationConfig, setOptimizationConfig] = useState({
     serviceLevel: 95,
@@ -426,7 +423,6 @@ export default function InventoryOptimization() {
   });
 
   // Fetch optimization data
-  // eslint-disable-next-line no-unused-vars
   const { data, isLoading } = useQuery({ // TODO: Show loading state
     queryKey: ['inventory', 'optimization', selectedSKUs],
     queryFn: async () => {

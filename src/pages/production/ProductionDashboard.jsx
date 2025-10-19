@@ -41,7 +41,7 @@ function ProductionDashboard() {
   });
 
   // SSE for real-time production updates
-    const { connected } = useSSE('production', {
+  const { connected } = useSSE('production', {
     enabled: true,
     onMessage: (message) => {
       // Invalidate queries based on update type

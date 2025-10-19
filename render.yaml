@@ -84,7 +84,7 @@ services:
       pnpm exec prisma generate
     startCommand: |
       corepack enable &&
-      pnpm exec prisma migrate resolve --applied 20251017171256_init &&
+      pnpm exec prisma migrate resolve --applied 20251017171256_init || true &&
       pnpm run start:render
     healthCheckPath: /api/health
     envVars:

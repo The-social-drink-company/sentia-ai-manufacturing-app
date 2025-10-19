@@ -636,6 +636,150 @@ curl https://sentia-backend-prod.onrender.com/api/dashboard/shopify-orders
 **Actual Coding Time**: ~4.5 hours (Issues #1-8 resolved)
 **Remaining Work**: User must configure correct Clerk API key (Issue #9)
 
+### Session 5: Tailwind CSS Compilation Fix (20:23-20:30 UTC, ~7 minutes) ✅ COMPLETE
+- **20:23**: User reported: "Landing page IS working only showing TEXT and not a beautiful design"
+- **20:24**: Investigated deployed CSS file - found ONLY 1 LINE (should be 10,000+)
+- **20:25**: **ROOT CAUSE #1 IDENTIFIED**: Tailwind CSS v4.1.7 incompatible with v3 config (Issue #10)
+  - `package.json` had: `"tailwindcss": "^4.1.7"` (v4)
+  - `tailwind.config.js` used v3 format (incompatible with v4)
+  - Tailwind v4 requires CSS-based `@theme` configuration, not JavaScript config
+  - Result: CSS compilation failed, only 1 line generated
+- **20:26**: **FIX #10 Applied** (commit 4a82b8a2): Downgrade Tailwind to v3.4.18
+  - Changed: `"tailwindcss": "^4.1.7"` → `"tailwindcss": "^3.4.18"`
+  - Removed: `"@tailwindcss/vite": "^4.1.7"` (v4-only package)
+  - Updated postcss.config.js: `'@tailwindcss/postcss': {}` → `tailwindcss: {}`
+  - Pushed changes to trigger deployment
+- **20:27**: **ROOT CAUSE #2 IDENTIFIED**: pnpm-lock.yaml out of sync (Issue #11)
+  - Render deployment failed: `ERR_PNPM_OUTDATED_LOCKFILE`
+  - Lockfile still had v4 references despite package.json changes
+  - Frozen-lockfile mode rejected mismatched dependencies
+- **20:28**: **FIX #11 Applied** (commit aa1473a2): Regenerate pnpm-lock.yaml
+  - Ran: `pnpm install --no-frozen-lockfile`
+  - Removed all v4 packages: `tailwindcss 4.1.14 → 3.4.18`
+  - Committed and pushed regenerated lockfile
+- **20:29**: Deployment dep-d3qkjs9r0fns7386mji0 started with Tailwind v3
+- **20:30**: ✅ **CSS COMPILATION SUCCESS**
+  - CSS file size: 109,815 characters (109 KB)
+  - Gradients confirmed: `from-blue-600` (#2563eb), `via-blue-700` (#1d4ed8), `to-purple-700` (#7e22ce)
+  - Beautiful blue-to-purple UI/UX now visible
+  - Landing page fully styled with all Tailwind classes
+
+**Total Time** (Updated): 11 hours 22 minutes across 5 sessions
+**Actual Coding Time**: ~4.75 hours (Issues #1-11 resolved)
+**Remaining Work**: User must configure correct Clerk API key (Issue #9)
+
+---
+
+### Issue #10: Tailwind CSS v4 Incompatibility ⚠️ **CRITICAL** (Frontend Styling)
+
+**Symptoms**:
+- Landing page showing plain text with no visual styling
+- CSS file deployed with only 1 line (should be 10,000+ lines)
+- No gradient colors, animations, or Tailwind utility classes
+- User complaint: "Landing page IS working only showing TEXT and not a beautiful design"
+
+**Root Cause**:
+Tailwind CSS version mismatch between installed package and configuration format:
+
+```json
+// package.json (BEFORE FIX):
+"tailwindcss": "^4.1.7",          // ❌ Version 4
+"@tailwindcss/vite": "^4.1.7",    // ❌ V4-only package
+
+// tailwind.config.js (INCOMPATIBLE):
+export default {
+  content: ['./src/**/*.{js,jsx,ts,tsx}'],
+  darkMode: 'class',
+  theme: { extend: { ... } },  // ❌ V3 format
+}
+```
+
+**The Problem**:
+1. Tailwind CSS v4 requires **CSS-based configuration** with `@theme` directive
+2. Project uses **JavaScript configuration** (`tailwind.config.js`) for v3
+3. Vite attempted to compile with v4 but couldn't parse v3 config format
+4. CSS compilation failed → generated only 1 line of CSS
+5. Landing page lost ALL styling (gradients, colors, animations, spacing)
+
+**Why This Happened**:
+- Package was accidentally upgraded to v4 (breaking change)
+- No validation that config format matches Tailwind version
+- Build succeeded but CSS was empty (no compilation errors shown)
+
+**Fix Applied** (Commit [4a82b8a2](https://github.com/The-social-drink-company/sentia-ai-manufacturing-app/commit/4a82b8a2)):
+```json
+// package.json (AFTER FIX):
+"tailwindcss": "^3.4.18",  // ✅ Downgraded to stable v3
+// @tailwindcss/vite removed (v4-only package)
+
+// postcss.config.js (AFTER FIX):
+export default {
+  plugins: {
+    tailwindcss: {},        // ✅ V3 plugin
+    autoprefixer: {},
+  },
+}
+```
+
+**Impact**:
+- CSS file size: 109,815 characters (was 1 line)
+- All gradient classes present: `bg-gradient-to-br`, `from-blue-600`, `via-blue-700`, `to-purple-700`
+- Beautiful landing page styling restored
+- Full Tailwind utility classes available
+
+---
+
+### Issue #11: pnpm-lock.yaml Out of Sync ⚠️ **CRITICAL** (Dependency Management)
+
+**Symptoms**:
+- Render deployment failed with frozen-lockfile error
+- Build logs showing: `ERR_PNPM_OUTDATED_LOCKFILE`
+- Error message: "Cannot install with 'frozen-lockfile' because pnpm-lock.yaml is not up to date with package.json"
+
+**Root Cause**:
+After downgrading Tailwind CSS in package.json (Issue #10 fix), the pnpm-lock.yaml still contained v4 references:
+
+```yaml
+# pnpm-lock.yaml (BEFORE FIX):
+tailwindcss: 4.1.7          # ❌ Old version
+@tailwindcss/vite: 4.1.7    # ❌ Should not exist
+@tailwindcss/postcss: 4.1.13 # ❌ Should not exist
+
+# package.json (AFTER Issue #10 FIX):
+"tailwindcss": "^3.4.18"    # ✅ V3 version
+# @tailwindcss/vite removed
+```
+
+**The Problem**:
+1. Modified package.json locally but didn't regenerate lockfile
+2. Pushed changes with stale pnpm-lock.yaml
+3. Render uses `pnpm install --frozen-lockfile` (requires exact match)
+4. Deployment rejected due to mismatch
+5. Build failed before CSS compilation could run
+
+**Why This Happened**:
+- Forgot to run `pnpm install` after modifying package.json
+- No local validation to ensure lockfile consistency
+- Render's strict frozen-lockfile mode caught the inconsistency
+
+**Fix Applied** (Commit [aa1473a2](https://github.com/The-social-drink-company/sentia-ai-manufacturing-app/commit/aa1473a2)):
+```bash
+# Regenerated lockfile locally:
+pnpm install --no-frozen-lockfile
+
+# Changes in pnpm-lock.yaml:
+- tailwindcss: 4.1.14 → 3.4.18
+- @tailwindcss/vite: 4.1.7 → REMOVED
+- @tailwindcss/postcss: 4.1.13 → REMOVED
+# 363 insertions(+), 276 deletions(-)
+```
+
+**Impact**:
+- Deployment succeeded with correct dependencies
+- No v4 packages in lockfile
+- Tailwind v3 compiled successfully
+- Build time: ~1.5 minutes (normal for production build)
+
 ---
 
 ## 🎯 **SUCCESS METRICS**

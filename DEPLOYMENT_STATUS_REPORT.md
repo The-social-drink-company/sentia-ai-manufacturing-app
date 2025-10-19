@@ -1,78 +1,52 @@
 # Deployment Status Report
-**Date**: 2025-10-19 17:55 UTC
+**Date**: 2025-10-20 00:00 UTC
 **Reporter**: Codex (BMAD Developer Agent)
-**Update**: Backend still unreachable after pgvector fix; Render redeploy outstanding
+**Update**: Backend deployment remains unhealthy; remediation required before further Render attempts.
 
 ---
 
 ## Executive Summary
 
-**Overall Status**: 🔴 **BLOCKED - Backend service unreachable on Render**
+**Overall Status**: BLOCKED - Backend failing, frontend waiting on Clerk key and healthy API, MCP not re-verified.
 
-| Component | Status | Health | Notes |
-|-----------|--------|--------|-------|
-| Frontend | ✅ OPERATIONAL | 200 OK | Verified via `/health` |
-| Backend API | ❌ DOWN | Connection aborted | Render returns `connection closed unexpectedly` |
-| MCP Server | ✅ HEALTHY | 200 OK | Verified via `/health` |
-| Git Repository | ✅ HEALTHY | Commit bc51ac3c | `main` clean locally |
-| BMAD Framework | ✅ COMPLETE | v6a installed | 65+ components |
-
----
-
-## 🚨 Critical Issues Identified
-
-### Backend API: Render connection aborts
-
-**Root Cause (Hypothesis)**: Prisma migration history out-of-sync (`20251017171256_init`); Render still needs manual migrate resolve + redeploy
-
-**Evidence**:
-- BMAD-INFRA-004 story documents pgvector version conflict
-- Schema fix committed and merged (bc51ac3c on `main`)
-- Render still reports `connection closed unexpectedly` (no healthy deploy)
-
-**Required Manual Action**:
-1. Access https://dashboard.render.com (sentia-backend-prod)
-2. Run `corepack enable && pnpm exec prisma migrate resolve --applied 20251017171256_init`
-3. Run `pnpm exec prisma migrate status` to confirm alignment
-4. Trigger manual redeploy of latest `main`
-5. Verify `/api/health` returns 200 OK
+| Component    | Status          | Health | Notes |
+|--------------|-----------------|--------|-------|
+| Frontend     | Needs config    | Blocked pending Clerk key | Set VITE_CLERK_PUBLISHABLE_KEY after backend is stable; redeploy afterwards |
+| Backend API  | Unhealthy       | Connection aborted | Prisma schema gaps (adminApproval, working-capital) and failing vitest suites prevent successful deploy |
+| MCP Server   | Unknown (last 200 OK on 2025-10-19) | Re-check pending | Re-run health checks once backend redeploy succeeds |
+| Git Repo     | Dirty workspace | main | Local tree has uncommitted changes (see git status); no new commits pushed |
+| BMAD Story   | Blocked         | n/a | BMAD-INFRA-004 remains open; acceptance criteria unmet |
 
 ---
 
-## ✅ Successful Completions Today
+## Findings (2025-10-20 Audit)
 
-### Recent Git Activity
-- ✅ Latest commit on `main`: bc51ac3c (EPIC-003 completion)
-- ✅ Working tree clean aside from in-progress documentation updates
-- ⚠️ PRs #13 and #14 (target `development`) still have 34/86 checks failing (per `gh pr status`)
-
----
-
-## 📋 Next Steps (MANUAL)
-
-### Immediate Action Required
-1. Open https://dashboard.render.com → `sentia-backend-prod`
-2. Launch Shell → run:
-   - `corepack enable`
-   - `pnpm exec prisma migrate resolve --applied 20251017171256_init`
-   - `pnpm exec prisma migrate status`
-3. Exit shell; trigger **Manual Deploy** (latest `main`)
-4. Monitor logs for successful migrate + startup
-5. Retest `/api/health`
-
-### Expected Fix
-Once Prisma migration history is marked resolved and redeploy runs, the backend should start cleanly and health endpoint should return 200 OK.
+- Render backend `/api/health` request terminated with connection aborted (see bmad/status/2025-10-20-project-review.md).
+- vitest suite still failing (7 suites / 41 tests) - queue monitor and admin services rely on missing data layer.
+- Admin controllers continue to return 501 placeholders; Prisma models for adminApproval and related records absent.
+- Documentation previously stated 95% deployment readiness; updated BMAD status now flags blockers.
 
 ---
 
-## 📊 Service URLs
+## Outstanding Actions
 
-- Frontend: https://sentia-frontend-prod.onrender.com (✅ Working)
-- Backend: https://sentia-backend-prod.onrender.com/api/health (❌ connection aborted)
-- MCP: https://sentia-mcp-prod.onrender.com/health (✅ 200)
+1. Define required Prisma models/migrations (adminApproval, working-capital records, queue monitors) and update services.
+2. Repair vitest suites and ensure queue monitor/admin tests pass locally.
+3. Re-run Render backend deployment (safe migrate + service restart) and confirm `/api/health` = 200 OK.
+4. After backend stability, configure `VITE_CLERK_PUBLISHABLE_KEY` on frontend service and trigger redeploy.
+5. Re-verify MCP health endpoints and capture evidence (curl/screenshots) for BMAD documentation.
+
+**Priority**: Critical
+**Estimated Effort**: Dependent on data-layer implementation (multi-day)
 
 ---
 
-**Status**: Awaiting Render shell access + manual redeploy
-**Priority**: CRITICAL
-**Time Estimate**: 20 minutes once access obtained
+## Verification Checklist
+
+- [ ] vitest --run passes locally
+- [ ] prisma migrate deploy executed successfully on Render
+- [ ] Backend `/api/health` returns 200 OK (Render dashboard + external curl)
+- [ ] Frontend loads without Clerk configuration errors
+- [ ] MCP `/health` returns 200 OK
+- [ ] BMAD status documents updated with final outcomes
+

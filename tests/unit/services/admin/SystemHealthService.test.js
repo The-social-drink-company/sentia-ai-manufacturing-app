@@ -16,7 +16,9 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import SystemHealthService from '../../../../server/services/admin/SystemHealthService.js'
 import prisma from '../../../../server/lib/prisma.js'
-import os from 'os'
+import * as os from 'os'
+
+const mockGetRedisClient = vi.fn()
 
 // Mock dependencies
 vi.mock('../../../../server/lib/prisma.js', () => ({
@@ -28,9 +30,9 @@ vi.mock('../../../../server/lib/prisma.js', () => ({
   },
 }))
 
-vi.mock('../../../../server/config/redis.js', () => ({
-  getRedisClient: vi.fn(),
-}))
+vi.mock('../../../../server/lib/redis.js', () => ({
+  getRedisClient: mockGetRedisClient,
+}), { virtual: true })
 
 vi.mock('../../../../server/utils/logger.js', () => ({
   default: {
@@ -73,8 +75,7 @@ used_memory_peak_human:3.00M
       `),
     }
 
-    const { getRedisClient } = await import('../../../../server/config/redis.js')
-    getRedisClient.mockResolvedValue(mockRedisClient)
+    mockGetRedisClient.mockResolvedValue(mockRedisClient)
 
     // Mock os module functions
     os.totalmem.mockReturnValue(16 * 1024 * 1024 * 1024)
@@ -232,7 +233,7 @@ used_memory_peak_human:3.00M
 
     it('should mark process as unhealthy when CPU > 80%', async () => {
       // Mock high CPU usage
-      const service = SystemHealthService as any
+      const service = SystemHealthService
       service.lastCpuUsage = { user: 1000000, system: 500000 }
       service.lastCpuCheck = Date.now() - 1000
 
@@ -250,8 +251,8 @@ used_memory_peak_human:3.00M
 
     it('should mark process as unhealthy when memory > 85%', async () => {
       // Mock high memory usage
-      ;(os.totalmem as any).mockReturnValue(16 * 1024 * 1024 * 1024) // 16GB
-      ;(os.freemem as any).mockReturnValue(1 * 1024 * 1024 * 1024) // 1GB (93.75% used)
+      os.totalmem.mockReturnValue(16 * 1024 * 1024 * 1024)
+      os.freemem.mockReturnValue(1 * 1024 * 1024 * 1024)
 
       const result = await SystemHealthService.getProcessMetrics()
 
@@ -417,7 +418,7 @@ used_memory_peak_human:3.00M
   describe('getHealthAlerts', () => {
     it('should generate HIGH_CPU_USAGE alert when CPU > 80%', async () => {
       // Mock high CPU
-      const service = SystemHealthService as any
+      const service = SystemHealthService
       service.lastCpuUsage = { user: 1000000, system: 500000 }
       service.lastCpuCheck = Date.now() - 1000
 
@@ -440,8 +441,8 @@ used_memory_peak_human:3.00M
 
     it('should generate HIGH_MEMORY_USAGE alert when memory > 85%', async () => {
       // Mock high memory usage
-      ;(os.totalmem as any).mockReturnValue(16 * 1024 * 1024 * 1024)
-      ;(os.freemem as any).mockReturnValue(1 * 1024 * 1024 * 1024) // 93.75% used
+      os.totalmem.mockReturnValue(16 * 1024 * 1024 * 1024)
+      os.freemem.mockReturnValue(1 * 1024 * 1024 * 1024)
 
       prisma.$queryRaw.mockResolvedValue([{ health_check: 1 }])
       prisma.adminIntegration.findMany.mockResolvedValue([])
@@ -544,7 +545,7 @@ used_memory_peak_human:3.00M
         },
       }
 
-      const score = (SystemHealthService as any)._calculateHealthScore(components)
+      const score = SystemHealthService._calculateHealthScore(components)
 
       expect(score).toBe(100)
     })
@@ -561,7 +562,7 @@ used_memory_peak_human:3.00M
         integrationHealth: { status: 'HEALTHY', down: 0, degraded: 0 },
       }
 
-      const score = (SystemHealthService as any)._calculateHealthScore(components)
+      const score = SystemHealthService._calculateHealthScore(components)
 
       expect(score).toBeLessThan(100)
       expect(score).toBeGreaterThanOrEqual(70) // -30 for CPU
@@ -579,7 +580,7 @@ used_memory_peak_human:3.00M
         integrationHealth: { status: 'HEALTHY', down: 0, degraded: 0 },
       }
 
-      const score = (SystemHealthService as any)._calculateHealthScore(components)
+      const score = SystemHealthService._calculateHealthScore(components)
 
       expect(score).toBeLessThanOrEqual(60) // -40 for database
     })
@@ -596,7 +597,7 @@ used_memory_peak_human:3.00M
         integrationHealth: { status: 'UNHEALTHY', down: 5, degraded: 2 },
       }
 
-      const score = (SystemHealthService as any)._calculateHealthScore(components)
+      const score = SystemHealthService._calculateHealthScore(components)
 
       expect(score).toBeGreaterThanOrEqual(0)
       expect(score).toBeLessThan(30)

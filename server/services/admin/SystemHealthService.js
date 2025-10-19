@@ -236,7 +236,7 @@ class SystemHealthService {
   async getRedisHealth() {
     try {
       // Get Redis client
-      const { getRedisClient } = await import('../config/redis.js')
+      const { getRedisClient } = await import('../../lib/redis.js')
       const redis = await getRedisClient()
 
       const startTime = Date.now()

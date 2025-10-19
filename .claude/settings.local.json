@@ -91,7 +91,20 @@
       "Bash(pnpm exec prisma migrate:*)",
       "Read(//c/**)",
       "Bash(git check-ignore:*)",
-      "Bash(git describe:*)"
+      "Bash(git describe:*)",
+      "Bash(\"https://api.render.com/v1/services/srv-d3p77vripnbc739pc2n0\")",
+      "Bash(for i in {1..10})",
+      "Bash(do echo \"Check $i/10:\")",
+      "Bash(do echo \"Attempt $i:\")",
+      "Bash(for i in {1..5})",
+      "Bash(do echo \"Check $i/5:\")",
+      "Bash(while true)",
+      "Bash(for i in {1..6})",
+      "Bash(python3:*)",
+      "Bash(for i in 1 2 3 4 5 6 7 8 9 10)",
+      "Bash(do curl -s -w \"\\n[Check $i] HTTP %{http_code}\\n\" --max-time 5 https://sentia-backend-prod.onrender.com/api/health)",
+      "Bash(jobs:*)",
+      "Bash(killall:*)"
     ],
     "deny": [],
     "ask": []

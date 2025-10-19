@@ -136,5 +136,7 @@ services:
           type: web
           name: sentia-backend-prod
           envVarKey: RENDER_EXTERNAL_URL
+      - key: VITE_DEVELOPMENT_MODE
+        value: "false"
       - key: VITE_CLERK_PUBLISHABLE_KEY
         sync: false

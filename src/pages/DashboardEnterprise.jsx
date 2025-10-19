@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge'
 import { useXero } from '@/contexts/XeroContext'
 import { useSSE } from '@/services/sse/useSSE'
 import KPIGrid from '@/components/dashboard/KPIGrid'
+import WorkingCapitalCard from '@/components/dashboard/WorkingCapitalCard'
 
 const RegionalContributionChart = lazy(
   () => import('@/components/dashboard/RegionalContributionChart')
@@ -776,6 +777,16 @@ const DashboardEnterprise = () => {
       >
         <StockLevelsWidget />
       </Suspense>
+
+      {/* Working Capital Card */}
+      <WorkingCapitalCard
+        data={{
+          currentWC: 869000,
+          daysCCC: 43.6,
+          optimizationPotential: 150000,
+          percentOfRevenue: 8.1
+        }}
+      />
 
       {/* Quick Actions Section */}
       <Suspense

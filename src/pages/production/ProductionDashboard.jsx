@@ -362,7 +362,7 @@ function OEECard({ label, value, target, icon: IconComponent, trend, onClick }) 
       className={`p-6 rounded-lg border-2 text-left transition-all hover:shadow-lg ${statusColors[status]}`}
     >
       <div className="flex items-center justify-between mb-3">
-        <Icon className="w-6 h-6 text-gray-700" />
+        {IconComponent ? <IconComponent className="w-6 h-6 text-gray-700" /> : null}
         <span className="text-xs font-semibold text-gray-600">Target: {target}%</span>
       </div>
       <p className="text-sm font-medium text-gray-700 mb-1">{label}</p>

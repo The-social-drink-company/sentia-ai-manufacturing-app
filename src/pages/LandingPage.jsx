@@ -1,5 +1,10 @@
+import { motion } from 'framer-motion'
+import useLandingAnalytics from '@/hooks/useLandingAnalytics'
+import { SignInButton } from '@clerk/clerk-react'
+import { ArrowRight, BarChart2, TrendingUp, DollarSign, Settings, Package, Brain, CheckCircle2 } from 'lucide-react'
+
 const LandingPage = () => {
-  const { heroRef, trackSecondaryCTA } = useLandingAnalytics()
+  const { heroRef, trackPrimaryCTA, trackSecondaryCTA, trackSignInModal } = useLandingAnalytics()
 
   const scrollToFeatures = () => {
     trackSecondaryCTA('features')
@@ -9,23 +14,20 @@ const LandingPage = () => {
     }
   }
 
-  const handleLearnMore = () => {
-    scrollToFeatures()
+  const handlePrimaryCTA = () => {
+    trackPrimaryCTA('hero-sign-in')
+    trackSignInModal('hero-sign-in')
   }
 
-
   const handleLearnMore = () => {
-    trackSecondaryCTA('features')
-    const featuresSection = document.getElementById('features')
-    if (featuresSection) {
-      featuresSection.scrollIntoView({ behavior: 'smooth' })
-    }
+    trackSecondaryCTA('hero-learn-more')
+    scrollToFeatures()
   }
 
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <Motion.header ref={heroRef}
+      <motion.header ref={heroRef}
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
@@ -42,7 +44,7 @@ const LandingPage = () => {
         <div className="relative mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-32 lg:px-8 lg:py-40">
           <div className="text-center">
             {/* Main Heading */}
-            <Motion.h1
+            <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.8 }}
@@ -50,20 +52,20 @@ const LandingPage = () => {
             >
               Sentia Manufacturing
               <span className="block text-blue-200">Enterprise Dashboard</span>
-            </Motion.h1>
+            </motion.h1>
 
             {/* Subheading */}
-            <Motion.p
+            <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, duration: 0.8 }}
               className="mx-auto mt-6 max-w-3xl text-lg leading-8 text-blue-100 sm:text-xl"
             >
               Real-time manufacturing intelligence with AI-driven forecasting and working capital optimization
-            </Motion.p>
+            </motion.p>
 
             {/* CTA Buttons */}
-            <Motion.div
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6, duration: 0.8 }}
@@ -90,10 +92,10 @@ const LandingPage = () => {
                 Learn More
                 <BarChart2 className="h-5 w-5" />
               </button>
-            </Motion.div>
+            </motion.div>
           </div>
         </div>
-      </Motion.header>
+      </motion.header>
 
       {/* Main Content */}
       <main>
@@ -144,7 +146,7 @@ const LandingPage = () => {
         {/* Final CTA Section */}
         <section className="bg-gradient-to-br from-purple-600 via-purple-700 to-blue-700 py-16 sm:py-24">
           <div className="mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
-            <Motion.div
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
@@ -169,7 +171,7 @@ const LandingPage = () => {
                   </button>
                 </SignInButton>
               </div>
-            </Motion.div>
+            </motion.div>
           </div>
         </section>
       </main>
@@ -222,7 +224,7 @@ const FeatureCard = ({ feature, index }) => {
   const Icon = feature.icon
 
   return (
-    <Motion.div
+    <motion.div
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.1, duration: 0.6 }}
@@ -243,7 +245,7 @@ const FeatureCard = ({ feature, index }) => {
 
       {/* Hover Accent */}
       <div className="absolute inset-0 rounded-2xl border-2 border-transparent transition-colors group-hover:border-purple-500" />
-    </Motion.div>
+    </motion.div>
   )
 }
 
@@ -253,7 +255,7 @@ const FeatureCard = ({ feature, index }) => {
  */
 const MetricCard = ({ metric, index }) => {
   return (
-    <Motion.div
+    <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
       whileInView={{ opacity: 1, scale: 1 }}
       transition={{ delay: index * 0.1, duration: 0.5 }}
@@ -270,7 +272,7 @@ const MetricCard = ({ metric, index }) => {
 
       {/* Label */}
       <div className="mt-2 text-sm font-medium text-slate-600">{metric.label}</div>
-    </Motion.div>
+    </motion.div>
   )
 }
 

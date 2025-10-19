@@ -512,7 +512,7 @@ const kpis = {
 **Blocker**: Local development server not running, Xero credentials not configured locally.
 
 **Recommendation**: Test on Render deployment where environment variables are configured:
-- Development: https://sentia-manufacturing-dashboard-621h.onrender.com/api/v1/dashboard/setup-status
+- Development: https://sentia-frontend-prod.onrender.com/api/v1/dashboard/setup-status
 - Testing: https://sentia-manufacturing-dashboard-test.onrender.com/api/v1/dashboard/setup-status
 
 ---

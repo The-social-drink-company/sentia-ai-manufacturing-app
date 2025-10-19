@@ -172,7 +172,7 @@ router.post('/api/products',
 // CORRECT: Strict CORS
 const corsOptions = {
   origin: [
-    'https://sentia-manufacturing-dashboard-621h.onrender.com',
+    'https://sentia-frontend-prod.onrender.com',
     'https://sentia-manufacturing-dashboard-test.onrender.com',
     'https://sentia-manufacturing-dashboard-production.onrender.com'
   ],

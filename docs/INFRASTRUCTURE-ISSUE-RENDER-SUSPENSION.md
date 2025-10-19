@@ -19,7 +19,7 @@
 ## Affected Services
 
 ### Development Environment
-- **URL**: https://sentia-manufacturing-dashboard-621h.onrender.com
+- **URL**: https://sentia-frontend-prod.onrender.com
 - **Status**: SUSPENDED
 - **Service**: sentia-manufacturing-dashboard-621h
 - **Impact**: Cannot verify PR #15 deployment or perform smoke testing
@@ -146,7 +146,7 @@ git push origin main
 
 1. **Verify Service Reactivation**:
    ```bash
-   curl -s https://sentia-manufacturing-dashboard-621h.onrender.com/health
+   curl -s https://sentia-frontend-prod.onrender.com/health
    # Expected: {"status":"ok","timestamp":"..."}
    ```
 

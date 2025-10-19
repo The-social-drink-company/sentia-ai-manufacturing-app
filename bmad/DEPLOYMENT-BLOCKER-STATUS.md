@@ -2,7 +2,7 @@
 
 **Date**: 2025-10-19
 **Status**: 🚨 **STILL BLOCKED**
-**Environment**: Development (https://sentia-manufacturing-dashboard-621h.onrender.com)
+**Environment**: Development (https://sentia-frontend-prod.onrender.com)
 **HTTP Status**: 503 Service Unavailable
 
 ---
@@ -12,7 +12,7 @@
 The Render development environment remains suspended. Automated verification confirms:
 
 ```bash
-curl -s -o /dev/null -w "%{http_code}" https://sentia-manufacturing-dashboard-621h.onrender.com/health
+curl -s -o /dev/null -w "%{http_code}" https://sentia-frontend-prod.onrender.com/health
 # Returns: 503
 ```
 

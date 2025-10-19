@@ -58,7 +58,7 @@ This guide provides complete instructions for deploying the Sentia Manufacturing
 │                                                           │
 │  ┌────────────────────────────────────────────────────┐ │
 │  │ Development                                        │ │
-│  │ sentia-manufacturing-dashboard-621h.onrender.com   │ │
+│  │ sentia-frontend-prod.onrender.com   │ │
 │  └────────────────────────────────────────────────────┘ │
 │                                                           │
 │  ┌────────────────────────────────────────────────────┐ │
@@ -77,7 +77,7 @@ This guide provides complete instructions for deploying the Sentia Manufacturing
 
 | Environment | URL | Branch | Purpose | Auto-Deploy |
 |-------------|-----|--------|---------|-------------|
-| Development | [sentia-...621h.onrender.com](https://sentia-manufacturing-dashboard-621h.onrender.com) | `development` | Daily development work | ✅ Yes |
+| Development | [sentia-...621h.onrender.com](https://sentia-frontend-prod.onrender.com) | `development` | Daily development work | ✅ Yes |
 | Test | [sentia-...-test.onrender.com](https://sentia-manufacturing-dashboard-test.onrender.com) | `test` | User acceptance testing | ✅ Yes |
 | Production | [sentia-...-production.onrender.com](https://sentia-manufacturing-dashboard-production.onrender.com) | `production` | Live production | ✅ Yes |
 
@@ -273,7 +273,7 @@ What happens:
 
 Wait 3-5 minutes for deployment, then:
 
-- Visit: https://sentia-manufacturing-dashboard-621h.onrender.com
+- Visit: https://sentia-frontend-prod.onrender.com
 - Test your changes
 - Check browser console for errors
 - Verify functionality works
@@ -644,7 +644,7 @@ git push origin development
 - Render: https://dashboard.render.com
 
 **Live Environments**
-- Dev: https://sentia-manufacturing-dashboard-621h.onrender.com
+- Dev: https://sentia-frontend-prod.onrender.com
 - Test: https://sentia-manufacturing-dashboard-test.onrender.com
 - Prod: https://sentia-manufacturing-dashboard-production.onrender.com
 

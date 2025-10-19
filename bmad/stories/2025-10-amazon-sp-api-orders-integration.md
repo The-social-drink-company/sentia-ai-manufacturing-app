@@ -161,7 +161,7 @@ class AmazonSPAPIService {
    - Go to: **Apps & Services** → **Develop Apps**
    - Click **Add new app client**
    - App name: `Sentia Manufacturing Dashboard`
-   - OAuth redirect URI: `https://sentia-manufacturing-dashboard-621h.onrender.com/amazon/callback`
+   - OAuth redirect URI: `https://sentia-frontend-prod.onrender.com/amazon/callback`
    - Select roles:
      - View and manage orders
      - View and manage inventory (FBA)
@@ -1201,7 +1201,7 @@ Connect your Amazon Seller Central account to the Sentia Manufacturing Dashboard
 2. Click **Develop Apps** → **Add new app client**
 3. Configure app:
    - App name: `Sentia Manufacturing Dashboard`
-   - OAuth redirect URI: `https://sentia-manufacturing-dashboard-621h.onrender.com/amazon/callback`
+   - OAuth redirect URI: `https://sentia-frontend-prod.onrender.com/amazon/callback`
 4. Select API roles:
    - **Orders API**: View and manage orders
    - **FBA Inventory API**: View inventory summaries

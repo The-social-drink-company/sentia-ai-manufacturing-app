@@ -109,7 +109,7 @@ git push origin main
 Once deployed, verify the following:
 
 ### Smoke Test Checklist:
-1. **Navigate to application**: https://sentia-manufacturing-dashboard-621h.onrender.com
+1. **Navigate to application**: https://sentia-frontend-prod.onrender.com
 2. **Login**: Use development credentials
 3. **Check sidebar**: Verify "Import Wizard" and "Export Builder" links visible
 4. **Navigate to Import**: `/app/admin/import` loads without errors

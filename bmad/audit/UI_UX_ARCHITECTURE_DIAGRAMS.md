@@ -942,7 +942,7 @@ LEGEND:
 │                                                                  │
 │  ┌──────────────────────────────────────────────────────────┐  │
 │  │ Development Environment                                   │  │
-│  │ https://sentia-manufacturing-dashboard-621h.onrender.com │  │
+│  │ https://sentia-frontend-prod.onrender.com │  │
 │  │ • Auto-deploys on push to development branch             │  │
 │  │ • VITE_DEVELOPMENT_MODE=true                             │  │
 │  └──────────────────────────────────────────────────────────┘  │

@@ -46,7 +46,7 @@ This guide will walk you through setting up the Amazon SP-API integration using 
 4. Fill in the application details:
    - **App Name**: `Sentia Manufacturing Dashboard` (or your preferred name)
    - **OAuth Redirect URI**: `https://your-dashboard-url.com/api/auth/amazon/callback`
-     - For Render: `https://sentia-manufacturing-dashboard-621h.onrender.com/api/auth/amazon/callback`
+     - For Render: `https://sentia-frontend-prod.onrender.com/api/auth/amazon/callback`
      - For local dev: `http://localhost:5000/api/auth/amazon/callback`
    - **Application Type**: Select **"SP-API"**
 

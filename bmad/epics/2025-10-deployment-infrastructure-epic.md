@@ -34,7 +34,7 @@
 - Git history clean and up-to-date
 
 **Deployment Status**: ❌ BLOCKED
-- Render service: `sentia-manufacturing-dashboard-621h.onrender.com`
+- Render service: `sentia-frontend-prod.onrender.com`
 - Status: **SUSPENDED**
 - HTTP Response: 503 Service Unavailable
 - Message: "This service has been suspended by its owner"
@@ -311,7 +311,7 @@ ROOT PROBLEM: Cannot deploy or verify completed features
 ## 📚 Project Deployment Strategy (from CLAUDE.md)
 
 **Render-Only Deployment**:
-- Development branch → sentia-manufacturing-dashboard-621h.onrender.com
+- Development branch → sentia-frontend-prod.onrender.com
 - Test branch → sentia-manufacturing-dashboard-test.onrender.com
 - Production branch → sentia-manufacturing-dashboard-production.onrender.com
 

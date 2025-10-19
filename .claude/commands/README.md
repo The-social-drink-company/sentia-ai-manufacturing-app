@@ -54,7 +54,7 @@
    ```
 
 4. **Test in development environment**
-   - Visit: https://sentia-manufacturing-dashboard-621h.onrender.com
+   - Visit: https://sentia-frontend-prod.onrender.com
    - Verify changes work correctly
 
 5. **When ready for UAT**
@@ -129,7 +129,7 @@ Claude:
   ✅ Deployment initiated
 
   🔗 Monitor at: https://dashboard.render.com
-  🌐 Test at: https://sentia-manufacturing-dashboard-621h.onrender.com
+  🌐 Test at: https://sentia-frontend-prod.onrender.com
 
   ⏱️  Deployment ETA: 3-5 minutes
 ```

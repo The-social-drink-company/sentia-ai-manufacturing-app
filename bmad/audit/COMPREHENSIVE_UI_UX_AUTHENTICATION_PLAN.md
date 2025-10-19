@@ -2272,7 +2272,7 @@ VITE_DEVELOPMENT_MODE=true  # For development branch
 VITE_DEVELOPMENT_MODE=false # For test/production branches
 
 # API Endpoints
-VITE_API_BASE_URL=https://sentia-manufacturing-dashboard-621h.onrender.com/api  # Dev
+VITE_API_BASE_URL=https://sentia-frontend-prod.onrender.com/api  # Dev
 VITE_API_BASE_URL=https://sentia-manufacturing-dashboard-test.onrender.com/api  # Test
 VITE_API_BASE_URL=https://sentia-manufacturing-dashboard-production.onrender.com/api  # Prod
 

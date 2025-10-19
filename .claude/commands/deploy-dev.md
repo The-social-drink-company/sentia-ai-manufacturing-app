@@ -32,7 +32,7 @@ Deploy the current changes to the development environment on Render.
 
 3. **Monitor Deployment**
    - Provide the Render dashboard URL: https://dashboard.render.com
-   - Show the development deployment URL: https://sentia-manufacturing-dashboard-621h.onrender.com
+   - Show the development deployment URL: https://sentia-frontend-prod.onrender.com
    - Remind to check Render logs for deployment status
 
 4. **Post-Deployment Verification**
@@ -54,8 +54,8 @@ After deployment, provide:
 
 🔗 URLs:
 - Dashboard: https://dashboard.render.com
-- Live App: https://sentia-manufacturing-dashboard-621h.onrender.com
-- Health Check: https://sentia-manufacturing-dashboard-621h.onrender.com/health
+- Live App: https://sentia-frontend-prod.onrender.com
+- Health Check: https://sentia-frontend-prod.onrender.com/health
 
 ⏱️  Estimated Deployment Time: 3-5 minutes
 

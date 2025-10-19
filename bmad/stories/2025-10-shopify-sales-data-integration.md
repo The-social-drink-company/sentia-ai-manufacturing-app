@@ -1339,7 +1339,7 @@ SHOPIFY_US_ACCESS_TOKEN=shpat_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ## Step 3: Verify Connection
 
 1. Wait for Render deployment to complete
-2. Navigate to your dashboard: https://sentia-manufacturing-dashboard-621h.onrender.com
+2. Navigate to your dashboard: https://sentia-frontend-prod.onrender.com
 3. Check the executive dashboard
 4. You should see:
    - Real revenue data from both stores

@@ -536,9 +536,20 @@ scripts/               # Utility scripts
 
 #### Main Application Deployments
 
-- **Development**: sentia-manufacturing-dashboard-621h.onrender.com [primary deployment of all code changes]
-- **Testing**: sentia-manufacturing-dashboard-test.onrender.com [test environment for users]
-- **Production**: sentia-manufacturing-dashboard-production.onrender.com [live environment updated after test has passed after UAT]
+**IMPORTANT**: The application now uses a **3-service architecture** (Frontend, Backend API, MCP Server) instead of the previous monolithic deployment.
+
+**Current Production Services** (All deploy from `development` branch):
+
+| Service | URL | Status | Purpose |
+|---------|-----|--------|---------|
+| **Frontend** | https://sentia-frontend-prod.onrender.com | ✅ Active | React application UI |
+| **Backend API** | https://sentia-backend-prod.onrender.com | 🔄 Active | Express REST API + Prisma |
+| **MCP Server** | https://sentia-mcp-prod.onrender.com | 🔄 Active | External API integrations |
+
+**Health Check Endpoints**:
+- Frontend: https://sentia-frontend-prod.onrender.com
+- Backend: https://sentia-backend-prod.onrender.com/api/health
+- MCP: https://sentia-mcp-prod.onrender.com/health
 
 #### Server File Configuration (SIMPLIFIED - October 2025)
 
@@ -579,11 +590,12 @@ scripts/               # Utility scripts
 
 ### Development Workflow (Implemented)
 
-**Enterprise Git Workflow**: Proper development → testing → production progression:
+**Enterprise Git Workflow**: All development work happens in the `development` branch, which deploys to the production Render services:
 
-1. **Development Branch**: All coding, fixing, and development work happens in `development` branch (sentia-manufacturing-dashboard-621h.onrender.com)
-2. **Test Branch**: Push to `test` branch for user acceptance testing at sentia-manufacturing-dashboard-test.onrender.com
-3. **Production Branch**: Only push to `production` when software is ready to go live at sentia-manufacturing-dashboard-production.onrender.com
+1. **Development Branch**: All coding, fixing, and development work happens in `development` branch
+   - Auto-deploys to: `sentia-frontend-prod`, `sentia-backend-prod`, `sentia-mcp-prod`
+2. **Testing Branch**: Push to `test` branch for user acceptance testing (future separate environment)
+3. **Production Branch**: Production-ready releases (future dedicated environment)
 
 **Quality Gates**: Formal UAT process with client approval required before production deployment.
 

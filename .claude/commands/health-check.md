@@ -4,7 +4,7 @@ Perform comprehensive health check across all deployment environments.
 
 ## Environments to Check
 
-1. **Development**: https://sentia-manufacturing-dashboard-621h.onrender.com
+1. **Development**: https://sentia-frontend-prod.onrender.com
 2. **Test**: https://sentia-manufacturing-dashboard-test.onrender.com
 3. **Production**: https://sentia-manufacturing-dashboard-production.onrender.com
 
@@ -71,7 +71,7 @@ Generated: [timestamp]
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 📊 DEVELOPMENT ENVIRONMENT
-URL: https://sentia-manufacturing-dashboard-621h.onrender.com
+URL: https://sentia-frontend-prod.onrender.com
 Status: ✅ HEALTHY / ⚠️ DEGRADED / ❌ DOWN
 
 Core Services:

@@ -194,7 +194,7 @@ export const ENVIRONMENT_TEMPLATES = {
     // Security Configuration
     JWT_SECRET: '${GENERATE_SECURE_JWT_SECRET}',
     SESSION_SECRET: '${GENERATE_SECURE_SESSION_SECRET}',
-    CORS_ORIGINS: 'https://sentia-manufacturing-dashboard-621h.onrender.com',
+    CORS_ORIGINS: 'https://sentia-frontend-prod.onrender.com',
 
     // Clerk Authentication (Development keys)
     CLERK_ENVIRONMENT: 'production',
@@ -211,7 +211,7 @@ export const ENVIRONMENT_TEMPLATES = {
     VITE_FORCE_CLERK_AUTH: 'true',
 
     // Frontend Configuration
-    VITE_API_BASE_URL: 'https://sentia-manufacturing-dashboard-621h.onrender.com',
+    VITE_API_BASE_URL: 'https://sentia-frontend-prod.onrender.com',
     VITE_APP_TITLE: 'Sentia Manufacturing Dashboard (Development)',
     VITE_APP_VERSION: '1.0.10-development',
 
@@ -225,7 +225,7 @@ export const ENVIRONMENT_TEMPLATES = {
     // External API Integrations - Development Credentials
     XERO_CLIENT_ID: '${DEV_XERO_CLIENT_ID}',
     XERO_CLIENT_SECRET: '${DEV_XERO_CLIENT_SECRET}',
-    XERO_REDIRECT_URI: 'https://sentia-manufacturing-dashboard-621h.onrender.com/api/xero/callback',
+    XERO_REDIRECT_URI: 'https://sentia-frontend-prod.onrender.com/api/xero/callback',
 
     SHOPIFY_UK_ACCESS_TOKEN: '${DEV_SHOPIFY_UK_ACCESS_TOKEN}',
     SHOPIFY_UK_API_KEY: '${DEV_SHOPIFY_UK_API_KEY}',

@@ -14,7 +14,7 @@
 
 The development environment on Render has been suspended, blocking Phase 3 QA testing from proceeding as planned.
 
-**Environment**: https://sentia-manufacturing-dashboard-621h.onrender.com
+**Environment**: https://sentia-frontend-prod.onrender.com
 **Status**: Service Suspended
 **Impact**: Cannot execute end-to-end QA testing on deployed environment
 **Discovered**: 2025-10-18 03:11 BST during post-merge deployment verification
@@ -356,7 +356,7 @@ According to BMAD-METHOD Phase 4 iterative cycle:
 - [PR #15](https://github.com/The-social-drink-company/sentia-ai-manufacturing-app/pull/15)
 
 **Deployment**:
-- Development: https://sentia-manufacturing-dashboard-621h.onrender.com (SUSPENDED)
+- Development: https://sentia-frontend-prod.onrender.com (SUSPENDED)
 - Testing: https://sentia-manufacturing-dashboard-test.onrender.com
 - Production: https://sentia-manufacturing-dashboard-production.onrender.com
 

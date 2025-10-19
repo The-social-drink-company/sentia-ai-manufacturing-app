@@ -1,4 +1,4 @@
-const logger = require('../../utils/logger')
+import logger from '../../utils/logger.js'
 
 class MitigationPlanner {
   constructor(config = {}) {
@@ -159,4 +159,4 @@ class MitigationPlanner {
   }
 }
 
-module.exports = MitigationPlanner
+export default MitigationPlanner

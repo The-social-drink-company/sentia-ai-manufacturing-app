@@ -1,5 +1,5 @@
-const prisma = require('../../lib/prisma')
-const logger = require('../../utils/logger')
+import prisma from '../../lib/prisma.js'
+import logger from '../../utils/logger.js'
 
 class CashConversionCycle {
   constructor(config = {}) {
@@ -179,4 +179,4 @@ class CashConversionCycle {
   }
 }
 
-module.exports = CashConversionCycle
+export default CashConversionCycle

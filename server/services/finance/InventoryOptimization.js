@@ -1,5 +1,5 @@
-const prisma = require('../../lib/prisma')
-const logger = require('../../utils/logger')
+import prisma from '../../lib/prisma.js'
+import logger from '../../utils/logger.js'
 
 class InventoryOptimization {
   constructor(config = {}) {
@@ -132,4 +132,4 @@ class InventoryOptimization {
   }
 }
 
-module.exports = InventoryOptimization
+export default InventoryOptimization

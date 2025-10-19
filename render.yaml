@@ -116,7 +116,7 @@ services:
     buildCommand: |
       corepack enable &&
       pnpm install --frozen-lockfile &&
-      pnpm exec vite build
+      pnpm exec vite build --mode production
     staticPublishPath: dist
     headers:
       - path: /*

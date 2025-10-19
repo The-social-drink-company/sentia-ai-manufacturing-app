@@ -1,16 +1,21 @@
 import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest'
-import { trackAnalyticsEvent } from '@/services/analyticsClient'
 
 describe('analyticsClient', () => {
+  let trackAnalyticsEvent
   let originalAnalytics
   let originalConsent
   let originalFetch
   let originalSendBeacon
 
-  beforeEach(() => {
+  beforeEach(async () => {
+    vi.clearAllMocks()
+    vi.resetModules()
     vi.unstubAllEnvs()
     vi.stubEnv('VITE_ENABLE_ANALYTICS', 'true')
     vi.stubEnv('VITE_ANALYTICS_ENDPOINT', '')
+
+    const module = await import('@/services/analyticsClient')
+    trackAnalyticsEvent = module.trackAnalyticsEvent
 
     originalAnalytics = window.analytics
     originalConsent = window.__sentiaConsent
@@ -63,18 +68,26 @@ describe('analyticsClient', () => {
     expect(track).not.toHaveBeenCalled()
   })
 
-  it('short-circuits when analytics disabled', () => {
+  it('short-circuits when analytics disabled', async () => {
     vi.stubEnv('VITE_ENABLE_ANALYTICS', 'false')
+    vi.resetModules()
+    const module = await import('@/services/analyticsClient')
+    const disabledTrack = module.trackAnalyticsEvent
+
     const track = vi.fn()
     window.analytics = { track }
 
-    trackAnalyticsEvent('test_event')
+    disabledTrack('test_event')
 
     expect(track).not.toHaveBeenCalled()
   })
 
   it('falls back to sendBeacon and fetch when endpoint configured', async () => {
     vi.stubEnv('VITE_ANALYTICS_ENDPOINT', 'https://example.com/collect')
+    vi.resetModules()
+    const module = await import('@/services/analyticsClient')
+    const endpointTrack = module.trackAnalyticsEvent
+
     const sendBeacon = vi.fn(() => false)
     Object.defineProperty(navigator, 'sendBeacon', {
       configurable: true,
@@ -84,7 +97,7 @@ describe('analyticsClient', () => {
     const fetchStub = vi.fn(() => Promise.resolve({ ok: true }))
     global.fetch = fetchStub
 
-    await trackAnalyticsEvent('test_event', { foo: 'bar' })
+    endpointTrack('test_event', { foo: 'bar' })
 
     expect(sendBeacon).toHaveBeenCalledTimes(1)
     expect(fetchStub).toHaveBeenCalledOnce()

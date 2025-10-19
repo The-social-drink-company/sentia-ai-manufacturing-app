@@ -59,3 +59,11 @@ The landing page is live but uninstrumented. Without telemetry we cannot measure
 
 ## Status
 Awaiting prioritization and developer assignment. Scrum Master to move story into backlog and schedule next BMAD cycle.
+---
+## Implementation Notes (2025-10-19)
+- ✅ Added `useLandingAnalytics` hook with consent-aware tracking and hero visibility observer.
+- ✅ Implemented `analyticsClient` abstraction handling Segment/web beacon fallback with env/consent guards.
+- ✅ Wired landing page CTAs and hero to analytics hook.
+- ✅ Added unit tests (`tests/unit/landing/analyticsClient.test.js`, `tests/unit/landing/useLandingAnalytics.test.jsx`).
+- ✅ Documented event catalog at `docs/analytics/landing-page-events.md` and appended QA checklist.
+- ⏭ Pending: Marketing dashboard wiring once ingestion endpoint is provisioned.

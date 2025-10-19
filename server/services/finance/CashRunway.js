@@ -1,5 +1,5 @@
-const prisma = require('../../lib/prisma')
-const logger = require('../../utils/logger')
+import prisma from '../../lib/prisma.js'
+import logger from '../../utils/logger.js'
 
 class CashRunway {
   constructor(config = {}) {
@@ -136,4 +136,4 @@ class CashRunway {
   }
 }
 
-module.exports = CashRunway
+export default CashRunway

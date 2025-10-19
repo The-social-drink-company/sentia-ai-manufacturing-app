@@ -1,5 +1,12 @@
+import { motion } from 'framer-motion'
+import useLandingAnalytics from '@/hooks/useLandingAnalytics'
+import { SignInButton } from '@clerk/clerk-react'
+import { ArrowRight, BarChart2, TrendingUp, DollarSign, Settings, Package, Brain, CheckCircle2 } from 'lucide-react'
+
+const Motion = motion
+
 const LandingPage = () => {
-  const { heroRef, trackSecondaryCTA } = useLandingAnalytics()
+  const { heroRef, trackPrimaryCTA, trackSecondaryCTA, trackSignInModal } = useLandingAnalytics()
 
   const scrollToFeatures = () => {
     trackSecondaryCTA('features')
@@ -9,17 +16,14 @@ const LandingPage = () => {
     }
   }
 
-  const handleLearnMore = () => {
-    scrollToFeatures()
+  const handlePrimaryCTA = () => {
+    trackPrimaryCTA('hero-sign-in')
+    trackSignInModal('hero-sign-in')
   }
 
-
   const handleLearnMore = () => {
-    trackSecondaryCTA('features')
-    const featuresSection = document.getElementById('features')
-    if (featuresSection) {
-      featuresSection.scrollIntoView({ behavior: 'smooth' })
-    }
+    trackSecondaryCTA('hero-learn-more')
+    scrollToFeatures()
   }
 
   return (

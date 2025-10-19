@@ -1,7 +1,7 @@
-const CashConversionCycle = require('./CashConversionCycle')
-const CashRunway = require('./CashRunway')
-const InventoryOptimization = require('./InventoryOptimization')
-const logger = require('../../utils/logger')
+import CashConversionCycle from './CashConversionCycle.js'
+import CashRunway from './CashRunway.js'
+import InventoryOptimization from './InventoryOptimization.js'
+import logger from '../../utils/logger.js'
 
 const DEFAULT_SCENARIOS = [
   {

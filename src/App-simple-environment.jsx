@@ -49,7 +49,19 @@ const Loader = () => (
 )
 
 // Environment detection
-const isDevelopmentMode = import.meta.env.VITE_DEVELOPMENT_MODE === 'true'
+// BMAD-DEPLOY-001-FIX: In production builds, ALWAYS use Clerk (never development mode)
+// Priority: import.meta.env.PROD > VITE_DEVELOPMENT_MODE
+// This ensures ClerkProvider wraps the app and authentication works correctly
+const isProductionBuild = import.meta.env.PROD === true
+const developmentFlag = import.meta.env.VITE_DEVELOPMENT_MODE
+
+// Production builds ALWAYS use production authentication (Clerk)
+// Development mode ONLY enabled when:
+// 1. NOT a production build (import.meta.env.PROD === false)
+// 2. AND developmentFlag is explicitly set to true/not "false"
+const isDevelopmentMode = isProductionBuild
+  ? false // ALWAYS false in production builds (import.meta.env.PROD === true)
+  : developmentFlag === 'true' || developmentFlag === true // Only true if explicitly enabled in dev
 
 // Simple Development Protected Route - No Authentication Check
 // In development mode, RBAC is bypassed for convenience
@@ -153,16 +165,10 @@ const ProtectedRoute = isDevelopmentMode ? DevelopmentProtectedRoute : Productio
 // Authentication Provider - Simple approach
 const AuthProvider = ({ children }) => {
   const [ClerkProvider, setClerkProvider] = useState(null)
-  const [loading, setLoading] = useState(!isDevelopmentMode)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (isDevelopmentMode) {
-      // Development mode - no auth provider needed
-      setLoading(false)
-      return
-    }
-
-    // Production mode - load Clerk
+    // Always load Clerk provider (needed for Clerk components even in dev mode)
     const loadClerkProvider = async () => {
       try {
         const clerkAuth = await import('@clerk/clerk-react')
@@ -181,12 +187,14 @@ const AuthProvider = ({ children }) => {
     return <Loader />
   }
 
-  if (isDevelopmentMode || !ClerkProvider) {
-    // Development mode or fallback - no auth wrapper
+  if (!ClerkProvider) {
+    // Fallback if Clerk failed to load - no auth wrapper
+    console.warn('[Auth] ClerkProvider not available, rendering without authentication')
     return children
   }
 
-  // Production mode with Clerk
+  // Both development and production modes use ClerkProvider
+  // (Clerk components like SignIn require ClerkProvider even in dev mode)
   const publishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
   const clerkAppearance = {
     baseTheme: undefined,

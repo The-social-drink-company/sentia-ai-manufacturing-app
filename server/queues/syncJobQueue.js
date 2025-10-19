@@ -352,7 +352,8 @@ async function processSyncJob(job) {
  * @returns {Promise<Object>} Sync result
  */
 async function executeXeroSync(syncJob, integration) {
-  logger.info(`[SyncJobQueue] Executing Xero sync for job  (integration )`)
+  const integrationId = integration?.id ?? 'unknown'
+  logger.info(`[SyncJobQueue] Executing Xero sync for job ${syncJob.id} (integration ${integrationId})`)
 
   // TODO: Week 3 - Implement actual Xero API sync
   // Will fetch: accounts receivable, accounts payable, bank accounts
@@ -366,92 +367,6 @@ async function executeXeroSync(syncJob, integration) {
     errorCount: 0,
   }
 }
-
-/**
- * Execute Shopify sales data sync
- *
- * @param {Object} syncJob - AdminSyncJob record
- * @param {Object} integration - AdminIntegration record
- * @returns {Promise<Object>} Sync result
- */
-async function executeShopifySync(syncJob, integration) {
-  logger.info(`[SyncJobQueue] Executing Shopify sync for job  (integration )`)
-
-  // TODO: Week 3 - Implement actual Shopify API sync
-  // Will fetch: orders, products, inventory levels
-  // Integration module: server/integrations/shopify.js
-
-  return {
-    success: true,
-    message: 'Shopify sync stub (Week 3 implementation)',
-    recordsProcessed: 0,
-    successCount: 0,
-    errorCount: 0,
-  }
-}
-
-/**
- * Execute Amazon SP-API orders sync
- *
- * @param {Object} syncJob - AdminSyncJob record
- * @param {Object} integration - AdminIntegration record
- * @returns {Promise<Object>} Sync result
- */
-async function executeAmazonSync(syncJob, integration) {
-  logger.info(`[SyncJobQueue] Executing Amazon sync for job  (integration )`)
-
-  // TODO: Week 3 - Implement actual Amazon SP-API sync
-  // Will fetch: orders, fulfillment data
-  // Integration module: server/integrations/amazon.js
-
-  return {
-    success: true,
-    message: 'Amazon sync stub (Week 3 implementation)',
-    recordsProcessed: 0,
-    successCount: 0,
-    errorCount: 0,
-  }
-}
-
-/**
- * Execute Unleashed ERP inventory sync
- *
- * @param {Object} syncJob - AdminSyncJob record
- * @param {Object} integration - AdminIntegration record
- * @returns {Promise<Object>} Sync result
- */
-async function executeUnleashedSync(syncJob, integration) {
-  logger.info(`[SyncJobQueue] Executing Unleashed sync for job  (integration )`)
-
-  // TODO: Week 3 - Implement actual Unleashed API sync
-  // Will fetch: inventory items, production jobs
-  // Integration module: server/integrations/unleashed.js
-
-  return {
-    success: true,
-    message: 'Unleashed sync stub (Week 3 implementation)',
-    recordsProcessed: 0,
-    successCount: 0,
-    errorCount: 0,
-  }
-}
-
-// ============================================================================
-// Queue Management
-// ============================================================================
-
-/**
- * Get sync job queue instance
- *
- * @returns {Queue} BullMQ queue
- */
-export function getSyncJobQueue() {
-  if (!syncJobQueue) {
-    throw new Error('Sync job queue not initialized')
-  }
-  return syncJobQueue
-}
-
 /**
  * Get queue statistics
  *
@@ -530,3 +445,5 @@ if (process.env.NODE_ENV !== 'test') {
     logger.error('[SyncJobQueue] Queue events auto-initialization failed:', error)
   })
 }
+
+

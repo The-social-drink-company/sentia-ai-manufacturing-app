@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Navigate } from 'react-router-dom'
+import LoadingScreen from '@/components/LoadingScreen'
 
 const isDevelopmentMode = import.meta.env.VITE_DEVELOPMENT_MODE === 'true'
 
@@ -39,16 +40,7 @@ const RedirectToSignInEnvironmentAware = ({ redirectUrl, ...props }) => {
   }, [])
 
   if (loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
-        <div className="text-center">
-          <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
-          <p className="text-xs uppercase tracking-[0.3em] text-slate-300">
-            Loading Authentication...
-          </p>
-        </div>
-      </div>
-    )
+    return <LoadingScreen message="Loading Authentication..." />
   }
 
   if (isDevelopmentMode || !RedirectToSignIn) {

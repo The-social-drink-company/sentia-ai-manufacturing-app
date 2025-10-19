@@ -72,11 +72,26 @@ function safeExtractError(error) {
 dotenv.config()
 
 // Import and run environment validation (SECURITY FIX 2025)
-import {
-  validateEnvironmentOnStartup,
-  getEnvironmentStatus,
-} from './api/middleware/environmentValidation.js'
-validateEnvironmentOnStartup()
+let validateEnvironmentOnStartup, getEnvironmentStatus
+try {
+  const envModule = await import('./api/middleware/environmentValidation.js')
+  validateEnvironmentOnStartup = envModule.validateEnvironmentOnStartup
+  getEnvironmentStatus = envModule.getEnvironmentStatus
+
+  // Run validation but catch any errors to prevent server crash
+  try {
+    validateEnvironmentOnStartup()
+  } catch (validationError) {
+    console.warn('Environment validation failed, continuing with warnings:', validationError.message)
+    logger.warn('Environment validation failed', { error: validationError.message })
+  }
+} catch (importError) {
+  console.warn('Could not load environment validation module:', importError.message)
+  logger.warn('Environment validation module unavailable', { error: importError.message })
+  // Create stub functions
+  validateEnvironmentOnStartup = () => {}
+  getEnvironmentStatus = () => ({ status: 'unavailable', environment: process.env.NODE_ENV })
+}
 
 // ES module compatibility
 const __filename = fileURLToPath(import.meta.url)

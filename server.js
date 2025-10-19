@@ -18,6 +18,7 @@ import { Server as SocketIOServer } from 'socket.io'
 // Import API routers
 import authRouter from './server/routes/auth.js'
 import sseRouter from './server/routes/sse.js'
+import masterAdminRouter from './server/routes/master-admin.routes.js'
 
 // Initialize logger with fallback
 let logger
@@ -339,6 +340,7 @@ app.locals.prisma = prisma
 // API Routes
 app.use('/api/auth', authRouter)
 app.use('/api/v1/sse', sseRouter)
+app.use('/api/master-admin', masterAdminRouter)
 
 // Health check endpoint with REAL status
 app.get('/health', async (req, res) => {

@@ -24,6 +24,7 @@ const Inventory = lazy(() => import('@/components/inventory/InventoryDashboard')
 const DataImport = lazy(() => import('@/components/data/DataImportWidget'))
 const AdminPanel = lazy(() => import('@/pages/AdminPanelEnhanced'))
 const Onboarding = lazy(() => import('@/pages/Onboarding'))
+const MasterAdminDashboard = lazy(() => import('@/pages/master-admin/MasterAdminDashboard'))
 // const ImportWizard = lazy(() => import('@/pages/admin/ImportWizard')) // TODO: Create ImportWizard component
 // const ExportBuilder = lazy(() => import('@/pages/admin/ExportBuilder')) // TODO: Create ExportBuilder component
 const WhatIf = lazy(() => import('@/components/analytics/WhatIfAnalysis'))
@@ -282,6 +283,18 @@ const App = () => {
                   <ErrorBoundary fallbackMessage="Onboarding failed to load.">
                     <Suspense fallback={<Loader />}>
                       <Onboarding />
+                    </Suspense>
+                  </ErrorBoundary>
+                }
+              />
+
+              {/* Master Admin Route (Requires special email whitelist) */}
+              <Route
+                path="/master-admin"
+                element={
+                  <ErrorBoundary fallbackMessage="Master Admin dashboard failed to load.">
+                    <Suspense fallback={<Loader />}>
+                      <MasterAdminDashboard />
                     </Suspense>
                   </ErrorBoundary>
                 }

@@ -5,6 +5,49 @@ export default {
   theme: {
     extend: {
       colors: {
+        // UI/UX Mockup Design System (BMAD-UI-001)
+        // Primary: Blue-purple gradient system
+        primary: {
+          50: '#EEF2FF',
+          100: '#E0E7FF',
+          200: '#C7D2FE',
+          300: '#A5B4FC',
+          400: '#818CF8',
+          500: '#3B82F6', // Blue base (gradient start)
+          600: '#2563EB',
+          700: '#1D4ED8',
+          800: '#1E3A8A',
+          900: '#1E293B',
+        },
+        // Secondary: Purple accent
+        secondary: {
+          50: '#FAF5FF',
+          100: '#F3E8FF',
+          200: '#E9D5FF',
+          300: '#D8B4FE',
+          400: '#C084FC',
+          500: '#8B5CF6', // Purple base (gradient end)
+          600: '#7C3AED',
+          700: '#6D28D9',
+          800: '#5B21B6',
+          900: '#4C1D95',
+        },
+        // Slate: Dark theme for sidebar (#1E293B)
+        slate: {
+          50: '#F8FAFC',
+          100: '#F1F5F9',
+          200: '#E2E8F0',
+          300: '#CBD5E1',
+          400: '#94A3B8',
+          500: '#64748B',
+          600: '#475569',
+          700: '#334155',
+          800: '#1E293B', // Dark sidebar base
+          900: '#0F172A',
+          950: '#020617',
+        },
+
+        // Legacy brand colors (keep for backwards compatibility)
         brand: {
           primary: '#00D4FF',
           secondary: '#7C3AED',
@@ -113,7 +156,41 @@ export default {
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
       },
+      // Typography scale (BMAD-UI-001) - 11 sizes from xs to 7xl
+      // Usage: text-xs, text-sm, text-base, text-lg, etc.
+      fontSize: {
+        'xs': ['12px', { lineHeight: '16px' }],      // Extra small
+        'sm': ['14px', { lineHeight: '20px' }],      // Small
+        'base': ['16px', { lineHeight: '24px' }],    // Base (body text)
+        'lg': ['18px', { lineHeight: '28px' }],      // Large
+        'xl': ['20px', { lineHeight: '28px' }],      // Extra large
+        '2xl': ['24px', { lineHeight: '32px' }],     // 2X large
+        '3xl': ['30px', { lineHeight: '36px' }],     // 3X large
+        '4xl': ['36px', { lineHeight: '40px' }],     // 4X large
+        '5xl': ['48px', { lineHeight: '1' }],        // 5X large (headings)
+        '6xl': ['60px', { lineHeight: '1' }],        // 6X large (hero)
+        '7xl': ['72px', { lineHeight: '1' }],        // 7X large (display)
+      },
+      // Spacing system with 4px base unit (BMAD-UI-001)
+      // Extends Tailwind's default spacing scale
       spacing: {
+        '0.5': '2px',   // 0.5 * 4px
+        '1': '4px',     // 1 * 4px (base unit)
+        '1.5': '6px',   // 1.5 * 4px
+        '2': '8px',     // 2 * 4px
+        '2.5': '10px',  // 2.5 * 4px
+        '3': '12px',    // 3 * 4px
+        '4': '16px',    // 4 * 4px
+        '5': '20px',    // 5 * 4px
+        '6': '24px',    // 6 * 4px
+        '8': '32px',    // 8 * 4px
+        '10': '40px',   // 10 * 4px
+        '12': '48px',   // 12 * 4px
+        '16': '64px',   // 16 * 4px
+        '20': '80px',   // 20 * 4px
+        '24': '96px',   // 24 * 4px
+        '32': '128px',  // 32 * 4px
+        // Legacy spacing (keep for backwards compatibility)
         18: '4.5rem',
         88: '22rem',
         128: '32rem',
@@ -189,12 +266,22 @@ export default {
         'glow-purple': '0 0 20px rgba(124, 58, 237, 0.5)',
         'glow-green': '0 0 20px rgba(16, 185, 129, 0.5)',
       },
+      // Custom gradient utilities for KPI cards and UI components
+      // Usage: <div className="bg-gradient-revenue">Revenue Card</div>
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
         'gradient-quantum': 'linear-gradient(135deg, #0A0E1B 0%, #1A1F2E 50%, #0F1420 100%)',
         'gradient-crystal': 'linear-gradient(135deg, #FFFFFF 0%, #F8FAFC 50%, #F1F5F9 100%)',
         'gradient-brand': 'linear-gradient(135deg, #00D4FF 0%, #7C3AED 100%)',
+
+        // UI/UX Mockup Design System Gradients (BMAD-UI-001)
+        'gradient-revenue': 'linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%)', // Blue → Purple
+        'gradient-units': 'linear-gradient(135deg, #10B981 0%, #3B82F6 100%)',   // Green → Blue
+        'gradient-margin': 'linear-gradient(135deg, #F59E0B 0%, #F97316 100%)',  // Amber → Orange
+        'gradient-wc': 'linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%)',      // Purple → Pink
+        'gradient-hero': 'linear-gradient(135deg, #3B82F6 0%, #1E40AF 50%, #8B5CF6 100%)', // Hero section
+
         shimmer: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent)',
       },
       backdropBlur: {

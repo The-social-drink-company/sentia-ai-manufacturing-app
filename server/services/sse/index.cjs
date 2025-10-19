@@ -312,6 +312,21 @@ const emitAmazonSyncError = (payload) => {
   emitChannelEvent('dashboard', 'amazon:sync_error', payload)
 }
 
+const emitUnleashedSyncStarted = (payload) => {
+  emitChannelEvent('manufacturing', 'unleashed:sync_started', payload)
+  emitChannelEvent('dashboard', 'unleashed:sync_started', payload)
+}
+
+const emitUnleashedSyncCompleted = (payload) => {
+  emitChannelEvent('manufacturing', 'unleashed:sync_completed', payload)
+  emitChannelEvent('dashboard', 'unleashed:sync_completed', payload)
+}
+
+const emitUnleashedSyncError = (payload) => {
+  emitChannelEvent('manufacturing', 'unleashed:sync_error', payload)
+  emitChannelEvent('dashboard', 'unleashed:sync_error', payload)
+}
+
 const emitAdminBroadcast = (channel, event, payload, meta = {}) => {
   const target = channel === '*' ? null : channel
   const enriched = {
@@ -364,6 +379,9 @@ module.exports = {
   emitAmazonFBASynced,
   emitAmazonSyncCompleted,
   emitAmazonSyncError,
+  emitUnleashedSyncStarted,
+  emitUnleashedSyncCompleted,
+  emitUnleashedSyncError,
   emitAdminBroadcast,
   getStatusSummary,
 }

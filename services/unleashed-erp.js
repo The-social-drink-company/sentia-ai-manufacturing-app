@@ -127,6 +127,11 @@ class UnleashedERPService {
     logDebug('UNLEASHED ERP: Starting comprehensive data sync...');
     const syncResults = {};
 
+    // Send SSE event: sync started
+    sseService.broadcast('unleashed-sync-started', {
+      timestamp: new Date().toISOString()
+    });
+
     try {
       // Sync production data
       syncResults.production = await this.syncProductionData();
@@ -150,16 +155,44 @@ class UnleashedERPService {
 
       // Generate consolidated manufacturing data
       const consolidatedData = this.consolidateManufacturingData(syncResults);
-      
+
       // Cache the consolidated data
       await redisCacheService.set('unleashed:consolidated_data', consolidatedData, 1800); // 30 min cache
       await redisCacheService.set('unleashed:last_sync', new Date().toISOString(), 3600);
 
       logDebug('UNLEASHED ERP: Sync completed successfully');
+
+      // Send SSE event: sync completed
+      sseService.broadcast('unleashed-sync-completed', {
+        production: {
+          activeBatches: consolidatedData.production.activeBatches,
+          completedToday: consolidatedData.production.completedToday,
+          qualityScore: consolidatedData.production.qualityScore,
+          utilizationRate: consolidatedData.production.utilizationRate
+        },
+        inventory: {
+          totalItems: syncResults.inventory?.metrics?.totalItems || 0,
+          totalValue: syncResults.inventory?.metrics?.totalValue || 0,
+          lowStockItems: syncResults.inventory?.alerts?.length || 0
+        },
+        alerts: {
+          qualityAlerts: consolidatedData.qualityAlerts.length,
+          inventoryAlerts: consolidatedData.inventoryAlerts.length
+        },
+        timestamp: new Date().toISOString()
+      });
+
       return consolidatedData;
 
     } catch (error) {
       logError('UNLEASHED ERP: Sync failed:', error);
+
+      // Send SSE event: sync error
+      sseService.broadcast('unleashed-sync-error', {
+        error: error.message,
+        timestamp: new Date().toISOString()
+      });
+
       throw error;
     }
   }
@@ -205,6 +238,16 @@ class UnleashedERPService {
           severity: 'Medium',
           timestamp: job.ModifiedOn
         }));
+
+      // Send SSE event if quality issues detected
+      if (qualityAlerts.length > 0) {
+        sseService.broadcast('unleashed-quality-alert', {
+          count: qualityAlerts.length,
+          criticalIssues: qualityAlerts.filter(a => a.severity === 'High').length,
+          alerts: qualityAlerts.slice(0, 3), // Top 3 critical alerts
+          timestamp: new Date().toISOString()
+        });
+      }
 
       // Cache production data
       const cacheKey = redisCacheService.generateCacheKey('unleashed', 'production');
@@ -261,6 +304,16 @@ class UnleashedERPService {
           minLevel: item.MinStockLevel || 10,
           location: item.Warehouse?.WarehouseName
         }));
+
+      // Send SSE event if low-stock items detected
+      if (lowStockAlerts.length > 0) {
+        sseService.broadcast('unleashed-low-stock-alert', {
+          count: lowStockAlerts.length,
+          criticalItems: lowStockAlerts.filter(item => item.currentStock === 0).length,
+          items: lowStockAlerts.slice(0, 5), // Top 5 critical items
+          timestamp: new Date().toISOString()
+        });
+      }
 
       // Cache inventory data
       const cacheKey = redisCacheService.generateCacheKey('unleashed', 'inventory');

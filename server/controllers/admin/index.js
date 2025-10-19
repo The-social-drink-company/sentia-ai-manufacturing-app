@@ -1,8 +1,6 @@
 export { getDashboard } from './dashboardController.js'
 export { listUsers, createUser } from './usersController.js'
 export {
-  listApprovals,
-  submitApproval,
   getApprovalRequests,
   createApprovalRequest,
   approveRequest,

@@ -6,8 +6,6 @@ import {
   getDashboard,
   listUsers,
   createUser,
-  listApprovals,
-  submitApproval,
   getApprovalRequests,
   createApprovalRequest,
   approveRequest,

@@ -1,14 +1,26 @@
-import { motion as Motion } from 'framer-motion'
-import useLandingAnalytics from '@/hooks/useLandingAnalytics'
-import { SignInButton } from '@clerk/clerk-react'
-import { ArrowRight, BarChart2, TrendingUp, DollarSign, Settings, Package, Brain, CheckCircle2 } from 'lucide-react'
+const LandingPage = () => {
+  const { heroRef, trackSecondaryCTA } = useLandingAnalytics()
 
-/**
- * LandingPage Component
- * Professional public-facing entry point before authentication
- * Features: Hero, Features Grid, Trust Metrics, CTA, Footer
- */
-const LandingPage = () => {\r\n  const { heroRef, trackPrimaryCTA, trackSecondaryCTA, trackSignInModal } = useLandingAnalytics()\r\n\r\n  const handleLearnMore = () => {\r\n    trackSecondaryCTA('features')\r\n    const featuresSection = document.getElementById('features')\r\n    if (featuresSection) {\r\n      featuresSection.scrollIntoView({ behavior: 'smooth' })\r\n    }\r\n  }
+  const scrollToFeatures = () => {
+    trackSecondaryCTA('features')
+    const featuresSection = document.getElementById('features')
+    if (featuresSection) {
+      featuresSection.scrollIntoView({ behavior: 'smooth' })
+    }
+  }
+
+  const handleLearnMore = () => {
+    scrollToFeatures()
+  }
+
+
+  const handleLearnMore = () => {
+    trackSecondaryCTA('features')
+    const featuresSection = document.getElementById('features')
+    if (featuresSection) {
+      featuresSection.scrollIntoView({ behavior: 'smooth' })
+    }
+  }
 
   return (
     <div className="min-h-screen bg-white">
@@ -60,6 +72,7 @@ const LandingPage = () => {\r\n  const { heroRef, trackPrimaryCTA, trackSecondar
               {/* Primary CTA - Sign In */}
               <SignInButton mode="modal" redirectUrl="/app/dashboard">
                 <button
+                  onClick={handlePrimaryCTA}
                   className="group inline-flex items-center gap-2 rounded-xl bg-white px-8 py-4 text-base font-semibold text-blue-700 shadow-xl transition-all hover:scale-105 hover:shadow-2xl focus:outline-none focus:ring-4 focus:ring-blue-300 sm:text-lg"
                   aria-label="Sign in to Sentia Dashboard"
                 >
@@ -70,7 +83,7 @@ const LandingPage = () => {\r\n  const { heroRef, trackPrimaryCTA, trackSecondar
 
               {/* Secondary CTA - Learn More */}
               <button
-                onClick={scrollToFeatures}
+                onClick={handleLearnMore}
                 className="inline-flex items-center gap-2 rounded-xl border-2 border-white bg-transparent px-8 py-4 text-base font-semibold text-white transition-all hover:bg-white hover:text-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 sm:text-lg"
                 aria-label="Learn more about features"
               >

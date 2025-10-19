@@ -274,9 +274,17 @@ bmad qa review-story --story "connect-xero-financial-data"
 ---
 
 ### QA Automation Follow-Up (2025-10-19)
-
 - BMAD-QA-001: Install Vitest coverage dependency (`@vitest/coverage-v8`)
 - BMAD-QA-002: Restore Playwright E2E capability (`@playwright/test` + browsers)
+- BMAD-QA-003: Provide Prisma test shim for admin services
+- BMAD-MOCK-010: Purge remaining `Math.random()` mock data across dashboards/services
+- BMAD-ARCH-012: Add Type/JSDoc coverage for finance & integration services
+### QA Automation Follow-Up (2025-10-19)
+- BMAD-QA-001: Install Vitest coverage dependency (`@vitest/coverage-v8`)
+- BMAD-QA-002: Restore Playwright E2E capability (`@playwright/test` + browsers)
+- BMAD-QA-003: Provide Prisma test shim for admin services
+- BMAD-MOCK-010: Purge remaining `Math.random()` mock data across dashboards/services
+- BMAD-ARCH-012: Add Type/JSDoc coverage for finance & integration services
 - BMAD-MOCK-010: Purge remaining `Math.random()` mock data across dashboards/services
 - BMAD-ARCH-012: Add Type/JSDoc coverage for finance & integration services
 

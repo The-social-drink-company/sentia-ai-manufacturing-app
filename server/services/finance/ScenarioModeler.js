@@ -242,4 +242,6 @@ class ScenarioModeler {
   }
 }
 
+// Export both default and named for maximum compatibility
+export { ScenarioModeler }
 export default ScenarioModeler

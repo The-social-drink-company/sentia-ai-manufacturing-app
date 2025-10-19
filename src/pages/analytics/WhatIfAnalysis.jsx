@@ -397,7 +397,6 @@ function WhatIfAnalysis() {
 /**
  * ParameterSlider Component
  */
-// eslint-disable-next-line no-unused-vars
 function ParameterSlider({
   label,
   value,

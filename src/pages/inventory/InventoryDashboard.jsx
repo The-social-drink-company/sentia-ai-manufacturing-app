@@ -56,7 +56,6 @@ const WAREHOUSES = {
 /**
  * Inventory Metric Card
  */
-// eslint-disable-next-line no-unused-vars
 function InventoryMetricCard({
   label,
   value,

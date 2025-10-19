@@ -10,11 +10,11 @@
 
 ## Epic Overview
 
-This document defines the 5 major epics required to transform the Sentia Manufacturing AI Dashboard from a high-fidelity prototype (75% functional) into a production-ready enterprise platform (100% complete).
+This document defines the 6 major epics required to transform the Sentia Manufacturing AI Dashboard from a high-fidelity prototype (75% functional) into a production-ready enterprise platform (100% complete).
 
-**Total Stories**: 47 stories across 5 epics
-**Total Estimated Time**: 12-14 weeks
-**Current Progress**: 11% complete (5/47 stories)
+**Total Stories**: 68 stories across 6 epics
+**Total Estimated Time**: 18-20 weeks
+**Current Progress**: 21% complete (14/68 stories)
 
 ---
 
@@ -513,6 +513,128 @@ Mock data undermines user trust and prevents production deployment. Real data in
 
 ---
 
+## EPIC-UI-001: UI/UX Transformation (Dashboard Redesign) ⏳ **PENDING**
+
+**Status**: ⏳ PENDING
+**Priority**: HIGH
+**Duration**: 6 weeks
+**Stories**: 0/21 complete
+**Depends On**: EPIC-002 (must have real data before UI redesign)
+
+### Epic Goal
+
+Transform the Sentia Manufacturing Dashboard to match the professional mockup design at https://manufacture-ng7zmx.manus.space/, achieving ≥90% visual consistency with the target design while maintaining all current functionality and improving user experience.
+
+### Business Value
+
+Professional UI/UX is critical for:
+- **User Trust**: Polished design builds confidence in data accuracy
+- **User Adoption**: Intuitive interfaces increase engagement and reduce training time
+- **Competitive Advantage**: Modern design differentiates from legacy manufacturing software
+- **Brand Perception**: Professional aesthetics reflect product quality
+
+### Epic Acceptance Criteria
+
+- [ ] Visual consistency with mockup design ≥90% (measured by stakeholder review)
+- [ ] WCAG 2.1 AA accessibility compliance (automated testing + manual audit)
+- [ ] Lighthouse score ≥90 in all categories (Performance, Accessibility, Best Practices, SEO)
+- [ ] Page load time < 2 seconds (LCP), Time to Interactive < 3 seconds
+- [ ] Mobile responsive across all breakpoints (375px → 1920px)
+- [ ] Zero regression in existing functionality (all features still work)
+- [ ] Cross-browser compatibility (Chrome, Firefox, Safari, Edge)
+
+### Stories Breakdown (21 stories across 6 weeks)
+
+#### Week 1: Foundation & Setup (4 stories)
+
+1. **BMAD-UI-001: Tailwind Design Tokens** (1 day) - Configure custom gradients, colors, typography
+2. **BMAD-UI-002: Component Library Structure** (2 days) - Reusable buttons, cards, modals matching mockup
+3. **BMAD-UI-003: Authentication Flow Verification** (1 day) - Clerk integration, loading states, error handling
+4. **BMAD-UI-004: Routing Verification** (1 day) - Protected routes, redirects, breadcrumbs
+
+#### Week 2: Public Experience (4 stories)
+
+5. **BMAD-UI-005: Landing Page Redesign** (2 days) - Hero, features grid, metrics, CTA sections
+6. **BMAD-UI-006: Clerk Sign-In Polish** (1 day) - Branded Clerk components, custom styling
+7. **BMAD-UI-007: Page Transitions** (1 day) - Framer Motion animations, loading states
+8. **BMAD-UI-008: Footer & Legal Pages** (1 day) - Footer links, privacy/terms pages
+
+#### Week 3: Dashboard Layout (3 stories)
+
+9. **BMAD-UI-009: Sidebar Redesign** (2 days) - Dark theme, icons, navigation groups
+10. **BMAD-UI-010: Header Enhancement** (1 day) - Breadcrumbs, system status, time display
+11. **BMAD-UI-011: Dashboard Grid Layout** (2 days) - Responsive grid, widget containers
+
+#### Week 4: Dashboard Components Part 1 (3 stories)
+
+12. **BMAD-UI-012: KPI Cards Redesign** (2 days) - Gradient backgrounds, icons, animations
+13. **BMAD-UI-013: Chart Components** (2 days) - Recharts styling, tooltips, legends
+14. **BMAD-UI-014: Working Capital Card** (1 day) - Financial widget styling, metrics display
+
+#### Week 5: Dashboard Components Part 2 (3 stories)
+
+15. **BMAD-UI-015: Quick Actions Widget** (1 day) - Action buttons, icons, hover states
+16. **BMAD-UI-016: Product Sales Chart** (1 day) - Bar chart styling, data visualization
+17. **BMAD-UI-017: Regional Contribution** (1 day) - Pie chart styling, legend placement
+
+#### Week 6: Polish & Testing (4 stories)
+
+18. **BMAD-UI-018: Accessibility Audit** (2 days) - WCAG 2.1 AA compliance, keyboard navigation
+19. **BMAD-UI-019: Responsive Testing** (1 day) - Mobile/tablet/desktop breakpoints
+20. **BMAD-UI-020: Performance Optimization** (1 day) - Lighthouse ≥90, bundle size reduction
+21. **BMAD-UI-021: Cross-Browser Testing** (1 day) - Chrome, Firefox, Safari, Edge
+
+### Epic Metrics
+
+- **Total Stories**: 21
+- **Completed**: 0 (0%)
+- **In Progress**: 0
+- **Pending**: 21 (100%)
+- **Estimated Duration**: 6 weeks (30 days)
+- **Actual Spent**: 0 hours
+- **Velocity**: TBD
+
+### Epic Success Criteria
+
+- [ ] At least 1 story complete (BMAD-UI-001)
+- [ ] All 21 stories complete (100% - 21/21)
+- [ ] Visual consistency ≥90% (stakeholder review)
+- [ ] WCAG 2.1 AA compliance (automated + manual audit)
+- [ ] Lighthouse score ≥90 (all categories)
+- [ ] Page load < 2s, TTI < 3s
+- [ ] Mobile responsive (375px → 1920px)
+- [ ] Zero functional regressions
+- [ ] Cross-browser compatibility verified
+
+### Key Technical Details
+
+**Design System:**
+- Blue-purple gradient system (#3B82F6 → #8B5CF6)
+- Dark sidebar (#1E293B slate-800)
+- Typography scale: 12px → 72px (10 sizes)
+- Spacing: 4px base unit
+- Accessibility: 4.5:1 contrast ratio (normal), 3:1 (large text)
+
+**Authentication Flow:**
+- Development mode bypass (VITE_DEVELOPMENT_MODE=true)
+- Production Clerk integration with 3-second timeout
+- Fallback to development mode if Clerk fails
+- Route protection with SignedIn/SignedOut components
+
+**Component Architecture:**
+- Tailwind CSS for styling
+- Framer Motion for animations
+- Recharts for data visualization
+- React Router v6 for routing
+- TanStack Query for server state (5-min staleTime)
+
+### Dependencies
+
+- **Upstream**: EPIC-002 (Eliminate Mock Data) must be 100% complete - UI redesign requires real data
+- **Downstream**: EPIC-003 (Frontend Polish) will be merged into this epic (loading states, error boundaries, empty states)
+
+---
+
 ## EPIC-003: Frontend Polish & User Experience ⏳ **PENDING**
 
 **Status**: ⏳ PENDING
@@ -643,28 +765,30 @@ Production deployment without proper preparation risks downtime, data loss, and 
 | Epic | Priority | Status | Stories | Duration | Dependencies |
 |------|----------|--------|---------|----------|--------------|
 | EPIC-001: Infrastructure | CRITICAL | ✅ COMPLETE | 4/4 | 4 weeks | None |
-| EPIC-002: Eliminate Mock Data | CRITICAL | ⏳ IN PROGRESS | 5/10 | 3.5 weeks | None |
-| EPIC-003: Frontend Polish | HIGH | ⏳ PENDING | 0/8 | 2 weeks | EPIC-002 |
+| EPIC-002: Eliminate Mock Data | CRITICAL | ✅ COMPLETE | 10/10 | 3.5 weeks | None |
+| EPIC-UI-001: UI/UX Transformation | HIGH | ⏳ PENDING | 0/21 | 6 weeks | EPIC-002 |
+| EPIC-003: Frontend Polish | HIGH | ⏳ PENDING | 0/8 | 2 weeks | EPIC-UI-001 |
 | EPIC-004: Test Coverage | HIGH | ⏳ PENDING | 0/10 | 2 weeks | EPIC-002 |
 | EPIC-005: Production Deployment | CRITICAL | ⏳ PENDING | 0/9 | 1.5 weeks | ALL PREVIOUS |
 
 ### Overall Metrics
 
-- **Total Stories**: 41 stories
-- **Completed**: 10 stories (24%)
+- **Total Stories**: 62 stories
+- **Completed**: 14 stories (23%)
 - **In Progress**: 0 stories
-- **Remaining**: 31 stories (76%)
-- **Total Duration**: 13 weeks estimated
+- **Remaining**: 48 stories (77%)
+- **Total Duration**: 19 weeks estimated
 - **Spent**: 4.2 weeks
-- **Remaining**: 8.8 weeks
+- **Remaining**: 14.8 weeks
 
 ### Sprint Schedule
 
-**Sprint 1 (Weeks 1-2)**: EPIC-002 Stories 1-4 (Financial & sales data)
-**Sprint 2 (Weeks 3-4)**: EPIC-002 Stories 5-10 (Orders, inventory, real-time, fallbacks)
-**Sprint 3 (Weeks 5-6)**: EPIC-003 (Frontend polish & UX)
-**Sprint 4 (Weeks 7-8)**: EPIC-004 (Test coverage & quality)
-**Sprint 5 (Week 9)**: EPIC-005 (Production deployment)
+**Sprint 1 (Weeks 1-2)**: ✅ COMPLETE - EPIC-002 Stories 1-4 (Financial & sales data)
+**Sprint 2 (Weeks 3-4)**: ✅ COMPLETE - EPIC-002 Stories 5-10 (Orders, inventory, real-time, fallbacks)
+**Sprint 3 (Weeks 5-10)**: ⏳ PENDING - EPIC-UI-001 (UI/UX Transformation - 21 stories, 6 weeks)
+**Sprint 4 (Weeks 11-12)**: ⏳ PENDING - EPIC-003 (Frontend polish & UX - 8 stories)
+**Sprint 5 (Weeks 13-14)**: ⏳ PENDING - EPIC-004 (Test coverage & quality - 10 stories)
+**Sprint 6 (Week 15-16)**: ⏳ PENDING - EPIC-005 (Production deployment - 9 stories)
 
 ### Success Criteria
 

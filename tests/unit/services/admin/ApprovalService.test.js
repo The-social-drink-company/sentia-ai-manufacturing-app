@@ -149,7 +149,9 @@ describe('ApprovalService', () => {
       }
 
       prisma.adminApproval.create.mockResolvedValue(mockApproval)
-      prisma.adminApproval.findUnique.mockResolvedValue(mockApproval)
+      prisma.adminApproval.findUnique
+        .mockResolvedValueOnce(mockApproval)
+        .mockResolvedValueOnce({ ...mockApproval, status: 'APPROVED' })
       prisma.adminApproval.update.mockResolvedValue({ ...mockApproval, status: 'APPROVED' })
       prisma.adminApprovalHistory.create.mockResolvedValue({ id: 'history-456' })
 
@@ -274,7 +276,9 @@ describe('ApprovalService', () => {
         expiresAt: new Date(Date.now() + 86400000), // 24 hours from now
       }
 
-      prisma.adminApproval.findUnique.mockResolvedValue(mockApproval)
+      prisma.adminApproval.findUnique
+        .mockResolvedValueOnce(mockApproval)
+        .mockResolvedValueOnce({ ...mockApproval, status: 'APPROVED' })
       prisma.adminApproval.update.mockResolvedValue({
         ...mockApproval,
         status: 'APPROVED',
@@ -311,7 +315,9 @@ describe('ApprovalService', () => {
         expiresAt: new Date(Date.now() + 86400000),
       }
 
-      prisma.adminApproval.findUnique.mockResolvedValue(mockApproval)
+      prisma.adminApproval.findUnique
+        .mockResolvedValueOnce(mockApproval)
+        .mockResolvedValueOnce({ ...mockApproval, status: 'APPROVED' })
 
       await expect(ApprovalService.approve('approval-999', 'admin-123', false)).rejects.toThrow(
         'MFA verification required for approval'
@@ -326,7 +332,9 @@ describe('ApprovalService', () => {
         expiresAt: new Date(Date.now() + 86400000),
       }
 
-      prisma.adminApproval.findUnique.mockResolvedValue(mockApproval)
+      prisma.adminApproval.findUnique
+        .mockResolvedValueOnce(mockApproval)
+        .mockResolvedValueOnce({ ...mockApproval, status: 'APPROVED' })
 
       await expect(
         ApprovalService.approve('approval-completed', 'admin-123', true)
@@ -341,7 +349,9 @@ describe('ApprovalService', () => {
         expiresAt: new Date(Date.now() - 3600000), // 1 hour ago
       }
 
-      prisma.adminApproval.findUnique.mockResolvedValue(mockApproval)
+      prisma.adminApproval.findUnique
+        .mockResolvedValueOnce(mockApproval)
+        .mockResolvedValueOnce({ ...mockApproval, status: 'APPROVED' })
       prisma.adminApproval.update.mockResolvedValue({ ...mockApproval, status: 'EXPIRED' })
       prisma.adminApprovalHistory.create.mockResolvedValue({ id: 'history-expired' })
 
@@ -363,7 +373,9 @@ describe('ApprovalService', () => {
         status: 'PENDING',
       }
 
-      prisma.adminApproval.findUnique.mockResolvedValue(mockApproval)
+      prisma.adminApproval.findUnique
+        .mockResolvedValueOnce(mockApproval)
+        .mockResolvedValueOnce({ ...mockApproval, status: 'APPROVED' })
       prisma.adminApproval.update.mockResolvedValue({
         ...mockApproval,
         status: 'REJECTED',
@@ -400,7 +412,9 @@ describe('ApprovalService', () => {
         status: 'PENDING',
       }
 
-      prisma.adminApproval.findUnique.mockResolvedValue(mockApproval)
+      prisma.adminApproval.findUnique
+        .mockResolvedValueOnce(mockApproval)
+        .mockResolvedValueOnce({ ...mockApproval, status: 'APPROVED' })
 
       await expect(ApprovalService.reject('approval-no-reason', 'admin-456', '')).rejects.toThrow(
         'Rejection reason is required'
@@ -485,3 +499,4 @@ describe('ApprovalService', () => {
     })
   })
 })
+

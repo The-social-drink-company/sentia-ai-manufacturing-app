@@ -8,7 +8,7 @@ import {
   LinkIcon,
   CheckCircleIcon,
   ExclamationTriangleIcon,
-  ArrowPathIcon
+  ArrowPathIcon,
 } from '@heroicons/react/24/outline'
 import { useXeroIntegration } from '../hooks/useXeroIntegration'
 import { logError } from '../../../utils/structuredLogger.js'
@@ -21,7 +21,7 @@ export default function XeroConnection({ onConnectionChange }) {
     isLoading,
     authenticate,
     disconnect,
-    startAuthFlow
+    startAuthFlow,
   } = useXeroIntegration()
 
   const [showDetails, setShowDetails] = useState(false)
@@ -55,7 +55,9 @@ export default function XeroConnection({ onConnectionChange }) {
   }
 
   const handleDisconnect = () => {
-    if (window.confirm('Disconnecting will switch the dashboard back to internal data. Continue?')) {
+    if (
+      window.confirm('Disconnecting will switch the dashboard back to internal data. Continue?')
+    ) {
       disconnect()
     }
   }
@@ -96,7 +98,9 @@ export default function XeroConnection({ onConnectionChange }) {
               )}
             </div>
             <div className="ml-4">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Xero Integration</h3>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                Xero Integration
+              </h3>
               <p className="text-sm text-gray-600 dark:text-gray-400">
                 {isConnected
                   ? `Connected to ${connectionStatus?.tenantName || 'Xero'}`
@@ -140,7 +144,9 @@ export default function XeroConnection({ onConnectionChange }) {
           <div className="mt-6 border-t border-gray-200 dark:border-gray-700 pt-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-2">Connection details</h4>
+                <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-2">
+                  Connection details
+                </h4>
                 <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
                   <div className="flex justify-between">
                     <span>Organisation:</span>
@@ -148,7 +154,9 @@ export default function XeroConnection({ onConnectionChange }) {
                   </div>
                   <div className="flex justify-between">
                     <span>Tenant ID:</span>
-                    <span className="font-mono text-xs">{connectionStatus?.tenantId?.slice(0, 8) || 'Unknown'}...</span>
+                    <span className="font-mono text-xs">
+                      {connectionStatus?.tenantId?.slice(0, 8) || 'Unknown'}...
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span>Status:</span>
@@ -157,7 +165,9 @@ export default function XeroConnection({ onConnectionChange }) {
                 </div>
               </div>
               <div>
-                <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-2">Token health</h4>
+                <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-2">
+                  Token health
+                </h4>
                 <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
                   <div className="flex justify-between">
                     <span>Expires:</span>

@@ -66,7 +66,8 @@ class MitigationPlanner {
       plan.quickWins.push({
         id: 'accelerate-collections',
         title: 'Accelerate receivables collections',
-        description: 'Deploy dunning workflows, focus on invoices >30 days, and incentivise early payment.',
+        description:
+          'Deploy dunning workflows, focus on invoices >30 days, and incentivise early payment.',
         owner: 'Finance Operations',
         impact: {
           type: 'ccc',
@@ -82,7 +83,8 @@ class MitigationPlanner {
       plan.structural.push({
         id: 'renegotiate-terms',
         title: 'Renegotiate supplier terms',
-        description: 'Target top 10 suppliers for 15-30 day extensions to align with collection cadence.',
+        description:
+          'Target top 10 suppliers for 15-30 day extensions to align with collection cadence.',
         owner: 'Procurement',
         impact: {
           type: 'ccc',
@@ -103,7 +105,8 @@ class MitigationPlanner {
       plan.liquidity.push({
         id: 'cash-containment',
         title: 'Activate cash containment playbook',
-        description: 'Pause discretionary spend, defer non-critical capex, and tighten vendor payment sequencing.',
+        description:
+          'Pause discretionary spend, defer non-critical capex, and tighten vendor payment sequencing.',
         owner: 'FP&A',
         impact: {
           type: 'runway',
@@ -117,7 +120,8 @@ class MitigationPlanner {
       plan.liquidity.push({
         id: 'credit-facility',
         title: 'Secure short-term liquidity facility',
-        description: 'Engage banking partners for revolving credit or supply-chain finance to protect >3 months runway.',
+        description:
+          'Engage banking partners for revolving credit or supply-chain finance to protect >3 months runway.',
         owner: 'Treasury',
         impact: {
           type: 'runway',
@@ -145,7 +149,8 @@ class MitigationPlanner {
       plan.structural.push({
         id: 'rebalance-slow-movers',
         title: 'Rebalance slow-moving SKUs',
-        description: 'Run targeted promotions, bundle offers, and inter-warehouse transfers to release trapped working capital.',
+        description:
+          'Run targeted promotions, bundle offers, and inter-warehouse transfers to release trapped working capital.',
         owner: 'Supply Chain',
         impact: {
           type: 'inventory',

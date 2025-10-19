@@ -1,4 +1,5 @@
 # Manual Codebase Analysis Guide
+
 ## Achieving BMAD Goals Without CLI Installation
 
 **Purpose**: Perform complete codebase analysis and alignment assessment using Claude Code and manual review - no external CLI tools required.
@@ -61,24 +62,30 @@ code analysis/ORIGINAL_INTENT.md
 ## Date Reviewed: [today]
 
 ## Business Goals
+
 From: context/business-requirements/sentia_business_model.md
 
 ### Primary Goal:
+
 [What problem was this solving?]
 
 ### Target Users:
+
 - [User type 1]: [Their needs]
 - [User type 2]: [Their needs]
 
 ### Success Criteria:
+
 From: acceptance_criteria.md
+
 1. [Criterion 1]
 2. [Criterion 2]
-...
+   ...
 
 ## Core Features (Original Plan)
 
 ### Must-Have Features:
+
 1. **Working Capital Management**
    - Purpose: [why]
    - Users: [who]
@@ -92,31 +99,39 @@ From: acceptance_criteria.md
 [Continue for all major features...]
 
 ### Should-Have Features:
+
 ...
 
 ### Nice-to-Have Features:
+
 ...
 
 ## Technical Requirements (Original)
+
 From: technical-specifications/
 
 ### Architecture:
+
 - Frontend: [requirements]
 - Backend: [requirements]
 - Database: [requirements]
 
 ### Integrations Required:
+
 - [ ] Xero (Financial data)
 - [ ] Shopify (Sales data)
 - [ ] Amazon SP-API (Orders)
 - [ ] Unleashed ERP (Manufacturing)
 
 ### Performance Requirements:
+
 - [Requirement 1]
 - [Requirement 2]
 
 ## Key Insights
+
 What stands out from the original requirements?
+
 - [Insight 1]
 - [Insight 2]
 ```
@@ -141,6 +156,7 @@ code analysis/CURRENT_STATE.md
 # Current Implementation State
 
 ## Date Analyzed: [today]
+
 ## Source: CLAUDE.md (lines referenced)
 
 ## Implementation Status (from CLAUDE.md lines 89-141)
@@ -148,17 +164,20 @@ code analysis/CURRENT_STATE.md
 ### ✅ FULLY FUNCTIONAL (75%)
 
 #### Navigation System
+
 - Status: ✅ Complete
 - Quality: Production-ready
 - Evidence: [file paths]
 
 #### UI Framework
+
 - Status: ✅ Complete
 - Components: React, Tailwind, shadcn/ui
 - Quality: Professional
 - Evidence: src/components/
 
 #### Working Capital Engine
+
 - Status: ✅ 95% Complete (CLAUDE.md line 127)
 - Real Implementation: YES
 - Algorithms: Real cash conversion cycle
@@ -166,17 +185,20 @@ code analysis/CURRENT_STATE.md
 - Evidence: src/services/WorkingCapitalEngine.js
 
 #### Demand Forecasting
+
 - Status: ✅ Complete with Real AI
 - Implementation: Ensemble forecasting models
 - Mock Data: NONE
 - Evidence: src/services/DemandForecastingEngine.js
 
 #### Inventory Management
+
 - Status: ✅ Complete
 - Real Data: YES
 - Evidence: src/components/InventoryManagement.jsx
 
 #### Shopify Integration
+
 - Status: ✅ Operational
 - Coverage: 90%
 - Real Data: YES
@@ -184,6 +206,7 @@ code analysis/CURRENT_STATE.md
 - Evidence: server/integrations/shopify.js
 
 #### Xero Integration
+
 - Status: ✅ Operational
 - Coverage: 85%
 - Real Data: YES
@@ -194,12 +217,14 @@ code analysis/CURRENT_STATE.md
 ### ⚠️ PARTIALLY IMPLEMENTED (15%)
 
 #### Amazon SP-API
+
 - Status: ⚠️ Framework Ready, Not Active
 - Coverage: 0% (configured but no credentials)
 - Evidence: server/integrations/amazon.js
 - CLAUDE.md Reference: Line 175
 
 #### Unleashed ERP
+
 - Status: 🔄 40% Complete
 - Manufacturing Sync: In Progress
 - Quality Control: Not Started
@@ -208,6 +233,7 @@ code analysis/CURRENT_STATE.md
 ### ❌ MOCK DATA / NON-FUNCTIONAL (10%)
 
 #### Business Intelligence Placeholders
+
 - Status: ❌ Mock
 - Location: src/components/AI/AIAnalytics.jsx
 - Type: Hardcoded scenarios
@@ -215,6 +241,7 @@ code analysis/CURRENT_STATE.md
 - Impact: HIGH - Users see fake insights
 
 #### What-If Analysis
+
 - Status: ❌ Non-functional
 - Location: src/components/WhatIfAnalysis.jsx
 - Issue: Sliders don't affect calculations
@@ -226,12 +253,14 @@ code analysis/CURRENT_STATE.md
 ## Overall Assessment
 
 ### By Numbers:
+
 - Total Features Planned: [X]
 - Fully Implemented: [Y] ([Z]%)
 - Partially Implemented: [A] ([B]%)
 - Mock/Broken: [C] ([D]%)
 
 ### By Business Value:
+
 - Critical Features Complete: [X]/[Y]
 - High Value Features Complete: [X]/[Y]
 - Medium Value Features Complete: [X]/[Y]
@@ -269,20 +298,21 @@ I'll generate a comprehensive report like this:
 
 ## Feature-by-Feature Comparison
 
-| Feature | Original Plan | Current Status | Gap | Priority |
-|---------|--------------|----------------|-----|----------|
-| Working Capital | ✅ Must-have | ✅ 95% Real | 5% formatting | LOW |
-| Demand Forecasting | ✅ Must-have | ✅ 100% Real | None | - |
-| Inventory Mgmt | ✅ Must-have | ✅ 100% Real | None | - |
-| What-If Analysis | ✅ Must-have | ❌ Non-functional | 100% | CRITICAL |
-| Business Intelligence | ✅ Should-have | ❌ Mock placeholders | 90% | HIGH |
-| Amazon Integration | ✅ Must-have | ⚠️ Ready (0% active) | 100% | HIGH |
-| Unleashed ERP | ✅ Must-have | 🔄 40% complete | 60% | HIGH |
-| Real-time Updates | ✅ Should-have | ❌ Simulated | 100% | MEDIUM |
+| Feature               | Original Plan  | Current Status       | Gap           | Priority |
+| --------------------- | -------------- | -------------------- | ------------- | -------- |
+| Working Capital       | ✅ Must-have   | ✅ 95% Real          | 5% formatting | LOW      |
+| Demand Forecasting    | ✅ Must-have   | ✅ 100% Real         | None          | -        |
+| Inventory Mgmt        | ✅ Must-have   | ✅ 100% Real         | None          | -        |
+| What-If Analysis      | ✅ Must-have   | ❌ Non-functional    | 100%          | CRITICAL |
+| Business Intelligence | ✅ Should-have | ❌ Mock placeholders | 90%           | HIGH     |
+| Amazon Integration    | ✅ Must-have   | ⚠️ Ready (0% active) | 100%          | HIGH     |
+| Unleashed ERP         | ✅ Must-have   | 🔄 40% complete      | 60%           | HIGH     |
+| Real-time Updates     | ✅ Should-have | ❌ Simulated         | 100%          | MEDIUM   |
 
 ## Critical Gaps (Blocking Production)
 
 ### 1. What-If Analysis Non-Functional
+
 **Original Intent**: Interactive scenario modeling for financial planning
 **Current State**: UI exists but calculations don't work
 **Impact**: HIGH - Key feature advertised but unusable
@@ -290,6 +320,7 @@ I'll generate a comprehensive report like this:
 **Location**: src/components/WhatIfAnalysis.jsx
 
 ### 2. Business Intelligence Mock Data
+
 **Original Intent**: AI-powered insights and recommendations
 **Current State**: Hardcoded fake scenarios
 **Impact**: HIGH - Users misled by fake data
@@ -301,7 +332,9 @@ I'll generate a comprehensive report like this:
 ## Integration Gaps
 
 ### Xero API (85% Complete)
+
 **Missing**:
+
 - Rate limiting handling
 - Some advanced features
 
@@ -309,7 +342,9 @@ I'll generate a comprehensive report like this:
 **Priority**: MEDIUM
 
 ### Shopify API (90% Complete)
+
 **Missing**:
+
 - Multi-store sync optimization
 - Webhook reliability
 
@@ -317,7 +352,9 @@ I'll generate a comprehensive report like this:
 **Priority**: MEDIUM
 
 ### Amazon SP-API (0% Active)
+
 **Missing**:
+
 - Credential configuration
 - Order synchronization
 - Inventory updates
@@ -326,7 +363,9 @@ I'll generate a comprehensive report like this:
 **Priority**: HIGH
 
 ### Unleashed ERP (40% Complete)
+
 **Missing**:
+
 - Manufacturing sync (60%)
 - Quality control integration
 - Production tracking
@@ -549,6 +588,7 @@ analysis/
 ### For Each Phase, Use This Pattern:
 
 1. **Ask me to help**:
+
    ```
    "Please help me with Phase [X], Step [Y] of the manual analysis.
    Read [files] and generate [output]."
@@ -650,6 +690,7 @@ Work through each phase, asking me to help with each step.
 **Total**: 6-10 hours spread over a few days
 
 But I'll do most of the heavy lifting! You just need to:
+
 - Review what I generate
 - Add your insights
 - Make decisions on priorities
@@ -674,12 +715,14 @@ By the end, you'll have:
 ## Next Steps
 
 1. **Create the analysis directory**:
+
    ```powershell
    mkdir analysis
    mkdir analysis/stories
    ```
 
 2. **Start Phase 1** by asking me in Claude Code:
+
    ```
    "Let's start Phase 1 of the manual codebase analysis..."
    ```

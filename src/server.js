@@ -1102,7 +1102,7 @@ class SentiaMCPServer {
       for (const [connectionId, res] of this.connections) {
         try {
           res.end()
-        // eslint-disable-next-line no-unused-vars
+          // eslint-disable-next-line no-unused-vars
         } catch (error) {
           // Error intentionally caught to prevent shutdown failure
           logger.warn('Error closing SSE connection', { connectionId })

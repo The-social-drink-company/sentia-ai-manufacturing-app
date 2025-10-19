@@ -252,11 +252,11 @@ You can now:
 
 _Add any deployment-specific notes here:_
 
-- Deployment Date: ******\_\_\_******
-- Deployed By: ******\_\_\_******
-- Neon Cancellation Date: ******\_\_\_******
-- Issues Encountered: ******\_\_\_******
-- Resolution: ******\_\_\_******
+- Deployment Date: **\*\***\_\_\_**\*\***
+- Deployed By: **\*\***\_\_\_**\*\***
+- Neon Cancellation Date: **\*\***\_\_\_**\*\***
+- Issues Encountered: **\*\***\_\_\_**\*\***
+- Resolution: **\*\***\_\_\_**\*\***
 
 ---
 

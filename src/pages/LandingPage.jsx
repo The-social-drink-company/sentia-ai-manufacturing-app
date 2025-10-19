@@ -1,7 +1,16 @@
 import { motion } from 'framer-motion'
 import useLandingAnalytics from '@/hooks/useLandingAnalytics'
 import { SignInButton } from '@clerk/clerk-react'
-import { ArrowRight, BarChart2, TrendingUp, DollarSign, Settings, Package, Brain, CheckCircle2 } from 'lucide-react'
+import {
+  ArrowRight,
+  BarChart2,
+  TrendingUp,
+  DollarSign,
+  Settings,
+  Package,
+  Brain,
+  CheckCircle2,
+} from 'lucide-react'
 
 const Motion = motion
 
@@ -29,7 +38,8 @@ const LandingPage = () => {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <Motion.header ref={heroRef}
+      <Motion.header
+        ref={heroRef}
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
@@ -37,10 +47,13 @@ const LandingPage = () => {
       >
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-10">
-          <div className="absolute inset-0" style={{
-            backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)',
-            backgroundSize: '40px 40px'
-          }} />
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)',
+              backgroundSize: '40px 40px',
+            }}
+          />
         </div>
 
         <div className="relative mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-32 lg:px-8 lg:py-40">
@@ -63,7 +76,8 @@ const LandingPage = () => {
               transition={{ delay: 0.4, duration: 0.8 }}
               className="mx-auto mt-6 max-w-3xl text-lg leading-8 text-blue-100 sm:text-xl"
             >
-              Real-time manufacturing intelligence with AI-driven forecasting and working capital optimization
+              Real-time manufacturing intelligence with AI-driven forecasting and working capital
+              optimization
             </Motion.p>
 
             {/* CTA Buttons */}
@@ -158,7 +172,8 @@ const LandingPage = () => {
                 Ready to optimize your manufacturing operations?
               </h2>
               <p className="mt-6 text-lg text-purple-100 sm:text-xl">
-                Join leading manufacturers using AI-powered insights to drive efficiency and profitability
+                Join leading manufacturers using AI-powered insights to drive efficiency and
+                profitability
               </p>
 
               {/* CTA Button */}
@@ -285,32 +300,38 @@ const features = [
   {
     icon: BarChart2,
     title: 'Executive Dashboard',
-    description: 'Real-time KPI monitoring with customizable widgets and role-based access control for executive decision-making.',
+    description:
+      'Real-time KPI monitoring with customizable widgets and role-based access control for executive decision-making.',
   },
   {
     icon: TrendingUp,
     title: 'AI Forecasting',
-    description: 'Ensemble forecasting models achieving >85% accuracy with seasonal pattern detection and confidence intervals.',
+    description:
+      'Ensemble forecasting models achieving >85% accuracy with seasonal pattern detection and confidence intervals.',
   },
   {
     icon: DollarSign,
     title: 'Working Capital',
-    description: 'Optimize cash conversion cycle with 30-90 day forecasting and receivables/payables management.',
+    description:
+      'Optimize cash conversion cycle with 30-90 day forecasting and receivables/payables management.',
   },
   {
     icon: Settings,
     title: 'What-If Analysis',
-    description: 'Interactive scenario planning and modeling with real-time impact analysis on key financial metrics.',
+    description:
+      'Interactive scenario planning and modeling with real-time impact analysis on key financial metrics.',
   },
   {
     icon: Package,
     title: 'Inventory Management',
-    description: 'Multi-warehouse optimization with reorder point calculations and batch size recommendations (100-1000 units).',
+    description:
+      'Multi-warehouse optimization with reorder point calculations and batch size recommendations (100-1000 units).',
   },
   {
     icon: Brain,
     title: 'AI Insights',
-    description: 'Powered by OpenAI and Claude for intelligent recommendations, anomaly detection, and predictive analytics.',
+    description:
+      'Powered by OpenAI and Claude for intelligent recommendations, anomaly detection, and predictive analytics.',
   },
 ]
 
@@ -337,6 +358,3 @@ const metrics = [
 ]
 
 export default LandingPage
-
-
-

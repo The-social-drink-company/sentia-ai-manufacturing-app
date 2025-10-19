@@ -28,23 +28,14 @@ router.get('/status', requireRole('admin', 'manager'), (_req, res) => {
   res.json(getStatusSummary())
 })
 
-router.post(
-  '/broadcast',
-  requireRole('admin'),
-  express.json(),
-  (req, res) => {
-    const {
-      channel = 'system',
-      event = 'admin:broadcast',
-      data = {},
-    } = req.body ?? {}
+router.post('/broadcast', requireRole('admin'), express.json(), (req, res) => {
+  const { channel = 'system', event = 'admin:broadcast', data = {} } = req.body ?? {}
 
-    emitAdminBroadcast(channel, event, data, {
-      userId: req.user?.id ?? null,
-    })
+  emitAdminBroadcast(channel, event, data, {
+    userId: req.user?.id ?? null,
+  })
 
-    res.json({ success: true })
-  }
-)
+  res.json({ success: true })
+})
 
 export default router

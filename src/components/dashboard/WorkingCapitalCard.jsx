@@ -26,23 +26,23 @@ const WorkingCapitalCard = ({ data }) => {
     {
       value: data.currentWC,
       label: 'Current WC',
-      format: 'currency'
+      format: 'currency',
     },
     {
       value: data.daysCCC,
       label: 'Days CCC',
-      format: 'number'
+      format: 'number',
     },
     {
       value: data.optimizationPotential,
       label: 'Optimization Potential',
-      format: 'currency'
+      format: 'currency',
     },
     {
       value: data.percentOfRevenue,
       label: '% of Revenue',
-      format: 'percentage'
-    }
+      format: 'percentage',
+    },
   ]
 
   /**
@@ -75,7 +75,9 @@ const WorkingCapitalCard = ({ data }) => {
       {/* Header */}
       <div className="mb-8">
         <h2 className="text-2xl font-bold flex items-center gap-3">
-          <span className="text-3xl" role="img" aria-label="Money bag">💰</span>
+          <span className="text-3xl" role="img" aria-label="Money bag">
+            💰
+          </span>
           Working Capital Analysis
         </h2>
         <p className="text-purple-100 mt-2">
@@ -95,9 +97,7 @@ const WorkingCapitalCard = ({ data }) => {
             <div className="text-4xl font-bold mb-2">
               {formatValue(metric.value, metric.format)}
             </div>
-            <div className="text-sm text-purple-100">
-              {metric.label}
-            </div>
+            <div className="text-sm text-purple-100">{metric.label}</div>
           </div>
         ))}
       </div>

@@ -68,9 +68,9 @@
 ### ✅ Auto-Sync Configuration
 
 - AUTO_SYNC_ENABLED: ✅ true
-- XERO_SYNC_INTERVAL: ✅ _/30 _ \* \* \*
-- SHOPIFY_SYNC_INTERVAL: ✅ _/15 _ \* \* \*
-- DATABASE_SYNC_INTERVAL: ✅ 0 _/6 _ \* \*
+- XERO*SYNC_INTERVAL: ✅ */30 \_ \* \* \*
+- SHOPIFY*SYNC_INTERVAL: ✅ */15 \_ \* \* \*
+- DATABASE*SYNC_INTERVAL: ✅ 0 */6 \_ \* \*
 
 ## 4. Missing/Optional Items
 

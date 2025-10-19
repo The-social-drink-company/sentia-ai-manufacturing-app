@@ -1,5 +1,5 @@
-import React from 'react';
-import { Download, Maximize2, RefreshCw } from 'lucide-react';
+import React from 'react'
+import { Download, Maximize2, RefreshCw } from 'lucide-react'
 
 /**
  * ChartCard Component
@@ -42,9 +42,7 @@ function ChartCard({
         <div className="flex items-start justify-between">
           <div className="flex-1">
             <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
-            {subtitle && (
-              <p className="text-sm text-gray-600 mt-1">{subtitle}</p>
-            )}
+            {subtitle && <p className="text-sm text-gray-600 mt-1">{subtitle}</p>}
           </div>
 
           {/* Action buttons */}
@@ -122,9 +120,7 @@ function ChartCard({
                   />
                 </svg>
               </div>
-              <p className="text-sm font-medium text-gray-900 mb-1">
-                Failed to load chart
-              </p>
+              <p className="text-sm font-medium text-gray-900 mb-1">Failed to load chart</p>
               <p className="text-sm text-gray-600 mb-4">
                 {error.message || 'An unexpected error occurred'}
               </p>
@@ -145,7 +141,7 @@ function ChartCard({
         {!loading && !error && children}
       </div>
     </div>
-  );
+  )
 }
 
-export default ChartCard;
+export default ChartCard

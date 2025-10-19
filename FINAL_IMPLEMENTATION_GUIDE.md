@@ -74,6 +74,7 @@ graph TB
 ## Four-Service Architecture Details
 
 ### Service 1: Frontend (Static Site)
+
 - **Render Service Type**: Static Site
 - **Build Command**: `pnpm run build`
 - **Publish Directory**: `dist/`
@@ -82,6 +83,7 @@ graph TB
 - **Environment**: Build-time injection of API URLs
 
 ### Service 2: Backend API (Express Server)
+
 - **Render Service Type**: Web Service
 - **Start Command**: `pnpm run start:render`
 - **Port**: 5000 (auto-assigned by Render)
@@ -90,6 +92,7 @@ graph TB
 - **Health Check**: `/api/health`
 
 ### Service 3: MCP Server (Integration Hub)
+
 - **Render Service Type**: Web Service
 - **Start Command**: Node.js MCP server
 - **Port**: 3001 (auto-assigned by Render)
@@ -98,6 +101,7 @@ graph TB
 - **Health Check**: `/health`
 
 ### Service 4: Database (PostgreSQL)
+
 - **Render Service Type**: PostgreSQL
 - **Version**: PostgreSQL 16
 - **Extensions**: pgvector (for AI/ML embeddings)

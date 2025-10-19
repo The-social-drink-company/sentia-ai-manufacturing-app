@@ -8,6 +8,7 @@
 **Status**: Phase 4 (Implementation) - QA/Automation in progress
 
 ### Quality Metrics (2025-10-19)
+
 - TestArch automation: full + ci_cd attempts FAILED (dependencies missing)
 - Unit tests passing: 12/13 (1 skipped)
 - Coverage tooling: missing `@vitest/coverage-v8`
@@ -274,6 +275,7 @@ bmad qa review-story --story "connect-xero-financial-data"
 ---
 
 ### QA Automation Follow-Up (2025-10-19)
+
 - BMAD-QA-001: Install Vitest coverage dependency (`@vitest/coverage-v8`)
 - BMAD-QA-002: Restore Playwright E2E capability (`@playwright/test` + browsers)
 - BMAD-QA-003: Provide Prisma test shim for admin services
@@ -478,10 +480,10 @@ BMAD-METHOD v6a provides the structured, agentic framework needed to transform t
 
 ### Sprint 1: Financial & Sales Data ✅ COMPLETE
 
-| Story ID | Status | Estimated | Actual | Completion |
-|----------|--------|-----------|--------|------------|
-| BMAD-MOCK-001 | ✅ COMPLETE | 3 days | 3 days | 2025-10-19 |
-| BMAD-MOCK-002 | ✅ COMPLETE | 2.5 days | 0.25 days (6 hours) | 2025-10-19 |
+| Story ID      | Status      | Estimated      | Actual                | Completion |
+| ------------- | ----------- | -------------- | --------------------- | ---------- |
+| BMAD-MOCK-001 | ✅ COMPLETE | 3 days         | 3 days                | 2025-10-19 |
+| BMAD-MOCK-002 | ✅ COMPLETE | 2.5 days       | 0.25 days (6 hours)   | 2025-10-19 |
 | BMAD-MOCK-003 | ✅ COMPLETE | (See Sprint 2) | 0 days (pre-existing) | 2025-10-19 |
 | BMAD-MOCK-004 | ✅ COMPLETE | (See Sprint 3) | 0 days (pre-existing) | 2025-10-19 |
 | BMAD-MOCK-007 | ✅ COMPLETE | (See Sprint 3) | 0 days (pre-existing) | 2025-10-19 |
@@ -492,10 +494,10 @@ BMAD-METHOD v6a provides the structured, agentic framework needed to transform t
 
 ### Sprint 2: Order & Inventory Data ✅ COMPLETE
 
-| Story ID | Status | Estimated | Actual | Completion |
-|----------|--------|-----------|--------|------------|
-| BMAD-MOCK-003-AMAZON | ✅ COMPLETE | 3 days | 2 hours | 2025-10-19 |
-| BMAD-MOCK-004-UNLEASHED | ✅ COMPLETE | 3 days | 2.5 hours | 2025-10-19 |
+| Story ID                | Status      | Estimated | Actual    | Completion |
+| ----------------------- | ----------- | --------- | --------- | ---------- |
+| BMAD-MOCK-003-AMAZON    | ✅ COMPLETE | 3 days    | 2 hours   | 2025-10-19 |
+| BMAD-MOCK-004-UNLEASHED | ✅ COMPLETE | 3 days    | 2.5 hours | 2025-10-19 |
 
 **Sprint 2 Velocity**: 6 days estimated → 4.5 hours actual = **1,333% velocity** (13.3x faster than estimated)
 
@@ -503,14 +505,14 @@ BMAD-METHOD v6a provides the structured, agentic framework needed to transform t
 
 ### Sprint 3: Real-time & UI Polish
 
-| Story ID | Status | Estimated | Actual | Completion |
-|----------|--------|-----------|--------|------------|
-| BMAD-MOCK-005 (Amazon) | ✅ COMPLETE | 2 days | 2 hours | 2025-10-19 |
-| BMAD-MOCK-006 (Unleashed) | ✅ COMPLETE | 1.5 days | 2.5 hours | 2025-10-19 |
-| BMAD-MOCK-007 (Working Capital) | ✅ COMPLETE | 2 days | 0 days (pre-existing) | 2025-10-19 |
-| BMAD-MOCK-008 (SSE Verification) | ✅ COMPLETE | 0.5 days | 15 min | 2025-10-19 |
-| BMAD-MOCK-009 (API Fallback Docs) | ✅ COMPLETE | 1 day | 45 min | 2025-10-19 |
-| BMAD-MOCK-010 (UI Empty States) | ✅ COMPLETE | 2 hours | 1 hour | 2025-10-19 |
+| Story ID                          | Status      | Estimated | Actual                | Completion |
+| --------------------------------- | ----------- | --------- | --------------------- | ---------- |
+| BMAD-MOCK-005 (Amazon)            | ✅ COMPLETE | 2 days    | 2 hours               | 2025-10-19 |
+| BMAD-MOCK-006 (Unleashed)         | ✅ COMPLETE | 1.5 days  | 2.5 hours             | 2025-10-19 |
+| BMAD-MOCK-007 (Working Capital)   | ✅ COMPLETE | 2 days    | 0 days (pre-existing) | 2025-10-19 |
+| BMAD-MOCK-008 (SSE Verification)  | ✅ COMPLETE | 0.5 days  | 15 min                | 2025-10-19 |
+| BMAD-MOCK-009 (API Fallback Docs) | ✅ COMPLETE | 1 day     | 45 min                | 2025-10-19 |
+| BMAD-MOCK-010 (UI Empty States)   | ✅ COMPLETE | 2 hours   | 1 hour                | 2025-10-19 |
 
 **Note**: Stories 005-006 are the RENAMED integration stories (originally in Sprint 2). Story 008-009 added for verification/documentation. Story 010 is UI empty states audit (not Math.random cleanup - that was already complete in story 003).
 
@@ -568,24 +570,23 @@ BMAD-METHOD v6a provides the structured, agentic framework needed to transform t
    - Next: Amazon referral fees, FBA costs
 
 **Pattern for All Future Integration Stories**:
+
 1. Check service health → Return setup instructions if not connected
 2. Fetch real data in parallel (Promise.all)
 3. Transform to dashboard format
 4. Return with metadata (dataSource, responseTime, timestamp)
 
 **Reusable Components Created**:
+
 - `XeroSetupPrompt.jsx` → Template for all integration prompts
 - `docs/integrations/xero-setup.md` → Structure for all integration guides
 - Dashboard API pattern → Reuse for Shopify/Amazon/Unleashed
 
 **Sprint 1 Retrospective Insights**:
+
 - **Time-to-Market**: 3.25 days actual vs 5.5 days estimated (59% of estimate)
 - **Velocity Trend**: Accelerating (BMAD-MOCK-001: 100% → BMAD-MOCK-002: 24%)
 - **Next Sprint Projection**: BMAD-MOCK-003 + BMAD-MOCK-004 estimated 6 days → projected 2-3 days actual
 - **Pattern Confidence**: HIGH - Integration template proven across 2 external APIs (Xero, Shopify)
 
 **Last Updated**: 2025-10-19 (Sprint 1 Complete)
-
-
-
-

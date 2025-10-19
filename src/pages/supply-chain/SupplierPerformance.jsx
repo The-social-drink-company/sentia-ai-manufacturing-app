@@ -10,8 +10,8 @@
  * - Supplier comparison and ranking
  */
 
-import { useState } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   TrendingUp,
   TrendingDown,
@@ -25,7 +25,7 @@ import {
   Star,
   Target,
   Package,
-} from 'lucide-react';
+} from 'lucide-react'
 import {
   ResponsiveContainer,
   BarChart,
@@ -48,34 +48,26 @@ import {
   Scatter,
   ZAxis,
   Cell,
-} from 'recharts';
-import { useSSE } from '../../hooks/useSSE';
+} from 'recharts'
+import { useSSE } from '../../hooks/useSSE'
 
 /**
  * Supplier Scorecard Component
  */
 function SupplierScorecard({ supplier }) {
-  const {
-    name,
-    overallScore,
-    otdScore,
-    qualityScore,
-    costScore,
-    leadTimeScore,
-    rating,
-    trend,
-  } = supplier;
+  const { name, overallScore, otdScore, qualityScore, costScore, leadTimeScore, rating, trend } =
+    supplier
 
-  const ratingStars = rating || 0;
-  const StatusIcon = trend >= 0 ? TrendingUp : TrendingDown;
-  const trendColor = trend >= 0 ? 'text-green-600' : 'text-red-600';
+  const ratingStars = rating || 0
+  const StatusIcon = trend >= 0 ? TrendingUp : TrendingDown
+  const trendColor = trend >= 0 ? 'text-green-600' : 'text-red-600'
 
-  const getRatingColor = (score) => {
-    if (score >= 90) return 'bg-green-500';
-    if (score >= 75) return 'bg-yellow-500';
-    if (score >= 60) return 'bg-orange-500';
-    return 'bg-red-500';
-  };
+  const getRatingColor = score => {
+    if (score >= 90) return 'bg-green-500'
+    if (score >= 75) return 'bg-yellow-500'
+    if (score >= 60) return 'bg-orange-500'
+    return 'bg-red-500'
+  }
 
   return (
     <div className="bg-white rounded-lg shadow p-6">
@@ -124,8 +116,8 @@ function SupplierScorecard({ supplier }) {
           { label: 'Quality', score: qualityScore, icon: CheckCircle2 },
           { label: 'Cost Competitiveness', score: costScore, icon: DollarSign },
           { label: 'Lead Time', score: leadTimeScore, icon: TrendingUp },
-        ].map((metric) => {
-          const Icon = metric.icon;
+        ].map(metric => {
+          const Icon = metric.icon
           return (
             <div key={metric.label} className="flex items-center gap-3">
               <Icon className="w-5 h-5 text-gray-400" />
@@ -142,11 +134,11 @@ function SupplierScorecard({ supplier }) {
                 </div>
               </div>
             </div>
-          );
+          )
         })}
       </div>
     </div>
-  );
+  )
 }
 
 /**
@@ -174,15 +166,13 @@ function SupplierComparisonRadar({ suppliers }) {
       metric: 'Overall',
       ...suppliers.reduce((acc, s) => ({ ...acc, [s.name]: s.overallScore }), {}),
     },
-  ];
+  ]
 
-  const colors = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'];
+  const colors = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899']
 
   return (
     <div className="bg-white rounded-lg shadow p-6">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">
-        Supplier Comparison
-      </h3>
+      <h3 className="text-lg font-semibold text-gray-900 mb-4">Supplier Comparison</h3>
 
       <ResponsiveContainer width="100%" height={350}>
         <RadarChart data={radarData}>
@@ -205,7 +195,7 @@ function SupplierComparisonRadar({ suppliers }) {
         </RadarChart>
       </ResponsiveContainer>
     </div>
-  );
+  )
 }
 
 /**
@@ -223,17 +213,17 @@ function OTDTrendChart({ otdData }) {
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis
             dataKey="month"
-            tickFormatter={(month) => new Date(month).toLocaleDateString('en-GB', { month: 'short' })}
+            tickFormatter={month => new Date(month).toLocaleDateString('en-GB', { month: 'short' })}
           />
-          <YAxis yAxisId="left" domain={[0, 100]} tickFormatter={(v) => `${v}%`} />
+          <YAxis yAxisId="left" domain={[0, 100]} tickFormatter={v => `${v}%`} />
           <YAxis yAxisId="right" orientation="right" />
           <Tooltip
-            labelFormatter={(month) => new Date(month).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })}
+            labelFormatter={month =>
+              new Date(month).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })
+            }
             formatter={(value, name) => [
               name === 'deliveries' ? value : `${value.toFixed(1)}%`,
-              name === 'otdRate' ? 'OTD Rate' :
-              name === 'target' ? 'Target' :
-              'Total Deliveries'
+              name === 'otdRate' ? 'OTD Rate' : name === 'target' ? 'Target' : 'Total Deliveries',
             ]}
           />
           <Legend />
@@ -269,7 +259,7 @@ function OTDTrendChart({ otdData }) {
         </ComposedChart>
       </ResponsiveContainer>
     </div>
-  );
+  )
 }
 
 /**
@@ -278,16 +268,14 @@ function OTDTrendChart({ otdData }) {
 function QualityPerformanceChart({ qualityData }) {
   return (
     <div className="bg-white rounded-lg shadow p-6">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">
-        Quality Performance
-      </h3>
+      <h3 className="text-lg font-semibold text-gray-900 mb-4">Quality Performance</h3>
 
       <ResponsiveContainer width="100%" height={300}>
         <BarChart data={qualityData}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="supplier" angle={-45} textAnchor="end" height={100} />
-          <YAxis tickFormatter={(v) => `${v}%`} domain={[0, 100]} />
-          <Tooltip formatter={(value) => `${value.toFixed(1)}%`} />
+          <YAxis tickFormatter={v => `${v}%`} domain={[0, 100]} />
+          <Tooltip formatter={value => `${value.toFixed(1)}%`} />
           <Legend />
 
           <Bar dataKey="acceptanceRate" fill="#10b981" name="Acceptance Rate" />
@@ -298,13 +286,19 @@ function QualityPerformanceChart({ qualityData }) {
       <div className="mt-4 grid grid-cols-3 gap-4">
         <div className="text-center p-3 bg-green-50 rounded">
           <div className="text-2xl font-bold text-green-600">
-            {(qualityData.reduce((sum, s) => sum + s.acceptanceRate, 0) / qualityData.length).toFixed(1)}%
+            {(
+              qualityData.reduce((sum, s) => sum + s.acceptanceRate, 0) / qualityData.length
+            ).toFixed(1)}
+            %
           </div>
           <div className="text-xs text-gray-600 mt-1">Avg Acceptance Rate</div>
         </div>
         <div className="text-center p-3 bg-red-50 rounded">
           <div className="text-2xl font-bold text-red-600">
-            {(qualityData.reduce((sum, s) => sum + s.defectRate, 0) / qualityData.length).toFixed(1)}%
+            {(qualityData.reduce((sum, s) => sum + s.defectRate, 0) / qualityData.length).toFixed(
+              1
+            )}
+            %
           </div>
           <div className="text-xs text-gray-600 mt-1">Avg Defect Rate</div>
         </div>
@@ -316,7 +310,7 @@ function QualityPerformanceChart({ qualityData }) {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 /**
@@ -325,9 +319,7 @@ function QualityPerformanceChart({ qualityData }) {
 function LeadTimeCostScatter({ scatterData }) {
   return (
     <div className="bg-white rounded-lg shadow p-6">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">
-        Lead Time vs Cost Analysis
-      </h3>
+      <h3 className="text-lg font-semibold text-gray-900 mb-4">Lead Time vs Cost Analysis</h3>
 
       <ResponsiveContainer width="100%" height={300}>
         <ScatterChart>
@@ -349,20 +341,19 @@ function LeadTimeCostScatter({ scatterData }) {
           <Tooltip
             cursor={{ strokeDasharray: '3 3' }}
             formatter={(value, name) => [
-              name === 'leadTime' ? `${value} days` :
-              name === 'costIndex' ? value.toFixed(2) :
-              value,
-              name === 'leadTime' ? 'Lead Time' :
-              name === 'costIndex' ? 'Cost Index' :
-              'Volume'
+              name === 'leadTime'
+                ? `${value} days`
+                : name === 'costIndex'
+                  ? value.toFixed(2)
+                  : value,
+              name === 'leadTime' ? 'Lead Time' : name === 'costIndex' ? 'Cost Index' : 'Volume',
             ]}
           />
           <Scatter name="Suppliers" data={scatterData} fill="#3b82f6">
             {scatterData.map((entry, index) => {
-              const color = entry.rating >= 4 ? '#10b981' :
-                           entry.rating >= 3 ? '#f59e0b' :
-                           '#ef4444';
-              return <Cell key={`cell-${index}`} fill={color} />;
+              const color =
+                entry.rating >= 4 ? '#10b981' : entry.rating >= 3 ? '#f59e0b' : '#ef4444'
+              return <Cell key={`cell-${index}`} fill={color} />
             })}
           </Scatter>
         </ScatterChart>
@@ -383,30 +374,30 @@ function LeadTimeCostScatter({ scatterData }) {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 /**
  * Supplier Rankings Table
  */
 function SupplierRankingsTable({ suppliers }) {
-  const [sortBy, setSortBy] = useState('overallScore');
-  const [sortOrder, setSortOrder] = useState('desc');
+  const [sortBy, setSortBy] = useState('overallScore')
+  const [sortOrder, setSortOrder] = useState('desc')
 
   const sortedSuppliers = [...suppliers].sort((a, b) => {
-    const aVal = a[sortBy];
-    const bVal = b[sortBy];
-    return sortOrder === 'asc' ? aVal - bVal : bVal - aVal;
-  });
+    const aVal = a[sortBy]
+    const bVal = b[sortBy]
+    return sortOrder === 'asc' ? aVal - bVal : bVal - aVal
+  })
 
-  const handleSort = (column) => {
+  const handleSort = column => {
     if (sortBy === column) {
-      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')
     } else {
-      setSortBy(column);
-      setSortOrder('desc');
+      setSortBy(column)
+      setSortOrder('desc')
     }
-  };
+  }
 
   return (
     <div className="bg-white rounded-lg shadow overflow-hidden">
@@ -469,12 +460,17 @@ function SupplierRankingsTable({ suppliers }) {
                   <div className="font-medium text-gray-900">{supplier.name}</div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <span className={`px-2 py-1 text-sm font-medium rounded ${
-                    supplier.overallScore >= 90 ? 'bg-green-100 text-green-700' :
-                    supplier.overallScore >= 75 ? 'bg-yellow-100 text-yellow-700' :
-                    supplier.overallScore >= 60 ? 'bg-orange-100 text-orange-700' :
-                    'bg-red-100 text-red-700'
-                  }`}>
+                  <span
+                    className={`px-2 py-1 text-sm font-medium rounded ${
+                      supplier.overallScore >= 90
+                        ? 'bg-green-100 text-green-700'
+                        : supplier.overallScore >= 75
+                          ? 'bg-yellow-100 text-yellow-700'
+                          : supplier.overallScore >= 60
+                            ? 'bg-orange-100 text-orange-700'
+                            : 'bg-red-100 text-red-700'
+                    }`}
+                  >
                     {supplier.overallScore}
                   </span>
                 </td>
@@ -500,11 +496,15 @@ function SupplierRankingsTable({ suppliers }) {
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <span className={`px-2 py-1 text-xs font-medium rounded ${
-                    supplier.status === 'approved' ? 'bg-green-100 text-green-700' :
-                    supplier.status === 'review' ? 'bg-yellow-100 text-yellow-700' :
-                    'bg-red-100 text-red-700'
-                  }`}>
+                  <span
+                    className={`px-2 py-1 text-xs font-medium rounded ${
+                      supplier.status === 'approved'
+                        ? 'bg-green-100 text-green-700'
+                        : supplier.status === 'review'
+                          ? 'bg-yellow-100 text-yellow-700'
+                          : 'bg-red-100 text-red-700'
+                    }`}
+                  >
                     {supplier.status}
                   </span>
                 </td>
@@ -514,41 +514,41 @@ function SupplierRankingsTable({ suppliers }) {
         </table>
       </div>
     </div>
-  );
+  )
 }
 
 /**
  * Main Supplier Performance Component
  */
 export default function SupplierPerformance() {
-  const queryClient = useQueryClient();
-  const [dateRange, setDateRange] = useState('6months');
-  const [categoryFilter, setCategoryFilter] = useState('all');
+  const queryClient = useQueryClient()
+  const [dateRange, setDateRange] = useState('6months')
+  const [categoryFilter, setCategoryFilter] = useState('all')
 
   // Fetch supplier performance data
   const { data, isLoading, error } = useQuery({
     queryKey: ['supply-chain', 'suppliers', dateRange, categoryFilter],
     queryFn: async () => {
-      const params = new URLSearchParams({ dateRange, category: categoryFilter });
+      const params = new URLSearchParams({ dateRange, category: categoryFilter })
       const response = await fetch(`/api/v1/supply-chain/suppliers/performance?${params}`, {
         credentials: 'include',
-      });
-      if (!response.ok) throw new Error('Failed to fetch supplier performance data');
-      const result = await response.json();
-      return result.data;
+      })
+      if (!response.ok) throw new Error('Failed to fetch supplier performance data')
+      const result = await response.json()
+      return result.data
     },
     refetchInterval: 60000,
-  });
+  })
 
   // SSE for real-time updates
   const { connected } = useSSE('supply-chain', {
     enabled: true,
-    onMessage: (message) => {
+    onMessage: message => {
       if (message.type === 'supplier:update') {
-        queryClient.invalidateQueries(['supply-chain', 'suppliers']);
+        queryClient.invalidateQueries(['supply-chain', 'suppliers'])
       }
     },
-  });
+  })
 
   if (isLoading) {
     return (
@@ -558,7 +558,7 @@ export default function SupplierPerformance() {
           <p className="text-gray-600">Loading supplier performance data...</p>
         </div>
       </div>
-    );
+    )
   }
 
   if (error) {
@@ -566,15 +566,10 @@ export default function SupplierPerformance() {
       <div className="bg-red-50 border border-red-200 rounded-lg p-6">
         <p className="text-red-800">Error loading supplier performance data: {error.message}</p>
       </div>
-    );
+    )
   }
 
-  const {
-    suppliers = [],
-    otdTrend = [],
-    qualityData = [],
-    scatterData = [],
-  } = data || {};
+  const { suppliers = [], otdTrend = [], qualityData = [], scatterData = [] } = data || {}
 
   return (
     <div className="space-y-6">
@@ -597,7 +592,7 @@ export default function SupplierPerformance() {
         <div className="flex items-center gap-3">
           <select
             value={dateRange}
-            onChange={(e) => setDateRange(e.target.value)}
+            onChange={e => setDateRange(e.target.value)}
             className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
           >
             <option value="3months">Last 3 Months</option>
@@ -607,7 +602,7 @@ export default function SupplierPerformance() {
 
           <select
             value={categoryFilter}
-            onChange={(e) => setCategoryFilter(e.target.value)}
+            onChange={e => setCategoryFilter(e.target.value)}
             className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
           >
             <option value="all">All Categories</option>
@@ -620,7 +615,7 @@ export default function SupplierPerformance() {
 
       {/* Top Suppliers Scorecards */}
       <div className="grid md:grid-cols-3 gap-6">
-        {suppliers.slice(0, 3).map((supplier) => (
+        {suppliers.slice(0, 3).map(supplier => (
           <SupplierScorecard key={supplier.id} supplier={supplier} />
         ))}
       </div>
@@ -640,5 +635,5 @@ export default function SupplierPerformance() {
       {/* Rankings Table */}
       <SupplierRankingsTable suppliers={suppliers} />
     </div>
-  );
+  )
 }

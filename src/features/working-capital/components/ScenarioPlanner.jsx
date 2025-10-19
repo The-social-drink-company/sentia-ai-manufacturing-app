@@ -22,7 +22,8 @@ const DeltaCell = ({ delta, percent }) => {
     return <span className="text-gray-500 dark:text-gray-400">--</span>
   }
 
-  const positive = delta < 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'
+  const positive =
+    delta < 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'
   const sign = delta > 0 ? '+' : ''
 
   return (
@@ -84,25 +85,38 @@ export default function ScenarioPlanner({ baseline, scenarios = [], onRunScenari
           <Badge variant="secondary">Live metrics</Badge>
         </div>
         <p className="text-sm text-gray-600 dark:text-gray-400">
-          Compare upside, base, and downside scenarios. Adjust the sliders to test new assumptions and see the resulting working-capital profile instantly.
+          Compare upside, base, and downside scenarios. Adjust the sliders to test new assumptions
+          and see the resulting working-capital profile instantly.
         </p>
       </CardHeader>
       <CardContent className="space-y-6">
         {baseline?.metrics && supportingScenarios.length > 0 && (
           <div className="space-y-4">
             {supportingScenarios.map(scenario => (
-              <div key={scenario.key} className="rounded-lg border border-border dark:border-gray-700 p-4 bg-muted/40 dark:bg-gray-900/60">
+              <div
+                key={scenario.key}
+                className="rounded-lg border border-border dark:border-gray-700 p-4 bg-muted/40 dark:bg-gray-900/60"
+              >
                 <div className="flex items-center justify-between mb-4">
                   <div>
-                    <h4 className="text-md font-semibold text-gray-900 dark:text-white">{scenario.label}</h4>
+                    <h4 className="text-md font-semibold text-gray-900 dark:text-white">
+                      {scenario.label}
+                    </h4>
                     <p className="text-xs text-gray-600 dark:text-gray-400">
                       {Object.entries(scenario.assumptions || {})
                         .filter(([, value]) => value)
-                        .map(([key, value]) => `${key}: ${typeof value === 'number' ? value.toString() : value}`)
+                        .map(
+                          ([key, value]) =>
+                            `${key}: ${typeof value === 'number' ? value.toString() : value}`
+                        )
                         .join(' • ') || 'No adjustments'}
                     </p>
                   </div>
-                  <Badge variant={scenario.metrics?.ccc?.status === 'excellent' ? 'secondary' : 'outline'}>
+                  <Badge
+                    variant={
+                      scenario.metrics?.ccc?.status === 'excellent' ? 'secondary' : 'outline'
+                    }
+                  >
                     CCC {scenario.metrics?.ccc?.ccc?.toFixed?.(2) ?? '--'} days
                   </Badge>
                 </div>
@@ -198,4 +212,3 @@ function ScenarioInput({ label, name, value, onChange, step }) {
     </label>
   )
 }
-

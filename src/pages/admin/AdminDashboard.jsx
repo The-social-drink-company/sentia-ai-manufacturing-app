@@ -10,9 +10,9 @@
  * - Quick admin actions
  */
 
-import React from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
+import React from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useNavigate } from 'react-router-dom'
 import {
   Activity,
   Users,
@@ -30,7 +30,7 @@ import {
   Pause,
   TrendingUp,
   TrendingDown,
-} from 'lucide-react';
+} from 'lucide-react'
 import {
   ResponsiveContainer,
   LineChart,
@@ -44,8 +44,8 @@ import {
   Legend,
   Area,
   AreaChart,
-} from 'recharts';
-import { useSSE } from '../../hooks/useSSE';
+} from 'recharts'
+import { useSSE } from '../../hooks/useSSE'
 
 /**
  * System Health Metric Card
@@ -56,31 +56,39 @@ function HealthMetricCard({ label, value, status, icon: Icon, trend, unit = '' }
     healthy: 'border-green-500 bg-green-50',
     warning: 'border-yellow-500 bg-yellow-50',
     critical: 'border-red-500 bg-red-50',
-  };
+  }
 
-  const StatusIcon = status === 'healthy' ? CheckCircle2 : AlertTriangle;
-  const TrendIcon = trend >= 0 ? TrendingUp : TrendingDown;
+  const StatusIcon = status === 'healthy' ? CheckCircle2 : AlertTriangle
+  const TrendIcon = trend >= 0 ? TrendingUp : TrendingDown
 
   return (
     <div className={`rounded-lg border-2 ${statusColors[status]} p-6`}>
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
-          <div className={`p-3 rounded-lg ${
-            status === 'healthy' ? 'bg-green-600' :
-            status === 'warning' ? 'bg-yellow-600' :
-            'bg-red-600'
-          }`}>
+          <div
+            className={`p-3 rounded-lg ${
+              status === 'healthy'
+                ? 'bg-green-600'
+                : status === 'warning'
+                  ? 'bg-yellow-600'
+                  : 'bg-red-600'
+            }`}
+          >
             <Icon className="w-6 h-6 text-white" />
           </div>
           <div>
             <p className="text-sm font-medium text-gray-600">{label}</p>
           </div>
         </div>
-        <StatusIcon className={`w-6 h-6 ${
-          status === 'healthy' ? 'text-green-600' :
-          status === 'warning' ? 'text-yellow-600' :
-          'text-red-600'
-        }`} />
+        <StatusIcon
+          className={`w-6 h-6 ${
+            status === 'healthy'
+              ? 'text-green-600'
+              : status === 'warning'
+                ? 'text-yellow-600'
+                : 'text-red-600'
+          }`}
+        />
       </div>
 
       <div className="flex items-baseline gap-2">
@@ -91,31 +99,33 @@ function HealthMetricCard({ label, value, status, icon: Icon, trend, unit = '' }
       </div>
 
       {trend !== undefined && (
-        <div className={`flex items-center gap-1 mt-2 text-sm ${
-          trend >= 0 ? 'text-green-600' : 'text-red-600'
-        }`}>
+        <div
+          className={`flex items-center gap-1 mt-2 text-sm ${
+            trend >= 0 ? 'text-green-600' : 'text-red-600'
+          }`}
+        >
           <TrendIcon className="w-4 h-4" />
           <span>{Math.abs(trend).toFixed(1)}% vs last hour</span>
         </div>
       )}
     </div>
-  );
+  )
 }
 
 /**
  * Integration Status Card
  */
 function IntegrationStatusCard({ integration }) {
-  const { name, status, lastSync, nextSync, errorCount, icon: Icon } = integration;
+  const { name, status, lastSync, nextSync, errorCount, icon: Icon } = integration
 
   const statusConfig = {
     connected: { color: 'text-green-600', bgColor: 'bg-green-100', label: 'Connected' },
     syncing: { color: 'text-blue-600', bgColor: 'bg-blue-100', label: 'Syncing' },
     error: { color: 'text-red-600', bgColor: 'bg-red-100', label: 'Error' },
     disabled: { color: 'text-gray-600', bgColor: 'bg-gray-100', label: 'Disabled' },
-  };
+  }
 
-  const config = statusConfig[status] || statusConfig.disabled;
+  const config = statusConfig[status] || statusConfig.disabled
 
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition-shadow">
@@ -156,14 +166,14 @@ function IntegrationStatusCard({ integration }) {
         </button>
       )}
     </div>
-  );
+  )
 }
 
 /**
  * Queue Status Card
  */
 function QueueStatusCard({ queue }) {
-  const { name, waiting, active, completed, failed, paused } = queue;
+  const { name, waiting, active, completed, failed, paused } = queue
 
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-4">
@@ -195,14 +205,14 @@ function QueueStatusCard({ queue }) {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 /**
  * Recent Audit Log Entry
  */
 function AuditLogEntry({ log }) {
-  const { user, action, resource, timestamp, status } = log;
+  const { user, action, resource, timestamp, status } = log
 
   return (
     <div className="flex items-center justify-between py-3 border-b border-gray-200 last:border-0">
@@ -214,15 +224,19 @@ function AuditLogEntry({ log }) {
         </div>
         <p className="text-xs text-gray-500">{new Date(timestamp).toLocaleString()}</p>
       </div>
-      <span className={`px-2 py-1 rounded text-xs font-medium ${
-        status === 'success' ? 'bg-green-100 text-green-700' :
-        status === 'failed' ? 'bg-red-100 text-red-700' :
-        'bg-yellow-100 text-yellow-700'
-      }`}>
+      <span
+        className={`px-2 py-1 rounded text-xs font-medium ${
+          status === 'success'
+            ? 'bg-green-100 text-green-700'
+            : status === 'failed'
+              ? 'bg-red-100 text-red-700'
+              : 'bg-yellow-100 text-yellow-700'
+        }`}
+      >
         {status}
       </span>
     </div>
-  );
+  )
 }
 
 /**
@@ -240,18 +254,23 @@ function SystemMetricsChart({ metricsData }) {
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis
             dataKey="timestamp"
-            tickFormatter={(ts) => new Date(ts).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
+            tickFormatter={ts =>
+              new Date(ts).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })
+            }
           />
           <YAxis yAxisId="left" />
           <YAxis yAxisId="right" orientation="right" />
           <Tooltip
-            labelFormatter={(ts) => new Date(ts).toLocaleString()}
+            labelFormatter={ts => new Date(ts).toLocaleString()}
             formatter={(value, name) => [
               name === 'responseTime' ? `${value}ms` : value,
-              name === 'responseTime' ? 'Response Time' :
-              name === 'requestCount' ? 'Requests' :
-              name === 'errorRate' ? 'Error Rate' :
-              name
+              name === 'responseTime'
+                ? 'Response Time'
+                : name === 'requestCount'
+                  ? 'Requests'
+                  : name === 'errorRate'
+                    ? 'Error Rate'
+                    : name,
             ]}
           />
           <Legend />
@@ -286,7 +305,7 @@ function SystemMetricsChart({ metricsData }) {
         </AreaChart>
       </ResponsiveContainer>
     </div>
-  );
+  )
 }
 
 /**
@@ -300,7 +319,7 @@ function QuickActionButton({ label, icon: Icon, onClick, variant = 'primary' }) 
     success: 'bg-green-600 hover:bg-green-700 text-white',
     warning: 'bg-yellow-600 hover:bg-yellow-700 text-white',
     danger: 'bg-red-600 hover:bg-red-700 text-white',
-  };
+  }
 
   return (
     <button
@@ -310,15 +329,15 @@ function QuickActionButton({ label, icon: Icon, onClick, variant = 'primary' }) 
       <Icon className="w-5 h-5" />
       {label}
     </button>
-  );
+  )
 }
 
 /**
  * Main Admin Dashboard Component
  */
 export default function AdminDashboard() {
-  const queryClient = useQueryClient();
-  const navigate = useNavigate();
+  const queryClient = useQueryClient()
+  const navigate = useNavigate()
 
   // Fetch dashboard data
   const { data, isLoading, error } = useQuery({
@@ -326,23 +345,23 @@ export default function AdminDashboard() {
     queryFn: async () => {
       const response = await fetch('/api/v1/admin/dashboard', {
         credentials: 'include',
-      });
-      if (!response.ok) throw new Error('Failed to fetch admin dashboard data');
-      const result = await response.json();
-      return result.data;
+      })
+      if (!response.ok) throw new Error('Failed to fetch admin dashboard data')
+      const result = await response.json()
+      return result.data
     },
     refetchInterval: 30000, // Refresh every 30 seconds
-  });
+  })
 
   // SSE for real-time admin updates
   const { connected } = useSSE('admin', {
     enabled: true,
-    onMessage: (message) => {
+    onMessage: message => {
       if (message.type === 'system:alert' || message.type === 'admin:update') {
-        queryClient.invalidateQueries(['admin', 'dashboard']);
+        queryClient.invalidateQueries(['admin', 'dashboard'])
       }
     },
-  });
+  })
 
   if (isLoading) {
     return (
@@ -352,7 +371,7 @@ export default function AdminDashboard() {
           <p className="text-gray-600">Loading admin dashboard...</p>
         </div>
       </div>
-    );
+    )
   }
 
   if (error) {
@@ -360,7 +379,7 @@ export default function AdminDashboard() {
       <div className="bg-red-50 border border-red-200 rounded-lg p-6">
         <p className="text-red-800">Error loading dashboard: {error.message}</p>
       </div>
-    );
+    )
   }
 
   const {
@@ -370,7 +389,7 @@ export default function AdminDashboard() {
     integrations = [],
     auditLogs = [],
     metrics = [],
-  } = data || {};
+  } = data || {}
 
   return (
     <div className="space-y-6">
@@ -417,7 +436,9 @@ export default function AdminDashboard() {
         <div className="bg-red-50 border-2 border-red-500 rounded-lg p-4">
           <div className="flex items-center gap-2 mb-2">
             <AlertTriangle className="w-5 h-5 text-red-600" />
-            <h3 className="font-semibold text-red-900">Critical Alerts ({systemHealth.alerts.length})</h3>
+            <h3 className="font-semibold text-red-900">
+              Critical Alerts ({systemHealth.alerts.length})
+            </h3>
           </div>
           <div className="space-y-2">
             {systemHealth.alerts.slice(0, 3).map((alert, index) => (
@@ -435,7 +456,13 @@ export default function AdminDashboard() {
           label="API Response Time"
           value={systemHealth.apiResponseTime || 0}
           unit="ms"
-          status={systemHealth.apiResponseTime < 200 ? 'healthy' : systemHealth.apiResponseTime < 500 ? 'warning' : 'critical'}
+          status={
+            systemHealth.apiResponseTime < 200
+              ? 'healthy'
+              : systemHealth.apiResponseTime < 500
+                ? 'warning'
+                : 'critical'
+          }
           icon={Zap}
           trend={systemHealth.apiResponseTimeTrend}
         />
@@ -460,7 +487,13 @@ export default function AdminDashboard() {
           label="Error Rate"
           value={systemHealth.errorRate || 0}
           unit="%"
-          status={systemHealth.errorRate < 1 ? 'healthy' : systemHealth.errorRate < 5 ? 'warning' : 'critical'}
+          status={
+            systemHealth.errorRate < 1
+              ? 'healthy'
+              : systemHealth.errorRate < 5
+                ? 'warning'
+                : 'critical'
+          }
           icon={AlertTriangle}
           trend={-systemHealth.errorRateTrend}
         />
@@ -483,7 +516,7 @@ export default function AdminDashboard() {
             </button>
           </div>
           <div className="space-y-3">
-            {integrations.slice(0, 4).map((integration) => (
+            {integrations.slice(0, 4).map(integration => (
               <IntegrationStatusCard key={integration.id} integration={integration} />
             ))}
           </div>
@@ -501,7 +534,7 @@ export default function AdminDashboard() {
             </button>
           </div>
           <div className="space-y-3">
-            {queues.slice(0, 4).map((queue) => (
+            {queues.slice(0, 4).map(queue => (
               <QueueStatusCard key={queue.name} queue={queue} />
             ))}
           </div>
@@ -521,12 +554,10 @@ export default function AdminDashboard() {
         </div>
         <div className="p-6">
           {auditLogs.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
-              No recent audit logs
-            </div>
+            <div className="text-center py-8 text-gray-500">No recent audit logs</div>
           ) : (
             <div className="space-y-0">
-              {auditLogs.slice(0, 10).map((log) => (
+              {auditLogs.slice(0, 10).map(log => (
                 <AuditLogEntry key={log.id} log={log} />
               ))}
             </div>
@@ -565,5 +596,5 @@ export default function AdminDashboard() {
         </div>
       </div>
     </div>
-  );
+  )
 }

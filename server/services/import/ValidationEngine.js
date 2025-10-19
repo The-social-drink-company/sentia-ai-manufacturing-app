@@ -14,9 +14,9 @@
  * Returns detailed validation results with suggestions for fixes.
  */
 
-const { PrismaClient } = require('@prisma/client');
+const { PrismaClient } = require('@prisma/client')
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient()
 
 /**
  * ============================================================================
@@ -32,11 +32,11 @@ const prisma = new PrismaClient();
  * @returns {Promise<Object>} Validation result
  */
 async function validateRow(row, schema) {
-  const errors = [];
-  const warnings = [];
+  const errors = []
+  const warnings = []
 
   for (const field of schema.fields) {
-    const value = row[field.name];
+    const value = row[field.name]
 
     // 1. Required field validation
     if (field.required && !validateRequired(value)) {
@@ -45,13 +45,13 @@ async function validateRow(row, schema) {
         type: 'REQUIRED',
         message: `${field.name} is required`,
         value,
-      });
-      continue; // Skip other validations if required field is missing
+      })
+      continue // Skip other validations if required field is missing
     }
 
     // Skip further validation if field is empty and not required
     if (!value && !field.required) {
-      continue;
+      continue
     }
 
     // 2. Type validation
@@ -62,19 +62,22 @@ async function validateRow(row, schema) {
         message: `Invalid ${field.type} format`,
         value,
         suggestion: `Expected ${field.type}`,
-      });
-      continue;
+      })
+      continue
     }
 
     // 3. Range validation (min/max)
-    if ((field.min !== undefined || field.max !== undefined) && !validateRange(value, field.min, field.max)) {
+    if (
+      (field.min !== undefined || field.max !== undefined) &&
+      !validateRange(value, field.min, field.max)
+    ) {
       errors.push({
         field: field.name,
         type: 'RANGE',
         message: `Value out of range`,
         value,
         expectedRange: { min: field.min, max: field.max },
-      });
+      })
     }
 
     // 4. Format validation (regex)
@@ -85,7 +88,7 @@ async function validateRow(row, schema) {
         message: `Value does not match required pattern`,
         value,
         pattern: field.pattern,
-      });
+      })
     }
 
     // 5. Enum validation
@@ -96,12 +99,12 @@ async function validateRow(row, schema) {
         message: `Invalid value. Must be one of: ${field.enum.join(', ')}`,
         value,
         allowedValues: field.enum,
-      });
+      })
     }
 
     // 6. Lookup validation (foreign key)
     if (field.lookup) {
-      const lookupValid = await validateLookup(value, field.lookup);
+      const lookupValid = await validateLookup(value, field.lookup)
       if (!lookupValid) {
         errors.push({
           field: field.name,
@@ -109,7 +112,7 @@ async function validateRow(row, schema) {
           message: `${value} not found in ${field.lookup.table}`,
           value,
           suggestion: 'Check spelling or create record first',
-        });
+        })
       }
     }
 
@@ -123,7 +126,7 @@ async function validateRow(row, schema) {
             message: rule.message,
             value,
             rule: rule.name,
-          });
+          })
         }
       }
     }
@@ -137,7 +140,7 @@ async function validateRow(row, schema) {
           message: `Length must be between ${field.minLength || 0} and ${field.maxLength || 'unlimited'}`,
           value,
           currentLength: value?.length,
-        });
+        })
       }
     }
   }
@@ -146,7 +149,7 @@ async function validateRow(row, schema) {
     valid: errors.length === 0,
     errors,
     warnings,
-  };
+  }
 }
 
 /**
@@ -162,9 +165,9 @@ async function validateRow(row, schema) {
  * @returns {boolean} True if valid
  */
 function validateRequired(value) {
-  if (value === null || value === undefined) return false;
-  if (typeof value === 'string' && value.trim() === '') return false;
-  return true;
+  if (value === null || value === undefined) return false
+  if (typeof value === 'string' && value.trim() === '') return false
+  return true
 }
 
 /**
@@ -177,36 +180,36 @@ function validateRequired(value) {
 function validateType(value, type) {
   switch (type.toLowerCase()) {
     case 'string':
-      return typeof value === 'string';
+      return typeof value === 'string'
 
     case 'number':
-      return !isNaN(parseFloat(value)) && isFinite(value);
+      return !isNaN(parseFloat(value)) && isFinite(value)
 
     case 'integer':
-      return Number.isInteger(Number(value));
+      return Number.isInteger(Number(value))
 
     case 'boolean':
-      return typeof value === 'boolean' || value === 'true' || value === 'false';
+      return typeof value === 'boolean' || value === 'true' || value === 'false'
 
     case 'date':
-      return !isNaN(Date.parse(value));
+      return !isNaN(Date.parse(value))
 
     case 'email':
-      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
 
     case 'url':
       try {
-        new URL(value);
-        return true;
+        new URL(value)
+        return true
       } catch {
-        return false;
+        return false
       }
 
     case 'phone':
-      return /^[+]?[(]?[0-9]{1,4}[)]?[-\s.]?[(]?[0-9]{1,4}[)]?[-\s.]?[0-9]{1,9}$/.test(value);
+      return /^[+]?[(]?[0-9]{1,4}[)]?[-\s.]?[(]?[0-9]{1,4}[)]?[-\s.]?[0-9]{1,9}$/.test(value)
 
     default:
-      return true;
+      return true
   }
 }
 
@@ -219,13 +222,13 @@ function validateType(value, type) {
  * @returns {boolean} True if valid
  */
 function validateRange(value, min, max) {
-  const num = Number(value);
+  const num = Number(value)
 
-  if (isNaN(num)) return false;
-  if (min !== undefined && num < min) return false;
-  if (max !== undefined && num > max) return false;
+  if (isNaN(num)) return false
+  if (min !== undefined && num < min) return false
+  if (max !== undefined && num > max) return false
 
-  return true;
+  return true
 }
 
 /**
@@ -236,8 +239,8 @@ function validateRange(value, min, max) {
  * @returns {boolean} True if valid
  */
 function validatePattern(value, pattern) {
-  const regex = typeof pattern === 'string' ? new RegExp(pattern) : pattern;
-  return regex.test(value);
+  const regex = typeof pattern === 'string' ? new RegExp(pattern) : pattern
+  return regex.test(value)
 }
 
 /**
@@ -248,7 +251,7 @@ function validatePattern(value, pattern) {
  * @returns {boolean} True if valid
  */
 function validateEnum(value, allowedValues) {
-  return allowedValues.includes(value);
+  return allowedValues.includes(value)
 }
 
 /**
@@ -260,18 +263,18 @@ function validateEnum(value, allowedValues) {
  */
 async function validateLookup(value, lookup) {
   try {
-    const { table, field = 'id' } = lookup;
+    const { table, field = 'id' } = lookup
 
     const record = await prisma[table].findFirst({
       where: {
         [field]: value,
       },
-    });
+    })
 
-    return !!record;
+    return !!record
   } catch (error) {
-    console.error('Lookup validation error:', error);
-    return false;
+    console.error('Lookup validation error:', error)
+    return false
   }
 }
 
@@ -286,19 +289,19 @@ function validateBusinessRule(row, rule) {
   try {
     // Execute rule function
     if (typeof rule.validate === 'function') {
-      return rule.validate(row);
+      return rule.validate(row)
     }
 
     // Execute rule expression
     if (rule.expression) {
       // Simple expression evaluation (can be expanded)
-      return eval(rule.expression);
+      return eval(rule.expression)
     }
 
-    return true;
+    return true
   } catch (error) {
-    console.error('Business rule validation error:', error);
-    return false;
+    console.error('Business rule validation error:', error)
+    return false
   }
 }
 
@@ -311,12 +314,12 @@ function validateBusinessRule(row, rule) {
  * @returns {boolean} True if valid
  */
 function validateLength(value, minLength, maxLength) {
-  const str = String(value);
+  const str = String(value)
 
-  if (minLength !== undefined && str.length < minLength) return false;
-  if (maxLength !== undefined && str.length > maxLength) return false;
+  if (minLength !== undefined && str.length < minLength) return false
+  if (maxLength !== undefined && str.length > maxLength) return false
 
-  return true;
+  return true
 }
 
 /**
@@ -338,25 +341,25 @@ async function validateBatch(rows, schema) {
     validRows: 0,
     invalidRows: 0,
     results: [],
-  };
+  }
 
   for (let i = 0; i < rows.length; i++) {
-    const validation = await validateRow(rows[i], schema);
+    const validation = await validateRow(rows[i], schema)
 
     results.results.push({
       row: i + 1,
       data: rows[i],
       ...validation,
-    });
+    })
 
     if (validation.valid) {
-      results.validRows++;
+      results.validRows++
     } else {
-      results.invalidRows++;
+      results.invalidRows++
     }
   }
 
-  return results;
+  return results
 }
 
 /**
@@ -376,4 +379,4 @@ module.exports = {
   validateLookup,
   validateBusinessRule,
   validateLength,
-};
+}

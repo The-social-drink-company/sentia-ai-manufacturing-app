@@ -28,14 +28,10 @@ const SignInPage = () => {
             </div>
 
             {/* Company Title */}
-            <h1 className="text-3xl font-bold text-white">
-              Sentia Manufacturing
-            </h1>
+            <h1 className="text-3xl font-bold text-white">Sentia Manufacturing</h1>
 
             {/* Subtitle */}
-            <p className="mt-2 text-purple-100">
-              Enterprise Dashboard
-            </p>
+            <p className="mt-2 text-purple-100">Enterprise Dashboard</p>
           </div>
 
           {/* Clerk Sign-In Component */}
@@ -45,7 +41,7 @@ const SignInPage = () => {
                 elements: {
                   rootBox: 'w-full',
                   card: 'shadow-none',
-                }
+                },
               }}
               routing="path"
               path="/sign-in"
@@ -55,10 +51,7 @@ const SignInPage = () => {
 
           {/* Back to Home Link */}
           <div className="mt-6 text-center">
-            <Link
-              to="/"
-              className="text-sm text-purple-100 hover:text-white transition-colors"
-            >
+            <Link to="/" className="text-sm text-purple-100 hover:text-white transition-colors">
               ← Back to Home
             </Link>
           </div>

@@ -9,7 +9,8 @@ const InventoryDashboard = () => {
   // Show setup prompts when integrations are not configured
   const showShopifySetup =
     integrations.shopify &&
-    (!integrations.shopify.connected || integrations.shopify.activeStores < integrations.shopify.totalStores)
+    (!integrations.shopify.connected ||
+      integrations.shopify.activeStores < integrations.shopify.totalStores)
   const showUnleashedSetup = integrations.unleashed && integrations.unleashed.status !== 'connected'
 
   // Show loading skeleton while integration status is loading

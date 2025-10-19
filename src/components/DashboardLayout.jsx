@@ -57,10 +57,12 @@ const DashboardLayout = ({ children }) => {
         <DashboardHeader mobileMenuOpen={mobileMenuOpen} onMenuClick={toggleMobileMenu} />
 
         {/* Main Content */}
-        <main id="main-content" className="flex-1 bg-slate-50 px-4 py-6 sm:px-6 lg:px-8" role="main">
-          <div className="mx-auto max-w-7xl space-y-6">
-            {children ?? <Outlet />}
-          </div>
+        <main
+          id="main-content"
+          className="flex-1 bg-slate-50 px-4 py-6 sm:px-6 lg:px-8"
+          role="main"
+        >
+          <div className="mx-auto max-w-7xl space-y-6">{children ?? <Outlet />}</div>
         </main>
 
         {/* Footer (Optional) */}

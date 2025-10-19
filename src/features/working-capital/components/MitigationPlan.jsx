@@ -21,21 +21,28 @@ export default function MitigationPlan({ plan }) {
           <Badge variant="outline">Top {recommendations.length || 0} actions</Badge>
         </div>
         <p className="text-sm text-gray-600 dark:text-gray-400">
-          Targeted actions prioritised by working-capital impact. Quick wins deliver immediate relief while structural changes harden the operating model.
+          Targeted actions prioritised by working-capital impact. Quick wins deliver immediate
+          relief while structural changes harden the operating model.
         </p>
       </CardHeader>
       <CardContent className="space-y-6">
         {recommendations.length === 0 && (
           <p className="text-sm text-gray-600 dark:text-gray-400">
-            No mitigation actions were generated. Once baseline metrics signal pressure we will surface recommended actions automatically.
+            No mitigation actions were generated. Once baseline metrics signal pressure we will
+            surface recommended actions automatically.
           </p>
         )}
 
         {recommendations.map(item => (
-          <div key={item.id} className="rounded-lg border border-border dark:border-gray-700 p-4 bg-muted/40 dark:bg-gray-900/50">
+          <div
+            key={item.id}
+            className="rounded-lg border border-border dark:border-gray-700 p-4 bg-muted/40 dark:bg-gray-900/50"
+          >
             <div className="flex items-start justify-between">
               <div>
-                <h4 className="text-md font-semibold text-gray-900 dark:text-white">{item.title}</h4>
+                <h4 className="text-md font-semibold text-gray-900 dark:text-white">
+                  {item.title}
+                </h4>
                 <p className="text-sm text-gray-600 dark:text-gray-400">{item.description}</p>
               </div>
               <Badge variant="secondary">{item.owner || 'Unassigned'}</Badge>
@@ -43,23 +50,31 @@ export default function MitigationPlan({ plan }) {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm text-gray-700 dark:text-gray-300 mt-3">
               <div>
-                <span className="font-medium">Impact score:</span> {item.impact?.score?.toFixed?.(2) ?? '--'}
+                <span className="font-medium">Impact score:</span>{' '}
+                {item.impact?.score?.toFixed?.(2) ?? '--'}
               </div>
               <div>
-                <span className="font-medium">Expected delta:</span> {formatDelta(item.impact?.expectedDelta)}
+                <span className="font-medium">Expected delta:</span>{' '}
+                {formatDelta(item.impact?.expectedDelta)}
               </div>
               <div>
                 <span className="font-medium">Effort:</span> {item.effort || 'n/a'}
               </div>
             </div>
 
-            <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">Timeframe: {item.timeframe || 'n/a'}</div>
+            <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+              Timeframe: {item.timeframe || 'n/a'}
+            </div>
           </div>
         ))}
 
         <div className="space-y-4">
           {Object.entries(categories).map(([category, items]) => (
-            <CategoryCard key={category} title={categoryLabels[category] || category} items={items} />
+            <CategoryCard
+              key={category}
+              title={categoryLabels[category] || category}
+              items={items}
+            />
           ))}
         </div>
       </CardContent>
@@ -89,4 +104,3 @@ const formatDelta = value => {
   const rounded = Number(value.toFixed ? value.toFixed(2) : value)
   return `${sign}${rounded.toLocaleString()}`
 }
-

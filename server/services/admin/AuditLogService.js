@@ -175,7 +175,10 @@ class AuditLogService {
         },
       }
     } catch (error) {
-      logger.error(`[AuditLogService] Failed to get audit logs for ${entityType}:${entityId}:`, error)
+      logger.error(
+        `[AuditLogService] Failed to get audit logs for ${entityType}:${entityId}:`,
+        error
+      )
       throw new Error(`Failed to retrieve entity audit logs: ${error.message}`)
     }
   }
@@ -199,7 +202,17 @@ class AuditLogService {
    */
   async createAuditLog(data) {
     try {
-      const { userId, action, entityType, entityId, oldValues, newValues, ipAddress, userAgent, requestId } = data
+      const {
+        userId,
+        action,
+        entityType,
+        entityId,
+        oldValues,
+        newValues,
+        ipAddress,
+        userAgent,
+        requestId,
+      } = data
 
       // Get previous hash for hash chain
       const previousLog = await prisma.auditLog.findFirst({
@@ -464,7 +477,7 @@ class AuditLogService {
       'Created At',
     ]
 
-    const rows = logs.map((log) => [
+    const rows = logs.map(log => [
       log.id,
       log.user?.email || 'SYSTEM',
       log.user ? `${log.user.firstName || ''} ${log.user.lastName || ''}`.trim() : 'SYSTEM',
@@ -477,9 +490,9 @@ class AuditLogService {
     ])
 
     const csvContent = [headers, ...rows]
-      .map((row) =>
+      .map(row =>
         row
-          .map((cell) => {
+          .map(cell => {
             // Escape quotes and wrap in quotes if contains comma
             const cellStr = String(cell).replace(/"/g, '""')
             return cellStr.includes(',') || cellStr.includes('\n') ? `"${cellStr}"` : cellStr
@@ -532,7 +545,7 @@ class AuditLogService {
         }
 
         // Add data rows
-        logs.forEach((log) => {
+        logs.forEach(log => {
           worksheet.addRow({
             id: log.id,
             userEmail: log.user?.email || 'SYSTEM',
@@ -573,7 +586,7 @@ class AuditLogService {
     const exportData = {
       exportedAt: new Date().toISOString(),
       recordCount: logs.length,
-      logs: logs.map((log) => ({
+      logs: logs.map(log => ({
         id: log.id,
         user: log.user
           ? {

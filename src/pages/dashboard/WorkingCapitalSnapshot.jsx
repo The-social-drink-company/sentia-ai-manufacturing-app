@@ -1,5 +1,5 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React from 'react'
+import { Link } from 'react-router-dom'
 import {
   TrendingUp,
   TrendingDown,
@@ -8,7 +8,7 @@ import {
   Clock,
   DollarSign,
   ArrowRight,
-} from 'lucide-react';
+} from 'lucide-react'
 
 /**
  * WorkingCapitalSnapshot Component
@@ -41,10 +41,10 @@ function WorkingCapitalSnapshot({ data }) {
         <h3 className="text-lg font-semibold mb-4">Working Capital</h3>
         <p className="text-gray-500">Loading working capital data...</p>
       </div>
-    );
+    )
   }
 
-  const { ccc, runway, breaches = [], mitigationActions = [] } = data;
+  const { ccc, runway, breaches = [], mitigationActions = [] } = data
 
   return (
     <div className="bg-white rounded-lg shadow">
@@ -156,8 +156,8 @@ function WorkingCapitalSnapshot({ data }) {
                 <div className="mt-2 space-y-1">
                   {breaches.slice(0, 2).map((breach, index) => (
                     <div key={index} className="text-xs text-red-700">
-                      <span className="font-medium">Month {breach.month}:</span>{' '}
-                      £{Math.abs(breach.deficit).toLocaleString()} deficit
+                      <span className="font-medium">Month {breach.month}:</span> £
+                      {Math.abs(breach.deficit).toLocaleString()} deficit
                     </div>
                   ))}
                   {breaches.length > 2 && (
@@ -225,7 +225,7 @@ function WorkingCapitalSnapshot({ data }) {
         )}
       </div>
     </div>
-  );
+  )
 }
 
 /**
@@ -253,16 +253,18 @@ function CCCStatusBadge({ status }) {
       label: 'Critical',
       className: 'bg-red-100 text-red-800',
     },
-  };
+  }
 
-  const { icon: Icon, label, className } = config[status] || config.good;
+  const { icon: Icon, label, className } = config[status] || config.good
 
   return (
-    <span className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-medium ${className}`}>
+    <span
+      className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-medium ${className}`}
+    >
       <Icon className="w-3 h-3" />
       {label}
     </span>
-  );
+  )
 }
 
 /**
@@ -270,25 +272,27 @@ function CCCStatusBadge({ status }) {
  */
 function RunwayStatusBadge({ months }) {
   // TODO: Add status-based icon (like CCCStatusBadge)
-  let label = 'Healthy';
-  let className = 'bg-green-100 text-green-800';
+  let label = 'Healthy'
+  let className = 'bg-green-100 text-green-800'
 
   if (months < 3) {
-    label = 'Critical';
-    className = 'bg-red-100 text-red-800';
+    label = 'Critical'
+    className = 'bg-red-100 text-red-800'
   } else if (months < 6) {
-    label = 'Warning';
-    className = 'bg-yellow-100 text-yellow-800';
+    label = 'Warning'
+    className = 'bg-yellow-100 text-yellow-800'
   } else if (months < 12) {
-    label = 'Good';
-    className = 'bg-blue-100 text-blue-800';
+    label = 'Good'
+    className = 'bg-blue-100 text-blue-800'
   }
 
   return (
-    <span className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-medium ${className}`}>
+    <span
+      className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-medium ${className}`}
+    >
       {label}
     </span>
-  );
+  )
 }
 
 /**
@@ -297,34 +301,32 @@ function RunwayStatusBadge({ months }) {
  */
 function MiniRunwayChart({ data, breaches = [], currentBalance }) {
   if (!data || data.length === 0) {
-    return null;
+    return null
   }
 
   // Calculate chart dimensions
   // eslint-disable-next-line no-unused-vars
-  const width = 100; // percentage (reserved for future responsive calculations)
-  const height = 60; // pixels
-  const maxValue = Math.max(...data.map(d => d.balance), currentBalance || 0);
-  const minValue = Math.min(...data.map(d => d.balance), 0);
-  const range = maxValue - minValue;
+  const width = 100 // percentage (reserved for future responsive calculations)
+  const height = 60 // pixels
+  const maxValue = Math.max(...data.map(d => d.balance), currentBalance || 0)
+  const minValue = Math.min(...data.map(d => d.balance), 0)
+  const range = maxValue - minValue
 
   // Generate SVG path
-  const points = data.map((point, index) => {
-    const x = (index / (data.length - 1)) * 100;
-    const y = height - ((point.balance - minValue) / range) * height;
-    return `${x},${y}`;
-  }).join(' ');
+  const points = data
+    .map((point, index) => {
+      const x = (index / (data.length - 1)) * 100
+      const y = height - ((point.balance - minValue) / range) * height
+      return `${x},${y}`
+    })
+    .join(' ')
 
   // Identify breach points
-  const breachMonths = new Set(breaches.map(b => b.month));
+  const breachMonths = new Set(breaches.map(b => b.month))
 
   return (
     <div className="relative">
-      <svg
-        viewBox={`0 0 100 ${height}`}
-        className="w-full"
-        style={{ height: `${height}px` }}
-      >
+      <svg viewBox={`0 0 100 ${height}`} className="w-full" style={{ height: `${height}px` }}>
         {/* Zero line */}
         <line
           x1="0"
@@ -347,8 +349,8 @@ function MiniRunwayChart({ data, breaches = [], currentBalance }) {
         {/* Breach indicators */}
         {data.map((point, index) => {
           if (breachMonths.has(index)) {
-            const x = (index / (data.length - 1)) * 100;
-            const y = height - ((point.balance - minValue) / range) * height;
+            const x = (index / (data.length - 1)) * 100
+            const y = height - ((point.balance - minValue) / range) * height
             return (
               <circle
                 key={index}
@@ -359,9 +361,9 @@ function MiniRunwayChart({ data, breaches = [], currentBalance }) {
                 stroke="white"
                 strokeWidth="1"
               />
-            );
+            )
           }
-          return null;
+          return null
         })}
       </svg>
 
@@ -371,7 +373,7 @@ function MiniRunwayChart({ data, breaches = [], currentBalance }) {
         <span>12 months</span>
       </div>
     </div>
-  );
+  )
 }
 
 /**
@@ -387,11 +389,9 @@ function ActionButton({ title, description, impact, onClick }) {
         <span className="font-medium">{title}</span>
         <span className="text-green-600 text-xs font-semibold">+£{impact}</span>
       </div>
-      {description && (
-        <div className="text-xs text-gray-600 mt-1">{description}</div>
-      )}
+      {description && <div className="text-xs text-gray-600 mt-1">{description}</div>}
     </button>
-  );
+  )
 }
 
 /**
@@ -404,22 +404,22 @@ function getCCCBarColor(status) {
     good: 'bg-blue-500',
     warning: 'bg-yellow-500',
     critical: 'bg-red-500',
-  };
-  return colors[status] || colors.good;
+  }
+  return colors[status] || colors.good
 }
 
 function handleActionClick(action) {
   // TODO: Implement action handler
   // This will navigate to the full Working Capital suite with the action pre-selected
-  console.log('Action clicked:', action);
+  console.log('Action clicked:', action)
   // For now, navigate to working capital page
-  window.location.href = '/working-capital?action=' + encodeURIComponent(action.id || action.title);
+  window.location.href = '/working-capital?action=' + encodeURIComponent(action.id || action.title)
 }
 
 function handleDefaultAction(actionType) {
   // TODO: Implement default action handler
-  console.log('Default action:', actionType);
-  window.location.href = '/working-capital?action=' + actionType;
+  console.log('Default action:', actionType)
+  window.location.href = '/working-capital?action=' + actionType
 }
 
-export default WorkingCapitalSnapshot;
+export default WorkingCapitalSnapshot

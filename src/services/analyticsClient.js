@@ -45,7 +45,11 @@ export function trackAnalyticsEvent(eventName, properties = {}) {
   if (ANALYTICS_ENDPOINT) {
     const payloadString = JSON.stringify(payload)
 
-    if (hasWindow && typeof navigator !== 'undefined' && typeof navigator.sendBeacon === 'function') {
+    if (
+      hasWindow &&
+      typeof navigator !== 'undefined' &&
+      typeof navigator.sendBeacon === 'function'
+    ) {
       const delivered = navigator.sendBeacon(ANALYTICS_ENDPOINT, payloadString)
       if (delivered) {
         return

@@ -254,21 +254,21 @@ Success Rate: 100%
 - [ ] Developer tested
 - [ ] All integrations verified
 - [ ] Performance acceptable
-- **Sign-off**: ******\_\_\_******
+- **Sign-off**: **\*\***\_\_\_**\*\***
 
 ### Testing Environment
 
 - [ ] UAT completed
 - [ ] Client tested
 - [ ] Bugs resolved
-- **Sign-off**: ******\_\_\_******
+- **Sign-off**: **\*\***\_\_\_**\*\***
 
 ### Production Environment
 
 - [ ] Go-live approved
 - [ ] Backups verified
 - [ ] Monitoring active
-- **Sign-off**: ******\_\_\_******
+- **Sign-off**: **\*\***\_\_\_**\*\***
 
 ---
 
@@ -307,7 +307,7 @@ When all items are checked:
 
 ---
 
-**Deployment Date**: ******\_\_\_******
-**Deployed By**: ******\_\_\_******
+**Deployment Date**: **\*\***\_\_\_**\*\***
+**Deployed By**: **\*\***\_\_\_**\*\***
 **Version**: 1.0.0
 **Status**: 🟢 OPERATIONAL

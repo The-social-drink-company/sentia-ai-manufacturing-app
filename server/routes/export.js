@@ -6,16 +6,25 @@
  * @module routes/export
  */
 
-const express = require('express');
-const path = require('path');
-const { PrismaClient } = require('@prisma/client');
-const { addExportJob, getExportJobStatus, cancelExportJob, retryExportJob } = require('../queues/exportQueue');
-const { listExports, getExportMetadata, deleteExport } = require('../services/import/ExportGenerator');
-const { logAudit } = require('../services/audit/AuditLogger');
-const { EXPORT_ACTIONS, STATUS } = require('../services/audit/AuditCategories');
+const express = require('express')
+const path = require('path')
+const { PrismaClient } = require('@prisma/client')
+const {
+  addExportJob,
+  getExportJobStatus,
+  cancelExportJob,
+  retryExportJob,
+} = require('../queues/exportQueue')
+const {
+  listExports,
+  getExportMetadata,
+  deleteExport,
+} = require('../services/import/ExportGenerator')
+const { logAudit } = require('../services/audit/AuditLogger')
+const { EXPORT_ACTIONS, STATUS } = require('../services/audit/AuditCategories')
 
-const router = express.Router();
-const prisma = new PrismaClient();
+const router = express.Router()
+const prisma = new PrismaClient()
 
 // ============================================================================
 // Routes
@@ -27,19 +36,19 @@ const prisma = new PrismaClient();
  */
 router.post('/start', async (req, res) => {
   try {
-    const { dataType, format, filters, options } = req.body;
-    const userId = req.user?.id || 'ANONYMOUS';
+    const { dataType, format, filters, options } = req.body
+    const userId = req.user?.id || 'ANONYMOUS'
 
     if (!dataType || !format) {
-      return res.status(400).json({ error: 'Data type and format are required' });
+      return res.status(400).json({ error: 'Data type and format are required' })
     }
 
     // Validate format
-    const allowedFormats = ['csv', 'xlsx', 'pdf', 'json'];
+    const allowedFormats = ['csv', 'xlsx', 'pdf', 'json']
     if (!allowedFormats.includes(format.toLowerCase())) {
       return res.status(400).json({
         error: `Invalid format. Allowed formats: ${allowedFormats.join(', ')}`,
-      });
+      })
     }
 
     // Create ExportJob record
@@ -52,21 +61,17 @@ router.post('/start', async (req, res) => {
         status: 'PENDING',
         userId,
       },
-    });
+    })
 
     // Generate filename
-    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    const filename = `${dataType.toLowerCase()}-export-${timestamp}.${format}`;
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
+    const filename = `${dataType.toLowerCase()}-export-${timestamp}.${format}`
 
     // Add to queue
-    await addExportJob(
-      exportJob.id,
-      userId,
-      dataType,
-      format,
-      filters || {},
-      { ...options, filename }
-    );
+    await addExportJob(exportJob.id, userId, dataType, format, filters || {}, {
+      ...options,
+      filename,
+    })
 
     res.json({
       success: true,
@@ -77,13 +82,12 @@ router.post('/start', async (req, res) => {
         format: exportJob.format,
         createdAt: exportJob.createdAt,
       },
-    });
-
+    })
   } catch (error) {
-    console.error('Start export error:', error);
-    res.status(500).json({ error: error.message });
+    console.error('Start export error:', error)
+    res.status(500).json({ error: error.message })
   }
-});
+})
 
 /**
  * GET /api/export/status/:jobId
@@ -91,19 +95,19 @@ router.post('/start', async (req, res) => {
  */
 router.get('/status/:jobId', async (req, res) => {
   try {
-    const { jobId } = req.params;
+    const { jobId } = req.params
 
     // Get database record
     const exportJob = await prisma.exportJob.findUnique({
       where: { id: jobId },
-    });
+    })
 
     if (!exportJob) {
-      return res.status(404).json({ error: 'Export job not found' });
+      return res.status(404).json({ error: 'Export job not found' })
     }
 
     // Get queue status
-    const queueStatus = await getExportJobStatus(jobId);
+    const queueStatus = await getExportJobStatus(jobId)
 
     res.json({
       success: true,
@@ -120,13 +124,12 @@ router.get('/status/:jobId', async (req, res) => {
         completedAt: exportJob.completedAt,
       },
       queueStatus,
-    });
-
+    })
   } catch (error) {
-    console.error('Get export status error:', error);
-    res.status(500).json({ error: error.message });
+    console.error('Get export status error:', error)
+    res.status(500).json({ error: error.message })
   }
-});
+})
 
 /**
  * GET /api/export/download/:jobId
@@ -134,24 +137,24 @@ router.get('/status/:jobId', async (req, res) => {
  */
 router.get('/download/:jobId', async (req, res) => {
   try {
-    const { jobId } = req.params;
-    const userId = req.user?.id || 'ANONYMOUS';
+    const { jobId } = req.params
+    const userId = req.user?.id || 'ANONYMOUS'
 
     // Get export job
     const exportJob = await prisma.exportJob.findUnique({
       where: { id: jobId },
-    });
+    })
 
     if (!exportJob) {
-      return res.status(404).json({ error: 'Export job not found' });
+      return res.status(404).json({ error: 'Export job not found' })
     }
 
     if (exportJob.status !== 'COMPLETED') {
-      return res.status(400).json({ error: 'Export is not completed yet' });
+      return res.status(400).json({ error: 'Export is not completed yet' })
     }
 
     if (!exportJob.filePath) {
-      return res.status(404).json({ error: 'Export file not found' });
+      return res.status(404).json({ error: 'Export file not found' })
     }
 
     // Log audit trail
@@ -167,23 +170,22 @@ router.get('/download/:jobId', async (req, res) => {
         format: exportJob.format,
         fileSize: exportJob.fileSize,
       },
-    });
+    })
 
     // Send file
-    res.download(exportJob.filePath, path.basename(exportJob.filePath), (err) => {
+    res.download(exportJob.filePath, path.basename(exportJob.filePath), err => {
       if (err) {
-        console.error('Download error:', err);
+        console.error('Download error:', err)
         if (!res.headersSent) {
-          res.status(500).json({ error: 'Failed to download file' });
+          res.status(500).json({ error: 'Failed to download file' })
         }
       }
-    });
-
+    })
   } catch (error) {
-    console.error('Download export error:', error);
-    res.status(500).json({ error: error.message });
+    console.error('Download export error:', error)
+    res.status(500).json({ error: error.message })
   }
-});
+})
 
 /**
  * POST /api/export/cancel/:jobId
@@ -191,21 +193,20 @@ router.get('/download/:jobId', async (req, res) => {
  */
 router.post('/cancel/:jobId', async (req, res) => {
   try {
-    const { jobId } = req.params;
-    const userId = req.user?.id || 'ANONYMOUS';
+    const { jobId } = req.params
+    const userId = req.user?.id || 'ANONYMOUS'
 
-    await cancelExportJob(jobId, userId);
+    await cancelExportJob(jobId, userId)
 
     res.json({
       success: true,
       message: 'Export job cancelled',
-    });
-
+    })
   } catch (error) {
-    console.error('Cancel export error:', error);
-    res.status(500).json({ error: error.message });
+    console.error('Cancel export error:', error)
+    res.status(500).json({ error: error.message })
   }
-});
+})
 
 /**
  * POST /api/export/retry/:jobId
@@ -213,21 +214,20 @@ router.post('/cancel/:jobId', async (req, res) => {
  */
 router.post('/retry/:jobId', async (req, res) => {
   try {
-    const { jobId } = req.params;
-    const userId = req.user?.id || 'ANONYMOUS';
+    const { jobId } = req.params
+    const userId = req.user?.id || 'ANONYMOUS'
 
-    await retryExportJob(jobId, userId);
+    await retryExportJob(jobId, userId)
 
     res.json({
       success: true,
       message: 'Export job retried',
-    });
-
+    })
   } catch (error) {
-    console.error('Retry export error:', error);
-    res.status(500).json({ error: error.message });
+    console.error('Retry export error:', error)
+    res.status(500).json({ error: error.message })
   }
-});
+})
 
 /**
  * DELETE /api/export/:jobId
@@ -235,28 +235,28 @@ router.post('/retry/:jobId', async (req, res) => {
  */
 router.delete('/:jobId', async (req, res) => {
   try {
-    const { jobId } = req.params;
-    const userId = req.user?.id || 'ANONYMOUS';
+    const { jobId } = req.params
+    const userId = req.user?.id || 'ANONYMOUS'
 
     // Get export job
     const exportJob = await prisma.exportJob.findUnique({
       where: { id: jobId },
-    });
+    })
 
     if (!exportJob) {
-      return res.status(404).json({ error: 'Export job not found' });
+      return res.status(404).json({ error: 'Export job not found' })
     }
 
     // Delete file if exists
     if (exportJob.filePath) {
-      const filename = path.basename(exportJob.filePath);
-      await deleteExport(filename);
+      const filename = path.basename(exportJob.filePath)
+      await deleteExport(filename)
     }
 
     // Delete database record
     await prisma.exportJob.delete({
       where: { id: jobId },
-    });
+    })
 
     // Log audit trail
     await logAudit({
@@ -266,18 +266,17 @@ router.delete('/:jobId', async (req, res) => {
       resourceType: 'EXPORT_JOB',
       resourceId: jobId,
       status: STATUS.SUCCESS,
-    });
+    })
 
     res.json({
       success: true,
       message: 'Export deleted',
-    });
-
+    })
   } catch (error) {
-    console.error('Delete export error:', error);
-    res.status(500).json({ error: error.message });
+    console.error('Delete export error:', error)
+    res.status(500).json({ error: error.message })
   }
-});
+})
 
 /**
  * GET /api/export/jobs
@@ -285,14 +284,14 @@ router.delete('/:jobId', async (req, res) => {
  */
 router.get('/jobs', async (req, res) => {
   try {
-    const { status, dataType, format, limit = 50, offset = 0 } = req.query;
-    const userId = req.user?.id;
+    const { status, dataType, format, limit = 50, offset = 0 } = req.query
+    const userId = req.user?.id
 
-    const where = {};
-    if (status) where.status = status;
-    if (dataType) where.dataType = dataType;
-    if (format) where.format = format.toUpperCase();
-    if (userId && req.user?.role !== 'ADMIN') where.userId = userId;
+    const where = {}
+    if (status) where.status = status
+    if (dataType) where.dataType = dataType
+    if (format) where.format = format.toUpperCase()
+    if (userId && req.user?.role !== 'ADMIN') where.userId = userId
 
     const [jobs, totalCount] = await Promise.all([
       prisma.exportJob.findMany({
@@ -302,11 +301,11 @@ router.get('/jobs', async (req, res) => {
         skip: parseInt(offset),
       }),
       prisma.exportJob.count({ where }),
-    ]);
+    ])
 
     res.json({
       success: true,
-      jobs: jobs.map((job) => ({
+      jobs: jobs.map(job => ({
         id: job.id,
         status: job.status,
         dataType: job.dataType,
@@ -319,13 +318,12 @@ router.get('/jobs', async (req, res) => {
       totalCount,
       limit: parseInt(limit),
       offset: parseInt(offset),
-    });
-
+    })
   } catch (error) {
-    console.error('List export jobs error:', error);
-    res.status(500).json({ error: error.message });
+    console.error('List export jobs error:', error)
+    res.status(500).json({ error: error.message })
   }
-});
+})
 
 /**
  * GET /api/export/files
@@ -333,23 +331,22 @@ router.get('/jobs', async (req, res) => {
  */
 router.get('/files', async (req, res) => {
   try {
-    const { format, sortBy = 'date' } = req.query;
+    const { format, sortBy = 'date' } = req.query
 
     const result = await listExports({
       format,
       sortBy,
-    });
+    })
 
     res.json({
       success: true,
       ...result,
-    });
-
+    })
   } catch (error) {
-    console.error('List export files error:', error);
-    res.status(500).json({ error: error.message });
+    console.error('List export files error:', error)
+    res.status(500).json({ error: error.message })
   }
-});
+})
 
 /**
  * GET /api/export/file/:filename
@@ -357,24 +354,23 @@ router.get('/files', async (req, res) => {
  */
 router.get('/file/:filename', async (req, res) => {
   try {
-    const { filename } = req.params;
+    const { filename } = req.params
 
-    const metadata = await getExportMetadata(filename);
+    const metadata = await getExportMetadata(filename)
 
     if (!metadata.exists) {
-      return res.status(404).json({ error: 'File not found' });
+      return res.status(404).json({ error: 'File not found' })
     }
 
     res.json({
       success: true,
       file: metadata,
-    });
-
+    })
   } catch (error) {
-    console.error('Get export metadata error:', error);
-    res.status(500).json({ error: error.message });
+    console.error('Get export metadata error:', error)
+    res.status(500).json({ error: error.message })
   }
-});
+})
 
 /**
  * GET /api/export/templates
@@ -442,21 +438,20 @@ router.get('/templates', async (req, res) => {
           endDate: 'date',
         },
       },
-    ];
+    ]
 
     res.json({
       success: true,
       templates,
-    });
-
+    })
   } catch (error) {
-    console.error('Get export templates error:', error);
-    res.status(500).json({ error: error.message });
+    console.error('Get export templates error:', error)
+    res.status(500).json({ error: error.message })
   }
-});
+})
 
 // ============================================================================
 // Export Router
 // ============================================================================
 
-module.exports = router;
+module.exports = router

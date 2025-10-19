@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useMutation, useQuery } from '@tanstack/react-query';
-import { useSSE } from '@/hooks/useSSE';
+import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useMutation, useQuery } from '@tanstack/react-query'
+import { useSSE } from '@/hooks/useSSE'
 import {
   PlayCircle,
   RefreshCw,
@@ -10,7 +10,7 @@ import {
   Clock,
   TrendingUp,
   Settings,
-} from 'lucide-react';
+} from 'lucide-react'
 
 /**
  * ForecastingDashboard Component
@@ -26,108 +26,108 @@ import {
  * Workflow: Select parameters → Run forecast → Track progress → View results → Compare models → Use in optimization
  */
 function ForecastingDashboard() {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   // Form state
-  const [selectedProducts, setSelectedProducts] = useState([]);
-  const [selectedModels, setSelectedModels] = useState(['ensemble']);
-  const [horizon, setHorizon] = useState(30);
-  const [region, setRegion] = useState('all');
-  const [channel, setChannel] = useState('all');
-  const [useEnsemble, setUseEnsemble] = useState(true);
+  const [selectedProducts, setSelectedProducts] = useState([])
+  const [selectedModels, setSelectedModels] = useState(['ensemble'])
+  const [horizon, setHorizon] = useState(30)
+  const [region, setRegion] = useState('all')
+  const [channel, setChannel] = useState('all')
+  const [useEnsemble, setUseEnsemble] = useState(true)
 
   // Job tracking state
-  const [currentJob, setCurrentJob] = useState(null);
-  const [jobProgress, setJobProgress] = useState(0);
-  const [jobStatus, setJobStatus] = useState(null);
+  const [currentJob, setCurrentJob] = useState(null)
+  const [jobProgress, setJobProgress] = useState(0)
+  const [jobStatus, setJobStatus] = useState(null)
   // eslint-disable-next-line no-unused-vars
-  const [completedForecasts, setCompletedForecasts] = useState([]); // TODO: Display in completed jobs section
+  const [completedForecasts, setCompletedForecasts] = useState([]) // TODO: Display in completed jobs section
 
   // Fetch available products
   const { data: products = [], isLoading: productsLoading } = useQuery({
     queryKey: ['products', 'list'],
     queryFn: async () => {
-      const response = await fetch('/api/v1/products');
-      if (!response.ok) throw new Error('Failed to fetch products');
-      const result = await response.json();
-      return result.data || [];
+      const response = await fetch('/api/v1/products')
+      if (!response.ok) throw new Error('Failed to fetch products')
+      const result = await response.json()
+      return result.data || []
     },
-  });
+  })
 
   // Fetch recent forecasts
   const { data: recentForecasts = [], refetch: refetchForecasts } = useQuery({
     queryKey: ['forecasts', 'recent'],
     queryFn: async () => {
-      const response = await fetch('/api/v1/forecasts/recent');
-      if (!response.ok) throw new Error('Failed to fetch recent forecasts');
-      const result = await response.json();
-      return result.data || [];
+      const response = await fetch('/api/v1/forecasts/recent')
+      if (!response.ok) throw new Error('Failed to fetch recent forecasts')
+      const result = await response.json()
+      return result.data || []
     },
-  });
+  })
 
   // Run forecast mutation
   const runForecastMutation = useMutation({
-    mutationFn: async (forecastParams) => {
+    mutationFn: async forecastParams => {
       const response = await fetch('/api/v1/forecasts/train', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(forecastParams),
-      });
-      if (!response.ok) throw new Error('Failed to start forecast job');
-      return response.json();
+      })
+      if (!response.ok) throw new Error('Failed to start forecast job')
+      return response.json()
     },
-    onSuccess: (data) => {
+    onSuccess: data => {
       if (data.success && data.data.jobId) {
-        setCurrentJob(data.data.jobId);
-        setJobStatus('running');
-        setJobProgress(0);
+        setCurrentJob(data.data.jobId)
+        setJobStatus('running')
+        setJobProgress(0)
       }
     },
-    onError: (error) => {
-      console.error('Forecast job error:', error);
-      setJobStatus('error');
+    onError: error => {
+      console.error('Forecast job error:', error)
+      setJobStatus('error')
     },
-  });
+  })
 
   // SSE for job progress
   // eslint-disable-next-line no-unused-vars
   const { lastMessage } = useSSE('forecast', {
     enabled: !!currentJob,
-    onMessage: (message) => {
+    onMessage: message => {
       if (message.type === 'forecast:progress' && message.jobId === currentJob) {
-        setJobProgress(message.progress || 0);
-        setJobStatus(message.status);
+        setJobProgress(message.progress || 0)
+        setJobStatus(message.status)
 
         if (message.status === 'completed') {
-          setCompletedForecasts((prev) => [...prev, message.result]);
-          refetchForecasts();
+          setCompletedForecasts(prev => [...prev, message.result])
+          refetchForecasts()
           setTimeout(() => {
-            setCurrentJob(null);
-            setJobStatus(null);
-            setJobProgress(0);
-          }, 2000);
+            setCurrentJob(null)
+            setJobStatus(null)
+            setJobProgress(0)
+          }, 2000)
         }
 
         if (message.status === 'failed') {
           setTimeout(() => {
-            setCurrentJob(null);
-            setJobStatus(null);
-            setJobProgress(0);
-          }, 3000);
+            setCurrentJob(null)
+            setJobStatus(null)
+            setJobProgress(0)
+          }, 3000)
         }
       }
     },
-  });
+  })
 
   const handleRunForecast = () => {
     if (selectedProducts.length === 0) {
-      alert('Please select at least one product');
-      return;
+      alert('Please select at least one product')
+      return
     }
 
     if (selectedModels.length === 0) {
-      alert('Please select at least one model');
-      return;
+      alert('Please select at least one model')
+      return
     }
 
     const forecastParams = {
@@ -137,13 +137,13 @@ function ForecastingDashboard() {
       region: region !== 'all' ? region : undefined,
       channel: channel !== 'all' ? channel : undefined,
       useEnsemble,
-    };
+    }
 
-    runForecastMutation.mutate(forecastParams);
-  };
+    runForecastMutation.mutate(forecastParams)
+  }
 
-  const isRunning = jobStatus === 'running';
-  const canRun = selectedProducts.length > 0 && selectedModels.length > 0 && !isRunning;
+  const isRunning = jobStatus === 'running'
+  const canRun = selectedProducts.length > 0 && selectedModels.length > 0 && !isRunning
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -177,26 +177,26 @@ function ForecastingDashboard() {
                 <input
                   type="checkbox"
                   checked={useEnsemble}
-                  onChange={(e) => setUseEnsemble(e.target.checked)}
+                  onChange={e => setUseEnsemble(e.target.checked)}
                   className="w-6 h-6"
                 />
               </div>
 
               {/* Individual models */}
               <div className="grid md:grid-cols-2 gap-3">
-                {MODELS.map((model) => (
+                {MODELS.map(model => (
                   <ModelCard
                     key={model.id}
                     model={model}
                     selected={selectedModels.includes(model.id)}
                     disabled={useEnsemble}
                     onToggle={() => {
-                      if (useEnsemble) return;
-                      setSelectedModels((prev) =>
+                      if (useEnsemble) return
+                      setSelectedModels(prev =>
                         prev.includes(model.id)
-                          ? prev.filter((m) => m !== model.id)
+                          ? prev.filter(m => m !== model.id)
                           : [...prev, model.id]
-                      );
+                      )
                     }}
                   />
                 ))}
@@ -220,8 +220,8 @@ function ForecastingDashboard() {
                 <select
                   multiple
                   value={selectedProducts}
-                  onChange={(e) =>
-                    setSelectedProducts(Array.from(e.target.selectedOptions, (opt) => opt.value))
+                  onChange={e =>
+                    setSelectedProducts(Array.from(e.target.selectedOptions, opt => opt.value))
                   }
                   className="w-full border border-gray-300 rounded-lg p-2 h-32"
                   disabled={productsLoading}
@@ -229,7 +229,7 @@ function ForecastingDashboard() {
                   {productsLoading ? (
                     <option>Loading products...</option>
                   ) : (
-                    products.map((product) => (
+                    products.map(product => (
                       <option key={product.id} value={product.id}>
                         {product.sku} - {product.name}
                       </option>
@@ -245,7 +245,7 @@ function ForecastingDashboard() {
                   Forecast Horizon
                 </label>
                 <div className="grid grid-cols-4 gap-2">
-                  {[7, 14, 30, 90].map((days) => (
+                  {[7, 14, 30, 90].map(days => (
                     <button
                       key={days}
                       onClick={() => setHorizon(days)}
@@ -266,7 +266,7 @@ function ForecastingDashboard() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">Region</label>
                 <select
                   value={region}
-                  onChange={(e) => setRegion(e.target.value)}
+                  onChange={e => setRegion(e.target.value)}
                   className="w-full border border-gray-300 rounded-lg p-2"
                 >
                   <option value="all">All Regions</option>
@@ -281,7 +281,7 @@ function ForecastingDashboard() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">Channel</label>
                 <select
                   value={channel}
-                  onChange={(e) => setChannel(e.target.value)}
+                  onChange={e => setChannel(e.target.value)}
                   className="w-full border border-gray-300 rounded-lg p-2"
                 >
                   <option value="all">All Channels</option>
@@ -322,11 +322,7 @@ function ForecastingDashboard() {
           {currentJob && (
             <div className="bg-white rounded-lg shadow p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">Job Progress</h2>
-              <JobProgressCard
-                jobId={currentJob}
-                status={jobStatus}
-                progress={jobProgress}
-              />
+              <JobProgressCard jobId={currentJob} status={jobStatus} progress={jobProgress} />
             </div>
           )}
 
@@ -337,7 +333,7 @@ function ForecastingDashboard() {
               <p className="text-sm text-gray-500">No recent forecasts</p>
             ) : (
               <div className="space-y-3">
-                {recentForecasts.slice(0, 5).map((forecast) => (
+                {recentForecasts.slice(0, 5).map(forecast => (
                   <RecentForecastCard
                     key={forecast.id}
                     forecast={forecast}
@@ -375,7 +371,7 @@ function ForecastingDashboard() {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 /**
@@ -390,8 +386,8 @@ function ModelCard({ model, selected, disabled, onToggle }) {
         disabled
           ? 'border-gray-200 bg-gray-50 opacity-50 cursor-not-allowed'
           : selected
-          ? 'border-blue-600 bg-blue-50'
-          : 'border-gray-200 bg-white hover:bg-gray-50'
+            ? 'border-blue-600 bg-blue-50'
+            : 'border-gray-200 bg-white hover:bg-gray-50'
       }`}
     >
       <div className="flex items-start justify-between mb-2">
@@ -412,7 +408,7 @@ function ModelCard({ model, selected, disabled, onToggle }) {
         {model.trainingTime}
       </div>
     </button>
-  );
+  )
 }
 
 /**
@@ -438,10 +434,10 @@ function JobProgressCard({ jobId, status, progress }) {
       bgColor: 'bg-red-50',
       label: 'Failed',
     },
-  };
+  }
 
-  const config = statusConfig[status] || statusConfig.running;
-  const Icon = config.icon;
+  const config = statusConfig[status] || statusConfig.running
+  const Icon = config.icon
 
   return (
     <div className={`p-4 rounded-lg ${config.bgColor}`}>
@@ -465,15 +461,15 @@ function JobProgressCard({ jobId, status, progress }) {
         </>
       )}
     </div>
-  );
+  )
 }
 
 /**
  * RecentForecastCard Component
  */
 function RecentForecastCard({ forecast, onClick }) {
-  const accuracy = forecast.accuracy || forecast.mape ? 100 - forecast.mape : null;
-  const isGood = accuracy && accuracy >= 85;
+  const accuracy = forecast.accuracy || forecast.mape ? 100 - forecast.mape : null
+  const isGood = accuracy && accuracy >= 85
 
   return (
     <button
@@ -496,7 +492,7 @@ function RecentForecastCard({ forecast, onClick }) {
         {forecast.model} • {forecast.horizon}d • {new Date(forecast.createdAt).toLocaleDateString()}
       </p>
     </button>
-  );
+  )
 }
 
 /**
@@ -527,6 +523,6 @@ const MODELS = [
     description: 'Ensemble decision trees with bootstrap aggregating',
     trainingTime: '~4 min',
   },
-];
+]
 
-export default ForecastingDashboard;
+export default ForecastingDashboard

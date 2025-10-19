@@ -6,37 +6,42 @@
  * @module routes/import
  */
 
-const express = require('express');
-const multer = require('multer');
-const path = require('path');
-const { PrismaClient } = require('@prisma/client');
-const { parseFile, previewFile } = require('../services/import/ImportProcessor');
-const { validateRow, getSchemaForDataType } = require('../services/import/ValidationEngine');
-const { addImportJob, getImportJobStatus, cancelImportJob, retryImportJob } = require('../queues/importQueue');
-const { logAudit } = require('../services/audit/AuditLogger');
-const { IMPORT_ACTIONS, STATUS } = require('../services/audit/AuditCategories');
+const express = require('express')
+const multer = require('multer')
+const path = require('path')
+const { PrismaClient } = require('@prisma/client')
+const { parseFile, previewFile } = require('../services/import/ImportProcessor')
+const { validateRow, getSchemaForDataType } = require('../services/import/ValidationEngine')
+const {
+  addImportJob,
+  getImportJobStatus,
+  cancelImportJob,
+  retryImportJob,
+} = require('../queues/importQueue')
+const { logAudit } = require('../services/audit/AuditLogger')
+const { IMPORT_ACTIONS, STATUS } = require('../services/audit/AuditCategories')
 
-const router = express.Router();
-const prisma = new PrismaClient();
+const router = express.Router()
+const prisma = new PrismaClient()
 
 // ============================================================================
 // File Upload Configuration
 // ============================================================================
 
 // Ensure uploads directory exists
-const UPLOADS_DIR = path.join(__dirname, '../../uploads');
+const UPLOADS_DIR = path.join(__dirname, '../../uploads')
 
 // Multer configuration
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, UPLOADS_DIR);
+    cb(null, UPLOADS_DIR)
   },
   filename: (req, file, cb) => {
-    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1E9)}`;
-    const ext = path.extname(file.originalname);
-    cb(null, `import-${uniqueSuffix}${ext}`);
+    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`
+    const ext = path.extname(file.originalname)
+    cb(null, `import-${uniqueSuffix}${ext}`)
   },
-});
+})
 
 const upload = multer({
   storage,
@@ -44,16 +49,16 @@ const upload = multer({
     fileSize: 50 * 1024 * 1024, // 50MB
   },
   fileFilter: (req, file, cb) => {
-    const allowedTypes = ['.csv', '.xlsx', '.xls'];
-    const ext = path.extname(file.originalname).toLowerCase();
+    const allowedTypes = ['.csv', '.xlsx', '.xls']
+    const ext = path.extname(file.originalname).toLowerCase()
 
     if (allowedTypes.includes(ext)) {
-      cb(null, true);
+      cb(null, true)
     } else {
-      cb(new Error(`Invalid file type. Allowed types: ${allowedTypes.join(', ')}`));
+      cb(new Error(`Invalid file type. Allowed types: ${allowedTypes.join(', ')}`))
     }
   },
-});
+})
 
 // ============================================================================
 // Routes
@@ -65,20 +70,20 @@ const upload = multer({
  */
 router.post('/upload', upload.single('file'), async (req, res) => {
   try {
-    const { dataType } = req.body;
-    const userId = req.user?.id || 'ANONYMOUS';
+    const { dataType } = req.body
+    const userId = req.user?.id || 'ANONYMOUS'
 
     if (!req.file) {
-      return res.status(400).json({ error: 'No file uploaded' });
+      return res.status(400).json({ error: 'No file uploaded' })
     }
 
     if (!dataType) {
-      return res.status(400).json({ error: 'Data type is required' });
+      return res.status(400).json({ error: 'Data type is required' })
     }
 
     // Determine file type
-    const ext = path.extname(req.file.originalname).toLowerCase();
-    const fileType = ext === '.csv' ? 'CSV' : 'EXCEL';
+    const ext = path.extname(req.file.originalname).toLowerCase()
+    const fileType = ext === '.csv' ? 'CSV' : 'EXCEL'
 
     // Create File record
     const file = await prisma.file.create({
@@ -90,10 +95,10 @@ router.post('/upload', upload.single('file'), async (req, res) => {
         mimeType: req.file.mimetype,
         uploadedBy: userId,
       },
-    });
+    })
 
     // Parse file to get preview
-    const preview = await previewFile(req.file.path, fileType, { limit: 10 });
+    const preview = await previewFile(req.file.path, fileType, { limit: 10 })
 
     // Log audit trail
     await logAudit({
@@ -109,7 +114,7 @@ router.post('/upload', upload.single('file'), async (req, res) => {
         dataType,
         rowCount: preview.totalRows,
       },
-    });
+    })
 
     res.json({
       success: true,
@@ -124,13 +129,12 @@ router.post('/upload', upload.single('file'), async (req, res) => {
         rows: preview.rows,
         totalRows: preview.totalRows,
       },
-    });
-
+    })
   } catch (error) {
-    console.error('File upload error:', error);
-    res.status(500).json({ error: error.message });
+    console.error('File upload error:', error)
+    res.status(500).json({ error: error.message })
   }
-});
+})
 
 /**
  * POST /api/import/preview
@@ -138,23 +142,23 @@ router.post('/upload', upload.single('file'), async (req, res) => {
  */
 router.post('/preview', async (req, res) => {
   try {
-    const { fileId, limit = 10 } = req.body;
+    const { fileId, limit = 10 } = req.body
 
     if (!fileId) {
-      return res.status(400).json({ error: 'File ID is required' });
+      return res.status(400).json({ error: 'File ID is required' })
     }
 
     // Get file record
     const file = await prisma.file.findUnique({
       where: { id: fileId },
-    });
+    })
 
     if (!file) {
-      return res.status(404).json({ error: 'File not found' });
+      return res.status(404).json({ error: 'File not found' })
     }
 
     // Preview file
-    const preview = await previewFile(file.filePath, file.fileType, { limit });
+    const preview = await previewFile(file.filePath, file.fileType, { limit })
 
     res.json({
       success: true,
@@ -163,13 +167,12 @@ router.post('/preview', async (req, res) => {
         rows: preview.rows,
         totalRows: preview.totalRows,
       },
-    });
-
+    })
   } catch (error) {
-    console.error('File preview error:', error);
-    res.status(500).json({ error: error.message });
+    console.error('File preview error:', error)
+    res.status(500).json({ error: error.message })
   }
-});
+})
 
 /**
  * POST /api/import/auto-map
@@ -177,31 +180,31 @@ router.post('/preview', async (req, res) => {
  */
 router.post('/auto-map', async (req, res) => {
   try {
-    const { fileId, dataType } = req.body;
+    const { fileId, dataType } = req.body
 
     if (!fileId || !dataType) {
-      return res.status(400).json({ error: 'File ID and data type are required' });
+      return res.status(400).json({ error: 'File ID and data type are required' })
     }
 
     // Get file record
     const file = await prisma.file.findUnique({
       where: { id: fileId },
-    });
+    })
 
     if (!file) {
-      return res.status(404).json({ error: 'File not found' });
+      return res.status(404).json({ error: 'File not found' })
     }
 
     // Parse file to get columns
-    const preview = await previewFile(file.filePath, file.fileType, { limit: 1 });
-    const sourceColumns = preview.columns;
+    const preview = await previewFile(file.filePath, file.fileType, { limit: 1 })
+    const sourceColumns = preview.columns
 
     // Get schema for data type
-    const schema = getSchemaForDataType(dataType);
-    const targetColumns = schema.fields.map((f) => f.name);
+    const schema = getSchemaForDataType(dataType)
+    const targetColumns = schema.fields.map(f => f.name)
 
     // Auto-map columns
-    const mapping = generateAutoMapping(sourceColumns, schema.fields);
+    const mapping = generateAutoMapping(sourceColumns, schema.fields)
 
     res.json({
       success: true,
@@ -209,13 +212,12 @@ router.post('/auto-map', async (req, res) => {
       sourceColumns,
       targetColumns,
       confidence: calculateMappingConfidence(mapping),
-    });
-
+    })
   } catch (error) {
-    console.error('Auto-mapping error:', error);
-    res.status(500).json({ error: error.message });
+    console.error('Auto-mapping error:', error)
+    res.status(500).json({ error: error.message })
   }
-});
+})
 
 /**
  * POST /api/import/validate
@@ -223,28 +225,28 @@ router.post('/auto-map', async (req, res) => {
  */
 router.post('/validate', async (req, res) => {
   try {
-    const { fileId, dataType, mapping, limit = 100 } = req.body;
-    const userId = req.user?.id || 'ANONYMOUS';
+    const { fileId, dataType, mapping, limit = 100 } = req.body
+    const userId = req.user?.id || 'ANONYMOUS'
 
     if (!fileId || !dataType || !mapping) {
-      return res.status(400).json({ error: 'File ID, data type, and mapping are required' });
+      return res.status(400).json({ error: 'File ID, data type, and mapping are required' })
     }
 
     // Get file record
     const file = await prisma.file.findUnique({
       where: { id: fileId },
-    });
+    })
 
     if (!file) {
-      return res.status(404).json({ error: 'File not found' });
+      return res.status(404).json({ error: 'File not found' })
     }
 
     // Parse file
-    const rows = await parseFile(file.filePath, file.fileType);
-    const sampleRows = rows.slice(0, limit);
+    const rows = await parseFile(file.filePath, file.fileType)
+    const sampleRows = rows.slice(0, limit)
 
     // Get schema
-    const schema = getSchemaForDataType(dataType);
+    const schema = getSchemaForDataType(dataType)
 
     // Validate rows
     const validationResults = {
@@ -253,35 +255,35 @@ router.post('/validate', async (req, res) => {
       invalidRows: 0,
       errors: [],
       warnings: [],
-    };
+    }
 
     for (let i = 0; i < sampleRows.length; i++) {
-      const row = sampleRows[i];
+      const row = sampleRows[i]
 
       // Map columns
-      const mappedRow = {};
+      const mappedRow = {}
       for (const [sourceCol, targetCol] of Object.entries(mapping)) {
-        mappedRow[targetCol] = row[sourceCol];
+        mappedRow[targetCol] = row[sourceCol]
       }
 
       // Validate
-      const { valid, errors, warnings } = await validateRow(mappedRow, schema);
+      const { valid, errors, warnings } = await validateRow(mappedRow, schema)
 
       if (valid) {
-        validationResults.validRows++;
+        validationResults.validRows++
       } else {
-        validationResults.invalidRows++;
+        validationResults.invalidRows++
         validationResults.errors.push({
           rowNumber: i + 1,
           errors,
-        });
+        })
       }
 
       if (warnings && warnings.length > 0) {
         validationResults.warnings.push({
           rowNumber: i + 1,
           warnings,
-        });
+        })
       }
     }
 
@@ -298,18 +300,17 @@ router.post('/validate', async (req, res) => {
         validRows: validationResults.validRows,
         invalidRows: validationResults.invalidRows,
       },
-    });
+    })
 
     res.json({
       success: true,
       validation: validationResults,
-    });
-
+    })
   } catch (error) {
-    console.error('Validation error:', error);
-    res.status(500).json({ error: error.message });
+    console.error('Validation error:', error)
+    res.status(500).json({ error: error.message })
   }
-});
+})
 
 /**
  * POST /api/import/start
@@ -317,11 +318,11 @@ router.post('/validate', async (req, res) => {
  */
 router.post('/start', async (req, res) => {
   try {
-    const { fileId, dataType, mapping, transformations, options } = req.body;
-    const userId = req.user?.id || 'ANONYMOUS';
+    const { fileId, dataType, mapping, transformations, options } = req.body
+    const userId = req.user?.id || 'ANONYMOUS'
 
     if (!fileId || !dataType || !mapping) {
-      return res.status(400).json({ error: 'File ID, data type, and mapping are required' });
+      return res.status(400).json({ error: 'File ID, data type, and mapping are required' })
     }
 
     // Create ImportJob record
@@ -335,10 +336,10 @@ router.post('/start', async (req, res) => {
         status: 'PENDING',
         userId,
       },
-    });
+    })
 
     // Add to queue
-    await addImportJob(importJob.id, userId, options);
+    await addImportJob(importJob.id, userId, options)
 
     res.json({
       success: true,
@@ -348,13 +349,12 @@ router.post('/start', async (req, res) => {
         dataType: importJob.dataType,
         createdAt: importJob.createdAt,
       },
-    });
-
+    })
   } catch (error) {
-    console.error('Start import error:', error);
-    res.status(500).json({ error: error.message });
+    console.error('Start import error:', error)
+    res.status(500).json({ error: error.message })
   }
-});
+})
 
 /**
  * GET /api/import/status/:jobId
@@ -362,7 +362,7 @@ router.post('/start', async (req, res) => {
  */
 router.get('/status/:jobId', async (req, res) => {
   try {
-    const { jobId } = req.params;
+    const { jobId } = req.params
 
     // Get database record
     const importJob = await prisma.importJob.findUnique({
@@ -370,14 +370,14 @@ router.get('/status/:jobId', async (req, res) => {
       include: {
         file: true,
       },
-    });
+    })
 
     if (!importJob) {
-      return res.status(404).json({ error: 'Import job not found' });
+      return res.status(404).json({ error: 'Import job not found' })
     }
 
     // Get queue status
-    const queueStatus = await getImportJobStatus(jobId);
+    const queueStatus = await getImportJobStatus(jobId)
 
     res.json({
       success: true,
@@ -398,13 +398,12 @@ router.get('/status/:jobId', async (req, res) => {
         },
       },
       queueStatus,
-    });
-
+    })
   } catch (error) {
-    console.error('Get import status error:', error);
-    res.status(500).json({ error: error.message });
+    console.error('Get import status error:', error)
+    res.status(500).json({ error: error.message })
   }
-});
+})
 
 /**
  * POST /api/import/cancel/:jobId
@@ -412,21 +411,20 @@ router.get('/status/:jobId', async (req, res) => {
  */
 router.post('/cancel/:jobId', async (req, res) => {
   try {
-    const { jobId } = req.params;
-    const userId = req.user?.id || 'ANONYMOUS';
+    const { jobId } = req.params
+    const userId = req.user?.id || 'ANONYMOUS'
 
-    await cancelImportJob(jobId, userId);
+    await cancelImportJob(jobId, userId)
 
     res.json({
       success: true,
       message: 'Import job cancelled',
-    });
-
+    })
   } catch (error) {
-    console.error('Cancel import error:', error);
-    res.status(500).json({ error: error.message });
+    console.error('Cancel import error:', error)
+    res.status(500).json({ error: error.message })
   }
-});
+})
 
 /**
  * POST /api/import/retry/:jobId
@@ -434,21 +432,20 @@ router.post('/cancel/:jobId', async (req, res) => {
  */
 router.post('/retry/:jobId', async (req, res) => {
   try {
-    const { jobId } = req.params;
-    const userId = req.user?.id || 'ANONYMOUS';
+    const { jobId } = req.params
+    const userId = req.user?.id || 'ANONYMOUS'
 
-    await retryImportJob(jobId, userId);
+    await retryImportJob(jobId, userId)
 
     res.json({
       success: true,
       message: 'Import job retried',
-    });
-
+    })
   } catch (error) {
-    console.error('Retry import error:', error);
-    res.status(500).json({ error: error.message });
+    console.error('Retry import error:', error)
+    res.status(500).json({ error: error.message })
   }
-});
+})
 
 /**
  * GET /api/import/jobs
@@ -456,13 +453,13 @@ router.post('/retry/:jobId', async (req, res) => {
  */
 router.get('/jobs', async (req, res) => {
   try {
-    const { status, dataType, limit = 50, offset = 0 } = req.query;
-    const userId = req.user?.id;
+    const { status, dataType, limit = 50, offset = 0 } = req.query
+    const userId = req.user?.id
 
-    const where = {};
-    if (status) where.status = status;
-    if (dataType) where.dataType = dataType;
-    if (userId && req.user?.role !== 'ADMIN') where.userId = userId;
+    const where = {}
+    if (status) where.status = status
+    if (dataType) where.dataType = dataType
+    if (userId && req.user?.role !== 'ADMIN') where.userId = userId
 
     const [jobs, totalCount] = await Promise.all([
       prisma.importJob.findMany({
@@ -475,11 +472,11 @@ router.get('/jobs', async (req, res) => {
         skip: parseInt(offset),
       }),
       prisma.importJob.count({ where }),
-    ]);
+    ])
 
     res.json({
       success: true,
-      jobs: jobs.map((job) => ({
+      jobs: jobs.map(job => ({
         id: job.id,
         status: job.status,
         dataType: job.dataType,
@@ -496,13 +493,12 @@ router.get('/jobs', async (req, res) => {
       totalCount,
       limit: parseInt(limit),
       offset: parseInt(offset),
-    });
-
+    })
   } catch (error) {
-    console.error('List import jobs error:', error);
-    res.status(500).json({ error: error.message });
+    console.error('List import jobs error:', error)
+    res.status(500).json({ error: error.message })
   }
-});
+})
 
 // ============================================================================
 // Helper Functions
@@ -512,20 +508,19 @@ router.get('/jobs', async (req, res) => {
  * Generate auto-mapping from source columns to target schema
  */
 function generateAutoMapping(sourceColumns, targetFields) {
-  const mapping = {};
+  const mapping = {}
 
-  sourceColumns.forEach((sourceCol) => {
+  sourceColumns.forEach(sourceCol => {
     // 1. Exact match (case-insensitive)
-    let match = targetFields.find(
-      (target) => target.name.toLowerCase() === sourceCol.toLowerCase()
-    );
+    let match = targetFields.find(target => target.name.toLowerCase() === sourceCol.toLowerCase())
 
     // 2. Fuzzy match (partial match)
     if (!match) {
-      match = targetFields.find((target) =>
-        sourceCol.toLowerCase().includes(target.name.toLowerCase()) ||
-        target.name.toLowerCase().includes(sourceCol.toLowerCase())
-      );
+      match = targetFields.find(
+        target =>
+          sourceCol.toLowerCase().includes(target.name.toLowerCase()) ||
+          target.name.toLowerCase().includes(sourceCol.toLowerCase())
+      )
     }
 
     // 3. Alias match (common variations)
@@ -536,38 +531,38 @@ function generateAutoMapping(sourceColumns, targetFields) {
         price: ['unit_price', 'cost', 'amount'],
         quantity: ['qty', 'stock', 'amount'],
         description: ['desc', 'details'],
-      };
+      }
 
       for (const [targetName, aliasList] of Object.entries(aliases)) {
-        if (aliasList.some((alias) => sourceCol.toLowerCase().includes(alias))) {
-          match = targetFields.find((target) => target.name.toLowerCase() === targetName);
-          if (match) break;
+        if (aliasList.some(alias => sourceCol.toLowerCase().includes(alias))) {
+          match = targetFields.find(target => target.name.toLowerCase() === targetName)
+          if (match) break
         }
       }
     }
 
     if (match) {
-      mapping[sourceCol] = match.name;
+      mapping[sourceCol] = match.name
     }
-  });
+  })
 
-  return mapping;
+  return mapping
 }
 
 /**
  * Calculate mapping confidence score
  */
 function calculateMappingConfidence(mapping) {
-  const mappedCount = Object.keys(mapping).length;
-  const totalCount = Object.keys(mapping).length;
+  const mappedCount = Object.keys(mapping).length
+  const totalCount = Object.keys(mapping).length
 
-  if (totalCount === 0) return 0;
+  if (totalCount === 0) return 0
 
-  return Math.round((mappedCount / totalCount) * 100);
+  return Math.round((mappedCount / totalCount) * 100)
 }
 
 // ============================================================================
 // Export Router
 // ============================================================================
 
-module.exports = router;
+module.exports = router

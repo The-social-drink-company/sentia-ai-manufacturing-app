@@ -9,7 +9,7 @@
  * - Export functionality
  */
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1'
 
 /**
  * Run a new forecast
@@ -31,14 +31,14 @@ export async function runForecast(params) {
     },
     credentials: 'include',
     body: JSON.stringify(params),
-  });
+  })
 
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || 'Failed to start forecast');
+    const error = await response.json()
+    throw new Error(error.message || 'Failed to start forecast')
   }
 
-  return response.json();
+  return response.json()
 }
 
 /**
@@ -50,13 +50,13 @@ export async function runForecast(params) {
 export async function getForecastResults(forecastId) {
   const response = await fetch(`${API_BASE_URL}/forecasts/${forecastId}`, {
     credentials: 'include',
-  });
+  })
 
   if (!response.ok) {
-    throw new Error('Failed to fetch forecast results');
+    throw new Error('Failed to fetch forecast results')
   }
 
-  return response.json();
+  return response.json()
 }
 
 /**
@@ -67,19 +67,19 @@ export async function getForecastResults(forecastId) {
  * @returns {Promise<Object[]>} Array of recent forecasts
  */
 export async function getRecentForecasts(productId = null, limit = 10) {
-  const params = new URLSearchParams();
-  if (productId) params.append('productId', productId);
-  params.append('limit', limit.toString());
+  const params = new URLSearchParams()
+  if (productId) params.append('productId', productId)
+  params.append('limit', limit.toString())
 
   const response = await fetch(`${API_BASE_URL}/forecasts/recent?${params}`, {
     credentials: 'include',
-  });
+  })
 
   if (!response.ok) {
-    throw new Error('Failed to fetch recent forecasts');
+    throw new Error('Failed to fetch recent forecasts')
   }
 
-  return response.json();
+  return response.json()
 }
 
 /**
@@ -89,18 +89,15 @@ export async function getRecentForecasts(productId = null, limit = 10) {
  * @returns {Promise<Object>} Comparison data with metrics for all models
  */
 export async function getModelComparison(productId) {
-  const response = await fetch(
-    `${API_BASE_URL}/forecasts/comparison?productId=${productId}`,
-    {
-      credentials: 'include',
-    }
-  );
+  const response = await fetch(`${API_BASE_URL}/forecasts/comparison?productId=${productId}`, {
+    credentials: 'include',
+  })
 
   if (!response.ok) {
-    throw new Error('Failed to fetch model comparison');
+    throw new Error('Failed to fetch model comparison')
   }
 
-  return response.json();
+  return response.json()
 }
 
 /**
@@ -110,18 +107,15 @@ export async function getModelComparison(productId) {
  * @returns {Promise<Object>} Accuracy metrics (MAPE, RMSE, MAE, R²)
  */
 export async function getForecastAccuracy(productId) {
-  const response = await fetch(
-    `${API_BASE_URL}/forecasts/accuracy/${productId}`,
-    {
-      credentials: 'include',
-    }
-  );
+  const response = await fetch(`${API_BASE_URL}/forecasts/accuracy/${productId}`, {
+    credentials: 'include',
+  })
 
   if (!response.ok) {
-    throw new Error('Failed to fetch forecast accuracy');
+    throw new Error('Failed to fetch forecast accuracy')
   }
 
-  return response.json();
+  return response.json()
 }
 
 /**
@@ -132,18 +126,15 @@ export async function getForecastAccuracy(productId) {
  * @returns {Promise<Blob>} File blob
  */
 export async function exportForecast(forecastId, format = 'csv') {
-  const response = await fetch(
-    `${API_BASE_URL}/forecasts/${forecastId}/export?format=${format}`,
-    {
-      credentials: 'include',
-    }
-  );
+  const response = await fetch(`${API_BASE_URL}/forecasts/${forecastId}/export?format=${format}`, {
+    credentials: 'include',
+  })
 
   if (!response.ok) {
-    throw new Error('Failed to export forecast');
+    throw new Error('Failed to export forecast')
   }
 
-  return response.blob();
+  return response.blob()
 }
 
 /**
@@ -161,13 +152,13 @@ export async function pushToOptimization(forecastId, options = {}) {
     },
     credentials: 'include',
     body: JSON.stringify(options),
-  });
+  })
 
   if (!response.ok) {
-    throw new Error('Failed to push forecast to optimization');
+    throw new Error('Failed to push forecast to optimization')
   }
 
-  return response.json();
+  return response.json()
 }
 
 /**
@@ -179,13 +170,13 @@ export async function pushToOptimization(forecastId, options = {}) {
 export async function getForecastJobStatus(jobId) {
   const response = await fetch(`${API_BASE_URL}/forecasts/jobs/${jobId}`, {
     credentials: 'include',
-  });
+  })
 
   if (!response.ok) {
-    throw new Error('Failed to fetch job status');
+    throw new Error('Failed to fetch job status')
   }
 
-  return response.json();
+  return response.json()
 }
 
 /**
@@ -202,13 +193,13 @@ export async function batchForecast(params) {
     },
     credentials: 'include',
     body: JSON.stringify(params),
-  });
+  })
 
   if (!response.ok) {
-    throw new Error('Failed to start batch forecast');
+    throw new Error('Failed to start batch forecast')
   }
 
-  return response.json();
+  return response.json()
 }
 
 export default {
@@ -221,4 +212,4 @@ export default {
   pushToOptimization,
   getForecastJobStatus,
   batchForecast,
-};
+}

@@ -7,20 +7,20 @@
  * @module queues/importQueue
  */
 
-const { Queue, Worker, QueueEvents } = require('bullmq');
-const { getRedisClient } = require('../config/redis');
-const { processImportJob } = require('../services/import/ImportProcessor');
-const { logAudit } = require('../services/audit/AuditLogger');
-const { IMPORT_ACTIONS, STATUS, SEVERITY } = require('../services/audit/AuditCategories');
-const { PrismaClient } = require('@prisma/client');
+const { Queue, Worker, QueueEvents } = require('bullmq')
+const { getRedisClient } = require('../config/redis')
+const { processImportJob } = require('../services/import/ImportProcessor')
+const { logAudit } = require('../services/audit/AuditLogger')
+const { IMPORT_ACTIONS, STATUS, SEVERITY } = require('../services/audit/AuditCategories')
+const { PrismaClient } = require('@prisma/client')
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient()
 
 // ============================================================================
 // Queue Configuration
 // ============================================================================
 
-const QUEUE_NAME = 'import-queue';
+const QUEUE_NAME = 'import-queue'
 
 const QUEUE_OPTIONS = {
   connection: null, // Will be set dynamically
@@ -39,48 +39,48 @@ const QUEUE_OPTIONS = {
       count: 5000, // Keep max 5000 failed jobs
     },
   },
-};
+}
 
 // ============================================================================
 // Queue Instance
 // ============================================================================
 
-let importQueue;
-let importWorker;
-let importQueueEvents;
+let importQueue
+let importWorker
+let importQueueEvents
 
 /**
  * Initialize import queue
  */
 async function initializeImportQueue() {
   if (importQueue) {
-    console.log('Import queue already initialized');
-    return importQueue;
+    console.log('Import queue already initialized')
+    return importQueue
   }
 
   try {
-    const redis = await getRedisClient();
+    const redis = await getRedisClient()
 
     // Create queue
     importQueue = new Queue(QUEUE_NAME, {
       ...QUEUE_OPTIONS,
       connection: redis,
-    });
+    })
 
     // Create queue events listener
     importQueueEvents = new QueueEvents(QUEUE_NAME, {
       connection: redis,
-    });
+    })
 
     // Set up event listeners
-    setupQueueEventListeners();
+    setupQueueEventListeners()
 
-    console.log(`✅ Import queue initialized: ${QUEUE_NAME}`);
+    console.log(`✅ Import queue initialized: ${QUEUE_NAME}`)
 
-    return importQueue;
+    return importQueue
   } catch (error) {
-    console.error('Failed to initialize import queue:', error);
-    throw error;
+    console.error('Failed to initialize import queue:', error)
+    throw error
   }
 }
 
@@ -89,36 +89,32 @@ async function initializeImportQueue() {
  */
 async function initializeImportWorker() {
   if (importWorker) {
-    console.log('Import worker already initialized');
-    return importWorker;
+    console.log('Import worker already initialized')
+    return importWorker
   }
 
   try {
-    const redis = await getRedisClient();
+    const redis = await getRedisClient()
 
     // Create worker
-    importWorker = new Worker(
-      QUEUE_NAME,
-      processImportJobWrapper,
-      {
-        connection: redis,
-        concurrency: 5, // Process up to 5 imports concurrently
-        limiter: {
-          max: 10, // Max 10 jobs per duration
-          duration: 60000, // per 60 seconds
-        },
-      }
-    );
+    importWorker = new Worker(QUEUE_NAME, processImportJobWrapper, {
+      connection: redis,
+      concurrency: 5, // Process up to 5 imports concurrently
+      limiter: {
+        max: 10, // Max 10 jobs per duration
+        duration: 60000, // per 60 seconds
+      },
+    })
 
     // Set up worker event listeners
-    setupWorkerEventListeners();
+    setupWorkerEventListeners()
 
-    console.log(`✅ Import worker initialized with concurrency: 5`);
+    console.log(`✅ Import worker initialized with concurrency: 5`)
 
-    return importWorker;
+    return importWorker
   } catch (error) {
-    console.error('Failed to initialize import worker:', error);
-    throw error;
+    console.error('Failed to initialize import worker:', error)
+    throw error
   }
 }
 
@@ -130,9 +126,9 @@ async function initializeImportWorker() {
  * Wrapper for import job processing with error handling
  */
 async function processImportJobWrapper(job) {
-  const { importJobId, userId } = job.data;
+  const { importJobId, userId } = job.data
 
-  console.log(`Processing import job: ${importJobId} (Bull Job ID: ${job.id})`);
+  console.log(`Processing import job: ${importJobId} (Bull Job ID: ${job.id})`)
 
   try {
     // Update job status to IMPORTING
@@ -142,12 +138,12 @@ async function processImportJobWrapper(job) {
         status: 'IMPORTING',
         startedAt: new Date(),
       },
-    });
+    })
 
     // Progress callback
-    const progressCallback = async (progress) => {
+    const progressCallback = async progress => {
       // Update job progress in BullMQ
-      await job.updateProgress(progress.progress);
+      await job.updateProgress(progress.progress)
 
       // Update database
       await prisma.importJob.update({
@@ -157,13 +153,13 @@ async function processImportJobWrapper(job) {
           succeededRows: progress.succeededRows || 0,
           failedRows: progress.failedRows || 0,
         },
-      });
+      })
 
-      console.log(`Import job ${importJobId} progress: ${progress.progress}%`);
-    };
+      console.log(`Import job ${importJobId} progress: ${progress.progress}%`)
+    }
 
     // Process the import
-    const result = await processImportJob(importJobId, progressCallback);
+    const result = await processImportJob(importJobId, progressCallback)
 
     // Update job status to COMPLETED
     await prisma.importJob.update({
@@ -176,7 +172,7 @@ async function processImportJobWrapper(job) {
         failedRows: result.failedRows,
         errors: result.errors || [],
       },
-    });
+    })
 
     // Log audit trail
     await logAudit({
@@ -192,14 +188,13 @@ async function processImportJobWrapper(job) {
         failedRows: result.failedRows,
         duration: result.duration,
       },
-    });
+    })
 
-    console.log(`✅ Import job ${importJobId} completed successfully`);
+    console.log(`✅ Import job ${importJobId} completed successfully`)
 
-    return result;
-
+    return result
   } catch (error) {
-    console.error(`❌ Import job ${importJobId} failed:`, error);
+    console.error(`❌ Import job ${importJobId} failed:`, error)
 
     // Update job status to FAILED
     await prisma.importJob.update({
@@ -209,7 +204,7 @@ async function processImportJobWrapper(job) {
         completedAt: new Date(),
         errors: [{ error: error.message }],
       },
-    });
+    })
 
     // Log audit trail
     await logAudit({
@@ -221,9 +216,9 @@ async function processImportJobWrapper(job) {
       status: STATUS.FAILURE,
       severity: SEVERITY.ERROR,
       errorMessage: error.message,
-    });
+    })
 
-    throw error;
+    throw error
   }
 }
 
@@ -236,25 +231,25 @@ async function processImportJobWrapper(job) {
  */
 async function addImportJob(importJobId, userId, options = {}) {
   if (!importQueue) {
-    await initializeImportQueue();
+    await initializeImportQueue()
   }
 
   const jobData = {
     importJobId,
     userId,
     timestamp: new Date().toISOString(),
-  };
+  }
 
   const jobOptions = {
     jobId: `import-${importJobId}`,
     priority: options.priority || 5,
     ...options,
-  };
+  }
 
   try {
-    const job = await importQueue.add('import', jobData, jobOptions);
+    const job = await importQueue.add('import', jobData, jobOptions)
 
-    console.log(`Import job added to queue: ${job.id}`);
+    console.log(`Import job added to queue: ${job.id}`)
 
     // Log audit trail
     await logAudit({
@@ -268,11 +263,11 @@ async function addImportJob(importJobId, userId, options = {}) {
         bullJobId: job.id,
         priority: jobOptions.priority,
       },
-    });
+    })
 
-    return job;
+    return job
   } catch (error) {
-    console.error('Failed to add import job to queue:', error);
+    console.error('Failed to add import job to queue:', error)
 
     await logAudit({
       userId,
@@ -283,9 +278,9 @@ async function addImportJob(importJobId, userId, options = {}) {
       status: STATUS.FAILURE,
       severity: SEVERITY.ERROR,
       errorMessage: error.message,
-    });
+    })
 
-    throw error;
+    throw error
   }
 }
 
@@ -294,18 +289,18 @@ async function addImportJob(importJobId, userId, options = {}) {
  */
 async function getImportJobStatus(importJobId) {
   if (!importQueue) {
-    await initializeImportQueue();
+    await initializeImportQueue()
   }
 
-  const bullJobId = `import-${importJobId}`;
-  const job = await importQueue.getJob(bullJobId);
+  const bullJobId = `import-${importJobId}`
+  const job = await importQueue.getJob(bullJobId)
 
   if (!job) {
-    return { exists: false };
+    return { exists: false }
   }
 
-  const state = await job.getState();
-  const progress = await job.progress;
+  const state = await job.getState()
+  const progress = await job.progress
 
   return {
     exists: true,
@@ -317,7 +312,7 @@ async function getImportJobStatus(importJobId) {
     finishedOn: job.finishedOn,
     returnvalue: job.returnvalue,
     failedReason: job.failedReason,
-  };
+  }
 }
 
 /**
@@ -325,18 +320,18 @@ async function getImportJobStatus(importJobId) {
  */
 async function cancelImportJob(importJobId, userId) {
   if (!importQueue) {
-    await initializeImportQueue();
+    await initializeImportQueue()
   }
 
-  const bullJobId = `import-${importJobId}`;
-  const job = await importQueue.getJob(bullJobId);
+  const bullJobId = `import-${importJobId}`
+  const job = await importQueue.getJob(bullJobId)
 
   if (!job) {
-    throw new Error(`Import job not found: ${importJobId}`);
+    throw new Error(`Import job not found: ${importJobId}`)
   }
 
   try {
-    await job.remove();
+    await job.remove()
 
     // Update database
     await prisma.importJob.update({
@@ -345,7 +340,7 @@ async function cancelImportJob(importJobId, userId) {
         status: 'CANCELLED',
         completedAt: new Date(),
       },
-    });
+    })
 
     // Log audit trail
     await logAudit({
@@ -355,14 +350,14 @@ async function cancelImportJob(importJobId, userId) {
       resourceType: 'IMPORT_JOB',
       resourceId: importJobId,
       status: STATUS.SUCCESS,
-    });
+    })
 
-    console.log(`Import job cancelled: ${importJobId}`);
+    console.log(`Import job cancelled: ${importJobId}`)
 
-    return { success: true };
+    return { success: true }
   } catch (error) {
-    console.error('Failed to cancel import job:', error);
-    throw error;
+    console.error('Failed to cancel import job:', error)
+    throw error
   }
 }
 
@@ -371,18 +366,18 @@ async function cancelImportJob(importJobId, userId) {
  */
 async function retryImportJob(importJobId, userId) {
   if (!importQueue) {
-    await initializeImportQueue();
+    await initializeImportQueue()
   }
 
-  const bullJobId = `import-${importJobId}`;
-  const job = await importQueue.getJob(bullJobId);
+  const bullJobId = `import-${importJobId}`
+  const job = await importQueue.getJob(bullJobId)
 
   if (!job) {
-    throw new Error(`Import job not found: ${importJobId}`);
+    throw new Error(`Import job not found: ${importJobId}`)
   }
 
   try {
-    await job.retry();
+    await job.retry()
 
     // Update database
     await prisma.importJob.update({
@@ -391,7 +386,7 @@ async function retryImportJob(importJobId, userId) {
         status: 'PENDING',
         errors: [],
       },
-    });
+    })
 
     // Log audit trail
     await logAudit({
@@ -401,14 +396,14 @@ async function retryImportJob(importJobId, userId) {
       resourceType: 'IMPORT_JOB',
       resourceId: importJobId,
       status: STATUS.SUCCESS,
-    });
+    })
 
-    console.log(`Import job retried: ${importJobId}`);
+    console.log(`Import job retried: ${importJobId}`)
 
-    return { success: true };
+    return { success: true }
   } catch (error) {
-    console.error('Failed to retry import job:', error);
-    throw error;
+    console.error('Failed to retry import job:', error)
+    throw error
   }
 }
 
@@ -421,7 +416,7 @@ async function retryImportJob(importJobId, userId) {
  */
 async function getQueueMetrics() {
   if (!importQueue) {
-    await initializeImportQueue();
+    await initializeImportQueue()
   }
 
   const [waiting, active, completed, failed, delayed] = await Promise.all([
@@ -430,7 +425,7 @@ async function getQueueMetrics() {
     importQueue.getCompletedCount(),
     importQueue.getFailedCount(),
     importQueue.getDelayedCount(),
-  ]);
+  ])
 
   return {
     queueName: QUEUE_NAME,
@@ -440,7 +435,7 @@ async function getQueueMetrics() {
     failed,
     delayed,
     total: waiting + active + completed + failed + delayed,
-  };
+  }
 }
 
 /**
@@ -448,12 +443,12 @@ async function getQueueMetrics() {
  */
 async function getJobsByStatus(status, start = 0, end = 99) {
   if (!importQueue) {
-    await initializeImportQueue();
+    await initializeImportQueue()
   }
 
-  const jobs = await importQueue.getJobs(status, start, end);
+  const jobs = await importQueue.getJobs(status, start, end)
 
-  return jobs.map((job) => ({
+  return jobs.map(job => ({
     id: job.id,
     name: job.name,
     data: job.data,
@@ -463,7 +458,7 @@ async function getJobsByStatus(status, start = 0, end = 99) {
     processedOn: job.processedOn,
     finishedOn: job.finishedOn,
     failedReason: job.failedReason,
-  }));
+  }))
 }
 
 /**
@@ -471,14 +466,14 @@ async function getJobsByStatus(status, start = 0, end = 99) {
  */
 async function cleanOldJobs(grace = 86400000) {
   if (!importQueue) {
-    await initializeImportQueue();
+    await initializeImportQueue()
   }
 
   // grace = 24 hours in milliseconds
-  await importQueue.clean(grace, 1000, 'completed');
-  await importQueue.clean(grace * 7, 5000, 'failed'); // Keep failed jobs for 7 days
+  await importQueue.clean(grace, 1000, 'completed')
+  await importQueue.clean(grace * 7, 5000, 'failed') // Keep failed jobs for 7 days
 
-  console.log('Old import jobs cleaned');
+  console.log('Old import jobs cleaned')
 }
 
 // ============================================================================
@@ -489,38 +484,38 @@ async function cleanOldJobs(grace = 86400000) {
  * Set up queue event listeners
  */
 function setupQueueEventListeners() {
-  if (!importQueueEvents) return;
+  if (!importQueueEvents) return
 
   importQueueEvents.on('completed', ({ jobId }) => {
-    console.log(`✅ Import job completed: ${jobId}`);
-  });
+    console.log(`✅ Import job completed: ${jobId}`)
+  })
 
   importQueueEvents.on('failed', ({ jobId, failedReason }) => {
-    console.error(`❌ Import job failed: ${jobId}`, failedReason);
-  });
+    console.error(`❌ Import job failed: ${jobId}`, failedReason)
+  })
 
   importQueueEvents.on('progress', ({ jobId, data }) => {
-    console.log(`Import job progress: ${jobId} - ${data}%`);
-  });
+    console.log(`Import job progress: ${jobId} - ${data}%`)
+  })
 }
 
 /**
  * Set up worker event listeners
  */
 function setupWorkerEventListeners() {
-  if (!importWorker) return;
+  if (!importWorker) return
 
-  importWorker.on('completed', (job) => {
-    console.log(`Worker completed job: ${job.id}`);
-  });
+  importWorker.on('completed', job => {
+    console.log(`Worker completed job: ${job.id}`)
+  })
 
   importWorker.on('failed', (job, error) => {
-    console.error(`Worker failed job: ${job.id}`, error.message);
-  });
+    console.error(`Worker failed job: ${job.id}`, error.message)
+  })
 
-  importWorker.on('error', (error) => {
-    console.error('Import worker error:', error);
-  });
+  importWorker.on('error', error => {
+    console.error('Import worker error:', error)
+  })
 }
 
 // ============================================================================
@@ -533,22 +528,22 @@ function setupWorkerEventListeners() {
 async function closeImportQueue() {
   try {
     if (importWorker) {
-      await importWorker.close();
-      console.log('Import worker closed');
+      await importWorker.close()
+      console.log('Import worker closed')
     }
 
     if (importQueueEvents) {
-      await importQueueEvents.close();
-      console.log('Import queue events closed');
+      await importQueueEvents.close()
+      console.log('Import queue events closed')
     }
 
     if (importQueue) {
-      await importQueue.close();
-      console.log('Import queue closed');
+      await importQueue.close()
+      console.log('Import queue closed')
     }
   } catch (error) {
-    console.error('Error closing import queue:', error);
-    throw error;
+    console.error('Error closing import queue:', error)
+    throw error
   }
 }
 
@@ -577,4 +572,4 @@ module.exports = {
 
   // Queue instance (for testing)
   getQueue: () => importQueue,
-};
+}

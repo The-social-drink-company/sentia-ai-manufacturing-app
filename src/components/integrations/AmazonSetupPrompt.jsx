@@ -1,5 +1,9 @@
-import { ExclamationCircleIcon, ArrowRightIcon, ShoppingCartIcon } from '@heroicons/react/24/outline';
-import { cn } from '@/lib/utils';
+import {
+  ExclamationCircleIcon,
+  ArrowRightIcon,
+  ShoppingCartIcon,
+} from '@heroicons/react/24/outline'
+import { cn } from '@/lib/utils'
 
 /**
  * Amazon SP-API Setup Prompt Component
@@ -14,34 +18,32 @@ import { cn } from '@/lib/utils';
  * @param {Object} amazonStatus.details - Additional details (missing env vars, error messages, etc.)
  */
 export default function AmazonSetupPrompt({ amazonStatus }) {
-  const isDevelopmentEnv = import.meta.env.MODE === 'development' || import.meta.env.VITE_DEVELOPMENT_MODE === 'true'
+  const isDevelopmentEnv =
+    import.meta.env.MODE === 'development' || import.meta.env.VITE_DEVELOPMENT_MODE === 'true'
 
   // Don't show if Amazon is connected
   if (!amazonStatus || amazonStatus.connected === true) {
-    return null;
+    return null
   }
 
-  const hasConfigError = amazonStatus.details?.missing && amazonStatus.details.missing.length > 0;
+  const hasConfigError = amazonStatus.details?.missing && amazonStatus.details.missing.length > 0
 
   const getStatusIcon = () => {
     if (hasConfigError) {
-      return <ExclamationCircleIcon className="mx-auto h-12 w-12 text-orange-500" />;
+      return <ExclamationCircleIcon className="mx-auto h-12 w-12 text-orange-500" />
     }
-    return <ShoppingCartIcon className="mx-auto h-12 w-12 text-slate-400" />;
-  };
+    return <ShoppingCartIcon className="mx-auto h-12 w-12 text-slate-400" />
+  }
 
   const getStatusColor = () => {
     if (hasConfigError) {
-      return 'border-orange-300 bg-orange-50';
+      return 'border-orange-300 bg-orange-50'
     }
-    return 'border-slate-300 bg-slate-50';
-  };
+    return 'border-slate-300 bg-slate-50'
+  }
 
   return (
-    <div className={cn(
-      'rounded-lg border-2 border-dashed p-8',
-      getStatusColor()
-    )}>
+    <div className={cn('rounded-lg border-2 border-dashed p-8', getStatusColor())}>
       <div className="mx-auto max-w-2xl text-center">
         {getStatusIcon()}
 
@@ -56,11 +58,9 @@ export default function AmazonSetupPrompt({ amazonStatus }) {
         {/* Configuration Error - Show Missing Variables */}
         {hasConfigError && (
           <div className="mt-6 rounded-md bg-orange-100 p-4 text-left">
-            <p className="text-sm font-medium text-orange-800 mb-3">
-              Missing Configuration:
-            </p>
+            <p className="text-sm font-medium text-orange-800 mb-3">Missing Configuration:</p>
             <ul className="space-y-2 text-sm text-orange-700">
-              {amazonStatus.details.missing.map((envVar) => (
+              {amazonStatus.details.missing.map(envVar => (
                 <li key={envVar} className="flex items-center gap-2">
                   <ExclamationCircleIcon className="h-4 w-4 flex-shrink-0" />
                   <code className="font-mono text-xs bg-orange-200 px-2 py-1 rounded">
@@ -74,9 +74,7 @@ export default function AmazonSetupPrompt({ amazonStatus }) {
 
         {/* Setup Steps */}
         <div className="mt-6 rounded-md bg-white p-6 text-left shadow-sm">
-          <h4 className="text-sm font-semibold text-slate-900 mb-4">
-            Quick Setup Steps:
-          </h4>
+          <h4 className="text-sm font-semibold text-slate-900 mb-4">Quick Setup Steps:</h4>
           <ol className="space-y-3 text-sm text-slate-700">
             <li className="flex gap-3">
               <span className="flex-shrink-0 flex h-6 w-6 items-center justify-center rounded-full bg-orange-100 text-xs font-semibold text-orange-700">
@@ -133,12 +131,25 @@ export default function AmazonSetupPrompt({ amazonStatus }) {
                   Add the following to your Render environment variables:
                 </p>
                 <ul className="mt-2 space-y-1 text-xs">
-                  <li><code className="font-mono bg-slate-100 px-1">AMAZON_REFRESH_TOKEN</code></li>
-                  <li><code className="font-mono bg-slate-100 px-1">AMAZON_LWA_APP_ID</code></li>
-                  <li><code className="font-mono bg-slate-100 px-1">AMAZON_LWA_CLIENT_SECRET</code></li>
-                  <li><code className="font-mono bg-slate-100 px-1">AMAZON_SP_ROLE_ARN</code></li>
-                  <li><code className="font-mono bg-slate-100 px-1">AMAZON_SELLER_ID</code></li>
-                  <li><code className="font-mono bg-slate-100 px-1">AMAZON_REGION</code> (default: us-east-1)</li>
+                  <li>
+                    <code className="font-mono bg-slate-100 px-1">AMAZON_REFRESH_TOKEN</code>
+                  </li>
+                  <li>
+                    <code className="font-mono bg-slate-100 px-1">AMAZON_LWA_APP_ID</code>
+                  </li>
+                  <li>
+                    <code className="font-mono bg-slate-100 px-1">AMAZON_LWA_CLIENT_SECRET</code>
+                  </li>
+                  <li>
+                    <code className="font-mono bg-slate-100 px-1">AMAZON_SP_ROLE_ARN</code>
+                  </li>
+                  <li>
+                    <code className="font-mono bg-slate-100 px-1">AMAZON_SELLER_ID</code>
+                  </li>
+                  <li>
+                    <code className="font-mono bg-slate-100 px-1">AMAZON_REGION</code> (default:
+                    us-east-1)
+                  </li>
                 </ul>
               </div>
             </li>
@@ -191,5 +202,5 @@ export default function AmazonSetupPrompt({ amazonStatus }) {
         )}
       </div>
     </div>
-  );
+  )
 }

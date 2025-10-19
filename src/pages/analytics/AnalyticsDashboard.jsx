@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import React, { useState } from 'react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   LineChart,
   Line,
@@ -14,7 +14,7 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-} from 'recharts';
+} from 'recharts'
 import {
   Plus,
   Save,
@@ -27,7 +27,7 @@ import {
   LineChart as LineChartIcon,
   PieChart as PieChartIcon,
   Table as TableIcon,
-} from 'lucide-react';
+} from 'lucide-react'
 
 /**
  * AnalyticsDashboard Component
@@ -41,7 +41,7 @@ import {
  * - Export functionality
  */
 function AnalyticsDashboard() {
-  const queryClient = useQueryClient();
+  const queryClient = useQueryClient()
 
   // Report configuration state
   const [reportConfig, setReportConfig] = useState({
@@ -52,98 +52,99 @@ function AnalyticsDashboard() {
     filters: [],
     timeRange: '30d',
     groupBy: 'day',
-  });
+  })
 
-  const [showSaveModal, setShowSaveModal] = useState(false);
-  const [showLoadModal, setShowLoadModal] = useState(false);
+  const [showSaveModal, setShowSaveModal] = useState(false)
+  const [showLoadModal, setShowLoadModal] = useState(false)
 
   // Fetch report data based on configuration
-  const { data: reportData, isLoading, refetch } = useQuery({
+  const {
+    data: reportData,
+    isLoading,
+    refetch,
+  } = useQuery({
     queryKey: ['analytics', 'custom-report', reportConfig],
     queryFn: async () => {
       const response = await fetch('/api/v1/analytics/custom-report', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(reportConfig),
-      });
-      if (!response.ok) throw new Error('Failed to fetch report data');
-      const result = await response.json();
-      return result.data;
+      })
+      if (!response.ok) throw new Error('Failed to fetch report data')
+      const result = await response.json()
+      return result.data
     },
     enabled: false, // Manual trigger
-  });
+  })
 
   // Fetch saved reports
   const { data: savedReports = [] } = useQuery({
     queryKey: ['analytics', 'saved-reports'],
     queryFn: async () => {
-      const response = await fetch('/api/v1/analytics/reports');
-      if (!response.ok) throw new Error('Failed to fetch saved reports');
-      const result = await response.json();
-      return result.data || [];
+      const response = await fetch('/api/v1/analytics/reports')
+      if (!response.ok) throw new Error('Failed to fetch saved reports')
+      const result = await response.json()
+      return result.data || []
     },
-  });
+  })
 
   // Save report mutation
   const saveReportMutation = useMutation({
-    mutationFn: async (config) => {
+    mutationFn: async config => {
       const response = await fetch('/api/v1/analytics/reports', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(config),
-      });
-      if (!response.ok) throw new Error('Failed to save report');
-      return response.json();
+      })
+      if (!response.ok) throw new Error('Failed to save report')
+      return response.json()
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['analytics', 'saved-reports']);
-      setShowSaveModal(false);
+      queryClient.invalidateQueries(['analytics', 'saved-reports'])
+      setShowSaveModal(false)
     },
-  });
+  })
 
   const handleRunReport = () => {
-    refetch();
-  };
+    refetch()
+  }
 
   const handleSaveReport = () => {
     if (!reportConfig.name || reportConfig.name === 'Untitled Report') {
-      alert('Please enter a report name');
-      return;
+      alert('Please enter a report name')
+      return
     }
-    saveReportMutation.mutate(reportConfig);
-  };
+    saveReportMutation.mutate(reportConfig)
+  }
 
-  const handleLoadReport = (report) => {
-    setReportConfig(report);
-    setShowLoadModal(false);
-    refetch();
-  };
+  const handleLoadReport = report => {
+    setReportConfig(report)
+    setShowLoadModal(false)
+    refetch()
+  }
 
-  const handleExport = (format) => {
-    console.log('Export report as:', format);
+  const handleExport = format => {
+    console.log('Export report as:', format)
     // TODO: Implement actual export
-  };
+  }
 
   const handleAddFilter = () => {
     setReportConfig({
       ...reportConfig,
-      filters: [
-        ...reportConfig.filters,
-        { field: 'product', operator: 'equals', value: '' },
-      ],
-    });
-  };
+      filters: [...reportConfig.filters, { field: 'product', operator: 'equals', value: '' }],
+    })
+  }
 
-  const handleRemoveFilter = (index) => {
-    const newFilters = reportConfig.filters.filter((_, i) => i !== index);
-    setReportConfig({ ...reportConfig, filters: newFilters });
-  };
+  const handleRemoveFilter = index => {
+    const newFilters = reportConfig.filters.filter((_, i) => i !== index)
+    setReportConfig({ ...reportConfig, filters: newFilters })
+  }
 
   const handleUpdateFilter = (index, field, value) => {
-    const newFilters = [...reportConfig.filters];
-    newFilters[index] = { ...newFilters[index], [field]: value };
-    setReportConfig({ ...reportConfig, filters: newFilters });
-  };
+    const newFilters = [...reportConfig.filters]
+    newFilters[index] = { ...newFilters[index], [field]: value }
+    setReportConfig({ ...reportConfig, filters: newFilters })
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -160,15 +161,11 @@ function AnalyticsDashboard() {
         <div className="lg:col-span-1 space-y-6">
           {/* Report Name */}
           <div className="bg-white rounded-lg shadow p-6">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Report Name
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Report Name</label>
             <input
               type="text"
               value={reportConfig.name}
-              onChange={(e) =>
-                setReportConfig({ ...reportConfig, name: e.target.value })
-              }
+              onChange={e => setReportConfig({ ...reportConfig, name: e.target.value })}
               className="w-full border border-gray-300 rounded-lg p-2"
               placeholder="Enter report name"
             />
@@ -178,16 +175,16 @@ function AnalyticsDashboard() {
           <div className="bg-white rounded-lg shadow p-6">
             <h3 className="text-sm font-semibold text-gray-900 mb-3">Metrics</h3>
             <div className="space-y-2">
-              {AVAILABLE_METRICS.map((metric) => (
+              {AVAILABLE_METRICS.map(metric => (
                 <label key={metric.id} className="flex items-center gap-2">
                   <input
                     type="checkbox"
                     checked={reportConfig.metrics.includes(metric.id)}
-                    onChange={(e) => {
+                    onChange={e => {
                       const newMetrics = e.target.checked
                         ? [...reportConfig.metrics, metric.id]
-                        : reportConfig.metrics.filter((m) => m !== metric.id);
-                      setReportConfig({ ...reportConfig, metrics: newMetrics });
+                        : reportConfig.metrics.filter(m => m !== metric.id)
+                      setReportConfig({ ...reportConfig, metrics: newMetrics })
                     }}
                     className="w-4 h-4"
                   />
@@ -201,16 +198,16 @@ function AnalyticsDashboard() {
           <div className="bg-white rounded-lg shadow p-6">
             <h3 className="text-sm font-semibold text-gray-900 mb-3">Dimensions</h3>
             <div className="space-y-2">
-              {AVAILABLE_DIMENSIONS.map((dimension) => (
+              {AVAILABLE_DIMENSIONS.map(dimension => (
                 <label key={dimension.id} className="flex items-center gap-2">
                   <input
                     type="checkbox"
                     checked={reportConfig.dimensions.includes(dimension.id)}
-                    onChange={(e) => {
+                    onChange={e => {
                       const newDimensions = e.target.checked
                         ? [...reportConfig.dimensions, dimension.id]
-                        : reportConfig.dimensions.filter((d) => d !== dimension.id);
-                      setReportConfig({ ...reportConfig, dimensions: newDimensions });
+                        : reportConfig.dimensions.filter(d => d !== dimension.id)
+                      setReportConfig({ ...reportConfig, dimensions: newDimensions })
                     }}
                     className="w-4 h-4"
                   />
@@ -222,18 +219,14 @@ function AnalyticsDashboard() {
 
           {/* Visualization Type */}
           <div className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-sm font-semibold text-gray-900 mb-3">
-              Visualization
-            </h3>
+            <h3 className="text-sm font-semibold text-gray-900 mb-3">Visualization</h3>
             <div className="grid grid-cols-2 gap-2">
-              {VISUALIZATION_TYPES.map((viz) => {
-                const Icon = viz.icon;
+              {VISUALIZATION_TYPES.map(viz => {
+                const Icon = viz.icon
                 return (
                   <button
                     key={viz.id}
-                    onClick={() =>
-                      setReportConfig({ ...reportConfig, visualization: viz.id })
-                    }
+                    onClick={() => setReportConfig({ ...reportConfig, visualization: viz.id })}
                     className={`p-3 rounded-lg border-2 transition-colors ${
                       reportConfig.visualization === viz.id
                         ? 'border-blue-600 bg-blue-50'
@@ -243,7 +236,7 @@ function AnalyticsDashboard() {
                     <Icon className="w-5 h-5 mx-auto mb-1" />
                     <p className="text-xs text-center">{viz.label}</p>
                   </button>
-                );
+                )
               })}
             </div>
           </div>
@@ -253,9 +246,7 @@ function AnalyticsDashboard() {
             <h3 className="text-sm font-semibold text-gray-900 mb-3">Time Range</h3>
             <select
               value={reportConfig.timeRange}
-              onChange={(e) =>
-                setReportConfig({ ...reportConfig, timeRange: e.target.value })
-              }
+              onChange={e => setReportConfig({ ...reportConfig, timeRange: e.target.value })}
               className="w-full border border-gray-300 rounded-lg p-2"
             >
               <option value="7d">Last 7 days</option>
@@ -316,12 +307,10 @@ function AnalyticsDashboard() {
                   <div key={index} className="flex items-center gap-2">
                     <select
                       value={filter.field}
-                      onChange={(e) =>
-                        handleUpdateFilter(index, 'field', e.target.value)
-                      }
+                      onChange={e => handleUpdateFilter(index, 'field', e.target.value)}
                       className="flex-1 border border-gray-300 rounded-lg p-2 text-sm"
                     >
-                      {FILTERABLE_FIELDS.map((field) => (
+                      {FILTERABLE_FIELDS.map(field => (
                         <option key={field.id} value={field.id}>
                           {field.label}
                         </option>
@@ -330,9 +319,7 @@ function AnalyticsDashboard() {
 
                     <select
                       value={filter.operator}
-                      onChange={(e) =>
-                        handleUpdateFilter(index, 'operator', e.target.value)
-                      }
+                      onChange={e => handleUpdateFilter(index, 'operator', e.target.value)}
                       className="flex-1 border border-gray-300 rounded-lg p-2 text-sm"
                     >
                       <option value="equals">Equals</option>
@@ -345,9 +332,7 @@ function AnalyticsDashboard() {
                     <input
                       type="text"
                       value={filter.value}
-                      onChange={(e) =>
-                        handleUpdateFilter(index, 'value', e.target.value)
-                      }
+                      onChange={e => handleUpdateFilter(index, 'value', e.target.value)}
                       placeholder="Value"
                       className="flex-1 border border-gray-300 rounded-lg p-2 text-sm"
                     />
@@ -367,9 +352,7 @@ function AnalyticsDashboard() {
           {/* Visualization */}
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-gray-900">
-                {reportConfig.name}
-              </h2>
+              <h2 className="text-lg font-semibold text-gray-900">{reportConfig.name}</h2>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => handleExport('csv')}
@@ -439,7 +422,7 @@ function AnalyticsDashboard() {
             <p className="text-sm text-gray-600">No saved reports found</p>
           ) : (
             <div className="space-y-2 max-h-96 overflow-y-auto">
-              {savedReports.map((report) => (
+              {savedReports.map(report => (
                 <button
                   key={report.id}
                   onClick={() => handleLoadReport(report)}
@@ -456,7 +439,7 @@ function AnalyticsDashboard() {
         </Modal>
       )}
     </div>
-  );
+  )
 }
 
 /**
@@ -464,7 +447,7 @@ function AnalyticsDashboard() {
  */
 function ReportVisualization({ data, type, metrics, dimensions }) {
   if (!data || data.length === 0) {
-    return <p className="text-center text-gray-500 py-12">No data available</p>;
+    return <p className="text-center text-gray-500 py-12">No data available</p>
   }
 
   if (type === 'line') {
@@ -488,7 +471,7 @@ function ReportVisualization({ data, type, metrics, dimensions }) {
           ))}
         </LineChart>
       </ResponsiveContainer>
-    );
+    )
   }
 
   if (type === 'bar') {
@@ -510,7 +493,7 @@ function ReportVisualization({ data, type, metrics, dimensions }) {
           ))}
         </BarChart>
       </ResponsiveContainer>
-    );
+    )
   }
 
   if (type === 'pie') {
@@ -534,7 +517,7 @@ function ReportVisualization({ data, type, metrics, dimensions }) {
           <Legend />
         </PieChart>
       </ResponsiveContainer>
-    );
+    )
   }
 
   // Table view
@@ -543,7 +526,7 @@ function ReportVisualization({ data, type, metrics, dimensions }) {
       <table className="w-full">
         <thead>
           <tr className="bg-gray-50 border-b border-gray-200">
-            {dimensions.map((dim) => (
+            {dimensions.map(dim => (
               <th
                 key={dim}
                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
@@ -551,7 +534,7 @@ function ReportVisualization({ data, type, metrics, dimensions }) {
                 {dim}
               </th>
             ))}
-            {metrics.map((metric) => (
+            {metrics.map(metric => (
               <th
                 key={metric}
                 className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
@@ -564,13 +547,16 @@ function ReportVisualization({ data, type, metrics, dimensions }) {
         <tbody className="bg-white divide-y divide-gray-200">
           {data.map((row, index) => (
             <tr key={index} className="hover:bg-gray-50">
-              {dimensions.map((dim) => (
+              {dimensions.map(dim => (
                 <td key={dim} className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                   {row[dim]}
                 </td>
               ))}
-              {metrics.map((metric) => (
-                <td key={metric} className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">
+              {metrics.map(metric => (
+                <td
+                  key={metric}
+                  className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right"
+                >
                   {typeof row[metric] === 'number' ? row[metric].toLocaleString() : row[metric]}
                 </td>
               ))}
@@ -579,7 +565,7 @@ function ReportVisualization({ data, type, metrics, dimensions }) {
         </tbody>
       </table>
     </div>
-  );
+  )
 }
 
 /**
@@ -594,7 +580,7 @@ function Modal({ children, onClose }) {
         {children}
       </div>
     </div>
-  );
+  )
 }
 
 /**
@@ -606,7 +592,7 @@ const AVAILABLE_METRICS = [
   { id: 'margin', label: 'Gross Margin' },
   { id: 'cost', label: 'Cost of Goods' },
   { id: 'profit', label: 'Net Profit' },
-];
+]
 
 const AVAILABLE_DIMENSIONS = [
   { id: 'product', label: 'Product' },
@@ -614,14 +600,14 @@ const AVAILABLE_DIMENSIONS = [
   { id: 'channel', label: 'Channel' },
   { id: 'time', label: 'Time Period' },
   { id: 'customer', label: 'Customer Segment' },
-];
+]
 
 const VISUALIZATION_TYPES = [
   { id: 'bar', label: 'Bar Chart', icon: BarChart3 },
   { id: 'line', label: 'Line Chart', icon: LineChartIcon },
   { id: 'pie', label: 'Pie Chart', icon: PieChartIcon },
   { id: 'table', label: 'Data Table', icon: TableIcon },
-];
+]
 
 const FILTERABLE_FIELDS = [
   { id: 'product', label: 'Product' },
@@ -629,8 +615,8 @@ const FILTERABLE_FIELDS = [
   { id: 'channel', label: 'Channel' },
   { id: 'revenue', label: 'Revenue' },
   { id: 'units', label: 'Units' },
-];
+]
 
-const CHART_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444'];
+const CHART_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444']
 
-export default AnalyticsDashboard;
+export default AnalyticsDashboard

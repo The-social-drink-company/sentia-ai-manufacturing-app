@@ -53,7 +53,9 @@ export async function requestMFACode(req, res) {
 
     const result = await MfaService.requestMFACode(userId, action, method)
 
-    logger.info(`[MfaController] MFA code requested for user ${userId}, action: ${action}, method: ${method}`)
+    logger.info(
+      `[MfaController] MFA code requested for user ${userId}, action: ${action}, method: ${method}`
+    )
 
     // For TOTP first-time setup, return QR code
     if (result.qrCode) {

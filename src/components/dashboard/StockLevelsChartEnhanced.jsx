@@ -1,4 +1,13 @@
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from 'recharts'
 import ChartCard from '@/components/charts/ChartCard'
 import { chartColors, chartTheme } from '@/utils/chartColors'
 
@@ -33,10 +42,7 @@ const StockLevelsChartEnhanced = () => {
       icon="📦"
     >
       <ResponsiveContainer width="100%" height={300}>
-        <BarChart
-          data={data}
-          margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-        >
+        <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
           <CartesianGrid
             strokeDasharray={chartTheme.gridStrokeDasharray}
             stroke={chartTheme.gridStroke}

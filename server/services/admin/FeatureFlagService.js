@@ -91,7 +91,14 @@ class FeatureFlagService {
       })
 
       // Create history entry
-      await this._createHistoryEntry(flag.id, 'CREATED', null, flag, lastModifiedBy, 'Feature flag created')
+      await this._createHistoryEntry(
+        flag.id,
+        'CREATED',
+        null,
+        flag,
+        lastModifiedBy,
+        'Feature flag created'
+      )
 
       logger.info(`[FeatureFlagService] Created feature flag ${flag.id} (${flag.key})`)
 
@@ -196,7 +203,9 @@ class FeatureFlagService {
     try {
       // Disallow isEnabled updates (use toggleFeatureFlag instead)
       if ('isEnabled' in updates) {
-        throw new Error('Cannot update isEnabled via updateFeatureFlag. Use toggleFeatureFlag instead.')
+        throw new Error(
+          'Cannot update isEnabled via updateFeatureFlag. Use toggleFeatureFlag instead.'
+        )
       }
 
       const existingFlag = await this._getFlag(id)
@@ -210,7 +219,14 @@ class FeatureFlagService {
       })
 
       // Create history entry
-      await this._createHistoryEntry(id, 'UPDATED', existingFlag, updatedFlag, updates.lastModifiedBy || 'SYSTEM', 'Feature flag updated')
+      await this._createHistoryEntry(
+        id,
+        'UPDATED',
+        existingFlag,
+        updatedFlag,
+        updates.lastModifiedBy || 'SYSTEM',
+        'Feature flag updated'
+      )
 
       logger.info(`[FeatureFlagService] Updated feature flag ${id}`)
 
@@ -241,7 +257,14 @@ class FeatureFlagService {
       })
 
       // Create history entry
-      await this._createHistoryEntry(id, 'DEPRECATED', existingFlag, deprecatedFlag, userId, 'Feature flag deprecated')
+      await this._createHistoryEntry(
+        id,
+        'DEPRECATED',
+        existingFlag,
+        deprecatedFlag,
+        userId,
+        'Feature flag deprecated'
+      )
 
       logger.info(`[FeatureFlagService] Deprecated feature flag ${id}`)
 
@@ -378,7 +401,9 @@ class FeatureFlagService {
       // 1. Target users (exact match)
       if (flag.targetUsers && Array.isArray(flag.targetUsers)) {
         if (flag.targetUsers.includes(userId)) {
-          logger.info(`[FeatureFlagService] Flag ${flagKey} enabled for user ${userId} (target user)`)
+          logger.info(
+            `[FeatureFlagService] Flag ${flagKey} enabled for user ${userId} (target user)`
+          )
           return true
         }
       }
@@ -386,7 +411,9 @@ class FeatureFlagService {
       // 2. Target roles (exact match)
       if (flag.targetRoles && Array.isArray(flag.targetRoles)) {
         if (flag.targetRoles.includes(userRole)) {
-          logger.info(`[FeatureFlagService] Flag ${flagKey} enabled for role ${userRole} (target role)`)
+          logger.info(
+            `[FeatureFlagService] Flag ${flagKey} enabled for role ${userRole} (target role)`
+          )
           return true
         }
       }
@@ -397,7 +424,9 @@ class FeatureFlagService {
         const enabled = userHash < flag.rolloutPercentage
 
         if (enabled) {
-          logger.info(`[FeatureFlagService] Flag ${flagKey} enabled for user ${userId} (percentage rollout: ${flag.rolloutPercentage}%)`)
+          logger.info(
+            `[FeatureFlagService] Flag ${flagKey} enabled for user ${userId} (percentage rollout: ${flag.rolloutPercentage}%)`
+          )
           return true
         }
       }
@@ -405,7 +434,9 @@ class FeatureFlagService {
       // 4. Custom conditions (future extension point)
       if (flag.conditions) {
         // TODO: Implement custom condition evaluation engine
-        logger.warn(`[FeatureFlagService] Custom conditions not yet implemented for flag ${flagKey}`)
+        logger.warn(
+          `[FeatureFlagService] Custom conditions not yet implemented for flag ${flagKey}`
+        )
       }
 
       return false

@@ -26,36 +26,36 @@ const QuickActions = () => {
       label: 'Run Forecast',
       description: 'Generate AI-powered demand forecast',
       path: '/forecasting',
-      color: 'bg-blue-500 hover:bg-blue-600 text-white'
+      color: 'bg-blue-500 hover:bg-blue-600 text-white',
     },
     {
       icon: DollarSign,
       label: 'Analyze Cash Flow',
       description: 'Review working capital metrics',
       path: '/working-capital',
-      color: 'bg-pink-500 hover:bg-pink-600 text-white'
+      color: 'bg-pink-500 hover:bg-pink-600 text-white',
     },
     {
       icon: Wrench,
       label: 'What-If Analysis',
       description: 'Run scenario planning',
       path: '/what-if',
-      color: 'bg-blue-500 hover:bg-blue-600 text-white'
+      color: 'bg-blue-500 hover:bg-blue-600 text-white',
     },
     {
       icon: FileText,
       label: 'Generate Report',
       description: 'Export financial reports',
       path: '/reports',
-      color: 'bg-white hover:bg-gray-50 text-gray-900 border border-gray-300'
-    }
+      color: 'bg-white hover:bg-gray-50 text-gray-900 border border-gray-300',
+    },
   ]
 
   /**
    * Handle action button click
    * @param {string} path - Route path to navigate to
    */
-  const handleActionClick = (path) => {
+  const handleActionClick = path => {
     navigate(path)
   }
 
@@ -64,12 +64,12 @@ const QuickActions = () => {
       {/* Header */}
       <div>
         <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-          <span className="text-3xl" role="img" aria-label="Lightning bolt">⚡</span>
+          <span className="text-3xl" role="img" aria-label="Lightning bolt">
+            ⚡
+          </span>
           Quick Actions
         </h2>
-        <p className="text-gray-600 mt-1">
-          Access key business intelligence tools and reports
-        </p>
+        <p className="text-gray-600 mt-1">Access key business intelligence tools and reports</p>
       </div>
 
       {/* Action Buttons Grid */}

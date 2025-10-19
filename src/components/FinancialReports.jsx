@@ -11,11 +11,11 @@ import {
   CurrencyDollarIcon,
   DocumentChartBarIcon,
   ExclamationTriangleIcon,
-  MinusIcon
+  MinusIcon,
 } from '@heroicons/react/24/outline'
 import apiService from '@/services/api'
 
-const asNumber = (value) => {
+const asNumber = value => {
   if (typeof value === 'number' && Number.isFinite(value)) {
     return value
   }
@@ -28,7 +28,7 @@ const asNumber = (value) => {
   return Number.isFinite(parsed) ? parsed : null
 }
 
-const formatCurrency = (value) => {
+const formatCurrency = value => {
   const number = asNumber(value)
   if (number === null) {
     return 'N/A'
@@ -37,11 +37,11 @@ const formatCurrency = (value) => {
   return new Intl.NumberFormat('en-GB', {
     style: 'currency',
     currency: 'GBP',
-    maximumFractionDigits: number >= 1_000_000 ? 0 : 1
+    maximumFractionDigits: number >= 1_000_000 ? 0 : 1,
   }).format(number)
 }
 
-const formatRatio = (value) => {
+const formatRatio = value => {
   const number = asNumber(value)
   if (number === null) {
     return 'N/A'
@@ -50,7 +50,7 @@ const formatRatio = (value) => {
   return `${number.toFixed(2)}x`
 }
 
-const formatDays = (value) => {
+const formatDays = value => {
   const number = asNumber(value)
   if (number === null) {
     return 'N/A'
@@ -70,7 +70,7 @@ const derivePercentChange = (current, previous) => {
   return ((currentNumber - previousNumber) / Math.abs(previousNumber)) * 100
 }
 
-const resolveTrendDirection = (change) => {
+const resolveTrendDirection = change => {
   const value = asNumber(change)
 
   if (value === null) {
@@ -97,16 +97,12 @@ const TrendIndicator = ({ change, direction }) => {
   const iconMap = {
     up: ArrowTrendingUpIcon,
     down: ArrowTrendingDownIcon,
-    neutral: MinusIcon
+    neutral: MinusIcon,
   }
 
   const IconComponent = iconMap[direction] || iconMap.neutral
   const color =
-    direction === 'up'
-      ? 'text-green-600'
-      : direction === 'down'
-        ? 'text-red-600'
-        : 'text-slate-500'
+    direction === 'up' ? 'text-green-600' : direction === 'down' ? 'text-red-600' : 'text-slate-500'
 
   return (
     <div className={`flex items-center gap-1 text-sm font-medium ${color}`}>
@@ -160,7 +156,7 @@ const FinancialReports = () => {
       const [summaryResult, workingCapitalResult, cashFlowResult] = await Promise.allSettled([
         apiService.getDashboardSummary(),
         apiService.getWorkingCapital(),
-        apiService.getCashFlow()
+        apiService.getCashFlow(),
       ])
 
       const resolvedSummary = summaryResult.status === 'fulfilled' ? summaryResult.value : null
@@ -310,10 +306,7 @@ const FinancialReports = () => {
       latestWorkingCapital?.cashConversionCycle,
       previousWorkingCapital?.cashConversionCycle
     )
-    const workingCapitalChange = derivePercentChange(
-      workingCapitalCurrent,
-      workingCapitalPrevious
-    )
+    const workingCapitalChange = derivePercentChange(workingCapitalCurrent, workingCapitalPrevious)
     const cashFlowChange = derivePercentChange(
       latestCashFlow?.netCashFlow,
       previousCashFlow?.netCashFlow
@@ -326,7 +319,7 @@ const FinancialReports = () => {
         changePercent: revenueGrowth,
         icon: ChartBarIcon,
         description: 'Revenue generated in the current month',
-        trend: resolveTrendDirection(revenueGrowth)
+        trend: resolveTrendDirection(revenueGrowth),
       },
       {
         title: 'Working Capital',
@@ -334,7 +327,7 @@ const FinancialReports = () => {
         changePercent: workingCapitalChange,
         icon: CurrencyDollarIcon,
         description: 'Current assets minus liabilities',
-        trend: resolveTrendDirection(workingCapitalChange)
+        trend: resolveTrendDirection(workingCapitalChange),
       },
       {
         title: 'Current Ratio',
@@ -342,7 +335,7 @@ const FinancialReports = () => {
         changePercent: currentRatioChange,
         icon: ChartPieIcon,
         description: 'Liquidity coverage of short-term obligations',
-        trend: resolveTrendDirection(currentRatioChange)
+        trend: resolveTrendDirection(currentRatioChange),
       },
       {
         title: 'Cash Conversion Cycle',
@@ -350,7 +343,7 @@ const FinancialReports = () => {
         changePercent: cccChange,
         icon: ArrowPathIcon,
         description: 'Time to convert investments to cash',
-        trend: resolveTrendDirection(cccChange)
+        trend: resolveTrendDirection(cccChange),
       },
       {
         title: 'Net Cash Flow',
@@ -358,8 +351,8 @@ const FinancialReports = () => {
         changePercent: cashFlowChange,
         icon: BanknotesIcon,
         description: 'Operating + investing + financing cash flow',
-        trend: resolveTrendDirection(cashFlowChange)
-      }
+        trend: resolveTrendDirection(cashFlowChange),
+      },
     ]
   }, [
     summary,
@@ -368,7 +361,7 @@ const FinancialReports = () => {
     latestWorkingCapital,
     previousWorkingCapital,
     latestCashFlow,
-    previousCashFlow
+    previousCashFlow,
   ])
 
   if (loading) {
@@ -380,7 +373,9 @@ const FinancialReports = () => {
               <DocumentChartBarIcon className="w-6 h-6 text-blue-600 dark:text-blue-400" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Financial Reports</h1>
+              <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
+                Financial Reports
+              </h1>
               <p className="text-slate-600 dark:text-slate-400">
                 Comprehensive financial analysis for Sentia Manufacturing
               </p>
@@ -466,7 +461,7 @@ const FinancialReports = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-        {summaryMetrics.map((metric) => (
+        {summaryMetrics.map(metric => (
           <MetricCard
             key={metric.title}
             title={metric.title}
@@ -490,7 +485,9 @@ const FinancialReports = () => {
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="space-y-2">
-                <h4 className="font-medium text-slate-900 dark:text-white">Cash Conversion Cycle</h4>
+                <h4 className="font-medium text-slate-900 dark:text-white">
+                  Cash Conversion Cycle
+                </h4>
                 <p className="text-2xl font-semibold text-blue-600 dark:text-blue-400">
                   {formatDays(latestWorkingCapital.cashConversionCycle)}
                 </p>
@@ -550,7 +547,9 @@ const FinancialReports = () => {
                 </p>
               </div>
               <div className="space-y-1">
-                <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Net Cash Flow</p>
+                <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
+                  Net Cash Flow
+                </p>
                 <p className="text-xl font-semibold text-slate-900 dark:text-white">
                   {formatCurrency(latestCashFlow.netCashFlow)}
                 </p>
@@ -574,8 +573,8 @@ const FinancialReports = () => {
             )}
           </div>
           <div className="mt-2 text-xs text-blue-700 dark:text-blue-300">
-            Financial metrics combine working capital, cash flow, and dashboard summary endpoints with live
-            authentication.
+            Financial metrics combine working capital, cash flow, and dashboard summary endpoints
+            with live authentication.
           </div>
         </CardContent>
       </Card>

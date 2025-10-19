@@ -45,13 +45,16 @@ export default function ApprovalInsights({ onEvaluate, evaluation, isLoading }) 
           Approval Insights
         </CardTitle>
         <p className="text-sm text-gray-600 dark:text-gray-400">
-          Benchmark requests against the auto-approval matrix. Results highlight approver routing, SLA, and required documentation.
+          Benchmark requests against the auto-approval matrix. Results highlight approver routing,
+          SLA, and required documentation.
         </p>
       </CardHeader>
       <CardContent className="space-y-6">
         <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <label className="block">
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Requested amount (£)</span>
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              Requested amount (£)
+            </span>
             <input
               name="amount"
               type="number"
@@ -64,7 +67,9 @@ export default function ApprovalInsights({ onEvaluate, evaluation, isLoading }) 
           </label>
 
           <label className="block">
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Business impact</span>
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              Business impact
+            </span>
             <select
               name="impact"
               value={form.impact}
@@ -91,7 +96,9 @@ export default function ApprovalInsights({ onEvaluate, evaluation, isLoading }) 
           </label>
 
           <label className="block md:col-span-2">
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Expected benefit</span>
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              Expected benefit
+            </span>
             <input
               name="expectedBenefit"
               value={form.expectedBenefit}
@@ -117,21 +124,25 @@ export default function ApprovalInsights({ onEvaluate, evaluation, isLoading }) 
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 dark:text-gray-400">Decision</p>
-                <p className="text-lg font-semibold text-gray-900 dark:text-white capitalize">{evaluation.decision.replace('_', ' ')}</p>
+                <p className="text-lg font-semibold text-gray-900 dark:text-white capitalize">
+                  {evaluation.decision.replace('_', ' ')}
+                </p>
               </div>
               <Badge variant={evaluation.risk?.category === 'high' ? 'destructive' : 'outline'}>
                 Risk: {evaluation.risk?.category ?? 'unknown'}
               </Badge>
             </div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">
-              {evaluation.rationale}
-            </div>
+            <div className="text-sm text-gray-600 dark:text-gray-400">{evaluation.rationale}</div>
             <div>
-              <h4 className="text-sm font-semibold text-gray-900 dark:text-white">Approver routing</h4>
+              <h4 className="text-sm font-semibold text-gray-900 dark:text-white">
+                Approver routing
+              </h4>
               <ul className="mt-1 text-sm text-gray-700 dark:text-gray-300 space-y-1">
-                {(evaluation.approvers || []).length
-                  ? evaluation.approvers.map(email => <li key={email}>{email}</li>)
-                  : <li>Auto-approved</li>}
+                {(evaluation.approvers || []).length ? (
+                  evaluation.approvers.map(email => <li key={email}>{email}</li>)
+                ) : (
+                  <li>Auto-approved</li>
+                )}
               </ul>
             </div>
             <div>
@@ -142,11 +153,12 @@ export default function ApprovalInsights({ onEvaluate, evaluation, isLoading }) 
                 ))}
               </ul>
             </div>
-            <div className="text-xs text-gray-500 dark:text-gray-400">SLA: {evaluation.slaHours ?? 'n/a'} hours</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400">
+              SLA: {evaluation.slaHours ?? 'n/a'} hours
+            </div>
           </div>
         )}
       </CardContent>
     </Card>
   )
 }
-

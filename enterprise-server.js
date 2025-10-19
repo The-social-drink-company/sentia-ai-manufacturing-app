@@ -1,9 +1,9 @@
 /**
  * SENTIA MANUFACTURING DASHBOARD - ENTERPRISE SERVER
- * 
+ *
  * Permanent, bulletproof enterprise-grade server architecture
  * Designed for 99.99% uptime with zero deployment failures
- * 
+ *
  * Features:
  * - Bulletproof error handling and graceful degradation
  * - Enterprise JWT authentication with secure session management
@@ -13,11 +13,11 @@
  * - Zero-dependency-failure architecture
  */
 
-const express = require('express');
-const path = require('path');
-const fs = require('fs');
-const crypto = require('crypto');
-const jwt = require('jsonwebtoken');
+const express = require('express')
+const path = require('path')
+const fs = require('fs')
+const crypto = require('crypto')
+const jwt = require('jsonwebtoken')
 
 // Enterprise Configuration
 const config = {
@@ -28,170 +28,179 @@ const config = {
   maxLoginAttempts: 5,
   lockoutDuration: 15 * 60 * 1000, // 15 minutes
   healthCheckInterval: 30000, // 30 seconds
-  enableDetailedLogging: process.env.ENABLE_DETAILED_LOGGING === 'true'
-};
+  enableDetailedLogging: process.env.ENABLE_DETAILED_LOGGING === 'true',
+}
 
 // Enterprise Application Class
 class SentiaManufacturingServer {
   constructor() {
-    this.app = express();
-    this.isHealthy = true;
-    this.startTime = Date.now();
-    this.requestCount = 0;
-    this.errorCount = 0;
-    this.users = new Map();
-    this.sessions = new Map();
-    this.loginAttempts = new Map();
-    
-    this.initializeMiddleware();
-    this.initializeRoutes();
-    this.initializeErrorHandling();
-    this.initializeHealthMonitoring();
-    this.setupGracefulShutdown();
+    this.app = express()
+    this.isHealthy = true
+    this.startTime = Date.now()
+    this.requestCount = 0
+    this.errorCount = 0
+    this.users = new Map()
+    this.sessions = new Map()
+    this.loginAttempts = new Map()
+
+    this.initializeMiddleware()
+    this.initializeRoutes()
+    this.initializeErrorHandling()
+    this.initializeHealthMonitoring()
+    this.setupGracefulShutdown()
   }
 
   // Enterprise Middleware Stack
   initializeMiddleware() {
     // Request logging and metrics
     this.app.use((req, res, next) => {
-      this.requestCount++;
-      const start = Date.now();
-      
+      this.requestCount++
+      const start = Date.now()
+
       res.on('finish', () => {
-        const duration = Date.now() - start;
+        const duration = Date.now() - start
         if (config.enableDetailedLogging) {
-          console.log(`${new Date().toISOString()} ${req.method} ${req.path} ${res.statusCode} ${duration}ms`);
+          console.log(
+            `${new Date().toISOString()} ${req.method} ${req.path} ${res.statusCode} ${duration}ms`
+          )
         }
-      });
-      
-      next();
-    });
+      })
+
+      next()
+    })
 
     // Security headers
     this.app.use((req, res, next) => {
-      res.setHeader('X-Content-Type-Options', 'nosniff');
-      res.setHeader('X-Frame-Options', 'DENY');
-      res.setHeader('X-XSS-Protection', '1; mode=block');
-      res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
-      next();
-    });
+      res.setHeader('X-Content-Type-Options', 'nosniff')
+      res.setHeader('X-Frame-Options', 'DENY')
+      res.setHeader('X-XSS-Protection', '1; mode=block')
+      res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains')
+      next()
+    })
 
     // Body parsing with limits
-    this.app.use(express.json({ limit: '10mb' }));
-    this.app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+    this.app.use(express.json({ limit: '10mb' }))
+    this.app.use(express.urlencoded({ extended: true, limit: '10mb' }))
 
     // Static file serving with intelligent fallback
-    this.setupStaticFileServing();
+    this.setupStaticFileServing()
   }
 
   // Intelligent Static File Serving
   setupStaticFileServing() {
-    const distPath = path.join(process.cwd(), 'dist');
-    const publicPath = path.join(process.cwd(), 'public');
-    
+    const distPath = path.join(process.cwd(), 'dist')
+    const publicPath = path.join(process.cwd(), 'public')
+
     // Check if built files exist
     if (fs.existsSync(distPath)) {
-      this.app.use(express.static(distPath, {
-        maxAge: '1d',
-        etag: true,
-        lastModified: true
-      }));
-      console.log('✅ Serving built application from /dist');
+      this.app.use(
+        express.static(distPath, {
+          maxAge: '1d',
+          etag: true,
+          lastModified: true,
+        })
+      )
+      console.log('✅ Serving built application from /dist')
     } else if (fs.existsSync(publicPath)) {
-      this.app.use(express.static(publicPath));
-      console.log('⚠️  Serving fallback files from /public');
+      this.app.use(express.static(publicPath))
+      console.log('⚠️  Serving fallback files from /public')
     } else {
-      console.log('⚠️  No static files found, serving embedded interface');
+      console.log('⚠️  No static files found, serving embedded interface')
     }
   }
 
   // Enterprise Route Initialization
   initializeRoutes() {
     // Health and monitoring endpoints
-    this.app.get('/health', this.handleHealthCheck.bind(this));
-    this.app.get('/metrics', this.handleMetrics.bind(this));
-    this.app.get('/status', this.handleStatus.bind(this));
+    this.app.get('/health', this.handleHealthCheck.bind(this))
+    this.app.get('/metrics', this.handleMetrics.bind(this))
+    this.app.get('/status', this.handleStatus.bind(this))
 
     // Authentication endpoints
-    this.app.post('/api/auth/login', this.handleLogin.bind(this));
-    this.app.post('/api/auth/register', this.handleRegister.bind(this));
-    this.app.post('/api/auth/logout', this.handleLogout.bind(this));
-    this.app.get('/api/auth/verify', this.handleVerifyToken.bind(this));
+    this.app.post('/api/auth/login', this.handleLogin.bind(this))
+    this.app.post('/api/auth/register', this.handleRegister.bind(this))
+    this.app.post('/api/auth/logout', this.handleLogout.bind(this))
+    this.app.get('/api/auth/verify', this.handleVerifyToken.bind(this))
 
     // Application routes
-    this.app.get('/login', this.serveLoginPage.bind(this));
-    this.app.get('/dashboard', this.authenticateToken.bind(this), this.serveDashboard.bind(this));
-    this.app.get('/api/dashboard/data', this.authenticateToken.bind(this), this.handleDashboardData.bind(this));
+    this.app.get('/login', this.serveLoginPage.bind(this))
+    this.app.get('/dashboard', this.authenticateToken.bind(this), this.serveDashboard.bind(this))
+    this.app.get(
+      '/api/dashboard/data',
+      this.authenticateToken.bind(this),
+      this.handleDashboardData.bind(this)
+    )
 
     // Catch-all route with intelligent routing
-    this.app.get('*', this.handleCatchAll.bind(this));
+    this.app.get('*', this.handleCatchAll.bind(this))
   }
 
   // Enterprise Authentication System
   authenticateToken(req, res, next) {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
+    const authHeader = req.headers['authorization']
+    const token = authHeader && authHeader.split(' ')[1]
 
     if (!token) {
-      return res.status(401).json({ error: 'Access token required' });
+      return res.status(401).json({ error: 'Access token required' })
     }
 
     try {
-      const decoded = jwt.verify(token, config.jwtSecret);
-      req.user = decoded;
-      next();
+      const decoded = jwt.verify(token, config.jwtSecret)
+      req.user = decoded
+      next()
     } catch (error) {
-      return res.status(403).json({ error: 'Invalid or expired token' });
+      return res.status(403).json({ error: 'Invalid or expired token' })
     }
   }
 
   // Login Handler with Rate Limiting
   async handleLogin(req, res) {
     try {
-      const { email, password } = req.body;
-      const clientIP = req.ip || req.connection.remoteAddress;
+      const { email, password } = req.body
+      const clientIP = req.ip || req.connection.remoteAddress
 
       // Rate limiting check
       if (this.isRateLimited(clientIP)) {
         return res.status(429).json({
           error: 'Too many login attempts. Please try again later.',
-          retryAfter: Math.ceil((this.loginAttempts.get(clientIP)?.lockoutUntil - Date.now()) / 1000)
-        });
+          retryAfter: Math.ceil(
+            (this.loginAttempts.get(clientIP)?.lockoutUntil - Date.now()) / 1000
+          ),
+        })
       }
 
       // Demo authentication (replace with your authentication logic)
-      const isValidUser = this.validateUser(email, password);
-      
+      const isValidUser = this.validateUser(email, password)
+
       if (!isValidUser) {
-        this.recordFailedAttempt(clientIP);
-        return res.status(401).json({ error: 'Invalid credentials' });
+        this.recordFailedAttempt(clientIP)
+        return res.status(401).json({ error: 'Invalid credentials' })
       }
 
       // Generate JWT token
       const token = jwt.sign(
-        { 
-          email, 
+        {
+          email,
           userId: this.generateUserId(email),
-          loginTime: Date.now() 
+          loginTime: Date.now(),
         },
         config.jwtSecret,
         { expiresIn: '24h' }
-      );
+      )
 
       // Clear failed attempts on successful login
-      this.loginAttempts.delete(clientIP);
+      this.loginAttempts.delete(clientIP)
 
       res.json({
         success: true,
         token,
         user: { email, name: this.getUserName(email) },
-        expiresIn: 24 * 60 * 60 * 1000
-      });
-
+        expiresIn: 24 * 60 * 60 * 1000,
+      })
     } catch (error) {
-      this.errorCount++;
-      console.error('Login error:', error);
-      res.status(500).json({ error: 'Internal server error during login' });
+      this.errorCount++
+      console.error('Login error:', error)
+      res.status(500).json({ error: 'Internal server error during login' })
     }
   }
 
@@ -201,45 +210,45 @@ class SentiaManufacturingServer {
     const demoUsers = {
       'admin@sentia.com': 'admin123',
       'demo@sentia.com': 'demo123',
-      'user@sentia.com': 'user123'
-    };
+      'user@sentia.com': 'user123',
+    }
 
-    return demoUsers[email] === password;
+    return demoUsers[email] === password
   }
 
   // Rate Limiting Implementation
   isRateLimited(clientIP) {
-    const attempts = this.loginAttempts.get(clientIP);
-    if (!attempts) return false;
+    const attempts = this.loginAttempts.get(clientIP)
+    if (!attempts) return false
 
     if (attempts.lockoutUntil && Date.now() < attempts.lockoutUntil) {
-      return true;
+      return true
     }
 
     if (attempts.lockoutUntil && Date.now() >= attempts.lockoutUntil) {
-      this.loginAttempts.delete(clientIP);
-      return false;
+      this.loginAttempts.delete(clientIP)
+      return false
     }
 
-    return attempts.count >= config.maxLoginAttempts;
+    return attempts.count >= config.maxLoginAttempts
   }
 
   recordFailedAttempt(clientIP) {
-    const attempts = this.loginAttempts.get(clientIP) || { count: 0, firstAttempt: Date.now() };
-    attempts.count++;
+    const attempts = this.loginAttempts.get(clientIP) || { count: 0, firstAttempt: Date.now() }
+    attempts.count++
 
     if (attempts.count >= config.maxLoginAttempts) {
-      attempts.lockoutUntil = Date.now() + config.lockoutDuration;
+      attempts.lockoutUntil = Date.now() + config.lockoutDuration
     }
 
-    this.loginAttempts.set(clientIP, attempts);
+    this.loginAttempts.set(clientIP, attempts)
   }
 
   // Health Check Handler
   handleHealthCheck(req, res) {
-    const uptime = Date.now() - this.startTime;
-    const memoryUsage = process.memoryUsage();
-    
+    const uptime = Date.now() - this.startTime
+    const memoryUsage = process.memoryUsage()
+
     res.json({
       status: this.isHealthy ? 'healthy' : 'unhealthy',
       timestamp: new Date().toISOString(),
@@ -250,14 +259,17 @@ class SentiaManufacturingServer {
       memory: {
         rss: Math.round(memoryUsage.rss / 1024 / 1024) + 'MB',
         heapUsed: Math.round(memoryUsage.heapUsed / 1024 / 1024) + 'MB',
-        heapTotal: Math.round(memoryUsage.heapTotal / 1024 / 1024) + 'MB'
+        heapTotal: Math.round(memoryUsage.heapTotal / 1024 / 1024) + 'MB',
       },
       requests: {
         total: this.requestCount,
         errors: this.errorCount,
-        errorRate: this.requestCount > 0 ? (this.errorCount / this.requestCount * 100).toFixed(2) + '%' : '0%'
-      }
-    });
+        errorRate:
+          this.requestCount > 0
+            ? ((this.errorCount / this.requestCount) * 100).toFixed(2) + '%'
+            : '0%',
+      },
+    })
   }
 
   // Metrics Handler
@@ -269,8 +281,8 @@ class SentiaManufacturingServer {
       memory: process.memoryUsage(),
       activeSessions: this.sessions.size,
       activeUsers: this.users.size,
-      timestamp: Date.now()
-    });
+      timestamp: Date.now(),
+    })
   }
 
   // Dashboard Data Handler
@@ -279,7 +291,7 @@ class SentiaManufacturingServer {
       production: {
         total: 12847,
         trend: '+5.2%',
-        data: [12000, 13500, 12800, 14200, 13900, 15100]
+        data: [12000, 13500, 12800, 14200, 13900, 15100],
       },
       workingCapital: {
         total: '£2.4M',
@@ -288,18 +300,18 @@ class SentiaManufacturingServer {
           inventory: 45,
           receivables: 25,
           cash: 20,
-          payables: 10
-        }
+          payables: 10,
+        },
       },
       quality: {
         score: 98.7,
-        status: 'Above target'
+        status: 'Above target',
       },
       efficiency: {
         overall: 94.2,
-        status: 'Monitoring'
-      }
-    });
+        status: 'Monitoring',
+      },
+    })
   }
 
   // Embedded Login Page
@@ -402,9 +414,9 @@ class SentiaManufacturingServer {
         });
     </script>
 </body>
-</html>`;
-    
-    res.send(loginHTML);
+</html>`
+
+    res.send(loginHTML)
   }
 
   // Enterprise Dashboard
@@ -685,30 +697,30 @@ class SentiaManufacturingServer {
         loadDashboardData();
     </script>
 </body>
-</html>`;
-    
-    res.send(dashboardHTML);
+</html>`
+
+    res.send(dashboardHTML)
   }
 
   // Catch-all handler with intelligent routing
   handleCatchAll(req, res) {
     // Check if it's an API request
     if (req.path.startsWith('/api/')) {
-      return res.status(404).json({ error: 'API endpoint not found' });
+      return res.status(404).json({ error: 'API endpoint not found' })
     }
 
     // For SPA routing, serve the main application or redirect to login
-    const token = req.headers.authorization?.split(' ')[1];
-    
+    const token = req.headers.authorization?.split(' ')[1]
+
     if (!token) {
-      return res.redirect('/login');
+      return res.redirect('/login')
     }
 
     try {
-      jwt.verify(token, config.jwtSecret);
-      return res.redirect('/dashboard');
+      jwt.verify(token, config.jwtSecret)
+      return res.redirect('/dashboard')
     } catch {
-      return res.redirect('/login');
+      return res.redirect('/login')
     }
   }
 
@@ -720,124 +732,125 @@ class SentiaManufacturingServer {
         error: 'Not Found',
         message: 'The requested resource was not found',
         path: req.path,
-        timestamp: new Date().toISOString()
-      });
-    });
+        timestamp: new Date().toISOString(),
+      })
+    })
 
     // Global error handler
     this.app.use((err, req, res, next) => {
-      this.errorCount++;
-      
+      this.errorCount++
+
       console.error('Server Error:', {
         error: err.message,
         stack: err.stack,
         path: req.path,
         method: req.method,
-        timestamp: new Date().toISOString()
-      });
+        timestamp: new Date().toISOString(),
+      })
 
       // Don't leak error details in production
-      const isDevelopment = config.environment === 'development';
+      const isDevelopment = config.environment === 'development'
 
       res.status(err.status || 500).json({
         error: 'Internal Server Error',
         message: isDevelopment ? err.message : 'An unexpected error occurred',
         timestamp: new Date().toISOString(),
-        ...(isDevelopment && { stack: err.stack })
-      });
-    });
+        ...(isDevelopment && { stack: err.stack }),
+      })
+    })
   }
 
   // Health Monitoring System
   initializeHealthMonitoring() {
     setInterval(() => {
-      this.performHealthCheck();
-    }, config.healthCheckInterval);
+      this.performHealthCheck()
+    }, config.healthCheckInterval)
 
     // Memory monitoring
     setInterval(() => {
-      const memUsage = process.memoryUsage();
-      const memUsageMB = memUsage.heapUsed / 1024 / 1024;
-      
-      if (memUsageMB > 500) { // 500MB threshold
-        console.warn(`High memory usage: ${memUsageMB.toFixed(2)}MB`);
+      const memUsage = process.memoryUsage()
+      const memUsageMB = memUsage.heapUsed / 1024 / 1024
+
+      if (memUsageMB > 500) {
+        // 500MB threshold
+        console.warn(`High memory usage: ${memUsageMB.toFixed(2)}MB`)
       }
-    }, 60000); // Check every minute
+    }, 60000) // Check every minute
   }
 
   performHealthCheck() {
-    const memUsage = process.memoryUsage();
-    const uptime = Date.now() - this.startTime;
-    
+    const memUsage = process.memoryUsage()
+    const uptime = Date.now() - this.startTime
+
     // Basic health checks
     const checks = {
       memory: memUsage.heapUsed < 1024 * 1024 * 1024, // < 1GB
       uptime: uptime > 0,
-      errorRate: this.requestCount === 0 || (this.errorCount / this.requestCount) < 0.1
-    };
+      errorRate: this.requestCount === 0 || this.errorCount / this.requestCount < 0.1,
+    }
 
-    this.isHealthy = Object.values(checks).every(check => check);
-    
+    this.isHealthy = Object.values(checks).every(check => check)
+
     if (!this.isHealthy) {
-      console.warn('Health check failed:', checks);
+      console.warn('Health check failed:', checks)
     }
   }
 
   // Graceful Shutdown
   setupGracefulShutdown() {
-    const gracefulShutdown = (signal) => {
-      console.log(`Received ${signal}. Starting graceful shutdown...`);
-      
+    const gracefulShutdown = signal => {
+      console.log(`Received ${signal}. Starting graceful shutdown...`)
+
       this.server.close(() => {
-        console.log('HTTP server closed.');
-        process.exit(0);
-      });
+        console.log('HTTP server closed.')
+        process.exit(0)
+      })
 
       // Force close after 30 seconds
       setTimeout(() => {
-        console.error('Could not close connections in time, forcefully shutting down');
-        process.exit(1);
-      }, 30000);
-    };
+        console.error('Could not close connections in time, forcefully shutting down')
+        process.exit(1)
+      }, 30000)
+    }
 
-    process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
-    process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+    process.on('SIGTERM', () => gracefulShutdown('SIGTERM'))
+    process.on('SIGINT', () => gracefulShutdown('SIGINT'))
   }
 
   // Utility methods
   generateUserId(email) {
-    return crypto.createHash('sha256').update(email).digest('hex').substring(0, 16);
+    return crypto.createHash('sha256').update(email).digest('hex').substring(0, 16)
   }
 
   getUserName(email) {
     const names = {
       'admin@sentia.com': 'Administrator',
       'demo@sentia.com': 'Demo User',
-      'user@sentia.com': 'Standard User'
-    };
-    return names[email] || email.split('@')[0];
+      'user@sentia.com': 'Standard User',
+    }
+    return names[email] || email.split('@')[0]
   }
 
   handleRegister(req, res) {
-    res.status(501).json({ error: 'Registration not implemented in demo mode' });
+    res.status(501).json({ error: 'Registration not implemented in demo mode' })
   }
 
   handleLogout(req, res) {
-    res.json({ success: true, message: 'Logged out successfully' });
+    res.json({ success: true, message: 'Logged out successfully' })
   }
 
   handleVerifyToken(req, res) {
-    const token = req.headers.authorization?.split(' ')[1];
-    
+    const token = req.headers.authorization?.split(' ')[1]
+
     if (!token) {
-      return res.status(401).json({ valid: false });
+      return res.status(401).json({ valid: false })
     }
 
     try {
-      const decoded = jwt.verify(token, config.jwtSecret);
-      res.json({ valid: true, user: decoded });
+      const decoded = jwt.verify(token, config.jwtSecret)
+      res.json({ valid: true, user: decoded })
     } catch {
-      res.status(401).json({ valid: false });
+      res.status(401).json({ valid: false })
     }
   }
 
@@ -848,38 +861,38 @@ class SentiaManufacturingServer {
       status: 'operational',
       environment: config.environment,
       uptime: Date.now() - this.startTime,
-      timestamp: new Date().toISOString()
-    });
+      timestamp: new Date().toISOString(),
+    })
   }
 
   // Start the server
   start() {
     this.server = this.app.listen(config.port, '0.0.0.0', () => {
-      console.log('🚀 SENTIA MANUFACTURING ENTERPRISE SERVER STARTED');
-      console.log('================================================');
-      console.log(`🌐 Server running on port ${config.port}`);
-      console.log(`🔒 Environment: ${config.environment}`);
-      console.log(`📊 Health endpoint: /health`);
-      console.log(`📈 Metrics endpoint: /metrics`);
-      console.log(`🔐 Login endpoint: /login`);
-      console.log(`📱 Dashboard endpoint: /dashboard`);
-      console.log('================================================');
-      console.log('✅ Enterprise-grade reliability enabled');
-      console.log('✅ JWT authentication system active');
-      console.log('✅ Health monitoring initialized');
-      console.log('✅ Graceful shutdown handlers registered');
-      console.log('✅ Error handling and logging active');
-      console.log('================================================');
-      console.log('🎯 READY FOR CLIENT DEMONSTRATION');
-    });
+      console.log('🚀 SENTIA MANUFACTURING ENTERPRISE SERVER STARTED')
+      console.log('================================================')
+      console.log(`🌐 Server running on port ${config.port}`)
+      console.log(`🔒 Environment: ${config.environment}`)
+      console.log(`📊 Health endpoint: /health`)
+      console.log(`📈 Metrics endpoint: /metrics`)
+      console.log(`🔐 Login endpoint: /login`)
+      console.log(`📱 Dashboard endpoint: /dashboard`)
+      console.log('================================================')
+      console.log('✅ Enterprise-grade reliability enabled')
+      console.log('✅ JWT authentication system active')
+      console.log('✅ Health monitoring initialized')
+      console.log('✅ Graceful shutdown handlers registered')
+      console.log('✅ Error handling and logging active')
+      console.log('================================================')
+      console.log('🎯 READY FOR CLIENT DEMONSTRATION')
+    })
 
-    return this.server;
+    return this.server
   }
 }
 
 // Initialize and start the enterprise server
-const server = new SentiaManufacturingServer();
-server.start();
+const server = new SentiaManufacturingServer()
+server.start()
 
 // Export for testing
-module.exports = server;
+module.exports = server

@@ -108,7 +108,8 @@ const Analytics = () => {
   const showAmazonSetup = integrations.amazon && integrations.amazon.status !== 'connected'
   const showShopifySetup =
     integrations.shopify &&
-    (!integrations.shopify.connected || integrations.shopify.activeStores < integrations.shopify.totalStores)
+    (!integrations.shopify.connected ||
+      integrations.shopify.activeStores < integrations.shopify.totalStores)
 
   // Show loading skeleton while integration status is loading
   if (integrations.loading) {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'
 import {
   BarChart,
   Bar,
@@ -11,8 +11,8 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-} from 'recharts';
-import ChartCard from './ChartCard';
+} from 'recharts'
+import ChartCard from './ChartCard'
 
 /**
  * ProductionOutputChart Component
@@ -32,15 +32,15 @@ import ChartCard from './ChartCard';
  * @param {Function} props.onExport - Export handler
  */
 function ProductionOutputChart({ data = [], loading = false, error = null, onRefresh, onExport }) {
-  const [timeRange, setTimeRange] = useState('30d'); // 7d, 30d, 90d
-  const [view, setView] = useState('output'); // output, oee, comparison
+  const [timeRange, setTimeRange] = useState('30d') // 7d, 30d, 90d
+  const [view, setView] = useState('output') // output, oee, comparison
 
   // Filter data based on time range
-  const filteredData = filterDataByTimeRange(data, timeRange);
+  const filteredData = filterDataByTimeRange(data, timeRange)
 
   // Custom tooltip
   const CustomTooltip = ({ active, payload, label }) => {
-    if (!active || !payload || payload.length === 0) return null;
+    if (!active || !payload || payload.length === 0) return null
 
     return (
       <div className="bg-white border border-gray-200 rounded shadow-lg p-3">
@@ -48,10 +48,7 @@ function ProductionOutputChart({ data = [], loading = false, error = null, onRef
         {payload.map((entry, index) => (
           <div key={index} className="flex items-center justify-between gap-4 text-sm">
             <span className="flex items-center gap-2">
-              <span
-                className="w-3 h-3 rounded"
-                style={{ backgroundColor: entry.color }}
-              />
+              <span className="w-3 h-3 rounded" style={{ backgroundColor: entry.color }} />
               {entry.name}
             </span>
             <span className="font-semibold">
@@ -62,13 +59,13 @@ function ProductionOutputChart({ data = [], loading = false, error = null, onRef
           </div>
         ))}
       </div>
-    );
-  };
+    )
+  }
 
   // Time range selector
   const timeRangeActions = (
     <div className="flex items-center gap-1 bg-gray-100 rounded p-1">
-      {['7d', '30d', '90d'].map((range) => (
+      {['7d', '30d', '90d'].map(range => (
         <button
           key={range}
           onClick={() => setTimeRange(range)}
@@ -82,7 +79,7 @@ function ProductionOutputChart({ data = [], loading = false, error = null, onRef
         </button>
       ))}
     </div>
-  );
+  )
 
   return (
     <ChartCard
@@ -99,9 +96,7 @@ function ProductionOutputChart({ data = [], loading = false, error = null, onRef
         <button
           onClick={() => setView('output')}
           className={`px-3 py-1 rounded text-sm ${
-            view === 'output'
-              ? 'bg-blue-100 text-blue-700'
-              : 'text-gray-600 hover:bg-gray-100'
+            view === 'output' ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:bg-gray-100'
           }`}
         >
           Output
@@ -117,9 +112,7 @@ function ProductionOutputChart({ data = [], loading = false, error = null, onRef
         <button
           onClick={() => setView('comparison')}
           className={`px-3 py-1 rounded text-sm ${
-            view === 'comparison'
-              ? 'bg-blue-100 text-blue-700'
-              : 'text-gray-600 hover:bg-gray-100'
+            view === 'comparison' ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:bg-gray-100'
           }`}
         >
           vs Target
@@ -140,7 +133,12 @@ function ProductionOutputChart({ data = [], loading = false, error = null, onRef
             <YAxis stroke="#6b7280" style={{ fontSize: '12px' }} />
             <Tooltip content={<CustomTooltip />} />
             <Legend wrapperStyle={{ fontSize: '14px' }} />
-            <Bar dataKey="unitsProduced" name="Units Produced" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+            <Bar
+              dataKey="unitsProduced"
+              name="Units Produced"
+              fill="#3b82f6"
+              radius={[4, 4, 0, 0]}
+            />
           </BarChart>
         </ResponsiveContainer>
       )}
@@ -166,7 +164,7 @@ function ProductionOutputChart({ data = [], loading = false, error = null, onRef
               domain={[0, 100]}
               stroke="#6b7280"
               style={{ fontSize: '12px' }}
-              tickFormatter={(value) => `${value}%`}
+              tickFormatter={value => `${value}%`}
             />
             <Tooltip content={<CustomTooltip />} />
             <Legend wrapperStyle={{ fontSize: '14px' }} />
@@ -225,7 +223,7 @@ function ProductionOutputChart({ data = [], loading = false, error = null, onRef
               domain={[0, 150]}
               stroke="#f59e0b"
               style={{ fontSize: '12px' }}
-              tickFormatter={(value) => `${value}%`}
+              tickFormatter={value => `${value}%`}
             />
           </ComposedChart>
         </ResponsiveContainer>
@@ -264,7 +262,7 @@ function ProductionOutputChart({ data = [], loading = false, error = null, onRef
         </div>
       </div>
     </ChartCard>
-  );
+  )
 }
 
 /**
@@ -276,7 +274,7 @@ function SummaryMetric({ label, value, suffix, decimals = 0, color }) {
     green: 'text-green-600',
     purple: 'text-purple-600',
     orange: 'text-orange-600',
-  };
+  }
 
   return (
     <div className="bg-gray-50 rounded-lg p-3">
@@ -286,7 +284,7 @@ function SummaryMetric({ label, value, suffix, decimals = 0, color }) {
         <span className="text-sm font-normal text-gray-600 ml-1">{suffix}</span>
       </div>
     </div>
-  );
+  )
 }
 
 /**
@@ -294,29 +292,29 @@ function SummaryMetric({ label, value, suffix, decimals = 0, color }) {
  */
 
 function filterDataByTimeRange(data, range) {
-  if (!data || data.length === 0) return [];
+  if (!data || data.length === 0) return []
 
-  const now = new Date();
+  const now = new Date()
   const ranges = {
     '7d': 7,
     '30d': 30,
     '90d': 90,
-  };
+  }
 
-  const daysAgo = ranges[range] || 30;
-  const cutoffDate = new Date(now.getTime() - daysAgo * 24 * 60 * 60 * 1000);
+  const daysAgo = ranges[range] || 30
+  const cutoffDate = new Date(now.getTime() - daysAgo * 24 * 60 * 60 * 1000)
 
-  return data.filter((item) => new Date(item.date) >= cutoffDate);
+  return data.filter(item => new Date(item.date) >= cutoffDate)
 }
 
 function formatDate(dateStr) {
-  const date = new Date(dateStr);
-  return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+  const date = new Date(dateStr)
+  return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
 function formatDateTick(dateStr) {
-  const date = new Date(dateStr);
-  return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+  const date = new Date(dateStr)
+  return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
 }
 
 function getTimeRangeLabel(range) {
@@ -324,25 +322,25 @@ function getTimeRangeLabel(range) {
     '7d': 'Last 7 days',
     '30d': 'Last 30 days',
     '90d': 'Last 90 days',
-  };
-  return labels[range] || 'Last 30 days';
+  }
+  return labels[range] || 'Last 30 days'
 }
 
 function calculateTotal(data, key) {
-  if (!data || data.length === 0) return 0;
-  return data.reduce((sum, item) => sum + (item[key] || 0), 0);
+  if (!data || data.length === 0) return 0
+  return data.reduce((sum, item) => sum + (item[key] || 0), 0)
 }
 
 function calculateAverage(data, key) {
-  if (!data || data.length === 0) return 0;
-  const total = calculateTotal(data, key);
-  return total / data.length;
+  if (!data || data.length === 0) return 0
+  const total = calculateTotal(data, key)
+  return total / data.length
 }
 
 function calculateTargetHitRate(data) {
-  if (!data || data.length === 0) return 0;
-  const daysHit = data.filter((item) => item.unitsProduced >= item.target).length;
-  return (daysHit / data.length) * 100;
+  if (!data || data.length === 0) return 0
+  const daysHit = data.filter(item => item.unitsProduced >= item.target).length
+  return (daysHit / data.length) * 100
 }
 
-export default ProductionOutputChart;
+export default ProductionOutputChart

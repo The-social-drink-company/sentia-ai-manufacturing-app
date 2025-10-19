@@ -96,20 +96,20 @@ export async function initializeApprovalWorker() {
 
     // Worker event handlers
     approvalWorker.on('completed', (job, result) => {
-      logger.info(
-        `[ApprovalQueue] Job ${job.id} completed for approval ${job.data.approvalId}`,
-        {
-          resultSummary: result?.status || 'success',
-          result,
-        }
-      )
+      logger.info(`[ApprovalQueue] Job ${job.id} completed for approval ${job.data.approvalId}`, {
+        resultSummary: result?.status || 'success',
+        result,
+      })
     })
 
     approvalWorker.on('failed', (job, error) => {
-      logger.error(`[ApprovalQueue] Job ${job.id} failed for approval ${job.data.approvalId}:`, error)
+      logger.error(
+        `[ApprovalQueue] Job ${job.id} failed for approval ${job.data.approvalId}:`,
+        error
+      )
     })
 
-    approvalWorker.on('error', (error) => {
+    approvalWorker.on('error', error => {
       logger.error('[ApprovalQueue] Worker error:', error)
     })
 
@@ -212,7 +212,9 @@ async function processApprovalJob(job) {
     }
 
     if (approval.status !== 'APPROVED') {
-      throw new Error(`Approval ${approvalId} is not in APPROVED state (current: ${approval.status})`)
+      throw new Error(
+        `Approval ${approvalId} is not in APPROVED state (current: ${approval.status})`
+      )
     }
 
     // Route to type-specific execution handler
@@ -496,15 +498,15 @@ export async function shutdownApprovalQueue() {
 
 // Auto-initialize on import (for server startup)
 if (process.env.NODE_ENV !== 'test') {
-  initializeApprovalQueue().catch((error) => {
+  initializeApprovalQueue().catch(error => {
     logger.error('[ApprovalQueue] Auto-initialization failed:', error)
   })
 
-  initializeApprovalWorker().catch((error) => {
+  initializeApprovalWorker().catch(error => {
     logger.error('[ApprovalQueue] Worker auto-initialization failed:', error)
   })
 
-  initializeApprovalQueueEvents().catch((error) => {
+  initializeApprovalQueueEvents().catch(error => {
     logger.error('[ApprovalQueue] Queue events auto-initialization failed:', error)
   })
 }

@@ -10,8 +10,8 @@
  * - Root cause analysis
  */
 
-import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   AlertTriangle,
   Clock,
@@ -28,7 +28,7 @@ import {
   AlertCircle,
   BarChart3,
   Filter,
-} from 'lucide-react';
+} from 'lucide-react'
 import {
   ResponsiveContainer,
   BarChart,
@@ -45,8 +45,8 @@ import {
   Legend,
   ComposedChart,
   Area,
-} from 'recharts';
-import { useSSE } from '../../hooks/useSSE';
+} from 'recharts'
+import { useSSE } from '../../hooks/useSSE'
 
 // Downtime categories
 const DOWNTIME_CATEGORIES = {
@@ -57,31 +57,30 @@ const DOWNTIME_CATEGORIES = {
   LACK_OF_MATERIALS: { label: 'Lack of Materials', color: '#ec4899', icon: AlertCircle },
   LACK_OF_OPERATORS: { label: 'Lack of Operators', color: '#14b8a6', icon: AlertCircle },
   OTHER: { label: 'Other', color: '#6b7280', icon: PauseCircle },
-};
+}
 
 /**
  * Downtime Event Card
  */
 function DowntimeEventCard({ event, onResolve }) {
-  const category = DOWNTIME_CATEGORIES[event.category] || DOWNTIME_CATEGORIES.OTHER;
-  const Icon = category.icon;
+  const category = DOWNTIME_CATEGORIES[event.category] || DOWNTIME_CATEGORIES.OTHER
+  const Icon = category.icon
 
   const duration = event.endTime
     ? Math.floor((new Date(event.endTime) - new Date(event.startTime)) / (1000 * 60))
-    : Math.floor((Date.now() - new Date(event.startTime)) / (1000 * 60));
+    : Math.floor((Date.now() - new Date(event.startTime)) / (1000 * 60))
 
-  const isOngoing = !event.endTime;
+  const isOngoing = !event.endTime
 
   return (
-    <div className={`rounded-lg border-2 p-4 ${
-      isOngoing ? 'border-red-500 bg-red-50' : 'border-gray-200 bg-white'
-    }`}>
+    <div
+      className={`rounded-lg border-2 p-4 ${
+        isOngoing ? 'border-red-500 bg-red-50' : 'border-gray-200 bg-white'
+      }`}
+    >
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-3">
-          <div
-            className="p-2 rounded-lg"
-            style={{ backgroundColor: category.color, opacity: 0.2 }}
-          >
+          <div className="p-2 rounded-lg" style={{ backgroundColor: category.color, opacity: 0.2 }}>
             <Icon className="w-5 h-5" style={{ color: category.color }} />
           </div>
           <div>
@@ -105,25 +104,19 @@ function DowntimeEventCard({ event, onResolve }) {
 
         <div className="flex items-center gap-2 text-sm text-gray-600">
           <Calendar className="w-4 h-4" />
-          <span>
-            Started: {new Date(event.startTime).toLocaleString()}
-          </span>
+          <span>Started: {new Date(event.startTime).toLocaleString()}</span>
         </div>
 
         {event.endTime && (
           <div className="flex items-center gap-2 text-sm text-gray-600">
             <CheckCircle2 className="w-4 h-4" />
-            <span>
-              Resolved: {new Date(event.endTime).toLocaleString()}
-            </span>
+            <span>Resolved: {new Date(event.endTime).toLocaleString()}</span>
           </div>
         )}
       </div>
 
       {event.description && (
-        <p className="text-sm text-gray-700 mb-3 p-3 bg-gray-50 rounded">
-          {event.description}
-        </p>
+        <p className="text-sm text-gray-700 mb-3 p-3 bg-gray-50 rounded">{event.description}</p>
       )}
 
       {event.rootCause && (
@@ -142,7 +135,7 @@ function DowntimeEventCard({ event, onResolve }) {
         </button>
       )}
     </div>
-  );
+  )
 }
 
 /**
@@ -154,26 +147,31 @@ function PredictiveMaintenanceCard({ alert }) {
     high: 'border-orange-500 bg-orange-50',
     medium: 'border-yellow-500 bg-yellow-50',
     low: 'border-blue-500 bg-blue-50',
-  };
+  }
 
   const severityIcons = {
     critical: AlertTriangle,
     high: AlertCircle,
     medium: AlertCircle,
     low: Activity,
-  };
+  }
 
-  const Icon = severityIcons[alert.severity] || AlertCircle;
+  const Icon = severityIcons[alert.severity] || AlertCircle
 
   return (
     <div className={`rounded-lg border-2 p-4 ${severityColors[alert.severity]}`}>
       <div className="flex items-start gap-3 mb-3">
-        <Icon className={`w-6 h-6 ${
-          alert.severity === 'critical' ? 'text-red-600' :
-          alert.severity === 'high' ? 'text-orange-600' :
-          alert.severity === 'medium' ? 'text-yellow-600' :
-          'text-blue-600'
-        }`} />
+        <Icon
+          className={`w-6 h-6 ${
+            alert.severity === 'critical'
+              ? 'text-red-600'
+              : alert.severity === 'high'
+                ? 'text-orange-600'
+                : alert.severity === 'medium'
+                  ? 'text-yellow-600'
+                  : 'text-blue-600'
+          }`}
+        />
         <div className="flex-1">
           <div className="flex items-center justify-between mb-1">
             <h4 className="font-semibold text-gray-900">{alert.machine}</h4>
@@ -195,11 +193,15 @@ function PredictiveMaintenanceCard({ alert }) {
 
         <div className="flex items-center justify-between text-sm">
           <span className="text-gray-600">Days Until Failure:</span>
-          <span className={`font-bold ${
-            alert.daysUntilFailure <= 7 ? 'text-red-600' :
-            alert.daysUntilFailure <= 14 ? 'text-orange-600' :
-            'text-green-600'
-          }`}>
+          <span
+            className={`font-bold ${
+              alert.daysUntilFailure <= 7
+                ? 'text-red-600'
+                : alert.daysUntilFailure <= 14
+                  ? 'text-orange-600'
+                  : 'text-green-600'
+            }`}
+          >
             {alert.daysUntilFailure} days
           </span>
         </div>
@@ -221,7 +223,7 @@ function PredictiveMaintenanceCard({ alert }) {
         </button>
       </div>
     </div>
-  );
+  )
 }
 
 /**
@@ -249,10 +251,9 @@ function ReliabilityStatsCard({ stats }) {
             </span>
             <span className="text-sm text-gray-600">hours</span>
           </div>
-          <p className={`text-sm mt-1 ${
-            stats.mtbfTrend >= 0 ? 'text-green-600' : 'text-red-600'
-          }`}>
-            {stats.mtbfTrend >= 0 ? '+' : ''}{stats.mtbfTrend?.toFixed(1)}% vs last month
+          <p className={`text-sm mt-1 ${stats.mtbfTrend >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+            {stats.mtbfTrend >= 0 ? '+' : ''}
+            {stats.mtbfTrend?.toFixed(1)}% vs last month
           </p>
         </div>
 
@@ -287,10 +288,9 @@ function ReliabilityStatsCard({ stats }) {
             </span>
             <span className="text-sm text-gray-600">hours</span>
           </div>
-          <p className={`text-sm mt-1 ${
-            stats.mttrTrend <= 0 ? 'text-green-600' : 'text-red-600'
-          }`}>
-            {stats.mttrTrend <= 0 ? '' : '+'}{stats.mttrTrend?.toFixed(1)}% vs last month
+          <p className={`text-sm mt-1 ${stats.mttrTrend <= 0 ? 'text-green-600' : 'text-red-600'}`}>
+            {stats.mttrTrend <= 0 ? '' : '+'}
+            {stats.mttrTrend?.toFixed(1)}% vs last month
           </p>
         </div>
 
@@ -306,7 +306,7 @@ function ReliabilityStatsCard({ stats }) {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 /**
@@ -317,9 +317,9 @@ function DowntimeByCategoryChart({ data }) {
     name: category.label,
     value: data[key.toLowerCase()] || 0,
     color: category.color,
-  }));
+  }))
 
-  const totalDowntime = chartData.reduce((sum, item) => sum + item.value, 0);
+  const totalDowntime = chartData.reduce((sum, item) => sum + item.value, 0)
 
   return (
     <div className="bg-white rounded-lg shadow p-6">
@@ -344,7 +344,7 @@ function DowntimeByCategoryChart({ data }) {
                 <Cell key={`cell-${index}`} fill={entry.color} />
               ))}
             </Pie>
-            <Tooltip formatter={(value) => `${value} min`} />
+            <Tooltip formatter={value => `${value} min`} />
           </PieChart>
         </ResponsiveContainer>
 
@@ -352,19 +352,14 @@ function DowntimeByCategoryChart({ data }) {
           <div className="space-y-3">
             {chartData
               .sort((a, b) => b.value - a.value)
-              .map((item) => (
+              .map(item => (
                 <div key={item.name} className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <div
-                      className="w-3 h-3 rounded-full"
-                      style={{ backgroundColor: item.color }}
-                    />
+                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }} />
                     <span className="text-sm text-gray-700">{item.name}</span>
                   </div>
                   <div className="text-right">
-                    <span className="text-sm font-medium text-gray-900">
-                      {item.value} min
-                    </span>
+                    <span className="text-sm font-medium text-gray-900">{item.value} min</span>
                     <span className="text-xs text-gray-500 ml-2">
                       ({totalDowntime > 0 ? ((item.value / totalDowntime) * 100).toFixed(1) : 0}%)
                     </span>
@@ -382,7 +377,7 @@ function DowntimeByCategoryChart({ data }) {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 /**
@@ -391,27 +386,34 @@ function DowntimeByCategoryChart({ data }) {
 function DowntimeTrendChart({ trendData }) {
   return (
     <div className="bg-white rounded-lg shadow p-6">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">
-        Downtime Trend (Last 30 Days)
-      </h3>
+      <h3 className="text-lg font-semibold text-gray-900 mb-4">Downtime Trend (Last 30 Days)</h3>
 
       <ResponsiveContainer width="100%" height={300}>
         <ComposedChart data={trendData}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis
             dataKey="date"
-            tickFormatter={(date) => new Date(date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })}
+            tickFormatter={date =>
+              new Date(date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })
+            }
           />
           <YAxis yAxisId="left" label={{ value: 'Minutes', angle: -90, position: 'insideLeft' }} />
-          <YAxis yAxisId="right" orientation="right" label={{ value: 'Events', angle: 90, position: 'insideRight' }} />
+          <YAxis
+            yAxisId="right"
+            orientation="right"
+            label={{ value: 'Events', angle: 90, position: 'insideRight' }}
+          />
           <Tooltip
-            labelFormatter={(date) => new Date(date).toLocaleDateString()}
+            labelFormatter={date => new Date(date).toLocaleDateString()}
             formatter={(value, name) => [
               name === 'events' ? value : `${value} min`,
-              name === 'plannedDowntime' ? 'Planned Downtime' :
-              name === 'unplannedDowntime' ? 'Unplanned Downtime' :
-              name === 'totalDowntime' ? 'Total Downtime' :
-              'Events'
+              name === 'plannedDowntime'
+                ? 'Planned Downtime'
+                : name === 'unplannedDowntime'
+                  ? 'Unplanned Downtime'
+                  : name === 'totalDowntime'
+                    ? 'Total Downtime'
+                    : 'Events',
             ]}
           />
           <Legend />
@@ -437,58 +439,58 @@ function DowntimeTrendChart({ trendData }) {
         </ComposedChart>
       </ResponsiveContainer>
     </div>
-  );
+  )
 }
 
 /**
  * Main Downtime Tracker Component
  */
 export default function DowntimeTracker() {
-  const queryClient = useQueryClient();
-  const [filterCategory, setFilterCategory] = useState('ALL');
-  const [filterStatus, setFilterStatus] = useState('ALL');
-  const [dateRange, setDateRange] = useState('today');
+  const queryClient = useQueryClient()
+  const [filterCategory, setFilterCategory] = useState('ALL')
+  const [filterStatus, setFilterStatus] = useState('ALL')
+  const [dateRange, setDateRange] = useState('today')
 
   // Fetch downtime data
   const { data, isLoading, error } = useQuery({
     queryKey: ['production', 'downtime', dateRange],
     queryFn: async () => {
-      const params = new URLSearchParams({ dateRange });
+      const params = new URLSearchParams({ dateRange })
       const response = await fetch(`/api/v1/production/downtime?${params}`, {
         credentials: 'include',
-      });
-      if (!response.ok) throw new Error('Failed to fetch downtime data');
-      const result = await response.json();
-      return result.data;
+      })
+      if (!response.ok) throw new Error('Failed to fetch downtime data')
+      const result = await response.json()
+      return result.data
     },
     refetchInterval: 30000,
-  });
+  })
 
   // Resolve downtime mutation
   const resolveDowntimeMutation = useMutation({
-    mutationFn: async (eventId) => {
+    mutationFn: async eventId => {
       const response = await fetch(`/api/v1/production/downtime/${eventId}/resolve`, {
         method: 'PATCH',
         credentials: 'include',
-      });
-      if (!response.ok) throw new Error('Failed to resolve downtime');
-      return response.json();
+      })
+      if (!response.ok) throw new Error('Failed to resolve downtime')
+      return response.json()
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['production', 'downtime']);
-      queryClient.invalidateQueries(['production', 'overview']);
+      queryClient.invalidateQueries(['production', 'downtime'])
+      queryClient.invalidateQueries(['production', 'overview'])
     },
-  });
+  })
 
   // SSE for real-time downtime updates
   const { connected } = useSSE('production', {
     enabled: true,
-    onMessage: (message) => {
+    onMessage: message => {
       if (message.type === 'downtime:event' || message.type === 'downtime:resolved') {
-        queryClient.invalidateQueries(['production', 'downtime']);
+        queryClient.invalidateQueries(['production', 'downtime'])
       }
     },
-  });
+  })
 
   if (isLoading) {
     return (
@@ -498,7 +500,7 @@ export default function DowntimeTracker() {
           <p className="text-gray-600">Loading downtime data...</p>
         </div>
       </div>
-    );
+    )
   }
 
   if (error) {
@@ -506,7 +508,7 @@ export default function DowntimeTracker() {
       <div className="bg-red-50 border border-red-200 rounded-lg p-6">
         <p className="text-red-800">Error loading downtime data: {error.message}</p>
       </div>
-    );
+    )
   }
 
   const {
@@ -515,20 +517,21 @@ export default function DowntimeTracker() {
     stats = {},
     trend = [],
     categoryBreakdown = {},
-  } = data || {};
+  } = data || {}
 
   // Filter events
   const filteredEvents = events.filter(event => {
-    const matchesCategory = filterCategory === 'ALL' || event.category === filterCategory;
-    const matchesStatus = filterStatus === 'ALL' ||
+    const matchesCategory = filterCategory === 'ALL' || event.category === filterCategory
+    const matchesStatus =
+      filterStatus === 'ALL' ||
       (filterStatus === 'ONGOING' && !event.endTime) ||
-      (filterStatus === 'RESOLVED' && event.endTime);
-    return matchesCategory && matchesStatus;
-  });
+      (filterStatus === 'RESOLVED' && event.endTime)
+    return matchesCategory && matchesStatus
+  })
 
   // Separate ongoing and resolved events
-  const ongoingEvents = filteredEvents.filter(e => !e.endTime);
-  const resolvedEvents = filteredEvents.filter(e => e.endTime);
+  const ongoingEvents = filteredEvents.filter(e => !e.endTime)
+  const resolvedEvents = filteredEvents.filter(e => e.endTime)
 
   return (
     <div className="space-y-6">
@@ -551,7 +554,7 @@ export default function DowntimeTracker() {
         <div className="flex items-center gap-3">
           <select
             value={dateRange}
-            onChange={(e) => setDateRange(e.target.value)}
+            onChange={e => setDateRange(e.target.value)}
             className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
           >
             <option value="today">Today</option>
@@ -562,7 +565,7 @@ export default function DowntimeTracker() {
 
           <select
             value={filterCategory}
-            onChange={(e) => setFilterCategory(e.target.value)}
+            onChange={e => setFilterCategory(e.target.value)}
             className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
           >
             <option value="ALL">All Categories</option>
@@ -575,7 +578,7 @@ export default function DowntimeTracker() {
 
           <select
             value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value)}
+            onChange={e => setFilterStatus(e.target.value)}
             className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
           >
             <option value="ALL">All Status</option>
@@ -595,7 +598,7 @@ export default function DowntimeTracker() {
             Predictive Maintenance Alerts ({predictiveAlerts.length})
           </h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {predictiveAlerts.map((alert) => (
+            {predictiveAlerts.map(alert => (
               <PredictiveMaintenanceCard key={alert.id} alert={alert} />
             ))}
           </div>
@@ -615,11 +618,11 @@ export default function DowntimeTracker() {
             Ongoing Downtime Events ({ongoingEvents.length})
           </h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {ongoingEvents.map((event) => (
+            {ongoingEvents.map(event => (
               <DowntimeEventCard
                 key={event.id}
                 event={event}
-                onResolve={(id) => resolveDowntimeMutation.mutate(id)}
+                onResolve={id => resolveDowntimeMutation.mutate(id)}
               />
             ))}
           </div>
@@ -633,12 +636,8 @@ export default function DowntimeTracker() {
             Recently Resolved ({resolvedEvents.length})
           </h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {resolvedEvents.slice(0, 6).map((event) => (
-              <DowntimeEventCard
-                key={event.id}
-                event={event}
-                onResolve={() => {}}
-              />
+            {resolvedEvents.slice(0, 6).map(event => (
+              <DowntimeEventCard key={event.id} event={event} onResolve={() => {}} />
             ))}
           </div>
         </div>
@@ -657,5 +656,5 @@ export default function DowntimeTracker() {
         </div>
       )}
     </div>
-  );
+  )
 }

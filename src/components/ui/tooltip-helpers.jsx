@@ -72,10 +72,22 @@ export function HelpTooltip({ content, children, side = 'top', className = '', .
   return (
     <Tooltip {...props}>
       <TooltipTrigger asChild>
-        <span className={`inline-flex items-center gap-1 cursor-help border-b border-dashed border-slate-400 ${className}`}>
+        <span
+          className={`inline-flex items-center gap-1 cursor-help border-b border-dashed border-slate-400 ${className}`}
+        >
           {children}
-          <svg className="h-3.5 w-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          <svg
+            className="h-3.5 w-3.5 text-slate-500"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
           </svg>
         </span>
       </TooltipTrigger>
@@ -106,7 +118,10 @@ export function AbbrTooltip({ abbr, full, children, side = 'top', ...props }) {
   return (
     <Tooltip {...props}>
       <TooltipTrigger asChild>
-        <abbr title={full} className="cursor-help no-underline border-b border-dotted border-slate-400">
+        <abbr
+          title={full}
+          className="cursor-help no-underline border-b border-dotted border-slate-400"
+        >
           {children || abbr}
         </abbr>
       </TooltipTrigger>
@@ -131,11 +146,13 @@ export function BadgeTooltip({ status = 'default', tooltip, children, side = 'to
     warning: 'bg-amber-100 text-amber-800 border-amber-200',
     error: 'bg-red-100 text-red-800 border-red-200',
     info: 'bg-blue-100 text-blue-800 border-blue-200',
-    default: 'bg-slate-100 text-slate-800 border-slate-200'
+    default: 'bg-slate-100 text-slate-800 border-slate-200',
   }
 
   const badge = (
-    <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold ${statusColors[status]}`}>
+    <span
+      className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold ${statusColors[status]}`}
+    >
       {children}
     </span>
   )

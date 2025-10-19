@@ -3,13 +3,13 @@
  * Validates imported data against schema rules
  */
 
-import { logInfo, logWarn, logError, logDebug } from '../../utils/logger.js';
+import { logInfo, logWarn, logError, logDebug } from '../../utils/logger.js'
 
 class ValidationEngine {
   constructor(schema) {
-    this.schema = schema;
-    this.errors = [];
-    this.warnings = [];
+    this.schema = schema
+    this.errors = []
+    this.warnings = []
   }
 
   /**
@@ -19,12 +19,12 @@ class ValidationEngine {
    * @returns {Object} Validation result
    */
   validateRow(row, rowIndex) {
-    const errors = [];
-    const warnings = [];
-    const validatedData = {};
+    const errors = []
+    const warnings = []
+    const validatedData = {}
 
     for (const [field, rules] of Object.entries(this.schema)) {
-      const value = row[field];
+      const value = row[field]
 
       // Required field validation
       if (rules.required && (value === null || value === undefined || value === '')) {
@@ -33,18 +33,18 @@ class ValidationEngine {
           field,
           type: 'required',
           message: `${field} is required`,
-        });
-        continue;
+        })
+        continue
       }
 
       // Skip further validation if field is empty and not required
       if (!rules.required && (value === null || value === undefined || value === '')) {
-        continue;
+        continue
       }
 
       // Type validation
       if (rules.type) {
-        const typeValid = this.validateType(value, rules.type);
+        const typeValid = this.validateType(value, rules.type)
         if (!typeValid) {
           errors.push({
             row: rowIndex,
@@ -52,8 +52,8 @@ class ValidationEngine {
             type: 'type',
             message: `${field} must be of type ${rules.type}`,
             value,
-          });
-          continue;
+          })
+          continue
         }
       }
 
@@ -66,7 +66,7 @@ class ValidationEngine {
             type: 'range',
             message: `${field} must be >= ${rules.min}`,
             value,
-          });
+          })
         }
         if (rules.max !== undefined && value > rules.max) {
           errors.push({
@@ -75,13 +75,13 @@ class ValidationEngine {
             type: 'range',
             message: `${field} must be <= ${rules.max}`,
             value,
-          });
+          })
         }
       }
 
       // Pattern validation
       if (rules.pattern) {
-        const regex = new RegExp(rules.pattern);
+        const regex = new RegExp(rules.pattern)
         if (!regex.test(value)) {
           errors.push({
             row: rowIndex,
@@ -89,7 +89,7 @@ class ValidationEngine {
             type: 'pattern',
             message: `${field} does not match required pattern`,
             value,
-          });
+          })
         }
       }
 
@@ -101,12 +101,12 @@ class ValidationEngine {
           type: 'enum',
           message: `${field} must be one of: ${rules.enum.join(', ')}`,
           value,
-        });
+        })
       }
 
       // Custom validation function
       if (rules.validate) {
-        const customResult = rules.validate(value, row);
+        const customResult = rules.validate(value, row)
         if (customResult !== true) {
           errors.push({
             row: rowIndex,
@@ -114,12 +114,12 @@ class ValidationEngine {
             type: 'custom',
             message: customResult || `${field} failed custom validation`,
             value,
-          });
+          })
         }
       }
 
       // Transform value if transformer provided
-      validatedData[field] = rules.transform ? rules.transform(value) : value;
+      validatedData[field] = rules.transform ? rules.transform(value) : value
     }
 
     return {
@@ -127,7 +127,7 @@ class ValidationEngine {
       data: validatedData,
       errors,
       warnings,
-    };
+    }
   }
 
   /**
@@ -136,17 +136,17 @@ class ValidationEngine {
   validateType(value, type) {
     switch (type) {
       case 'string':
-        return typeof value === 'string';
+        return typeof value === 'string'
       case 'number':
-        return typeof value === 'number' && !isNaN(value);
+        return typeof value === 'number' && !isNaN(value)
       case 'boolean':
-        return typeof value === 'boolean';
+        return typeof value === 'boolean'
       case 'date':
-        return value instanceof Date || !isNaN(Date.parse(value));
+        return value instanceof Date || !isNaN(Date.parse(value))
       case 'email':
-        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
       default:
-        return true;
+        return true
     }
   }
 
@@ -156,39 +156,39 @@ class ValidationEngine {
    * @returns {Object} Validation summary
    */
   validateAll(data) {
-    const results = [];
-    const allErrors = [];
-    const allWarnings = [];
-    let validCount = 0;
+    const results = []
+    const allErrors = []
+    const allWarnings = []
+    let validCount = 0
 
-    logInfo(`Starting validation for ${data.length} rows`);
+    logInfo(`Starting validation for ${data.length} rows`)
 
     data.forEach((row, index) => {
-      const result = this.validateRow(row, index + 1);
-      results.push(result);
+      const result = this.validateRow(row, index + 1)
+      results.push(result)
 
       if (result.valid) {
-        validCount++;
+        validCount++
       } else {
-        allErrors.push(...result.errors);
+        allErrors.push(...result.errors)
         // Log first few errors for debugging
         if (allErrors.length <= 5) {
-          logError(`Validation error at row ${index + 1}:`, result.errors);
+          logError(`Validation error at row ${index + 1}:`, result.errors)
         }
       }
 
       if (result.warnings && result.warnings.length > 0) {
-        allWarnings.push(...result.warnings);
+        allWarnings.push(...result.warnings)
         if (allWarnings.length <= 5) {
-          logWarn(`Validation warning at row ${index + 1}:`, result.warnings);
+          logWarn(`Validation warning at row ${index + 1}:`, result.warnings)
         }
       }
 
       // Log progress for large datasets
       if ((index + 1) % 1000 === 0) {
-        logDebug(`Validation progress: ${index + 1}/${data.length} rows processed`);
+        logDebug(`Validation progress: ${index + 1}/${data.length} rows processed`)
       }
-    });
+    })
 
     const summary = {
       totalRows: data.length,
@@ -197,15 +197,17 @@ class ValidationEngine {
       errors: allErrors,
       warnings: allWarnings,
       results,
-    };
-
-    if (allErrors.length === 0) {
-      logInfo(`Validation completed successfully: ${validCount}/${data.length} rows valid`);
-    } else {
-      logError(`Validation completed with errors: ${summary.invalidRows} invalid rows, ${allErrors.length} total errors`);
     }
 
-    return summary;
+    if (allErrors.length === 0) {
+      logInfo(`Validation completed successfully: ${validCount}/${data.length} rows valid`)
+    } else {
+      logError(
+        `Validation completed with errors: ${summary.invalidRows} invalid rows, ${allErrors.length} total errors`
+      )
+    }
+
+    return summary
   }
 
   /**
@@ -221,7 +223,7 @@ class ValidationEngine {
         date: {
           required: true,
           type: 'date',
-          transform: (val) => new Date(val),
+          transform: val => new Date(val),
         },
         forecastedDemand: {
           required: true,
@@ -252,7 +254,7 @@ class ValidationEngine {
         lastUpdated: {
           required: false,
           type: 'date',
-          transform: (val) => new Date(val),
+          transform: val => new Date(val),
         },
       },
       sales: {
@@ -263,7 +265,7 @@ class ValidationEngine {
         date: {
           required: true,
           type: 'date',
-          transform: (val) => new Date(val),
+          transform: val => new Date(val),
         },
         quantity: {
           required: true,
@@ -276,10 +278,10 @@ class ValidationEngine {
           min: 0,
         },
       },
-    };
+    }
 
-    return schemas[type] || {};
+    return schemas[type] || {}
   }
 }
 
-export default ValidationEngine;
+export default ValidationEngine

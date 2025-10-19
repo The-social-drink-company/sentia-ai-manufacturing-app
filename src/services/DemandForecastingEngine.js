@@ -855,5 +855,3 @@ class DemandForecastingEngine {
 }
 
 export default DemandForecastingEngine
-
-

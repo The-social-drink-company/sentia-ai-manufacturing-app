@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'
 import {
   LineChart,
   Line,
@@ -10,8 +10,8 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-} from 'recharts';
-import ChartCard from './ChartCard';
+} from 'recharts'
+import ChartCard from './ChartCard'
 
 /**
  * SalesRevenueChart Component
@@ -31,16 +31,16 @@ import ChartCard from './ChartCard';
  * @param {Function} props.onExport - Export handler
  */
 function SalesRevenueChart({ data = [], loading = false, error = null, onRefresh, onExport }) {
-  const [timeRange, setTimeRange] = useState('30d'); // 7d, 30d, 90d, 1y
-  const [chartType, setChartType] = useState('line'); // line, area
-  const [showBreakdown, setShowBreakdown] = useState(false);
+  const [timeRange, setTimeRange] = useState('30d') // 7d, 30d, 90d, 1y
+  const [chartType, setChartType] = useState('line') // line, area
+  const [showBreakdown, setShowBreakdown] = useState(false)
 
   // Filter data based on time range
-  const filteredData = filterDataByTimeRange(data, timeRange);
+  const filteredData = filterDataByTimeRange(data, timeRange)
 
   // Custom tooltip component
   const CustomTooltip = ({ active, payload, label }) => {
-    if (!active || !payload || payload.length === 0) return null;
+    if (!active || !payload || payload.length === 0) return null
 
     return (
       <div className="bg-white border border-gray-200 rounded shadow-lg p-3">
@@ -48,23 +48,20 @@ function SalesRevenueChart({ data = [], loading = false, error = null, onRefresh
         {payload.map((entry, index) => (
           <div key={index} className="flex items-center justify-between gap-4 text-sm">
             <span className="flex items-center gap-2">
-              <span
-                className="w-3 h-3 rounded"
-                style={{ backgroundColor: entry.color }}
-              />
+              <span className="w-3 h-3 rounded" style={{ backgroundColor: entry.color }} />
               {entry.name}
             </span>
             <span className="font-semibold">{formatValue(entry.value, entry.dataKey)}</span>
           </div>
         ))}
       </div>
-    );
-  };
+    )
+  }
 
   // Time range buttons
   const timeRangeActions = (
     <div className="flex items-center gap-1 bg-gray-100 rounded p-1">
-      {['7d', '30d', '90d', '1y'].map((range) => (
+      {['7d', '30d', '90d', '1y'].map(range => (
         <button
           key={range}
           onClick={() => setTimeRange(range)}
@@ -78,7 +75,7 @@ function SalesRevenueChart({ data = [], loading = false, error = null, onRefresh
         </button>
       ))}
     </div>
-  );
+  )
 
   return (
     <ChartCard
@@ -96,9 +93,7 @@ function SalesRevenueChart({ data = [], loading = false, error = null, onRefresh
           <button
             onClick={() => setChartType('line')}
             className={`px-3 py-1 rounded text-sm ${
-              chartType === 'line'
-                ? 'bg-blue-100 text-blue-700'
-                : 'text-gray-600 hover:bg-gray-100'
+              chartType === 'line' ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:bg-gray-100'
             }`}
           >
             Line
@@ -106,9 +101,7 @@ function SalesRevenueChart({ data = [], loading = false, error = null, onRefresh
           <button
             onClick={() => setChartType('area')}
             className={`px-3 py-1 rounded text-sm ${
-              chartType === 'area'
-                ? 'bg-blue-100 text-blue-700'
-                : 'text-gray-600 hover:bg-gray-100'
+              chartType === 'area' ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:bg-gray-100'
             }`}
           >
             Area
@@ -138,7 +131,7 @@ function SalesRevenueChart({ data = [], loading = false, error = null, onRefresh
               yAxisId="left"
               stroke="#3b82f6"
               style={{ fontSize: '12px' }}
-              tickFormatter={(value) => `£${(value / 1000).toFixed(0)}k`}
+              tickFormatter={value => `£${(value / 1000).toFixed(0)}k`}
             />
             <YAxis
               yAxisId="right"
@@ -192,7 +185,7 @@ function SalesRevenueChart({ data = [], loading = false, error = null, onRefresh
               yAxisId="left"
               stroke="#3b82f6"
               style={{ fontSize: '12px' }}
-              tickFormatter={(value) => `£${(value / 1000).toFixed(0)}k`}
+              tickFormatter={value => `£${(value / 1000).toFixed(0)}k`}
             />
             <YAxis
               yAxisId="right"
@@ -251,7 +244,7 @@ function SalesRevenueChart({ data = [], loading = false, error = null, onRefresh
         </div>
       )}
     </ChartCard>
-  );
+  )
 }
 
 /**
@@ -265,13 +258,15 @@ function BreakdownBar({ label, value, amount, color }) {
     purple: 'bg-purple-500',
     orange: 'bg-orange-500',
     cyan: 'bg-cyan-500',
-  };
+  }
 
   return (
     <div>
       <div className="flex items-center justify-between text-sm mb-1">
         <span className="text-gray-700">{label}</span>
-        <span className="font-semibold">£{amount} ({value}%)</span>
+        <span className="font-semibold">
+          £{amount} ({value}%)
+        </span>
       </div>
       <div className="w-full bg-gray-200 rounded-full h-2">
         <div
@@ -280,7 +275,7 @@ function BreakdownBar({ label, value, amount, color }) {
         />
       </div>
     </div>
-  );
+  )
 }
 
 /**
@@ -288,37 +283,37 @@ function BreakdownBar({ label, value, amount, color }) {
  */
 
 function filterDataByTimeRange(data, range) {
-  if (!data || data.length === 0) return [];
+  if (!data || data.length === 0) return []
 
-  const now = new Date();
+  const now = new Date()
   const ranges = {
     '7d': 7,
     '30d': 30,
     '90d': 90,
     '1y': 365,
-  };
+  }
 
-  const daysAgo = ranges[range] || 30;
-  const cutoffDate = new Date(now.getTime() - daysAgo * 24 * 60 * 60 * 1000);
+  const daysAgo = ranges[range] || 30
+  const cutoffDate = new Date(now.getTime() - daysAgo * 24 * 60 * 60 * 1000)
 
-  return data.filter((item) => new Date(item.date) >= cutoffDate);
+  return data.filter(item => new Date(item.date) >= cutoffDate)
 }
 
 function formatDate(dateStr) {
-  const date = new Date(dateStr);
-  return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+  const date = new Date(dateStr)
+  return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
 function formatDateTick(dateStr) {
-  const date = new Date(dateStr);
-  return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+  const date = new Date(dateStr)
+  return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
 }
 
 function formatValue(value, dataKey) {
   if (dataKey === 'revenue') {
-    return `£${value.toLocaleString()}`;
+    return `£${value.toLocaleString()}`
   }
-  return value.toLocaleString();
+  return value.toLocaleString()
 }
 
 function getTimeRangeLabel(range) {
@@ -327,8 +322,8 @@ function getTimeRangeLabel(range) {
     '30d': 'Last 30 days',
     '90d': 'Last 90 days',
     '1y': 'Last 12 months',
-  };
-  return labels[range] || 'Last 30 days';
+  }
+  return labels[range] || 'Last 30 days'
 }
 
-export default SalesRevenueChart;
+export default SalesRevenueChart

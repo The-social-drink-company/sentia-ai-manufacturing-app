@@ -66,10 +66,7 @@
     "no-implied-eval": "error",
     "prefer-const": "error",
     "no-var": "error",
-    "eqeqeq": [
-      "error",
-      "always"
-    ],
+    "eqeqeq": ["error", "always"],
     "no-throw-literal": "error",
     "no-return-await": "error",
     "require-await": "warn"

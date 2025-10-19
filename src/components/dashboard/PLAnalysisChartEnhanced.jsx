@@ -1,4 +1,13 @@
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from 'recharts'
 import ChartCard from '@/components/charts/ChartCard'
 import { chartColors, chartTheme } from '@/utils/chartColors'
 
@@ -54,16 +63,9 @@ const data = [
  */
 const PLAnalysisChartEnhanced = () => {
   return (
-    <ChartCard
-      title="P&L Analysis"
-      subtitle="Financial performance trends over time"
-      icon="💰"
-    >
+    <ChartCard title="P&L Analysis" subtitle="Financial performance trends over time" icon="💰">
       <ResponsiveContainer width="100%" height={300}>
-        <LineChart
-          data={data}
-          margin={{ top: 20, right: 60, left: 20, bottom: 5 }}
-        >
+        <LineChart data={data} margin={{ top: 20, right: 60, left: 20, bottom: 5 }}>
           <CartesianGrid
             strokeDasharray={chartTheme.gridStrokeDasharray}
             stroke={chartTheme.gridStroke}
@@ -107,10 +109,7 @@ const PLAnalysisChartEnhanced = () => {
               return [`£${value}K`, name]
             }}
           />
-          <Legend
-            wrapperStyle={chartTheme.legend.wrapperStyle}
-            iconType="line"
-          />
+          <Legend wrapperStyle={chartTheme.legend.wrapperStyle} iconType="line" />
           <Line
             yAxisId="left"
             type="monotone"

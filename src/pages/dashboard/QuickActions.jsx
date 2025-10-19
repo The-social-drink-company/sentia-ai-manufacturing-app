@@ -1,5 +1,5 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React from 'react'
+import { useNavigate } from 'react-router-dom'
 import {
   Package,
   TrendingUp,
@@ -9,7 +9,7 @@ import {
   BarChart3,
   DollarSign,
   ClipboardCheck,
-} from 'lucide-react';
+} from 'lucide-react'
 
 /**
  * QuickActions Component
@@ -29,7 +29,7 @@ import {
  * @param {Object} props.permissions - User permissions for action visibility
  */
 function QuickActions({ recentAlerts = [], permissions = {} }) {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   // Define all available quick actions
   const actions = [
@@ -106,22 +106,22 @@ function QuickActions({ recentAlerts = [], permissions = {} }) {
       path: '/settings',
       permission: 'system.configure',
     },
-  ];
+  ]
 
   // Filter actions based on permissions
   const availableActions = actions.filter(action => {
     // If no permission required or permissions not provided, show action
-    if (!action.permission || !permissions) return true;
+    if (!action.permission || !permissions) return true
     // Check if user has required permission
-    return permissions[action.permission] === true;
-  });
+    return permissions[action.permission] === true
+  })
 
   // Display only first 6 actions to keep component compact
-  const displayedActions = availableActions.slice(0, 6);
+  const displayedActions = availableActions.slice(0, 6)
 
-  const handleActionClick = (action) => {
-    navigate(action.path);
-  };
+  const handleActionClick = action => {
+    navigate(action.path)
+  }
 
   return (
     <div className="bg-white rounded-lg shadow">
@@ -133,12 +133,8 @@ function QuickActions({ recentAlerts = [], permissions = {} }) {
       {/* Actions Grid */}
       <div className="p-6">
         <div className="grid grid-cols-2 gap-3">
-          {displayedActions.map((action) => (
-            <ActionCard
-              key={action.id}
-              action={action}
-              onClick={() => handleActionClick(action)}
-            />
+          {displayedActions.map(action => (
+            <ActionCard key={action.id} action={action} onClick={() => handleActionClick(action)} />
           ))}
         </div>
 
@@ -155,7 +151,7 @@ function QuickActions({ recentAlerts = [], permissions = {} }) {
         )}
       </div>
     </div>
-  );
+  )
 }
 
 /**
@@ -164,7 +160,7 @@ function QuickActions({ recentAlerts = [], permissions = {} }) {
  * Individual action card with icon, title, and description
  */
 function ActionCard({ action, onClick }) {
-  const { icon: Icon, title, description, color, badge } = action;
+  const { icon: Icon, title, description, color, badge } = action
 
   // Color configurations
   const colorConfig = {
@@ -216,9 +212,9 @@ function ActionCard({ action, onClick }) {
       border: 'border-gray-200',
       icon: 'text-gray-600',
     },
-  };
+  }
 
-  const colors = colorConfig[color] || colorConfig.blue;
+  const colors = colorConfig[color] || colorConfig.blue
 
   return (
     <button
@@ -245,7 +241,7 @@ function ActionCard({ action, onClick }) {
       {/* Description */}
       <div className="text-xs text-gray-600">{description}</div>
     </button>
-  );
+  )
 }
 
-export default QuickActions;
+export default QuickActions

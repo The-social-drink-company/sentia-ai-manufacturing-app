@@ -1,5 +1,5 @@
-const Redis = require('ioredis');
-const logger = require('../utils/logger');
+const Redis = require('ioredis')
+const logger = require('../utils/logger')
 
 /**
  * Redis Connection Manager
@@ -15,10 +15,10 @@ const logger = require('../utils/logger');
 
 // Redis connection configurations
 const getRedisConfig = () => {
-  const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
+  const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379'
 
   // Parse Redis URL
-  const url = new URL(redisUrl);
+  const url = new URL(redisUrl)
 
   return {
     host: url.hostname,
@@ -28,106 +28,106 @@ const getRedisConfig = () => {
     maxRetriesPerRequest: 3,
     enableReadyCheck: true,
     retryStrategy(times) {
-      const delay = Math.min(times * 50, 2000);
-      logger.warn(`[Redis] Retrying connection (attempt ${times}), delay: ${delay}ms`);
-      return delay;
+      const delay = Math.min(times * 50, 2000)
+      logger.warn(`[Redis] Retrying connection (attempt ${times}), delay: ${delay}ms`)
+      return delay
     },
     reconnectOnError(err) {
-      const targetError = 'READONLY';
+      const targetError = 'READONLY'
       if (err.message.includes(targetError)) {
-        logger.error('[Redis] Reconnecting due to READONLY error');
-        return true;
+        logger.error('[Redis] Reconnecting due to READONLY error')
+        return true
       }
-      return false;
+      return false
     },
-  };
-};
+  }
+}
 
 // Main Redis client for general operations
-let redisClient = null;
+let redisClient = null
 
 /**
  * Get Redis client (singleton)
  */
 const getRedisClient = () => {
   if (!redisClient) {
-    const config = getRedisConfig();
+    const config = getRedisConfig()
 
-    redisClient = new Redis(config);
+    redisClient = new Redis(config)
 
     redisClient.on('connect', () => {
-      logger.info('[Redis] Connected successfully');
-    });
+      logger.info('[Redis] Connected successfully')
+    })
 
     redisClient.on('ready', () => {
-      logger.info('[Redis] Client ready');
-    });
+      logger.info('[Redis] Client ready')
+    })
 
-    redisClient.on('error', (err) => {
-      logger.error('[Redis] Client error:', err);
-    });
+    redisClient.on('error', err => {
+      logger.error('[Redis] Client error:', err)
+    })
 
     redisClient.on('close', () => {
-      logger.warn('[Redis] Connection closed');
-    });
+      logger.warn('[Redis] Connection closed')
+    })
 
     redisClient.on('reconnecting', () => {
-      logger.info('[Redis] Reconnecting...');
-    });
+      logger.info('[Redis] Reconnecting...')
+    })
   }
 
-  return redisClient;
-};
+  return redisClient
+}
 
 /**
  * Create Redis connection for BullMQ
  * BullMQ requires separate connections for queue and worker
  */
 const createBullMQConnection = () => {
-  const config = getRedisConfig();
+  const config = getRedisConfig()
 
   return new Redis({
     ...config,
     maxRetriesPerRequest: null, // BullMQ requirement
     enableOfflineQueue: false, // BullMQ requirement
-  });
-};
+  })
+}
 
 /**
  * Test Redis connection
  */
 const testConnection = async () => {
   try {
-    const client = getRedisClient();
-    await client.ping();
-    logger.info('[Redis] Connection test successful');
-    return { success: true };
+    const client = getRedisClient()
+    await client.ping()
+    logger.info('[Redis] Connection test successful')
+    return { success: true }
   } catch (error) {
-    logger.error('[Redis] Connection test failed:', error);
-    return { success: false, error: error.message };
+    logger.error('[Redis] Connection test failed:', error)
+    return { success: false, error: error.message }
   }
-};
+}
 
 /**
  * Get Redis info
  */
 const getRedisInfo = async () => {
   try {
-    const client = getRedisClient();
-    const info = await client.info();
+    const client = getRedisClient()
+    const info = await client.info()
 
     // Parse info string
-    const lines = info.split('\r\n');
-    const parsed = {};
+    const lines = info.split('\r\n')
+    const parsed = {}
 
-    let section = 'general';
+    let section = 'general'
     for (const line of lines) {
       if (line.startsWith('#')) {
-        section = line.substring(2).toLowerCase().trim();
-        parsed[section] = {};
+        section = line.substring(2).toLowerCase().trim()
+        parsed[section] = {}
       } else if (line.includes(':')) {
-        const [key, value] = line.split(':');
-        parsed[section][key] = value;
+        const [key, value] = line.split(':')
+        parsed[section][key] = value
       }
     }
 
@@ -139,36 +139,33 @@ const getRedisInfo = async () => {
       usedMemory: parsed.memory?.used_memory_human,
       totalSystemMemory: parsed.memory?.total_system_memory_human,
       ...parsed,
-    };
+    }
   } catch (error) {
-    logger.error('[Redis] Failed to get info:', error);
+    logger.error('[Redis] Failed to get info:', error)
     return {
       connected: false,
       error: error.message,
-    };
+    }
   }
-};
+}
 
 /**
  * Get Redis statistics
  */
 const getRedisStats = async () => {
   try {
-    const client = getRedisClient();
+    const client = getRedisClient()
 
-    const [dbSize, info] = await Promise.all([
-      client.dbsize(),
-      client.info('stats'),
-    ]);
+    const [dbSize, info] = await Promise.all([client.dbsize(), client.info('stats')])
 
     // Parse stats
-    const lines = info.split('\r\n');
-    const stats = {};
+    const lines = info.split('\r\n')
+    const stats = {}
 
     for (const line of lines) {
       if (line.includes(':')) {
-        const [key, value] = line.split(':');
-        stats[key] = value;
+        const [key, value] = line.split(':')
+        stats[key] = value
       }
     }
 
@@ -179,30 +176,35 @@ const getRedisStats = async () => {
       instantaneousOpsPerSec: parseFloat(stats.instantaneous_ops_per_sec) || 0,
       keyspaceHits: parseInt(stats.keyspace_hits) || 0,
       keyspaceMisses: parseInt(stats.keyspace_misses) || 0,
-      hitRate: stats.keyspace_hits && stats.keyspace_misses
-        ? ((parseInt(stats.keyspace_hits) / (parseInt(stats.keyspace_hits) + parseInt(stats.keyspace_misses))) * 100).toFixed(2) + '%'
-        : 'N/A',
-    };
+      hitRate:
+        stats.keyspace_hits && stats.keyspace_misses
+          ? (
+              (parseInt(stats.keyspace_hits) /
+                (parseInt(stats.keyspace_hits) + parseInt(stats.keyspace_misses))) *
+              100
+            ).toFixed(2) + '%'
+          : 'N/A',
+    }
   } catch (error) {
-    logger.error('[Redis] Failed to get stats:', error);
-    return null;
+    logger.error('[Redis] Failed to get stats:', error)
+    return null
   }
-};
+}
 
 /**
  * Clear all keys (use with caution!)
  */
 const flushAll = async () => {
   try {
-    const client = getRedisClient();
-    await client.flushall();
-    logger.warn('[Redis] All keys flushed');
-    return { success: true };
+    const client = getRedisClient()
+    await client.flushall()
+    logger.warn('[Redis] All keys flushed')
+    return { success: true }
   } catch (error) {
-    logger.error('[Redis] Failed to flush all:', error);
-    return { success: false, error: error.message };
+    logger.error('[Redis] Failed to flush all:', error)
+    return { success: false, error: error.message }
   }
-};
+}
 
 /**
  * Close Redis connection
@@ -210,38 +212,38 @@ const flushAll = async () => {
 const closeConnection = async () => {
   if (redisClient) {
     try {
-      await redisClient.quit();
-      redisClient = null;
-      logger.info('[Redis] Connection closed');
+      await redisClient.quit()
+      redisClient = null
+      logger.info('[Redis] Connection closed')
     } catch (error) {
-      logger.error('[Redis] Error closing connection:', error);
-      throw error;
+      logger.error('[Redis] Error closing connection:', error)
+      throw error
     }
   }
-};
+}
 
 /**
  * Health check for Redis
  */
 const healthCheck = async () => {
   try {
-    const client = getRedisClient();
-    const start = Date.now();
-    await client.ping();
-    const latency = Date.now() - start;
+    const client = getRedisClient()
+    const start = Date.now()
+    await client.ping()
+    const latency = Date.now() - start
 
     return {
       healthy: true,
       latency,
       status: latency < 100 ? 'excellent' : latency < 500 ? 'good' : 'slow',
-    };
+    }
   } catch (error) {
     return {
       healthy: false,
       error: error.message,
-    };
+    }
   }
-};
+}
 
 module.exports = {
   getRedisClient,
@@ -252,4 +254,4 @@ module.exports = {
   flushAll,
   closeConnection,
   healthCheck,
-};
+}

@@ -3,11 +3,11 @@
  * BullMQ queue for handling data import operations
  */
 
-import { Queue } from 'bullmq';
-import { createBullMQConnection } from '../lib/redis.js';
-import { logInfo, logError } from '../utils/logger.js';
+import { Queue } from 'bullmq'
+import { createBullMQConnection } from '../lib/redis.js'
+import { logInfo, logError } from '../utils/logger.js'
 
-let importQueue = null;
+let importQueue = null
 
 /**
  * Get or create the import queue
@@ -15,7 +15,7 @@ let importQueue = null;
  */
 export function getImportQueue() {
   if (!importQueue) {
-    const connection = createBullMQConnection();
+    const connection = createBullMQConnection()
 
     importQueue = new Queue('import-queue', {
       connection,
@@ -33,16 +33,16 @@ export function getImportQueue() {
           age: 7 * 24 * 3600, // Keep failed jobs for 7 days
         },
       },
-    });
+    })
 
-    importQueue.on('error', (error) => {
-      logError('Import Queue error:', error);
-    });
+    importQueue.on('error', error => {
+      logError('Import Queue error:', error)
+    })
 
-    logInfo('Import Queue initialized');
+    logInfo('Import Queue initialized')
   }
 
-  return importQueue;
+  return importQueue
 }
 
 /**
@@ -55,19 +55,19 @@ export function getImportQueue() {
  * @returns {Promise<Job>} Created job
  */
 export async function addImportJob(data) {
-  const queue = getImportQueue();
+  const queue = getImportQueue()
 
   const job = await queue.add('import-data', data, {
     jobId: `import-${data.fileId}-${Date.now()}`,
     priority: data.priority || 5,
-  });
+  })
 
   logInfo(`Import job created: ${job.id}`, {
     fileId: data.fileId,
     userId: data.userId,
-  });
+  })
 
-  return job;
+  return job
 }
 
 /**
@@ -76,15 +76,15 @@ export async function addImportJob(data) {
  * @returns {Promise<Object>} Job status information
  */
 export async function getImportJobStatus(jobId) {
-  const queue = getImportQueue();
-  const job = await queue.getJob(jobId);
+  const queue = getImportQueue()
+  const job = await queue.getJob(jobId)
 
   if (!job) {
-    return { exists: false };
+    return { exists: false }
   }
 
-  const state = await job.getState();
-  const progress = job.progress;
+  const state = await job.getState()
+  const progress = job.progress
 
   return {
     exists: true,
@@ -96,7 +96,7 @@ export async function getImportJobStatus(jobId) {
     finishedOn: job.finishedOn,
     processedOn: job.processedOn,
     failedReason: job.failedReason,
-  };
+  }
 }
 
 /**
@@ -105,17 +105,17 @@ export async function getImportJobStatus(jobId) {
  * @returns {Promise<boolean>} True if cancelled successfully
  */
 export async function cancelImportJob(jobId) {
-  const queue = getImportQueue();
-  const job = await queue.getJob(jobId);
+  const queue = getImportQueue()
+  const job = await queue.getJob(jobId)
 
   if (!job) {
-    return false;
+    return false
   }
 
-  await job.remove();
-  logInfo(`Import job cancelled: ${jobId}`);
+  await job.remove()
+  logInfo(`Import job cancelled: ${jobId}`)
 
-  return true;
+  return true
 }
 
 /**
@@ -123,7 +123,7 @@ export async function cancelImportJob(jobId) {
  * @returns {Promise<Object>} Queue metrics
  */
 export async function getImportQueueMetrics() {
-  const queue = getImportQueue();
+  const queue = getImportQueue()
 
   const [waiting, active, completed, failed, delayed] = await Promise.all([
     queue.getWaitingCount(),
@@ -131,7 +131,7 @@ export async function getImportQueueMetrics() {
     queue.getCompletedCount(),
     queue.getFailedCount(),
     queue.getDelayedCount(),
-  ]);
+  ])
 
   return {
     waiting,
@@ -140,7 +140,7 @@ export async function getImportQueueMetrics() {
     failed,
     delayed,
     total: waiting + active + completed + failed + delayed,
-  };
+  }
 }
 
 /**
@@ -149,9 +149,9 @@ export async function getImportQueueMetrics() {
  */
 export async function closeImportQueue() {
   if (importQueue) {
-    await importQueue.close();
-    importQueue = null;
-    logInfo('Import Queue closed');
+    await importQueue.close()
+    importQueue = null
+    logInfo('Import Queue closed')
   }
 }
 
@@ -162,4 +162,4 @@ export default {
   cancelImportJob,
   getImportQueueMetrics,
   closeImportQueue,
-};
+}

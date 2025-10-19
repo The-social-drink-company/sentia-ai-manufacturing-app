@@ -3,6 +3,7 @@
 ## Issue: Cannot Install BMAD CLI
 
 If you're seeing errors like:
+
 ```
 npm error code EEXIST
 npm error path C:\npm-global\bmad.cmd
@@ -22,6 +23,7 @@ The BMAD Method can be applied manually without requiring the CLI installation.
 📖 **Follow this guide instead**: [MANUAL_CODEBASE_ANALYSIS.md](MANUAL_CODEBASE_ANALYSIS.md)
 
 **Advantages**:
+
 - ✅ No installation required
 - ✅ No permission issues
 - ✅ Works perfectly on Windows
@@ -64,6 +66,7 @@ bmad --version
 #### If Still Failing
 
 The package might not be publicly available yet. The BMAD Method documentation exists at:
+
 - https://github.com/bmad-code-org/BMAD-METHOD
 
 But the npm package might still be in private development.
@@ -91,6 +94,7 @@ If you get "npm ERR! 404 Not Found", the package isn't published yet.
 **Use the Manual Analysis Guide**: [MANUAL_CODEBASE_ANALYSIS.md](MANUAL_CODEBASE_ANALYSIS.md)
 
 This guide:
+
 1. Achieves the same goals as BMAD CLI
 2. Uses Claude Code (already working)
 3. No installation required
@@ -122,6 +126,7 @@ Claude Code will help you through each phase, doing most of the heavy lifting!
 ## Support
 
 If you want to use the BMAD CLI approach and need the actual tool:
+
 - Check: https://github.com/bmad-code-org/BMAD-METHOD
 - File an issue if CLI isn't available
 - Ask about installation instructions

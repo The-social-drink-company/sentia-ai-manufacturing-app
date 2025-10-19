@@ -8,6 +8,7 @@
 ## ✅ CREDENTIALS SECURED (User Confirmed)
 
 ### 1. Cloudflare Keys - REVOKED ✅
+
 ```
 Status: 🟢 SECURE
 Action Taken: User revoked exposed keys
@@ -15,6 +16,7 @@ Date: October 19, 2025
 ```
 
 **Exposed Keys (NOW INVALID)**:
+
 - ~~Global API Key: 5d9f59c06348d3caffe8009c60a05193dfc39~~ ✅ REVOKED
 - ~~Origin CA Key: v1.0-58b7b2c418a2c7f4fbe7a9fe-...~~ ✅ REVOKED
 
@@ -25,6 +27,7 @@ Date: October 19, 2025
 ---
 
 ### 2. OpenAI API Key - REVOKED ✅
+
 ```
 Status: 🟢 SECURE
 Action Taken: User revoked exposed key
@@ -32,6 +35,7 @@ Date: October 19, 2025
 ```
 
 **Exposed Key (NOW INVALID)**:
+
 - ~~sk-proj-wFWxY-r7gKdvIl-vQ2bAjQ8wd8jOqY...~~ ✅ REVOKED
 
 **Impact**: Old key no longer works. No unauthorized usage possible.
@@ -41,6 +45,7 @@ Date: October 19, 2025
 ---
 
 ### 3. Database Password - ROTATED ✅
+
 ```
 Status: 🟢 SECURE
 Action Taken: User rotated password
@@ -48,6 +53,7 @@ Date: October 19, 2025
 ```
 
 **Exposed Password (NOW INVALID)**:
+
 - ~~nZ4vtXienMAwxahr0GJByc2qXFIFSoYL~~ ✅ ROTATED
 
 **Impact**: Old password no longer works. Database is secure.
@@ -63,6 +69,7 @@ Date: October 19, 2025
 **Why**: You need a DNS management token (different from the R2 token you have)
 
 **Instructions**:
+
 1. Go to: https://dash.cloudflare.com/profile/api-tokens
 2. Click: **"Create Token"**
 3. Find template: **"Edit zone DNS"**
@@ -81,6 +88,7 @@ Date: October 19, 2025
    ```
 
 **Template Not Found?** Use "Create Custom Token":
+
 - Permission 1: Zone → DNS → Edit
 - Permission 2: Zone → Zone → Read
 - Resources: Include → Specific zone → capliquify.com
@@ -90,12 +98,14 @@ Date: October 19, 2025
 ### Priority 2: Get Zone ID & Account ID (2 minutes)
 
 **Instructions**:
+
 1. Go to: https://dash.cloudflare.com
 2. Click: **capliquify.com**
 3. Look at **right sidebar** → "API" section
 4. Click to copy **Zone ID** (32 characters)
 5. Click to copy **Account ID** (32 characters)
 6. Update `.env.local`:
+
    ```bash
    # Line 50
    CLOUDFLARE_ZONE_ID=your_zone_id_here
@@ -114,6 +124,7 @@ Date: October 19, 2025
 **Instructions**: Follow [CLOUDFLARE_QUICK_START.md](CLOUDFLARE_QUICK_START.md) Step 4
 
 **Quick Summary**:
+
 1. Go to: https://dashboard.clerk.com
 2. Create new application: "CapLiquify Production"
 3. Add domain: `auth.capliquify.com`
@@ -128,6 +139,7 @@ Date: October 19, 2025
 **Instructions**: Follow [CLOUDFLARE_QUICK_START.md](CLOUDFLARE_QUICK_START.md) Step 6
 
 **4 DNS Records Required**:
+
 1. `@` → Render (Proxy ON)
 2. `www` → Render (Proxy ON)
 3. `auth` → accounts.clerk.com (Proxy OFF!)
@@ -137,14 +149,14 @@ Date: October 19, 2025
 
 ## 📊 Overall Security Status
 
-| Category | Status | Progress |
-|----------|--------|----------|
-| **Exposed Credentials** | ✅ Revoked | 100% |
-| **New API Token** | ⏳ Pending | 0% |
-| **Environment Config** | ⏳ Partial | 30% |
-| **DNS Security** | ⏳ Pending | 0% |
-| **SSL/TLS** | ⏳ Pending | 0% |
-| **Access Control** | ⏳ Pending | 0% |
+| Category                | Status     | Progress |
+| ----------------------- | ---------- | -------- |
+| **Exposed Credentials** | ✅ Revoked | 100%     |
+| **New API Token**       | ⏳ Pending | 0%       |
+| **Environment Config**  | ⏳ Partial | 30%      |
+| **DNS Security**        | ⏳ Pending | 0%       |
+| **SSL/TLS**             | ⏳ Pending | 0%       |
+| **Access Control**      | ⏳ Pending | 0%       |
 
 **Overall**: 🟡 **SECURE BUT INCOMPLETE** - Critical issues fixed, configuration pending
 
@@ -155,26 +167,31 @@ Date: October 19, 2025
 ### October 19, 2025 - Security Incident Timeline
 
 **13:00** - Credentials exposed in chat session
+
 - Cloudflare Global API Key shared 2x
 - Cloudflare Origin CA Key shared 2x
 - Impact: Full account access possible
 
 **13:30** - Additional exposures discovered
+
 - OpenAI API key found in git history
 - Database password found in git history
 - Impact: Unauthorized API usage, database access possible
 
 **13:45** - Security remediation implemented
+
 - Removed credential files from git tracking
 - Updated .gitignore to prevent future exposures
 - Created comprehensive security documentation
 
 **14:00** - User action completed
+
 - ✅ Cloudflare keys revoked
 - ✅ OpenAI key revoked
 - ✅ Database password rotated
 
 **14:30** - Security status
+
 - 🟢 All exposed credentials invalidated
 - 🟢 No unauthorized usage detected
 - 🟢 Account secured
@@ -185,6 +202,7 @@ Date: October 19, 2025
 ## 🎖️ Security Best Practices Going Forward
 
 ### ✅ DO:
+
 - Store all credentials in `.env.local` (already gitignored)
 - Use API tokens with minimal permissions (not Global API Keys)
 - Enable 2FA on all accounts (Cloudflare, Clerk, Render, GitHub)
@@ -193,6 +211,7 @@ Date: October 19, 2025
 - Review audit logs monthly
 
 ### ❌ DO NOT:
+
 - **NEVER** share credentials in chat, email, or screenshots
 - **NEVER** commit `.env.local` to git (protected by .gitignore)
 - **NEVER** use Global API Keys (use scoped tokens)
@@ -203,13 +222,13 @@ Date: October 19, 2025
 
 ## 📋 Credential Rotation Schedule
 
-| Credential | Last Rotated | Next Rotation | Frequency |
-|-----------|--------------|---------------|-----------|
-| Cloudflare API Token | Oct 19, 2025 | Oct 19, 2026 | Annual |
-| Clerk API Keys | Pending | - | Annual |
-| OpenAI API Key | Oct 19, 2025 | Oct 19, 2026 | Annual |
-| Database Password | Oct 19, 2025 | On breach only | As needed |
-| Stripe Keys | Not created | - | Annual |
+| Credential           | Last Rotated | Next Rotation  | Frequency |
+| -------------------- | ------------ | -------------- | --------- |
+| Cloudflare API Token | Oct 19, 2025 | Oct 19, 2026   | Annual    |
+| Clerk API Keys       | Pending      | -              | Annual    |
+| OpenAI API Key       | Oct 19, 2025 | Oct 19, 2026   | Annual    |
+| Database Password    | Oct 19, 2025 | On breach only | As needed |
+| Stripe Keys          | Not created  | -              | Annual    |
 
 ---
 

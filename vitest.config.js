@@ -18,13 +18,11 @@ export default defineConfig({
       'tests/unit/**/*.test.jsx',
       'tests/unit/**/*.test.js',
       'services/__tests__/**/*.test.js',
-      'services/__tests__/**/*.test.jsx'
+      'services/__tests__/**/*.test.jsx',
     ],
     exclude: ['legacy/**'],
     environment: 'jsdom',
-    environmentMatchGlobs: [
-      ['services/__tests__/**', 'node']
-    ],
+    environmentMatchGlobs: [['services/__tests__/**', 'node']],
     setupFiles: ['tests/setup.js'],
     globals: true,
     reporters: ['default', 'hanging-process'],

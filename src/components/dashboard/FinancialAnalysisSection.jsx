@@ -42,7 +42,8 @@ const FinancialAnalysisSection = () => {
       {/* Footer Note */}
       <div className="text-center text-sm text-gray-500 mt-4">
         <p>
-          Data refreshes in real-time • Last updated: {new Date().toLocaleString('en-GB', {
+          Data refreshes in real-time • Last updated:{' '}
+          {new Date().toLocaleString('en-GB', {
             day: '2-digit',
             month: 'short',
             year: 'numeric',

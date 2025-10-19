@@ -11,14 +11,7 @@ import { cn } from '@/lib/utils'
  * @param {ReactNode} actions - Optional action buttons (export, filter, etc.)
  * @param {string} icon - Optional emoji icon for the header
  */
-const ChartCard = ({
-  title,
-  subtitle,
-  children,
-  className,
-  actions,
-  icon = '📊',
-}) => {
+const ChartCard = ({ title, subtitle, children, className, actions, icon = '📊' }) => {
   return (
     <div
       className={cn(
@@ -35,23 +28,13 @@ const ChartCard = ({
             </span>
             {title}
           </h3>
-          {subtitle && (
-            <p className="text-sm text-gray-500 mt-1 leading-relaxed">
-              {subtitle}
-            </p>
-          )}
+          {subtitle && <p className="text-sm text-gray-500 mt-1 leading-relaxed">{subtitle}</p>}
         </div>
-        {actions && (
-          <div className="flex gap-2 ml-4">
-            {actions}
-          </div>
-        )}
+        {actions && <div className="flex gap-2 ml-4">{actions}</div>}
       </div>
 
       {/* Chart Content */}
-      <div className="w-full">
-        {children}
-      </div>
+      <div className="w-full">{children}</div>
     </div>
   )
 }

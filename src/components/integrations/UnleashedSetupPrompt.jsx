@@ -1,5 +1,5 @@
-import { ExclamationCircleIcon, ArrowRightIcon, CogIcon } from '@heroicons/react/24/outline';
-import { cn } from '@/lib/utils';
+import { ExclamationCircleIcon, ArrowRightIcon, CogIcon } from '@heroicons/react/24/outline'
+import { cn } from '@/lib/utils'
 
 /**
  * Unleashed ERP Setup Prompt Component
@@ -14,34 +14,33 @@ import { cn } from '@/lib/utils';
  * @param {Object} unleashedStatus.details - Additional details (missing env vars, error messages, etc.)
  */
 export default function UnleashedSetupPrompt({ unleashedStatus }) {
-  const isDevelopmentEnv = import.meta.env.MODE === 'development' || import.meta.env.VITE_DEVELOPMENT_MODE === 'true'
+  const isDevelopmentEnv =
+    import.meta.env.MODE === 'development' || import.meta.env.VITE_DEVELOPMENT_MODE === 'true'
 
   // Don't show if Unleashed is connected
   if (!unleashedStatus || unleashedStatus.connected === true) {
-    return null;
+    return null
   }
 
-  const hasConfigError = unleashedStatus.details?.missing && unleashedStatus.details.missing.length > 0;
+  const hasConfigError =
+    unleashedStatus.details?.missing && unleashedStatus.details.missing.length > 0
 
   const getStatusIcon = () => {
     if (hasConfigError) {
-      return <ExclamationCircleIcon className="mx-auto h-12 w-12 text-purple-500" />;
+      return <ExclamationCircleIcon className="mx-auto h-12 w-12 text-purple-500" />
     }
-    return <CogIcon className="mx-auto h-12 w-12 text-slate-400" />;
-  };
+    return <CogIcon className="mx-auto h-12 w-12 text-slate-400" />
+  }
 
   const getStatusColor = () => {
     if (hasConfigError) {
-      return 'border-purple-300 bg-purple-50';
+      return 'border-purple-300 bg-purple-50'
     }
-    return 'border-slate-300 bg-slate-50';
-  };
+    return 'border-slate-300 bg-slate-50'
+  }
 
   return (
-    <div className={cn(
-      'rounded-lg border-2 border-dashed p-8',
-      getStatusColor()
-    )}>
+    <div className={cn('rounded-lg border-2 border-dashed p-8', getStatusColor())}>
       <div className="mx-auto max-w-2xl text-center">
         {getStatusIcon()}
 
@@ -56,11 +55,9 @@ export default function UnleashedSetupPrompt({ unleashedStatus }) {
         {/* Configuration Error - Show Missing Variables */}
         {hasConfigError && (
           <div className="mt-6 rounded-md bg-purple-100 p-4 text-left">
-            <p className="text-sm font-medium text-purple-800 mb-3">
-              Missing Configuration:
-            </p>
+            <p className="text-sm font-medium text-purple-800 mb-3">Missing Configuration:</p>
             <ul className="space-y-2 text-sm text-purple-700">
-              {unleashedStatus.details.missing.map((envVar) => (
+              {unleashedStatus.details.missing.map(envVar => (
                 <li key={envVar} className="flex items-center gap-2">
                   <ExclamationCircleIcon className="h-4 w-4 flex-shrink-0" />
                   <code className="font-mono text-xs bg-purple-200 px-2 py-1 rounded">
@@ -74,9 +71,7 @@ export default function UnleashedSetupPrompt({ unleashedStatus }) {
 
         {/* Setup Steps */}
         <div className="mt-6 rounded-md bg-white p-6 text-left shadow-sm">
-          <h4 className="text-sm font-semibold text-slate-900 mb-4">
-            Quick Setup Steps:
-          </h4>
+          <h4 className="text-sm font-semibold text-slate-900 mb-4">Quick Setup Steps:</h4>
           <ol className="space-y-3 text-sm text-slate-700">
             <li className="flex gap-3">
               <span className="flex-shrink-0 flex h-6 w-6 items-center justify-center rounded-full bg-purple-100 text-xs font-semibold text-purple-700">
@@ -123,9 +118,18 @@ export default function UnleashedSetupPrompt({ unleashedStatus }) {
                   Add the following to your Render environment variables:
                 </p>
                 <ul className="mt-2 space-y-1 text-xs">
-                  <li><code className="font-mono bg-slate-100 px-1">UNLEASHED_API_ID</code> - Your API ID (GUID format)</li>
-                  <li><code className="font-mono bg-slate-100 px-1">UNLEASHED_API_KEY</code> - Your API Key for HMAC signature</li>
-                  <li><code className="font-mono bg-slate-100 px-1">UNLEASHED_API_URL</code> (optional, default: https://api.unleashedsoftware.com)</li>
+                  <li>
+                    <code className="font-mono bg-slate-100 px-1">UNLEASHED_API_ID</code> - Your API
+                    ID (GUID format)
+                  </li>
+                  <li>
+                    <code className="font-mono bg-slate-100 px-1">UNLEASHED_API_KEY</code> - Your
+                    API Key for HMAC signature
+                  </li>
+                  <li>
+                    <code className="font-mono bg-slate-100 px-1">UNLEASHED_API_URL</code>{' '}
+                    (optional, default: https://api.unleashedsoftware.com)
+                  </li>
                 </ul>
               </div>
             </li>
@@ -137,7 +141,8 @@ export default function UnleashedSetupPrompt({ unleashedStatus }) {
               <div>
                 <span className="font-medium">Restart Application</span>
                 <p className="mt-1 text-xs text-slate-500">
-                  The service will automatically connect and start syncing manufacturing data every 15 minutes
+                  The service will automatically connect and start syncing manufacturing data every
+                  15 minutes
                 </p>
               </div>
             </li>
@@ -151,7 +156,10 @@ export default function UnleashedSetupPrompt({ unleashedStatus }) {
             Known Limitations
           </h4>
           <p className="text-xs text-yellow-800">
-            <strong>Stock Movements Endpoint</strong>: The <code className="bg-yellow-100 px-1 font-mono">/StockMovements</code> endpoint may return 403 Forbidden depending on your Unleashed subscription plan. Stock movements are calculated from Sales Orders and Purchase Orders instead.
+            <strong>Stock Movements Endpoint</strong>: The{' '}
+            <code className="bg-yellow-100 px-1 font-mono">/StockMovements</code> endpoint may
+            return 403 Forbidden depending on your Unleashed subscription plan. Stock movements are
+            calculated from Sales Orders and Purchase Orders instead.
           </p>
         </div>
 
@@ -189,5 +197,5 @@ export default function UnleashedSetupPrompt({ unleashedStatus }) {
         )}
       </div>
     </div>
-  );
+  )
 }

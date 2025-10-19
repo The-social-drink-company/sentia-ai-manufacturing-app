@@ -8,7 +8,7 @@
  * - Export functionality
  */
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1'
 
 /**
  * Run custom report
@@ -29,13 +29,13 @@ export async function runCustomReport(config) {
     },
     credentials: 'include',
     body: JSON.stringify(config),
-  });
+  })
 
   if (!response.ok) {
-    throw new Error('Failed to run custom report');
+    throw new Error('Failed to run custom report')
   }
 
-  return response.json();
+  return response.json()
 }
 
 /**
@@ -46,13 +46,13 @@ export async function runCustomReport(config) {
 export async function getSavedReports() {
   const response = await fetch(`${API_BASE_URL}/analytics/reports`, {
     credentials: 'include',
-  });
+  })
 
   if (!response.ok) {
-    throw new Error('Failed to fetch saved reports');
+    throw new Error('Failed to fetch saved reports')
   }
 
-  return response.json();
+  return response.json()
 }
 
 /**
@@ -69,13 +69,13 @@ export async function saveReport(config) {
     },
     credentials: 'include',
     body: JSON.stringify(config),
-  });
+  })
 
   if (!response.ok) {
-    throw new Error('Failed to save report');
+    throw new Error('Failed to save report')
   }
 
-  return response.json();
+  return response.json()
 }
 
 /**
@@ -88,13 +88,13 @@ export async function deleteReport(reportId) {
   const response = await fetch(`${API_BASE_URL}/analytics/reports/${reportId}`, {
     method: 'DELETE',
     credentials: 'include',
-  });
+  })
 
   if (!response.ok) {
-    throw new Error('Failed to delete report');
+    throw new Error('Failed to delete report')
   }
 
-  return response.json();
+  return response.json()
 }
 
 /**
@@ -113,13 +113,13 @@ export async function calculateWhatIf(params) {
     },
     credentials: 'include',
     body: JSON.stringify(params),
-  });
+  })
 
   if (!response.ok) {
-    throw new Error('Failed to calculate what-if scenario');
+    throw new Error('Failed to calculate what-if scenario')
   }
 
-  return response.json();
+  return response.json()
 }
 
 /**
@@ -137,13 +137,13 @@ export async function getSensitivityAnalysis(baseline, metric) {
     },
     credentials: 'include',
     body: JSON.stringify({ baseline, metric }),
-  });
+  })
 
   if (!response.ok) {
-    throw new Error('Failed to get sensitivity analysis');
+    throw new Error('Failed to get sensitivity analysis')
   }
 
-  return response.json();
+  return response.json()
 }
 
 /**
@@ -161,13 +161,13 @@ export async function exportReport(reportData, format = 'csv') {
     },
     credentials: 'include',
     body: JSON.stringify({ reportData, format }),
-  });
+  })
 
   if (!response.ok) {
-    throw new Error('Failed to export report');
+    throw new Error('Failed to export report')
   }
 
-  return response.blob();
+  return response.blob()
 }
 
 /**
@@ -188,13 +188,13 @@ export async function scheduleReport(schedule) {
     },
     credentials: 'include',
     body: JSON.stringify(schedule),
-  });
+  })
 
   if (!response.ok) {
-    throw new Error('Failed to schedule report');
+    throw new Error('Failed to schedule report')
   }
 
-  return response.json();
+  return response.json()
 }
 
 /**
@@ -204,16 +204,16 @@ export async function scheduleReport(schedule) {
  * @returns {Promise<Object>} KPI data
  */
 export async function getKPIs(params = {}) {
-  const queryParams = new URLSearchParams(params);
+  const queryParams = new URLSearchParams(params)
   const response = await fetch(`${API_BASE_URL}/analytics/kpis?${queryParams}`, {
     credentials: 'include',
-  });
+  })
 
   if (!response.ok) {
-    throw new Error('Failed to fetch KPIs');
+    throw new Error('Failed to fetch KPIs')
   }
 
-  return response.json();
+  return response.json()
 }
 
 export default {
@@ -226,4 +226,4 @@ export default {
   exportReport,
   scheduleReport,
   getKPIs,
-};
+}

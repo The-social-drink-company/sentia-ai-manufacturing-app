@@ -35,7 +35,7 @@ export const formatCurrency = (value, currency = '£') => {
  * @returns {string} Formatted number string
  * @example formatNumber(350314) // '350K'
  */
-export const formatNumber = (value) => {
+export const formatNumber = value => {
   if (typeof value !== 'number' || isNaN(value)) {
     return '0'
   }
@@ -75,7 +75,7 @@ export const formatPercentage = (value, decimals = 1) => {
  * @returns {string} Formatted number string with commas
  * @example formatCompact(10760) // '10,760'
  */
-export const formatCompact = (value) => {
+export const formatCompact = value => {
   if (typeof value !== 'number' || isNaN(value)) {
     return '0'
   }
@@ -89,7 +89,7 @@ export const formatCompact = (value) => {
  * @returns {string} Formatted trend string
  * @example formatTrend(15.2) // '+15.2%'
  */
-export const formatTrend = (value) => {
+export const formatTrend = value => {
   if (typeof value !== 'number' || isNaN(value)) {
     return '0%'
   }

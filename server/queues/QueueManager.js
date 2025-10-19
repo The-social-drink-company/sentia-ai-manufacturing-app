@@ -1,6 +1,6 @@
-const { Queue, QueueEvents } = require('bullmq');
-const { createBullMQConnection } = require('../lib/redis');
-const logger = require('../utils/logger');
+const { Queue, QueueEvents } = require('bullmq')
+const { createBullMQConnection } = require('../lib/redis')
+const logger = require('../utils/logger')
 
 /**
  * QueueManager
@@ -25,9 +25,9 @@ const logger = require('../utils/logger');
  */
 class QueueManager {
   constructor() {
-    this.queues = new Map();
-    this.queueEvents = new Map();
-    this.connection = null;
+    this.queues = new Map()
+    this.queueEvents = new Map()
+    this.connection = null
 
     // Queue configurations
     this.queueConfigs = {
@@ -157,7 +157,7 @@ class QueueManager {
           timeout: 10 * 60 * 1000,
         },
       },
-    };
+    }
   }
 
   /**
@@ -165,29 +165,29 @@ class QueueManager {
    */
   async initialize() {
     try {
-      logger.info('[QueueManager] Initializing queues...');
+      logger.info('[QueueManager] Initializing queues...')
 
       // Create Redis connection for BullMQ
-      this.connection = createBullMQConnection();
+      this.connection = createBullMQConnection()
 
       // Test connection
-      await this.connection.ping();
-      logger.info('[QueueManager] Redis connection established');
+      await this.connection.ping()
+      logger.info('[QueueManager] Redis connection established')
 
       // Initialize each queue
       for (const [key, config] of Object.entries(this.queueConfigs)) {
-        await this.initializeQueue(key, config);
+        await this.initializeQueue(key, config)
       }
 
-      logger.info(`[QueueManager] Initialized ${this.queues.size} queues`);
+      logger.info(`[QueueManager] Initialized ${this.queues.size} queues`)
 
       return {
         success: true,
         queues: Array.from(this.queues.keys()),
-      };
+      }
     } catch (error) {
-      logger.error('[QueueManager] Failed to initialize queues:', error);
-      throw error;
+      logger.error('[QueueManager] Failed to initialize queues:', error)
+      throw error
     }
   }
 
@@ -200,26 +200,26 @@ class QueueManager {
       const queue = new Queue(config.name, {
         connection: this.connection,
         defaultJobOptions: config.defaultJobOptions,
-      });
+      })
 
       // Create queue events for monitoring
       const queueEvents = new QueueEvents(config.name, {
         connection: createBullMQConnection(), // Separate connection for events
-      });
+      })
 
       // Store references
-      this.queues.set(key, queue);
-      this.queueEvents.set(key, queueEvents);
+      this.queues.set(key, queue)
+      this.queueEvents.set(key, queueEvents)
 
       // Setup event listeners
-      this.setupEventListeners(key, queue, queueEvents);
+      this.setupEventListeners(key, queue, queueEvents)
 
-      logger.info(`[QueueManager] Initialized queue: ${config.name}`);
+      logger.info(`[QueueManager] Initialized queue: ${config.name}`)
 
-      return queue;
+      return queue
     } catch (error) {
-      logger.error(`[QueueManager] Failed to initialize queue ${key}:`, error);
-      throw error;
+      logger.error(`[QueueManager] Failed to initialize queue ${key}:`, error)
+      throw error
     }
   }
 
@@ -229,52 +229,52 @@ class QueueManager {
   setupEventListeners(key, queue, queueEvents) {
     // Job added
     queueEvents.on('added', ({ jobId }) => {
-      logger.debug(`[Queue:${key}] Job added: ${jobId}`);
-    });
+      logger.debug(`[Queue:${key}] Job added: ${jobId}`)
+    })
 
     // Job completed
     queueEvents.on('completed', ({ jobId }) => {
       // returnvalue available in event but not logged for brevity
-      logger.info(`[Queue:${key}] Job completed: ${jobId}`);
-    });
+      logger.info(`[Queue:${key}] Job completed: ${jobId}`)
+    })
 
     // Job failed
     queueEvents.on('failed', ({ jobId, failedReason }) => {
       logger.error(`[Queue:${key}] Job failed: ${jobId}`, {
         reason: failedReason,
-      });
-    });
+      })
+    })
 
     // Job progress
     queueEvents.on('progress', ({ jobId, data }) => {
-      logger.debug(`[Queue:${key}] Job progress: ${jobId}`, data);
-    });
+      logger.debug(`[Queue:${key}] Job progress: ${jobId}`, data)
+    })
 
     // Job stalled
     queueEvents.on('stalled', ({ jobId }) => {
-      logger.warn(`[Queue:${key}] Job stalled: ${jobId}`);
-    });
+      logger.warn(`[Queue:${key}] Job stalled: ${jobId}`)
+    })
 
     // Job retrying
     queueEvents.on('retrying', ({ jobId, attemptsMade }) => {
-      logger.warn(`[Queue:${key}] Job retrying: ${jobId} (attempt ${attemptsMade})`);
-    });
+      logger.warn(`[Queue:${key}] Job retrying: ${jobId} (attempt ${attemptsMade})`)
+    })
 
     // Error event
-    queueEvents.on('error', (err) => {
-      logger.error(`[Queue:${key}] Queue error:`, err);
-    });
+    queueEvents.on('error', err => {
+      logger.error(`[Queue:${key}] Queue error:`, err)
+    })
   }
 
   /**
    * Get queue by key
    */
   getQueue(key) {
-    const queue = this.queues.get(key);
+    const queue = this.queues.get(key)
     if (!queue) {
-      throw new Error(`Queue not found: ${key}`);
+      throw new Error(`Queue not found: ${key}`)
     }
-    return queue;
+    return queue
   }
 
   /**
@@ -282,7 +282,7 @@ class QueueManager {
    */
   async addJob(queueKey, jobName, data, options = {}) {
     try {
-      const queue = this.getQueue(queueKey);
+      const queue = this.getQueue(queueKey)
 
       const job = await queue.add(jobName, data, {
         ...options,
@@ -290,18 +290,18 @@ class QueueManager {
         priority: options.priority || undefined,
         delay: options.delay || undefined,
         jobId: options.jobId || undefined,
-      });
+      })
 
-      logger.info(`[QueueManager] Job added to ${queueKey}: ${job.id}`);
+      logger.info(`[QueueManager] Job added to ${queueKey}: ${job.id}`)
 
       return {
         success: true,
         jobId: job.id,
         queueName: queue.name,
-      };
+      }
     } catch (error) {
-      logger.error(`[QueueManager] Failed to add job to ${queueKey}:`, error);
-      throw error;
+      logger.error(`[QueueManager] Failed to add job to ${queueKey}:`, error)
+      throw error
     }
   }
 
@@ -310,15 +310,15 @@ class QueueManager {
    */
   async getJobStatus(queueKey, jobId) {
     try {
-      const queue = this.getQueue(queueKey);
-      const job = await queue.getJob(jobId);
+      const queue = this.getQueue(queueKey)
+      const job = await queue.getJob(jobId)
 
       if (!job) {
-        return null;
+        return null
       }
 
-      const state = await job.getState();
-      const progress = job.progress;
+      const state = await job.getState()
+      const progress = job.progress
 
       return {
         id: job.id,
@@ -332,10 +332,10 @@ class QueueManager {
         finishedOn: job.finishedOn,
         failedReason: job.failedReason,
         returnvalue: job.returnvalue,
-      };
+      }
     } catch (error) {
-      logger.error(`[QueueManager] Failed to get job status:`, error);
-      return null;
+      logger.error(`[QueueManager] Failed to get job status:`, error)
+      return null
     }
   }
 
@@ -344,23 +344,16 @@ class QueueManager {
    */
   async getQueueStats(queueKey) {
     try {
-      const queue = this.getQueue(queueKey);
+      const queue = this.getQueue(queueKey)
 
-      const [
-        waiting,
-        active,
-        completed,
-        failed,
-        delayed,
-        isPaused,
-      ] = await Promise.all([
+      const [waiting, active, completed, failed, delayed, isPaused] = await Promise.all([
         queue.getWaitingCount(),
         queue.getActiveCount(),
         queue.getCompletedCount(),
         queue.getFailedCount(),
         queue.getDelayedCount(),
         queue.isPaused(),
-      ]);
+      ])
 
       return {
         queueName: queue.name,
@@ -371,10 +364,10 @@ class QueueManager {
         delayed,
         isPaused,
         total: waiting + active + completed + failed + delayed,
-      };
+      }
     } catch (error) {
-      logger.error(`[QueueManager] Failed to get queue stats:`, error);
-      return null;
+      logger.error(`[QueueManager] Failed to get queue stats:`, error)
+      return null
     }
   }
 
@@ -382,19 +375,19 @@ class QueueManager {
    * Get all queue statistics
    */
   async getAllQueueStats() {
-    const stats = [];
+    const stats = []
 
     for (const key of this.queues.keys()) {
-      const stat = await this.getQueueStats(key);
+      const stat = await this.getQueueStats(key)
       if (stat) {
         stats.push({
           key,
           ...stat,
-        });
+        })
       }
     }
 
-    return stats;
+    return stats
   }
 
   /**
@@ -402,8 +395,8 @@ class QueueManager {
    */
   async getFailedJobs(queueKey, start = 0, end = 10) {
     try {
-      const queue = this.getQueue(queueKey);
-      const jobs = await queue.getFailed(start, end);
+      const queue = this.getQueue(queueKey)
+      const jobs = await queue.getFailed(start, end)
 
       return jobs.map(job => ({
         id: job.id,
@@ -413,10 +406,10 @@ class QueueManager {
         attemptsMade: job.attemptsMade,
         timestamp: job.timestamp,
         finishedOn: job.finishedOn,
-      }));
+      }))
     } catch (error) {
-      logger.error(`[QueueManager] Failed to get failed jobs:`, error);
-      return [];
+      logger.error(`[QueueManager] Failed to get failed jobs:`, error)
+      return []
     }
   }
 
@@ -425,24 +418,24 @@ class QueueManager {
    */
   async retryJob(queueKey, jobId) {
     try {
-      const queue = this.getQueue(queueKey);
-      const job = await queue.getJob(jobId);
+      const queue = this.getQueue(queueKey)
+      const job = await queue.getJob(jobId)
 
       if (!job) {
-        throw new Error(`Job not found: ${jobId}`);
+        throw new Error(`Job not found: ${jobId}`)
       }
 
-      await job.retry();
+      await job.retry()
 
-      logger.info(`[QueueManager] Job retried: ${jobId}`);
+      logger.info(`[QueueManager] Job retried: ${jobId}`)
 
       return {
         success: true,
         jobId,
-      };
+      }
     } catch (error) {
-      logger.error(`[QueueManager] Failed to retry job:`, error);
-      throw error;
+      logger.error(`[QueueManager] Failed to retry job:`, error)
+      throw error
     }
   }
 
@@ -451,24 +444,24 @@ class QueueManager {
    */
   async removeJob(queueKey, jobId) {
     try {
-      const queue = this.getQueue(queueKey);
-      const job = await queue.getJob(jobId);
+      const queue = this.getQueue(queueKey)
+      const job = await queue.getJob(jobId)
 
       if (!job) {
-        throw new Error(`Job not found: ${jobId}`);
+        throw new Error(`Job not found: ${jobId}`)
       }
 
-      await job.remove();
+      await job.remove()
 
-      logger.info(`[QueueManager] Job removed: ${jobId}`);
+      logger.info(`[QueueManager] Job removed: ${jobId}`)
 
       return {
         success: true,
         jobId,
-      };
+      }
     } catch (error) {
-      logger.error(`[QueueManager] Failed to remove job:`, error);
-      throw error;
+      logger.error(`[QueueManager] Failed to remove job:`, error)
+      throw error
     }
   }
 
@@ -477,15 +470,15 @@ class QueueManager {
    */
   async pauseQueue(queueKey) {
     try {
-      const queue = this.getQueue(queueKey);
-      await queue.pause();
+      const queue = this.getQueue(queueKey)
+      await queue.pause()
 
-      logger.info(`[QueueManager] Queue paused: ${queueKey}`);
+      logger.info(`[QueueManager] Queue paused: ${queueKey}`)
 
-      return { success: true };
+      return { success: true }
     } catch (error) {
-      logger.error(`[QueueManager] Failed to pause queue:`, error);
-      throw error;
+      logger.error(`[QueueManager] Failed to pause queue:`, error)
+      throw error
     }
   }
 
@@ -494,15 +487,15 @@ class QueueManager {
    */
   async resumeQueue(queueKey) {
     try {
-      const queue = this.getQueue(queueKey);
-      await queue.resume();
+      const queue = this.getQueue(queueKey)
+      await queue.resume()
 
-      logger.info(`[QueueManager] Queue resumed: ${queueKey}`);
+      logger.info(`[QueueManager] Queue resumed: ${queueKey}`)
 
-      return { success: true };
+      return { success: true }
     } catch (error) {
-      logger.error(`[QueueManager] Failed to resume queue:`, error);
-      throw error;
+      logger.error(`[QueueManager] Failed to resume queue:`, error)
+      throw error
     }
   }
 
@@ -511,18 +504,18 @@ class QueueManager {
    */
   async cleanQueue(queueKey, grace = 3600000, limit = 1000, type = 'completed') {
     try {
-      const queue = this.getQueue(queueKey);
-      const jobs = await queue.clean(grace, limit, type);
+      const queue = this.getQueue(queueKey)
+      const jobs = await queue.clean(grace, limit, type)
 
-      logger.info(`[QueueManager] Cleaned ${jobs.length} ${type} jobs from ${queueKey}`);
+      logger.info(`[QueueManager] Cleaned ${jobs.length} ${type} jobs from ${queueKey}`)
 
       return {
         success: true,
         cleaned: jobs.length,
-      };
+      }
     } catch (error) {
-      logger.error(`[QueueManager] Failed to clean queue:`, error);
-      throw error;
+      logger.error(`[QueueManager] Failed to clean queue:`, error)
+      throw error
     }
   }
 
@@ -531,15 +524,15 @@ class QueueManager {
    */
   async drainQueue(queueKey) {
     try {
-      const queue = this.getQueue(queueKey);
-      await queue.drain();
+      const queue = this.getQueue(queueKey)
+      await queue.drain()
 
-      logger.warn(`[QueueManager] Queue drained: ${queueKey}`);
+      logger.warn(`[QueueManager] Queue drained: ${queueKey}`)
 
-      return { success: true };
+      return { success: true }
     } catch (error) {
-      logger.error(`[QueueManager] Failed to drain queue:`, error);
-      throw error;
+      logger.error(`[QueueManager] Failed to drain queue:`, error)
+      throw error
     }
   }
 
@@ -548,15 +541,15 @@ class QueueManager {
    */
   async obliterateQueue(queueKey) {
     try {
-      const queue = this.getQueue(queueKey);
-      await queue.obliterate({ force: true });
+      const queue = this.getQueue(queueKey)
+      await queue.obliterate({ force: true })
 
-      logger.warn(`[QueueManager] Queue obliterated: ${queueKey}`);
+      logger.warn(`[QueueManager] Queue obliterated: ${queueKey}`)
 
-      return { success: true };
+      return { success: true }
     } catch (error) {
-      logger.error(`[QueueManager] Failed to obliterate queue:`, error);
-      throw error;
+      logger.error(`[QueueManager] Failed to obliterate queue:`, error)
+      throw error
     }
   }
 
@@ -565,49 +558,49 @@ class QueueManager {
    */
   async shutdown() {
     try {
-      logger.info('[QueueManager] Shutting down queues...');
+      logger.info('[QueueManager] Shutting down queues...')
 
       // Close all queue events
       for (const [key, queueEvents] of this.queueEvents) {
-        await queueEvents.close();
-        logger.debug(`[QueueManager] Closed events for ${key}`);
+        await queueEvents.close()
+        logger.debug(`[QueueManager] Closed events for ${key}`)
       }
 
       // Close all queues
       for (const [key, queue] of this.queues) {
-        await queue.close();
-        logger.debug(`[QueueManager] Closed queue ${key}`);
+        await queue.close()
+        logger.debug(`[QueueManager] Closed queue ${key}`)
       }
 
       // Close Redis connection
       if (this.connection) {
-        await this.connection.quit();
-        this.connection = null;
+        await this.connection.quit()
+        this.connection = null
       }
 
       // Clear maps
-      this.queues.clear();
-      this.queueEvents.clear();
+      this.queues.clear()
+      this.queueEvents.clear()
 
-      logger.info('[QueueManager] Shutdown complete');
+      logger.info('[QueueManager] Shutdown complete')
 
-      return { success: true };
+      return { success: true }
     } catch (error) {
-      logger.error('[QueueManager] Shutdown error:', error);
-      throw error;
+      logger.error('[QueueManager] Shutdown error:', error)
+      throw error
     }
   }
 }
 
 // Singleton instance
-let instance = null;
+let instance = null
 
 module.exports = {
   QueueManager,
   getInstance: () => {
     if (!instance) {
-      instance = new QueueManager();
+      instance = new QueueManager()
     }
-    return instance;
+    return instance
   },
-};
+}

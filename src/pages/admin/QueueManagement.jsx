@@ -37,9 +37,17 @@ const normalizeJobs = payload => {
 }
 
 const QueueStatus = ({ queue }) => {
-  const tone = queue.paused ? 'bg-amber-100 text-amber-700' : queue.failedCount > 0 ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'
+  const tone = queue.paused
+    ? 'bg-amber-100 text-amber-700'
+    : queue.failedCount > 0
+      ? 'bg-red-100 text-red-700'
+      : 'bg-green-100 text-green-700'
   const label = queue.paused ? 'Paused' : queue.failedCount > 0 ? 'Attention' : 'Healthy'
-  return <span className={`rounded-full px-2 py-0.5 text-xs font-semibold uppercase ${tone}`}>{label}</span>
+  return (
+    <span className={`rounded-full px-2 py-0.5 text-xs font-semibold uppercase ${tone}`}>
+      {label}
+    </span>
+  )
 }
 
 const JobList = ({ jobs, onRetry }) => {
@@ -85,7 +93,8 @@ export default function QueueManagement() {
   })
 
   const queues = useMemo(() => normalizeQueues(queuesQuery.data), [queuesQuery.data])
-  const selectedQueue = queues.find(item => (item.name || item.queue) === selectedQueueName) || queues[0]
+  const selectedQueue =
+    queues.find(item => (item.name || item.queue) === selectedQueueName) || queues[0]
 
   useEffect(() => {
     if (!selectedQueueName && selectedQueue) {
@@ -101,7 +110,8 @@ export default function QueueManagement() {
 
   const jobsQuery = useQuery({
     queryKey: ['admin', 'queue-jobs', selectedQueue?.name || selectedQueue?.queue, jobFilter],
-    queryFn: () => getQueueJobs(selectedQueue.name || selectedQueue.queue, jobFilter, { limit: 20 }),
+    queryFn: () =>
+      getQueueJobs(selectedQueue.name || selectedQueue.queue, jobFilter, { limit: 20 }),
     enabled: Boolean(selectedQueue),
   })
 
@@ -120,7 +130,9 @@ export default function QueueManagement() {
 
   const cleanMutation = useMutation({
     mutationFn: async () => {
-      const confirmed = window.confirm('Clean completed jobs? This removes them from the queue history.')
+      const confirmed = window.confirm(
+        'Clean completed jobs? This removes them from the queue history.'
+      )
       if (!confirmed) return null
       const mfa = window.prompt(MFA_MESSAGE)
       if (!mfa) throw new Error('MFA code is required')
@@ -142,7 +154,8 @@ export default function QueueManagement() {
         <div>
           <h1 className="text-2xl font-semibold text-gray-900">Queue Management</h1>
           <p className="text-sm text-gray-500">
-            Inspect BullMQ queues, retry failed jobs, and clean completed work. MFA required for destructive actions.
+            Inspect BullMQ queues, retry failed jobs, and clean completed work. MFA required for
+            destructive actions.
           </p>
         </div>
         <div className="flex items-center gap-3 text-xs text-gray-500">
@@ -167,9 +180,13 @@ export default function QueueManagement() {
 
       <section className="grid gap-6 lg:grid-cols-[280px,1fr]">
         <aside className="rounded-xl border border-gray-200 bg-white shadow-sm">
-          <div className="border-b border-gray-200 px-4 py-3 text-sm font-semibold text-gray-700">Queues</div>
+          <div className="border-b border-gray-200 px-4 py-3 text-sm font-semibold text-gray-700">
+            Queues
+          </div>
           <div className="divide-y divide-gray-100">
-            {queuesQuery.isLoading && <p className="px-4 py-3 text-sm text-gray-500">Loading queues...</p>}
+            {queuesQuery.isLoading && (
+              <p className="px-4 py-3 text-sm text-gray-500">Loading queues...</p>
+            )}
             {!queuesQuery.isLoading && queues.length === 0 && (
               <p className="px-4 py-3 text-sm text-gray-500">No queues registered.</p>
             )}
@@ -187,7 +204,9 @@ export default function QueueManagement() {
                 >
                   <div>
                     <p className="font-medium">{name}</p>
-                    <p className="text-xs text-gray-500">{queue.description || 'No description provided.'}</p>
+                    <p className="text-xs text-gray-500">
+                      {queue.description || 'No description provided.'}
+                    </p>
                   </div>
                   <QueueStatus queue={queue} />
                 </button>
@@ -200,8 +219,12 @@ export default function QueueManagement() {
           <div className="rounded-xl border border-gray-200 bg-white shadow-sm">
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 px-6 py-4">
               <div>
-                <h2 className="text-lg font-semibold text-gray-900">{selectedQueue?.name || selectedQueue?.queue || 'Select a queue'}</h2>
-                <p className="text-sm text-gray-500">{selectedQueue?.description || 'No description provided.'}</p>
+                <h2 className="text-lg font-semibold text-gray-900">
+                  {selectedQueue?.name || selectedQueue?.queue || 'Select a queue'}
+                </h2>
+                <p className="text-sm text-gray-500">
+                  {selectedQueue?.description || 'No description provided.'}
+                </p>
               </div>
               <div className="flex items-center gap-2">
                 <button
@@ -240,7 +263,9 @@ export default function QueueManagement() {
                       type="button"
                       onClick={() => setJobFilter(status)}
                       className={`rounded border px-2 py-1 text-xs font-semibold capitalize ${
-                        jobFilter === status ? 'border-blue-200 bg-blue-50 text-blue-700' : 'border-gray-200 text-gray-600'
+                        jobFilter === status
+                          ? 'border-blue-200 bg-blue-50 text-blue-700'
+                          : 'border-gray-200 text-gray-600'
                       }`}
                     >
                       {status}
@@ -250,7 +275,9 @@ export default function QueueManagement() {
                 <div className="mt-3">
                   <JobList
                     jobs={jobs}
-                    onRetry={jobFilter === 'failed' ? jobId => retryMutation.mutate(jobId) : undefined}
+                    onRetry={
+                      jobFilter === 'failed' ? jobId => retryMutation.mutate(jobId) : undefined
+                    }
                   />
                 </div>
               </div>
@@ -269,8 +296,8 @@ export default function QueueManagement() {
           <div className="rounded-xl border border-green-200 bg-green-50 p-4 text-xs text-green-700">
             <p className="font-semibold">Operational guidance</p>
             <p className="mt-2">
-              Retry failed jobs only after resolving the root cause. Cleaning completed jobs helps maintain queue performance.
-              All MFA prompts are logged to the audit trail.
+              Retry failed jobs only after resolving the root cause. Cleaning completed jobs helps
+              maintain queue performance. All MFA prompts are logged to the audit trail.
             </p>
           </div>
         </div>

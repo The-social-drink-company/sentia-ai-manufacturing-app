@@ -297,9 +297,9 @@ Welcome to the Sentia Manufacturing Dashboard development team! This guide will 
 - [ ] First PR merged
 - [ ] Access to all required services
 
-**Name**: ******\_\_\_******
-**Date**: ******\_\_\_******
-**Signature**: ******\_\_\_******
+**Name**: **\*\***\_\_\_**\*\***
+**Date**: **\*\***\_\_\_**\*\***
+**Signature**: **\*\***\_\_\_**\*\***
 
 ### Mentor/Manager
 
@@ -308,9 +308,9 @@ Welcome to the Sentia Manufacturing Dashboard development team! This guide will 
 - [ ] First tasks assigned
 - [ ] Ready for independent work
 
-**Name**: ******\_\_\_******
-**Date**: ******\_\_\_******
-**Signature**: ******\_\_\_******
+**Name**: **\*\***\_\_\_**\*\***
+**Date**: **\*\***\_\_\_**\*\***
+**Signature**: **\*\***\_\_\_**\*\***
 
 ## Feedback
 

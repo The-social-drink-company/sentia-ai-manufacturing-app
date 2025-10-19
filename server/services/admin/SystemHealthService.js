@@ -251,16 +251,12 @@ class SystemHealthService {
 
       // Parse memory info
       const memoryLines = info.split('\r\n')
-      const usedMemoryLine = memoryLines.find((line) => line.startsWith('used_memory:'))
-      const maxMemoryLine = memoryLines.find((line) => line.startsWith('maxmemory:'))
+      const usedMemoryLine = memoryLines.find(line => line.startsWith('used_memory:'))
+      const maxMemoryLine = memoryLines.find(line => line.startsWith('maxmemory:'))
 
-      const usedMemory = usedMemoryLine
-        ? parseInt(usedMemoryLine.split(':')[1], 10)
-        : null
+      const usedMemory = usedMemoryLine ? parseInt(usedMemoryLine.split(':')[1], 10) : null
 
-      const maxMemory = maxMemoryLine
-        ? parseInt(maxMemoryLine.split(':')[1], 10)
-        : null
+      const maxMemory = maxMemoryLine ? parseInt(maxMemoryLine.split(':')[1], 10) : null
 
       const status =
         responseTime > this.ALERT_THRESHOLDS.REDIS_RESPONSE_TIME ? 'DEGRADED' : 'HEALTHY'
@@ -316,10 +312,10 @@ class SystemHealthService {
       })
 
       const total = integrations.length
-      const healthy = integrations.filter((i) => i.healthStatus === 'HEALTHY').length
-      const degraded = integrations.filter((i) => i.healthStatus === 'DEGRADED').length
-      const down = integrations.filter((i) => i.healthStatus === 'DOWN').length
-      const unknown = integrations.filter((i) => i.healthStatus === 'UNKNOWN').length
+      const healthy = integrations.filter(i => i.healthStatus === 'HEALTHY').length
+      const degraded = integrations.filter(i => i.healthStatus === 'DEGRADED').length
+      const down = integrations.filter(i => i.healthStatus === 'DOWN').length
+      const unknown = integrations.filter(i => i.healthStatus === 'UNKNOWN').length
 
       const status = down > 0 ? 'UNHEALTHY' : degraded > 0 ? 'DEGRADED' : 'HEALTHY'
 
@@ -330,7 +326,7 @@ class SystemHealthService {
         degraded,
         down,
         unknown,
-        integrations: integrations.map((i) => ({
+        integrations: integrations.map(i => ({
           name: i.name,
           type: i.type,
           status: i.healthStatus,

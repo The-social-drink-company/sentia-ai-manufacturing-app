@@ -5,62 +5,65 @@
  * Supports file validation, preview, and progress tracking
  */
 
-import { useCallback, useState } from 'react';
-import { useDropzone } from 'react-dropzone';
-import { ArrowUpTrayIcon, DocumentTextIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { useCallback, useState } from 'react'
+import { useDropzone } from 'react-dropzone'
+import { ArrowUpTrayIcon, DocumentTextIcon, XMarkIcon } from '@heroicons/react/24/outline'
 
-const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
+const MAX_FILE_SIZE = 50 * 1024 * 1024 // 50MB
 
 const ACCEPTED_FILE_TYPES = {
   'text/csv': ['.csv'],
   'application/vnd.ms-excel': ['.xls'],
   'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'],
-};
+}
 
 export default function FileUploadZone({ onFileSelect, disabled = false }) {
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [error, setError] = useState(null);
+  const [uploadProgress, setUploadProgress] = useState(0)
+  const [selectedFile, setSelectedFile] = useState(null)
+  const [error, setError] = useState(null)
 
-  const onDrop = useCallback((acceptedFiles, rejectedFiles) => {
-    setError(null);
+  const onDrop = useCallback(
+    (acceptedFiles, rejectedFiles) => {
+      setError(null)
 
-    // Handle rejected files
-    if (rejectedFiles.length > 0) {
-      const rejection = rejectedFiles[0];
-      const error = rejection.errors[0];
+      // Handle rejected files
+      if (rejectedFiles.length > 0) {
+        const rejection = rejectedFiles[0]
+        const error = rejection.errors[0]
 
-      if (error.code === 'file-too-large') {
-        setError(`File size exceeds 50MB limit. Please upload a smaller file.`);
-      } else if (error.code === 'file-invalid-type') {
-        setError('Only CSV and Excel files (.csv, .xls, .xlsx) are supported.');
-      } else {
-        setError(`Upload failed: ${error.message}`);
+        if (error.code === 'file-too-large') {
+          setError(`File size exceeds 50MB limit. Please upload a smaller file.`)
+        } else if (error.code === 'file-invalid-type') {
+          setError('Only CSV and Excel files (.csv, .xls, .xlsx) are supported.')
+        } else {
+          setError(`Upload failed: ${error.message}`)
+        }
+        return
       }
-      return;
-    }
 
-    // Handle accepted files
-    if (acceptedFiles.length > 0) {
-      const file = acceptedFiles[0];
-      setSelectedFile(file);
-      setUploadProgress(0);
+      // Handle accepted files
+      if (acceptedFiles.length > 0) {
+        const file = acceptedFiles[0]
+        setSelectedFile(file)
+        setUploadProgress(0)
 
-      // Simulate upload progress (in real implementation, this would be from XHR)
-      const progressInterval = setInterval(() => {
-        setUploadProgress((prev) => {
-          if (prev >= 100) {
-            clearInterval(progressInterval);
-            return 100;
-          }
-          return prev + 10;
-        });
-      }, 100);
+        // Simulate upload progress (in real implementation, this would be from XHR)
+        const progressInterval = setInterval(() => {
+          setUploadProgress(prev => {
+            if (prev >= 100) {
+              clearInterval(progressInterval)
+              return 100
+            }
+            return prev + 10
+          })
+        }, 100)
 
-      // Call parent handler
-      onFileSelect(file);
-    }
-  }, [onFileSelect]);
+        // Call parent handler
+        onFileSelect(file)
+      }
+    },
+    [onFileSelect]
+  )
 
   const { getRootProps, getInputProps, isDragActive, isDragReject } = useDropzone({
     accept: ACCEPTED_FILE_TYPES,
@@ -68,23 +71,23 @@ export default function FileUploadZone({ onFileSelect, disabled = false }) {
     multiple: false,
     disabled,
     onDrop,
-  });
+  })
 
-  const handleRemoveFile = (e) => {
-    e.stopPropagation();
-    setSelectedFile(null);
-    setUploadProgress(0);
-    setError(null);
-    onFileSelect(null);
-  };
+  const handleRemoveFile = e => {
+    e.stopPropagation()
+    setSelectedFile(null)
+    setUploadProgress(0)
+    setError(null)
+    onFileSelect(null)
+  }
 
-  const formatFileSize = (bytes) => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
-  };
+  const formatFileSize = bytes => {
+    if (bytes === 0) return '0 Bytes'
+    const k = 1024
+    const sizes = ['Bytes', 'KB', 'MB', 'GB']
+    const i = Math.floor(Math.log(bytes) / Math.log(k))
+    return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i]
+  }
 
   return (
     <div className="w-full">
@@ -120,12 +123,8 @@ export default function FileUploadZone({ onFileSelect, disabled = false }) {
             <div className="flex items-center justify-center space-x-3">
               <DocumentTextIcon className="h-10 w-10 text-blue-500" />
               <div className="flex-1 text-left">
-                <p className="text-sm font-medium text-gray-900 truncate">
-                  {selectedFile.name}
-                </p>
-                <p className="text-xs text-gray-500">
-                  {formatFileSize(selectedFile.size)}
-                </p>
+                <p className="text-sm font-medium text-gray-900 truncate">{selectedFile.name}</p>
+                <p className="text-xs text-gray-500">{formatFileSize(selectedFile.size)}</p>
               </div>
               <button
                 onClick={handleRemoveFile}
@@ -153,11 +152,7 @@ export default function FileUploadZone({ onFileSelect, disabled = false }) {
 
             {uploadProgress === 100 && (
               <div className="flex items-center justify-center text-xs text-green-600">
-                <svg
-                  className="h-4 w-4 mr-1"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
+                <svg className="h-4 w-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
                   <path
                     fillRule="evenodd"
                     d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
@@ -185,5 +180,5 @@ export default function FileUploadZone({ onFileSelect, disabled = false }) {
         </div>
       )}
     </div>
-  );
+  )
 }

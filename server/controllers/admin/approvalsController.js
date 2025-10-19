@@ -122,7 +122,9 @@ export async function createApprovalRequest(req, res) {
       requesterId,
     })
 
-    logger.info(`[ApprovalsController] Created approval request ${approval.id} by user ${requesterId}`)
+    logger.info(
+      `[ApprovalsController] Created approval request ${approval.id} by user ${requesterId}`
+    )
 
     res.status(201).json({
       success: true,

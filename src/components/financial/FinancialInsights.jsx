@@ -294,4 +294,3 @@ const FinancialInsights = ({ data, loading = false, error = null, className }) =
 }
 
 export default FinancialInsights
-

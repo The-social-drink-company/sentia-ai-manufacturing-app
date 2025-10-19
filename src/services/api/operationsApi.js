@@ -12,7 +12,7 @@
  * - Supplier performance
  */
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1'
 
 /**
  * ============================================================================
@@ -28,10 +28,10 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1';
 export async function getProductionOverview() {
   const response = await fetch(`${API_BASE_URL}/production/overview`, {
     credentials: 'include',
-  });
+  })
 
-  if (!response.ok) throw new Error('Failed to fetch production overview');
-  return response.json();
+  if (!response.ok) throw new Error('Failed to fetch production overview')
+  return response.json()
 }
 
 /**
@@ -41,13 +41,13 @@ export async function getProductionOverview() {
  * @returns {Promise<Object[]>} Array of production jobs
  */
 export async function getProductionJobs(filters = {}) {
-  const params = new URLSearchParams(filters);
+  const params = new URLSearchParams(filters)
   const response = await fetch(`${API_BASE_URL}/production/jobs?${params}`, {
     credentials: 'include',
-  });
+  })
 
-  if (!response.ok) throw new Error('Failed to fetch production jobs');
-  return response.json();
+  if (!response.ok) throw new Error('Failed to fetch production jobs')
+  return response.json()
 }
 
 /**
@@ -63,10 +63,10 @@ export async function updateProductionJob(jobId, updates) {
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
     body: JSON.stringify(updates),
-  });
+  })
 
-  if (!response.ok) throw new Error('Failed to update production job');
-  return response.json();
+  if (!response.ok) throw new Error('Failed to update production job')
+  return response.json()
 }
 
 /**
@@ -76,13 +76,13 @@ export async function updateProductionJob(jobId, updates) {
  * @returns {Promise<Object>} OEE data
  */
 export async function getOEEData(params = {}) {
-  const queryParams = new URLSearchParams(params);
+  const queryParams = new URLSearchParams(params)
   const response = await fetch(`${API_BASE_URL}/production/oee?${queryParams}`, {
     credentials: 'include',
-  });
+  })
 
-  if (!response.ok) throw new Error('Failed to fetch OEE data');
-  return response.json();
+  if (!response.ok) throw new Error('Failed to fetch OEE data')
+  return response.json()
 }
 
 /**
@@ -92,13 +92,13 @@ export async function getOEEData(params = {}) {
  * @returns {Promise<Object>} Downtime data
  */
 export async function getDowntimeData(params = {}) {
-  const queryParams = new URLSearchParams(params);
+  const queryParams = new URLSearchParams(params)
   const response = await fetch(`${API_BASE_URL}/production/downtime?${queryParams}`, {
     credentials: 'include',
-  });
+  })
 
-  if (!response.ok) throw new Error('Failed to fetch downtime data');
-  return response.json();
+  if (!response.ok) throw new Error('Failed to fetch downtime data')
+  return response.json()
 }
 
 /**
@@ -111,10 +111,10 @@ export async function resolveDowntimeEvent(eventId) {
   const response = await fetch(`${API_BASE_URL}/production/downtime/${eventId}/resolve`, {
     method: 'PATCH',
     credentials: 'include',
-  });
+  })
 
-  if (!response.ok) throw new Error('Failed to resolve downtime event');
-  return response.json();
+  if (!response.ok) throw new Error('Failed to resolve downtime event')
+  return response.json()
 }
 
 /**
@@ -124,13 +124,13 @@ export async function resolveDowntimeEvent(eventId) {
  * @returns {Promise<Object>} Quality metrics data
  */
 export async function getQualityMetrics(params = {}) {
-  const queryParams = new URLSearchParams(params);
+  const queryParams = new URLSearchParams(params)
   const response = await fetch(`${API_BASE_URL}/production/quality?${queryParams}`, {
     credentials: 'include',
-  });
+  })
 
-  if (!response.ok) throw new Error('Failed to fetch quality metrics');
-  return response.json();
+  if (!response.ok) throw new Error('Failed to fetch quality metrics')
+  return response.json()
 }
 
 /**
@@ -146,13 +146,13 @@ export async function getQualityMetrics(params = {}) {
  * @returns {Promise<Object>} Inventory dashboard data
  */
 export async function getInventoryDashboard(params = {}) {
-  const queryParams = new URLSearchParams(params);
+  const queryParams = new URLSearchParams(params)
   const response = await fetch(`${API_BASE_URL}/inventory/dashboard?${queryParams}`, {
     credentials: 'include',
-  });
+  })
 
-  if (!response.ok) throw new Error('Failed to fetch inventory dashboard data');
-  return response.json();
+  if (!response.ok) throw new Error('Failed to fetch inventory dashboard data')
+  return response.json()
 }
 
 /**
@@ -162,13 +162,13 @@ export async function getInventoryDashboard(params = {}) {
  * @returns {Promise<Object>} Stock alerts data
  */
 export async function getStockAlerts(params = {}) {
-  const queryParams = new URLSearchParams(params);
+  const queryParams = new URLSearchParams(params)
   const response = await fetch(`${API_BASE_URL}/inventory/alerts?${queryParams}`, {
     credentials: 'include',
-  });
+  })
 
-  if (!response.ok) throw new Error('Failed to fetch stock alerts');
-  return response.json();
+  if (!response.ok) throw new Error('Failed to fetch stock alerts')
+  return response.json()
 }
 
 /**
@@ -181,10 +181,10 @@ export async function dismissStockAlert(alertId) {
   const response = await fetch(`${API_BASE_URL}/inventory/alerts/${alertId}/dismiss`, {
     method: 'PATCH',
     credentials: 'include',
-  });
+  })
 
-  if (!response.ok) throw new Error('Failed to dismiss stock alert');
-  return response.json();
+  if (!response.ok) throw new Error('Failed to dismiss stock alert')
+  return response.json()
 }
 
 /**
@@ -200,10 +200,10 @@ export async function executeAlertAction(alertId, actionData) {
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
     body: JSON.stringify(actionData),
-  });
+  })
 
-  if (!response.ok) throw new Error('Failed to execute alert action');
-  return response.json();
+  if (!response.ok) throw new Error('Failed to execute alert action')
+  return response.json()
 }
 
 /**
@@ -213,13 +213,13 @@ export async function executeAlertAction(alertId, actionData) {
  * @returns {Promise<Object>} Optimization data
  */
 export async function getInventoryOptimization(params = {}) {
-  const queryParams = new URLSearchParams(params);
+  const queryParams = new URLSearchParams(params)
   const response = await fetch(`${API_BASE_URL}/inventory/optimization?${queryParams}`, {
     credentials: 'include',
-  });
+  })
 
-  if (!response.ok) throw new Error('Failed to fetch inventory optimization data');
-  return response.json();
+  if (!response.ok) throw new Error('Failed to fetch inventory optimization data')
+  return response.json()
 }
 
 /**
@@ -234,10 +234,10 @@ export async function runInventoryOptimization(config) {
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
     body: JSON.stringify(config),
-  });
+  })
 
-  if (!response.ok) throw new Error('Failed to run inventory optimization');
-  return response.json();
+  if (!response.ok) throw new Error('Failed to run inventory optimization')
+  return response.json()
 }
 
 /**
@@ -252,10 +252,10 @@ export async function createPurchaseOrder(orderData) {
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
     body: JSON.stringify(orderData),
-  });
+  })
 
-  if (!response.ok) throw new Error('Failed to create purchase order');
-  return response.json();
+  if (!response.ok) throw new Error('Failed to create purchase order')
+  return response.json()
 }
 
 /**
@@ -271,13 +271,16 @@ export async function createPurchaseOrder(orderData) {
  * @returns {Promise<Object>} Supplier performance data
  */
 export async function getSupplierPerformance(params = {}) {
-  const queryParams = new URLSearchParams(params);
-  const response = await fetch(`${API_BASE_URL}/supply-chain/suppliers/performance?${queryParams}`, {
-    credentials: 'include',
-  });
+  const queryParams = new URLSearchParams(params)
+  const response = await fetch(
+    `${API_BASE_URL}/supply-chain/suppliers/performance?${queryParams}`,
+    {
+      credentials: 'include',
+    }
+  )
 
-  if (!response.ok) throw new Error('Failed to fetch supplier performance data');
-  return response.json();
+  if (!response.ok) throw new Error('Failed to fetch supplier performance data')
+  return response.json()
 }
 
 /**
@@ -289,10 +292,10 @@ export async function getSupplierPerformance(params = {}) {
 export async function getSupplierDetails(supplierId) {
   const response = await fetch(`${API_BASE_URL}/supply-chain/suppliers/${supplierId}`, {
     credentials: 'include',
-  });
+  })
 
-  if (!response.ok) throw new Error('Failed to fetch supplier details');
-  return response.json();
+  if (!response.ok) throw new Error('Failed to fetch supplier details')
+  return response.json()
 }
 
 /**
@@ -308,10 +311,10 @@ export async function updateSupplierRating(supplierId, ratingData) {
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
     body: JSON.stringify(ratingData),
-  });
+  })
 
-  if (!response.ok) throw new Error('Failed to update supplier rating');
-  return response.json();
+  if (!response.ok) throw new Error('Failed to update supplier rating')
+  return response.json()
 }
 
 /**
@@ -329,13 +332,13 @@ export async function updateSupplierRating(supplierId, ratingData) {
  * @returns {Promise<Blob>} File blob
  */
 export async function exportProductionData(dataType, format = 'csv', params = {}) {
-  const queryParams = new URLSearchParams({ ...params, format });
+  const queryParams = new URLSearchParams({ ...params, format })
   const response = await fetch(`${API_BASE_URL}/production/${dataType}/export?${queryParams}`, {
     credentials: 'include',
-  });
+  })
 
-  if (!response.ok) throw new Error('Failed to export production data');
-  return response.blob();
+  if (!response.ok) throw new Error('Failed to export production data')
+  return response.blob()
 }
 
 /**
@@ -347,13 +350,13 @@ export async function exportProductionData(dataType, format = 'csv', params = {}
  * @returns {Promise<Blob>} File blob
  */
 export async function exportInventoryData(dataType, format = 'csv', params = {}) {
-  const queryParams = new URLSearchParams({ ...params, format });
+  const queryParams = new URLSearchParams({ ...params, format })
   const response = await fetch(`${API_BASE_URL}/inventory/${dataType}/export?${queryParams}`, {
     credentials: 'include',
-  });
+  })
 
-  if (!response.ok) throw new Error('Failed to export inventory data');
-  return response.blob();
+  if (!response.ok) throw new Error('Failed to export inventory data')
+  return response.blob()
 }
 
 /**
@@ -364,13 +367,13 @@ export async function exportInventoryData(dataType, format = 'csv', params = {})
  * @returns {Promise<Blob>} File blob
  */
 export async function exportSupplierData(format = 'csv', params = {}) {
-  const queryParams = new URLSearchParams({ ...params, format });
+  const queryParams = new URLSearchParams({ ...params, format })
   const response = await fetch(`${API_BASE_URL}/supply-chain/suppliers/export?${queryParams}`, {
     credentials: 'include',
-  });
+  })
 
-  if (!response.ok) throw new Error('Failed to export supplier data');
-  return response.blob();
+  if (!response.ok) throw new Error('Failed to export supplier data')
+  return response.blob()
 }
 
 /**
@@ -407,4 +410,4 @@ export default {
   exportProductionData,
   exportInventoryData,
   exportSupplierData,
-};
+}

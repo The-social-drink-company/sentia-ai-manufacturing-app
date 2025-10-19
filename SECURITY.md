@@ -91,6 +91,7 @@ The identified vulnerabilities are **LOW SEVERITY** and do not pose immediate ri
 **Status**: ACCEPTABLE RISK - Documented and monitored
 
 ---
+
 ---
 
 # Security Policy - CapLiquify
@@ -142,6 +143,7 @@ If you discover a security vulnerability, please report it to:
 ### Critical Rules:
 
 #### ✅ DO:
+
 - Store credentials in `.env.local` (already gitignored)
 - Use environment variables for all secrets
 - Use API tokens with minimal permissions (not Global API Keys)
@@ -150,6 +152,7 @@ If you discover a security vulnerability, please report it to:
 - Enable 2FA on all service accounts
 
 #### ❌ DO NOT:
+
 - **NEVER** commit credentials to git
 - **NEVER** use Global API Keys (use scoped tokens)
 - **NEVER** share credentials via email, chat, or screenshots
@@ -159,13 +162,13 @@ If you discover a security vulnerability, please report it to:
 
 ### Credential Rotation Schedule:
 
-| Credential Type | Frequency | Storage |
-|----------------|-----------|---------|
-| Cloudflare API Token | Quarterly | `.env.local` + Render |
-| Clerk API Keys | Annually | `.env.local` + Render |
-| Stripe Keys | Annually | `.env.local` + Render |
-| Database URLs | On breach only | Render only |
-| External APIs | Per vendor policy | `.env.local` + Render |
+| Credential Type      | Frequency         | Storage               |
+| -------------------- | ----------------- | --------------------- |
+| Cloudflare API Token | Quarterly         | `.env.local` + Render |
+| Clerk API Keys       | Annually          | `.env.local` + Render |
+| Stripe Keys          | Annually          | `.env.local` + Render |
+| Database URLs        | On breach only    | Render only           |
+| External APIs        | Per vendor policy | `.env.local` + Render |
 
 ---
 
@@ -197,6 +200,7 @@ Security Level: Medium
 
 **Status**: ✅ DNS Configured
 **Domains**:
+
 - Primary: `capliquify.com`
 - Auth: `auth.capliquify.com`
 - API: `clerk.capliquify.com`
@@ -215,12 +219,12 @@ Security Level: Medium
 
 ### Role-Based Access Control (RBAC):
 
-| Role | Permissions | Features |
-|------|-------------|----------|
-| **Viewer** | Read-only | Dashboard, reports |
-| **Operator** | Create, read, update | Forecasting, inventory |
-| **Manager** | Create, read, update, limited delete | All features, team management |
-| **Admin** | Full access | All features, user management, billing |
+| Role         | Permissions                          | Features                               |
+| ------------ | ------------------------------------ | -------------------------------------- |
+| **Viewer**   | Read-only                            | Dashboard, reports                     |
+| **Operator** | Create, read, update                 | Forecasting, inventory                 |
+| **Manager**  | Create, read, update, limited delete | All features, team management          |
+| **Admin**    | Full access                          | All features, user management, billing |
 
 ### Session Security:
 
@@ -235,12 +239,12 @@ Security Level: Medium
 
 ### Data Classification:
 
-| Level | Examples | Encryption | Access |
-|-------|----------|-----------|--------|
-| **Public** | Marketing content | Optional | Everyone |
-| **Internal** | Dashboard data | TLS in transit | Authenticated users |
-| **Confidential** | Financial data | TLS + DB encryption | Authorized roles |
-| **Restricted** | API keys, PII | TLS + DB + app-level | Admin only |
+| Level            | Examples          | Encryption           | Access              |
+| ---------------- | ----------------- | -------------------- | ------------------- |
+| **Public**       | Marketing content | Optional             | Everyone            |
+| **Internal**     | Dashboard data    | TLS in transit       | Authenticated users |
+| **Confidential** | Financial data    | TLS + DB encryption  | Authorized roles    |
+| **Restricted**   | API keys, PII     | TLS + DB + app-level | Admin only          |
 
 ### Encryption:
 
@@ -260,12 +264,12 @@ Security Level: Medium
 
 ### Severity Levels:
 
-| Level | Description | Response Time |
-|-------|-------------|--------------|
-| **P1 - Critical** | Production down, data breach | < 1 hour |
-| **P2 - High** | Degraded service | < 4 hours |
-| **P3 - Medium** | Limited impact | < 24 hours |
-| **P4 - Low** | Minimal impact | < 7 days |
+| Level             | Description                  | Response Time |
+| ----------------- | ---------------------------- | ------------- |
+| **P1 - Critical** | Production down, data breach | < 1 hour      |
+| **P2 - High**     | Degraded service             | < 4 hours     |
+| **P3 - Medium**   | Limited impact               | < 24 hours    |
+| **P4 - Low**      | Minimal impact               | < 7 days      |
 
 ### Incident Response Steps:
 
@@ -277,12 +281,12 @@ Security Level: Medium
 
 ### Emergency Contacts:
 
-| Service | Support URL |
-|---------|------------|
-| Cloudflare | https://support.cloudflare.com |
-| Render | https://render.com/docs/support |
-| Clerk | https://clerk.com/support |
-| Stripe | https://support.stripe.com |
+| Service    | Support URL                     |
+| ---------- | ------------------------------- |
+| Cloudflare | https://support.cloudflare.com  |
+| Render     | https://render.com/docs/support |
+| Clerk      | https://clerk.com/support       |
+| Stripe     | https://support.stripe.com      |
 
 ---
 
@@ -292,10 +296,10 @@ Security Level: Medium
 
 ```javascript
 // ✅ Good - Validate all user input
-const email = validator.isEmail(req.body.email) ? req.body.email : null;
+const email = validator.isEmail(req.body.email) ? req.body.email : null
 
 // ❌ Bad - Trusting user input
-const email = req.body.email;
+const email = req.body.email
 ```
 
 ### Git Security:

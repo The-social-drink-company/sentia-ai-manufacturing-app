@@ -180,9 +180,7 @@ const NotificationDropdown = ({
 
                       {/* Notification Content */}
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-slate-900">
-                          {notification.title}
-                        </p>
+                        <p className="text-sm font-medium text-slate-900">{notification.title}</p>
                         {notification.message && (
                           <p className="mt-0.5 text-sm text-slate-600 line-clamp-2">
                             {notification.message}

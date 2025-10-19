@@ -153,9 +153,7 @@ const DashboardHeader = ({ mobileMenuOpen = false, onMenuClick = () => {} }) => 
    * Mark notification as read
    */
   const handleMarkAsRead = notificationId => {
-    setNotifications(prev =>
-      prev.map(n => (n.id === notificationId ? { ...n, read: true } : n))
-    )
+    setNotifications(prev => prev.map(n => (n.id === notificationId ? { ...n, read: true } : n)))
   }
 
   /**
@@ -173,19 +171,13 @@ const DashboardHeader = ({ mobileMenuOpen = false, onMenuClick = () => {} }) => 
         <MobileMenuButton isOpen={mobileMenuOpen} onClick={onMenuClick} />
 
         {/* Breadcrumb Navigation */}
-        <nav
-          className="hidden md:flex items-center gap-2 text-sm"
-          aria-label="Breadcrumb"
-        >
+        <nav className="hidden md:flex items-center gap-2 text-sm" aria-label="Breadcrumb">
           <ol className="flex items-center gap-2" role="list">
             {breadcrumbs.map((crumb, index) => (
               <li key={index} className="flex items-center gap-2">
                 {/* Breadcrumb Link/Text */}
                 {crumb.isActive ? (
-                  <span
-                    className="font-semibold text-slate-900"
-                    aria-current="page"
-                  >
+                  <span className="font-semibold text-slate-900" aria-current="page">
                     {crumb.label}
                   </span>
                 ) : crumb.path ? (
@@ -201,10 +193,7 @@ const DashboardHeader = ({ mobileMenuOpen = false, onMenuClick = () => {} }) => 
 
                 {/* Separator */}
                 {index < breadcrumbs.length - 1 && (
-                  <ChevronRight
-                    className="h-4 w-4 text-slate-400"
-                    aria-hidden="true"
-                  />
+                  <ChevronRight className="h-4 w-4 text-slate-400" aria-hidden="true" />
                 )}
               </li>
             ))}

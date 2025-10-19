@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useQuery } from '@tanstack/react-query'
 import {
   LineChart,
   Line,
@@ -12,15 +12,8 @@ import {
   ResponsiveContainer,
   Area,
   AreaChart,
-} from 'recharts';
-import {
-  ArrowRight,
-  CheckCircle,
-  TrendingUp,
-  Award,
-  AlertTriangle,
-  Download,
-} from 'lucide-react';
+} from 'recharts'
+import { ArrowRight, CheckCircle, TrendingUp, Award, AlertTriangle, Download } from 'lucide-react'
 
 /**
  * ModelComparison Component
@@ -35,38 +28,38 @@ import {
  * Workflow: Compare models → Select best model → Push to inventory optimization
  */
 function ModelComparison() {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
-  const [selectedProduct, setSelectedProduct] = useState('PROD-001');
-  const [selectedModelForOptimization, setSelectedModelForOptimization] = useState(null);
-  const [comparisonView, setComparisonView] = useState('metrics'); // metrics, charts, history
+  const [selectedProduct, setSelectedProduct] = useState('PROD-001')
+  const [selectedModelForOptimization, setSelectedModelForOptimization] = useState(null)
+  const [comparisonView, setComparisonView] = useState('metrics') // metrics, charts, history
 
   // Fetch forecast comparison data
   const { data: comparisonData, isLoading } = useQuery({
     queryKey: ['forecasts', 'comparison', selectedProduct],
     queryFn: async () => {
-      const response = await fetch(`/api/v1/forecasts/comparison?productId=${selectedProduct}`);
-      if (!response.ok) throw new Error('Failed to fetch comparison data');
-      const result = await response.json();
-      return result.data;
+      const response = await fetch(`/api/v1/forecasts/comparison?productId=${selectedProduct}`)
+      if (!response.ok) throw new Error('Failed to fetch comparison data')
+      const result = await response.json()
+      return result.data
     },
-  });
+  })
 
   // Fetch available products
   const { data: products = [] } = useQuery({
     queryKey: ['products', 'with-forecasts'],
     queryFn: async () => {
-      const response = await fetch('/api/v1/products?hasForecasts=true');
-      if (!response.ok) throw new Error('Failed to fetch products');
-      const result = await response.json();
-      return result.data || [];
+      const response = await fetch('/api/v1/products?hasForecasts=true')
+      if (!response.ok) throw new Error('Failed to fetch products')
+      const result = await response.json()
+      return result.data || []
     },
-  });
+  })
 
   const handleUseInOptimization = () => {
     if (!selectedModelForOptimization) {
-      alert('Please select a model first');
-      return;
+      alert('Please select a model first')
+      return
     }
 
     // Navigate to inventory optimization with selected forecast
@@ -76,8 +69,8 @@ function ModelComparison() {
         productId: selectedProduct,
         comparisonData,
       },
-    });
-  };
+    })
+  }
 
   if (isLoading) {
     return (
@@ -87,12 +80,12 @@ function ModelComparison() {
           <p className="text-gray-600">Loading model comparison...</p>
         </div>
       </div>
-    );
+    )
   }
 
-  const models = comparisonData?.models || [];
-  const bestModel = models.find((m) => m.isBest);
-  const hasSelection = selectedModelForOptimization !== null;
+  const models = comparisonData?.models || []
+  const bestModel = models.find(m => m.isBest)
+  const hasSelection = selectedModelForOptimization !== null
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -125,13 +118,13 @@ function ModelComparison() {
         <label className="block text-sm font-medium text-gray-700 mb-2">Select Product</label>
         <select
           value={selectedProduct}
-          onChange={(e) => {
-            setSelectedProduct(e.target.value);
-            setSelectedModelForOptimization(null);
+          onChange={e => {
+            setSelectedProduct(e.target.value)
+            setSelectedModelForOptimization(null)
           }}
           className="w-full md:w-96 border border-gray-300 rounded-lg p-2"
         >
-          {products.map((product) => (
+          {products.map(product => (
             <option key={product.id} value={product.id}>
               {product.sku} - {product.name}
             </option>
@@ -233,7 +226,7 @@ function ModelComparison() {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {models.map((model) => (
+                  {models.map(model => (
                     <tr
                       key={model.id}
                       className={`hover:bg-gray-50 ${
@@ -282,7 +275,7 @@ function ModelComparison() {
       {/* Charts View */}
       {comparisonView === 'charts' && (
         <div className="space-y-6">
-          {models.map((model) => (
+          {models.map(model => (
             <div key={model.id} className="bg-white rounded-lg shadow p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
@@ -301,7 +294,10 @@ function ModelComparison() {
 
               {/* Forecast Chart with Confidence Intervals */}
               <ResponsiveContainer width="100%" height={300}>
-                <AreaChart data={model.forecastData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                <AreaChart
+                  data={model.forecastData}
+                  margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+                >
                   <defs>
                     <linearGradient id={`confidence-${model.id}`} x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
@@ -311,7 +307,9 @@ function ModelComparison() {
                   <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                   <XAxis
                     dataKey="date"
-                    tickFormatter={(date) => new Date(date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
+                    tickFormatter={date =>
+                      new Date(date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
+                    }
                     style={{ fontSize: '12px' }}
                   />
                   <YAxis style={{ fontSize: '12px' }} />
@@ -325,12 +323,7 @@ function ModelComparison() {
                     fill={`url(#confidence-${model.id})`}
                     name="Confidence Interval"
                   />
-                  <Area
-                    type="monotone"
-                    dataKey="lowerBound"
-                    stroke="none"
-                    fill="white"
-                  />
+                  <Area type="monotone" dataKey="lowerBound" stroke="none" fill="white" />
                   {/* Actual values */}
                   <Line
                     type="monotone"
@@ -360,15 +353,18 @@ function ModelComparison() {
       {/* Historical Performance View */}
       {comparisonView === 'history' && (
         <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">
-            Historical Accuracy Trends
-          </h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">Historical Accuracy Trends</h2>
           <ResponsiveContainer width="100%" height={400}>
-            <LineChart data={comparisonData?.historicalPerformance || []} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+            <LineChart
+              data={comparisonData?.historicalPerformance || []}
+              margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+            >
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
               <XAxis
                 dataKey="date"
-                tickFormatter={(date) => new Date(date).toLocaleDateString('en-GB', { month: 'short', year: '2-digit' })}
+                tickFormatter={date =>
+                  new Date(date).toLocaleDateString('en-GB', { month: 'short', year: '2-digit' })
+                }
                 style={{ fontSize: '12px' }}
               />
               <YAxis
@@ -403,7 +399,7 @@ function ModelComparison() {
         </div>
       )}
     </div>
-  );
+  )
 }
 
 /**
@@ -415,7 +411,7 @@ function MetricBadge({ label, value }) {
       <p className="text-xs text-gray-600 mb-1">{label}</p>
       <p className="text-lg font-bold text-gray-900">{value}</p>
     </div>
-  );
+  )
 }
 
 /**
@@ -423,17 +419,17 @@ function MetricBadge({ label, value }) {
  */
 function AccuracyBadge({ value, type }) {
   // TODO: Use status for icon/tooltip
-  let className = 'bg-green-100 text-green-800';
+  let className = 'bg-green-100 text-green-800'
 
   if (type === 'mape') {
     if (value > 20) {
-      className = 'bg-red-100 text-red-800';
+      className = 'bg-red-100 text-red-800'
     } else if (value > 15) {
-      className = 'bg-yellow-100 text-yellow-800';
+      className = 'bg-yellow-100 text-yellow-800'
     } else if (value > 10) {
-      className = 'bg-green-100 text-green-800';
+      className = 'bg-green-100 text-green-800'
     } else {
-      className = 'bg-blue-100 text-blue-800';
+      className = 'bg-blue-100 text-blue-800'
     }
   }
 
@@ -441,19 +437,23 @@ function AccuracyBadge({ value, type }) {
     <span className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${className}`}>
       {value.toFixed(2)}%
     </span>
-  );
+  )
 }
 
 /**
  * ForecastTooltip Component
  */
 function ForecastTooltip({ active, payload, label }) {
-  if (!active || !payload || payload.length === 0) return null;
+  if (!active || !payload || payload.length === 0) return null
 
   return (
     <div className="bg-white border border-gray-200 rounded shadow-lg p-3">
       <p className="font-medium text-gray-900 mb-2">
-        {new Date(label).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+        {new Date(label).toLocaleDateString('en-GB', {
+          day: 'numeric',
+          month: 'short',
+          year: 'numeric',
+        })}
       </p>
       {payload.map((entry, index) => (
         <div key={index} className="flex items-center justify-between gap-4 text-sm">
@@ -465,12 +465,12 @@ function ForecastTooltip({ active, payload, label }) {
         </div>
       ))}
     </div>
-  );
+  )
 }
 
 /**
  * Constants
  */
-const MODEL_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444'];
+const MODEL_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444']
 
-export default ModelComparison;
+export default ModelComparison

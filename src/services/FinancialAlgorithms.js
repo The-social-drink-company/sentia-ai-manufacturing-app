@@ -486,6 +486,3 @@ class FinancialAlgorithms {
 }
 
 export default FinancialAlgorithms
-
-
-

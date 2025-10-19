@@ -1,6 +1,10 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { CubeIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline'
+import { useIntegrationStatus } from '@/hooks/useIntegrationStatus'
+import AmazonSetupPrompt from '@/components/integrations/AmazonSetupPrompt'
+import UnleashedSetupPrompt from '@/components/integrations/UnleashedSetupPrompt'
+import { KPIStripSkeleton, TableSkeleton } from '@/components/skeletons'
 
 const currencyFormatter = new Intl.NumberFormat('en-GB', {
   style: 'currency',
@@ -14,6 +18,9 @@ const InventoryManagement = () => {
   const [inventory, setInventory] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+
+  // Check integration status for inventory-related services
+  const { amazon: amazonStatus, unleashed: unleashedStatus, loading: integrationLoading } = useIntegrationStatus()
 
   const apiBase = import.meta.env.VITE_API_BASE_URL || '/api'
 
@@ -49,16 +56,27 @@ const InventoryManagement = () => {
       .slice(0, 5)
   }, [inventory])
 
+  // Show setup prompts if integrations are not connected
+  const showAmazonPrompt = !integrationLoading && amazonStatus && amazonStatus.status !== 'connected'
+  const showUnleashedPrompt = !integrationLoading && unleashedStatus && unleashedStatus.status !== 'connected'
+
+  if (showAmazonPrompt || showUnleashedPrompt) {
+    return (
+      <div className="space-y-6">
+        {showAmazonPrompt && <AmazonSetupPrompt amazonStatus={amazonStatus} />}
+        {showUnleashedPrompt && <UnleashedSetupPrompt unleashedStatus={unleashedStatus} />}
+      </div>
+    )
+  }
+
   if (loading) {
     return (
-      <div className="space-y-4">
-        <Card className="animate-pulse">
-          <CardContent className="p-6 space-y-3">
-            <div className="h-4 bg-gray-200 rounded w-32" />
-            <div className="h-8 bg-gray-200 rounded w-48" />
-            <div className="h-3 bg-gray-200 rounded w-full" />
-          </CardContent>
-        </Card>
+      <div className="space-y-6">
+        {/* Summary KPIs Skeleton (BMAD-UI-002) */}
+        <KPIStripSkeleton count={4} />
+
+        {/* Low Stock Alerts Table Skeleton (BMAD-UI-002) */}
+        <TableSkeleton rows={5} columns={3} showHeader={true} />
       </div>
     )
   }

@@ -15,7 +15,7 @@ const formatCurrency = value => {
     style: 'currency',
     currency: 'USD',
     minimumFractionDigits: 0,
-    maximumFractionDigits: 0
+    maximumFractionDigits: 0,
   }).format(amount)
 }
 
@@ -38,9 +38,12 @@ export default function CashFlowForecast({ data, period = 'current' }) {
   if (!series.length) {
     return (
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Cash Flow Forecast</h3>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+          Cash Flow Forecast
+        </h3>
         <p className="text-sm text-gray-600 dark:text-gray-400">
-          No cash flow records are available for the selected period ({period}). Verify that cash flow data is being ingested from your finance system.
+          No cash flow records are available for the selected period ({period}). Verify that cash
+          flow data is being ingested from your finance system.
         </p>
       </div>
     )
@@ -60,7 +63,7 @@ export default function CashFlowForecast({ data, period = 'current' }) {
       outflow: 0,
       net: 0,
       minBalance: Number.POSITIVE_INFINITY,
-      maxBalance: Number.NEGATIVE_INFINITY
+      maxBalance: Number.NEGATIVE_INFINITY,
     }
   )
 
@@ -97,23 +100,34 @@ export default function CashFlowForecast({ data, period = 'current' }) {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
           <p className="text-sm text-blue-600 dark:text-blue-400">Total Inflow</p>
-          <p className="text-lg font-bold text-blue-900 dark:text-blue-100">{formatCurrency(totals.inflow)}</p>
+          <p className="text-lg font-bold text-blue-900 dark:text-blue-100">
+            {formatCurrency(totals.inflow)}
+          </p>
         </div>
         <div className="bg-red-50 dark:bg-red-900/20 rounded-lg p-4">
           <p className="text-sm text-red-600 dark:text-red-400">Total Outflow</p>
-          <p className="text-lg font-bold text-red-900 dark:text-red-100">-{formatCurrency(totals.outflow)}</p>
+          <p className="text-lg font-bold text-red-900 dark:text-red-100">
+            -{formatCurrency(totals.outflow)}
+          </p>
         </div>
-        <div className={${totals.net >= 0 ? 'bg-green-50 dark:bg-green-900/20' : 'bg-red-50 dark:bg-red-900/20'} rounded-lg p-4}>
-          <p className={${totals.net >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'} text-sm}>
+        <div
+          className={`${totals.net >= 0 ? 'bg-green-50 dark:bg-green-900/20' : 'bg-red-50 dark:bg-red-900/20'} rounded-lg p-4`}
+        >
+          <p
+            className={`${totals.net >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'} text-sm`}
+          >
             Net Cash Flow
           </p>
-          <p className={${totals.net >= 0 ? 'text-green-900 dark:text-green-100' : 'text-red-900 dark:text-red-100'} text-lg font-bold}>
-            {totals.net >= 0 ? '+' : ''}{formatCurrency(totals.net)}
+          <p
+            className={`${totals.net >= 0 ? 'text-green-900 dark:text-green-100' : 'text-red-900 dark:text-red-100'} text-lg font-bold`}
+          >
+            {totals.net >= 0 ? '+' : ''}
+            {formatCurrency(totals.net)}
           </p>
         </div>
-        <div className={${getBalanceBackground(totals.minBalance)} rounded-lg p-4}>
-          <p className={${getBalanceColour(totals.minBalance)} text-sm}>Lowest Balance</p>
-          <p className={${getBalanceColour(totals.minBalance)} text-lg font-bold}>
+        <div className={`${getBalanceBackground(totals.minBalance)} rounded-lg p-4`}>
+          <p className={`${getBalanceColour(totals.minBalance)} text-sm`}>Lowest Balance</p>
+          <p className={`${getBalanceColour(totals.minBalance)} text-lg font-bold`}>
             {formatCurrency(totals.minBalance)}
           </p>
         </div>
@@ -121,9 +135,12 @@ export default function CashFlowForecast({ data, period = 'current' }) {
 
       {shortfallDays.length > 0 && (
         <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-          <h4 className="text-sm font-medium text-red-800 dark:text-red-200 mb-2">Cash flow alert</h4>
+          <h4 className="text-sm font-medium text-red-800 dark:text-red-200 mb-2">
+            Cash flow alert
+          </h4>
           <p className="text-sm text-red-600 dark:text-red-400">
-            Cash balance is projected to fall below  on {shortfallDays.length} day(s). Consider accelerating collections or deferring discretionary spend.
+            Cash balance is projected to fall below on {shortfallDays.length} day(s). Consider
+            accelerating collections or deferring discretionary spend.
           </p>
         </div>
       )}
@@ -142,13 +159,16 @@ export default function CashFlowForecast({ data, period = 'current' }) {
           <tbody className="divide-y divide-gray-100 dark:divide-gray-800 text-sm text-gray-800 dark:text-gray-200">
             {series.map(row => (
               <tr key={row.date}>
-                <td className="py-2 pr-4 whitespace-nowrap">{new Date(row.date).toLocaleDateString()}</td>
+                <td className="py-2 pr-4 whitespace-nowrap">
+                  {new Date(row.date).toLocaleDateString()}
+                </td>
                 <td className="py-2 pr-4">{formatCurrency(row.inflow)}</td>
                 <td className="py-2 pr-4">-{formatCurrency(row.outflow)}</td>
-                <td className={py-2 pr-4 }>
-                  {row.netFlow >= 0 ? '+' : ''}{formatCurrency(row.netFlow)}
+                <td className={`py-2 pr-4 ${row.netFlow >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  {row.netFlow >= 0 ? '+' : ''}
+                  {formatCurrency(row.netFlow)}
                 </td>
-                <td className={py-2 pr-4 }>
+                <td className={`py-2 pr-4 ${getBalanceColour(row.runningBalance)}`}>
                   {formatCurrency(row.runningBalance)}
                 </td>
               </tr>

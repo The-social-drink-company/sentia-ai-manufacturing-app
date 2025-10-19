@@ -5,7 +5,7 @@ import {
   ClockIcon,
   ArrowTrendingUpIcon,
   ExclamationTriangleIcon,
-  CheckCircleIcon
+  CheckCircleIcon,
 } from '@heroicons/react/24/outline'
 
 const priorityColour = priority => {
@@ -57,10 +57,13 @@ export default function OptimizationRecommendations({ recommendations, onActionC
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
         <div className="flex items-center mb-4">
           <LightBulbIcon className="h-6 w-6 text-blue-600 dark:text-blue-400 mr-2" />
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Optimisation Recommendations</h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+            Optimisation Recommendations
+          </h3>
         </div>
         <p className="text-sm text-gray-600 dark:text-gray-400">
-          No automation-driven suggestions are available yet. Once sufficient real data is ingested we will surface targeted working-capital actions here.
+          No automation-driven suggestions are available yet. Once sufficient real data is ingested
+          we will surface targeted working-capital actions here.
         </p>
       </div>
     )
@@ -71,7 +74,9 @@ export default function OptimizationRecommendations({ recommendations, onActionC
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center">
           <LightBulbIcon className="h-6 w-6 text-blue-600 dark:text-blue-400 mr-2" />
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Optimisation Recommendations</h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+            Optimisation Recommendations
+          </h3>
         </div>
         <div className="text-sm text-gray-600 dark:text-gray-400">
           {pendingCount} pending action{pendingCount === 1 ? '' : 's'}
@@ -82,13 +87,15 @@ export default function OptimizationRecommendations({ recommendations, onActionC
         {items.map(item => (
           <div
             key={item.id}
-            className={order rounded-lg p-4 transition hover:shadow-md }
+            className={`border rounded-lg p-4 transition hover:shadow-md ${priorityColour(item.priority)}`}
           >
             <div className="flex items-start justify-between">
               <div className="flex items-center space-x-3">
                 {typeIcon(item.type)}
                 <div>
-                  <h4 className="text-md font-semibold text-gray-900 dark:text-white">{item.title}</h4>
+                  <h4 className="text-md font-semibold text-gray-900 dark:text-white">
+                    {item.title}
+                  </h4>
                   <p className="text-sm text-gray-600 dark:text-gray-400">{item.description}</p>
                 </div>
               </div>

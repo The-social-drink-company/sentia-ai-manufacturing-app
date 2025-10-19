@@ -44,6 +44,9 @@ Thumbs.db
 # Prisma generated
 prisma/generated/
 
+# Prisma migration lock file - DO NOT FORMAT
+prisma/migrations/migration_lock.toml
+
 # Package manager
 .yarn/
 .pnpm-store/# Legacy automation artifacts

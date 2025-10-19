@@ -15,6 +15,10 @@ import fs from 'fs'
 import { createServer } from 'http'
 import { Server as SocketIOServer } from 'socket.io'
 
+// Import API routers
+import authRouter from './server/routes/auth.js'
+import sseRouter from './server/routes/sse.js'
+
 // Initialize logger with fallback
 let logger
 let createLogger, loggingMiddleware
@@ -68,11 +72,29 @@ function safeExtractError(error) {
 dotenv.config()
 
 // Import and run environment validation (SECURITY FIX 2025)
-import {
-  validateEnvironmentOnStartup,
-  getEnvironmentStatus,
-} from './api/middleware/environmentValidation.js'
-validateEnvironmentOnStartup()
+let validateEnvironmentOnStartup, getEnvironmentStatus
+try {
+  const envModule = await import('./api/middleware/environmentValidation.js')
+  validateEnvironmentOnStartup = envModule.validateEnvironmentOnStartup
+  getEnvironmentStatus = envModule.getEnvironmentStatus
+
+  // Run validation but catch any errors to prevent server crash
+  try {
+    validateEnvironmentOnStartup()
+  } catch (validationError) {
+    console.warn(
+      'Environment validation failed, continuing with warnings:',
+      validationError.message
+    )
+    logger.warn('Environment validation failed', { error: validationError.message })
+  }
+} catch (importError) {
+  console.warn('Could not load environment validation module:', importError.message)
+  logger.warn('Environment validation module unavailable', { error: importError.message })
+  // Create stub functions
+  validateEnvironmentOnStartup = () => {}
+  getEnvironmentStatus = () => ({ status: 'unavailable', environment: process.env.NODE_ENV })
+}
 
 // ES module compatibility
 const __filename = fileURLToPath(import.meta.url)
@@ -310,6 +332,13 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }))
 
 // Enterprise logging middleware
 app.use(loggingMiddleware)
+
+// Make prisma available to routes
+app.locals.prisma = prisma
+
+// API Routes
+app.use('/api/auth', authRouter)
+app.use('/api/v1/sse', sseRouter)
 
 // Health check endpoint with REAL status
 app.get('/health', async (req, res) => {
@@ -1136,18 +1165,7 @@ app.get('/api/forecasting/enhanced', async (req, res) => {
   }
 })
 
-// Authentication endpoints
-app.get('/api/auth/me', async (req, res) => {
-  // This would integrate with Clerk in production
-  res.json({
-    user: {
-      id: 'user_123',
-      email: 'admin@sentia.com',
-      role: 'admin',
-      permissions: ['all'],
-    },
-  })
-})
+// Authentication endpoints are now handled by authRouter (/api/auth/*)
 
 // Xero diagnostic endpoint
 app.get('/api/xero/health', async (req, res) => {
@@ -2979,6 +2997,7 @@ function broadcastSSE(eventType, data) {
     try {
       client.write(message)
     } catch (error) {
+      logger.error('Failed to broadcast SSE message:', error)
       sseClients.delete(client)
     }
   }

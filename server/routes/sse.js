@@ -1,34 +1,41 @@
 import express from 'express'
+import { authMiddleware, requireRole } from '../middleware/auth.js'
+import sseService from '../services/sse/index.cjs'
+
+const {
+  streamChannel,
+  streamJobChannel,
+  streamMultiChannel,
+  emitAdminBroadcast,
+  getStatusSummary,
+} = sseService
 
 const router = express.Router()
 
-const notConfiguredResponse = {
-  error: 'Real-time streaming not configured',
-  message:
-    'Connect the production telemetry pipeline (Kafka/Redis stream or MCP feed) before enabling SSE.',
-  requiredIntegrations: [
-    'Real-time telemetry source (e.g. Kafka topic, Redis stream, or MCP feed)',
-    'Monitoring/observability pipeline to publish live events',
-    'Authentication/authorization layer for live data access',
-  ],
-}
+router.use(authMiddleware)
 
-router.get('/live-data', (_req, res) => {
-  res.status(503).json(notConfiguredResponse)
+router.get('/dashboard', (req, res) => streamChannel('dashboard', req, res))
+router.get('/production', (req, res) => streamChannel('production', req, res))
+router.get('/manufacturing', (req, res) => streamChannel('manufacturing', req, res))
+router.get('/inventory', (req, res) => streamChannel('inventory', req, res))
+router.get('/alerts', (req, res) => streamChannel('alerts', req, res))
+router.get('/forecast', (req, res) => streamChannel('forecast', req, res))
+router.get('/working-capital', (req, res) => streamChannel('working-capital', req, res))
+router.get('/jobs/:jobId', (req, res) => streamJobChannel(req.params.jobId, req, res))
+router.get('/subscribe', (req, res) => streamMultiChannel(req, res))
+
+router.get('/status', requireRole('admin', 'manager'), (_req, res) => {
+  res.json(getStatusSummary())
 })
 
-router.post('/trigger/:eventType', express.json(), (_req, res) => {
-  res.status(503).json(notConfiguredResponse)
-})
+router.post('/broadcast', requireRole('admin'), express.json(), (req, res) => {
+  const { channel = 'system', event = 'admin:broadcast', data = {} } = req.body ?? {}
 
-router.get('/clients', (_req, res) => {
-  res.status(503).json({ ...notConfiguredResponse, clients: [] })
-})
+  emitAdminBroadcast(channel, event, data, {
+    userId: req.user?.id ?? null,
+  })
 
-export const sendSSEEvent = () => {
-  throw new Error(
-    'SSE streaming is not configured. Connect the real-time pipeline before broadcasting events.'
-  )
-}
+  res.json({ success: true })
+})
 
 export default router

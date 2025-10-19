@@ -2,13 +2,16 @@ import { Suspense, lazy, useState, useEffect } from 'react'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
-import LandingPage from '@/components/LandingPage'
+import LandingPage from '@/pages/LandingPage'
 import DashboardLayout from '@/components/DashboardLayout'
 import ProgressiveDashboardLoader from '@/components/dashboard/ProgressiveDashboardLoader'
-import ClerkSignInEnvironmentAware from '@/pages/ClerkSignInEnvironmentAware'
+import SignInPage from '@/pages/SignInPage'
+import SignUpPage from '@/pages/SignUpPage'
 import ErrorBoundary from '@/components/ErrorBoundary'
 import DebugPanel from '@/components/DebugPanel'
+import AuthError from '@/components/AuthError'
 import { XeroProvider } from '@/contexts/XeroContext'
+import { useRequireAuth } from '@/hooks/useRequireAuth'
 
 const Dashboard = lazy(() => import('@/pages/DashboardEnterprise'))
 const WorkingCapital = lazy(() => import('@/components/WorkingCapital/RealWorkingCapital'))
@@ -17,6 +20,8 @@ const Analytics = lazy(() => import('@/pages/Analytics'))
 const Inventory = lazy(() => import('@/components/inventory/InventoryDashboard'))
 const DataImport = lazy(() => import('@/components/data/DataImportWidget'))
 const AdminPanel = lazy(() => import('@/pages/AdminPanelEnhanced'))
+// const ImportWizard = lazy(() => import('@/pages/admin/ImportWizard')) // TODO: Create ImportWizard component
+// const ExportBuilder = lazy(() => import('@/pages/admin/ExportBuilder')) // TODO: Create ExportBuilder component
 const WhatIf = lazy(() => import('@/components/analytics/WhatIfAnalysis'))
 const ScenarioPlanner = lazy(() => import('@/features/forecasting/ScenarioPlanner.jsx'))
 const AssistantPanel = lazy(() => import('@/features/ai-assistant/AssistantPanel.jsx'))
@@ -47,7 +52,13 @@ const Loader = () => (
 const isDevelopmentMode = import.meta.env.VITE_DEVELOPMENT_MODE === 'true'
 
 // Simple Development Protected Route - No Authentication Check
-const DevelopmentProtectedRoute = ({ children }) => {
+// In development mode, RBAC is bypassed for convenience
+const DevelopmentProtectedRoute = ({ children, requiredRole }) => {
+  // Log RBAC requirement for visibility (but don't enforce in dev mode)
+  if (requiredRole) {
+    console.log(`[Dev Mode] Route requires role: ${requiredRole} (bypassed in development)`)
+  }
+
   return (
     <XeroProvider>
       <ProgressiveDashboardLoader>
@@ -57,10 +68,19 @@ const DevelopmentProtectedRoute = ({ children }) => {
   )
 }
 
+// Inner component that performs RBAC check (can use hooks)
+const RBACGuard = ({ children, requiredRole }) => {
+  // Use the RBAC hook - it will redirect to /unauthorized if role insufficient
+  useRequireAuth({ requiredRole })
+
+  return children
+}
+
 // Production Protected Route - Uses Clerk
-const ProductionProtectedRoute = ({ children }) => {
+const ProductionProtectedRoute = ({ children, requiredRole }) => {
   const [ClerkComponents, setClerkComponents] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [clerkError, setClerkError] = useState(null)
 
   useEffect(() => {
     const loadClerk = async () => {
@@ -73,8 +93,8 @@ const ProductionProtectedRoute = ({ children }) => {
         })
       } catch (error) {
         console.error('[Production] Failed to load Clerk:', error)
-        // Fallback to development mode if Clerk fails
-        setClerkComponents(null)
+        // BMAD-AUTH-008-FIX-002: Remove fallback to dev mode, show error instead
+        setClerkError(error)
       } finally {
         setLoading(false)
       }
@@ -87,14 +107,14 @@ const ProductionProtectedRoute = ({ children }) => {
     return <Loader />
   }
 
-  if (!ClerkComponents) {
-    // Fallback to development mode if Clerk unavailable
+  // BMAD-AUTH-008-FIX-002: Show error page instead of fallback
+  if (!ClerkComponents || clerkError) {
     return (
-      <XeroProvider>
-        <ProgressiveDashboardLoader>
-          <DashboardLayout>{children}</DashboardLayout>
-        </ProgressiveDashboardLoader>
-      </XeroProvider>
+      <AuthError
+        type="network"
+        message="Unable to connect to authentication service. Please check your internet connection and try again."
+        onRetry={() => window.location.reload()}
+      />
     )
   }
 
@@ -103,11 +123,22 @@ const ProductionProtectedRoute = ({ children }) => {
   return (
     <>
       <SignedIn>
-        <XeroProvider>
-          <ProgressiveDashboardLoader>
-            <DashboardLayout>{children}</DashboardLayout>
-          </ProgressiveDashboardLoader>
-        </XeroProvider>
+        {/* BMAD-AUTH-008-FIX-001: Add RBAC enforcement */}
+        {requiredRole ? (
+          <RBACGuard requiredRole={requiredRole}>
+            <XeroProvider>
+              <ProgressiveDashboardLoader>
+                <DashboardLayout>{children}</DashboardLayout>
+              </ProgressiveDashboardLoader>
+            </XeroProvider>
+          </RBACGuard>
+        ) : (
+          <XeroProvider>
+            <ProgressiveDashboardLoader>
+              <DashboardLayout>{children}</DashboardLayout>
+            </ProgressiveDashboardLoader>
+          </XeroProvider>
+        )}
       </SignedIn>
       <SignedOut>
         <RedirectToSignIn />
@@ -204,10 +235,26 @@ const App = () => {
               <Route path="/landing" element={<LandingPage />} />
 
               {/* Authentication Routes */}
-              <Route path="/app/sign-in" element={<ClerkSignInEnvironmentAware />} />
-              <Route path="/app/sign-up" element={<ClerkSignInEnvironmentAware />} />
+              <Route path="/sign-in" element={<SignInPage />} />
+              <Route path="/sign-up" element={<SignUpPage />} />
+              {/* Legacy routes for backward compatibility */}
+              <Route path="/app/sign-in" element={<Navigate to="/sign-in" replace />} />
+              <Route path="/app/sign-up" element={<Navigate to="/sign-up" replace />} />
 
               {/* Protected Dashboard Routes */}
+              <Route
+                path="/dashboard"
+                element={
+                  <ErrorBoundary fallbackMessage="Dashboard failed to load. Please check your connection and try again.">
+                    <ProtectedRoute>
+                      <Suspense fallback={<Loader />}>
+                        <Dashboard />
+                      </Suspense>
+                    </ProtectedRoute>
+                  </ErrorBoundary>
+                }
+              />
+              {/* Legacy /app/dashboard route for backward compatibility */}
               <Route
                 path="/app/dashboard"
                 element={
@@ -277,7 +324,7 @@ const App = () => {
                 path="/app/data-import"
                 element={
                   <ErrorBoundary fallbackMessage="Data Import module failed to load.">
-                    <ProtectedRoute>
+                    <ProtectedRoute requiredRole="manager">
                       <Suspense fallback={<Loader />}>
                         <DataImport />
                       </Suspense>
@@ -290,7 +337,7 @@ const App = () => {
                 path="/app/admin"
                 element={
                   <ErrorBoundary fallbackMessage="Admin Panel failed to load.">
-                    <ProtectedRoute>
+                    <ProtectedRoute requiredRole="admin">
                       <Suspense fallback={<Loader />}>
                         <AdminPanel />
                       </Suspense>
@@ -298,6 +345,36 @@ const App = () => {
                   </ErrorBoundary>
                 }
               />
+
+              {/* TODO: Implement ImportWizard component
+              <Route
+                path="/app/admin/import"
+                element={
+                  <ErrorBoundary fallbackMessage="Import Wizard failed to load.">
+                    <ProtectedRoute requiredRole="admin">
+                      <Suspense fallback={<Loader />}>
+                        <ImportWizard />
+                      </Suspense>
+                    </ProtectedRoute>
+                  </ErrorBoundary>
+                }
+              />
+              */}
+
+              {/* TODO: Implement ExportBuilder component
+              <Route
+                path="/app/admin/export"
+                element={
+                  <ErrorBoundary fallbackMessage="Export Builder failed to load.">
+                    <ProtectedRoute requiredRole="admin">
+                      <Suspense fallback={<Loader />}>
+                        <ExportBuilder />
+                      </Suspense>
+                    </ProtectedRoute>
+                  </ErrorBoundary>
+                }
+              />
+              */}
 
               <Route
                 path="/app/what-if"

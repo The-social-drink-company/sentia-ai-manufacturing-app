@@ -297,7 +297,7 @@ const generateExecutiveSummary = (sections, dateRange) => {
 /**
  * Generate summary for P&L analysis
  */
-const generatePLSummary = (plData, summaryData) => {
+const generatePLSummary = plData => {
   if (!plData || !Array.isArray(plData) || plData.length === 0) {
     return { status: 'Data unavailable', message: 'P&L analysis data not accessible' }
   }

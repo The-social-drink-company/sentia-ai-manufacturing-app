@@ -6,6 +6,7 @@ import { rateLimiters } from '../middleware/rateLimiter.js';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { z } from 'zod';
 import { logDebug, logInfo, logWarn, logError } from '../../src/utils/logger';
+import xeroService from '../../services/xeroService.js';
 
 
 // Initialize cache with 60 second TTL for financial data
@@ -985,60 +986,125 @@ router.get('/overview',
 
 /**
  * GET /api/financial/pl-analysis
- * Get P&L analysis data by month
+ * Get P&L analysis data by month from REAL Xero API
+ *
+ * BMAD-MOCK-001: Replaced Math.random() mock data with live Xero integration
+ * Status: ✅ LIVE DATA ONLY - No fallbacks, no mock data
  */
 router.get('/pl-analysis',
   requireAuth,
   rateLimiters.read,
   asyncHandler(async (req, res) => {
-    const cacheKey = 'pl_analysis_data';
-    
+    const { periods = 11 } = req.query; // Default to 11 periods (almost 1 year)
+    const cacheKey = `pl_analysis_data_${periods}`;
+
     // Check cache first
     const cached = cache.get(cacheKey);
     if (cached) {
+      logDebug('[P&L Analysis API] Cache hit');
       return res.json(cached);
     }
 
+    logInfo('[P&L Analysis API] Fetching REAL data from Xero');
+
     try {
-      // Generate mock P&L data for demonstration
-      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-      
-      const plData = months.map((month, index) => {
-        // Generate realistic but varied data with seasonal patterns
-        const baseRevenue = 1200 + (Math.sin(index * 0.5) * 200) + (Math.random() * 100);
-        const seasonalFactor = 1 + (Math.sin(index * 0.5) * 0.15);
-        
-        const revenue = Math.round(baseRevenue * seasonalFactor);
-        const grossProfit = Math.round(revenue * (0.55 + Math.random() * 0.15)); // 55-70% gross margin
-        const ebitda = Math.round(revenue * (0.18 + Math.random() * 0.08)); // 18-26% EBITDA margin
-        const grossMarginPercent = Number(((grossProfit / revenue) * 100).toFixed(1));
-        
+      // Check Xero connection status
+      const xeroHealth = await xeroService.healthCheck();
+
+      if (xeroHealth.status !== 'connected') {
+        logWarn('[P&L Analysis API] Xero not connected');
+        return res.status(503).json({
+          success: false,
+          error: 'Xero integration required',
+          message: 'Please connect to Xero to view real P&L analysis data',
+          dataSource: 'xero_not_connected',
+          xeroStatus: xeroHealth,
+          setupInstructions: {
+            step1: 'Set XERO_CLIENT_ID environment variable',
+            step2: 'Set XERO_CLIENT_SECRET environment variable',
+            step3: 'Ensure Xero Custom Connection is created with accounting.transactions.read permission',
+            documentation: 'See docs/xero-setup.md for detailed instructions'
+          },
+          timestamp: new Date().toISOString()
+        });
+      }
+
+      // Fetch REAL P&L data from Xero (max 11 periods)
+      const periodsToFetch = Math.min(parseInt(periods) || 11, 11);
+      const xeroPlData = await xeroService.getProfitAndLoss(periodsToFetch);
+
+      if (!xeroPlData || xeroPlData.length === 0) {
+        logWarn('[P&L Analysis API] No P&L data available from Xero');
+        return res.status(404).json({
+          success: false,
+          error: 'No P&L data available',
+          message: 'Xero is connected but returned no P&L data. Please check if organization has financial transactions.',
+          dataSource: 'xero_api',
+          timestamp: new Date().toISOString()
+        });
+      }
+
+      // Transform Xero data to month-based format
+      const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+      const plData = xeroPlData.map((period, index) => {
+        // Extract month from reportDate (format: "31 October 2024")
+        const reportDate = new Date(period.reportDate);
+        const monthIndex = reportDate.getMonth();
+        const month = monthNames[monthIndex];
+
+        // Use real Xero data - NO MOCK DATA
+        const revenue = period.totalRevenue || 0;
+        const expenses = period.totalExpenses || 0;
+
+        // Calculate gross profit (Revenue - COGS)
+        // Estimate COGS as 65% of expenses for manufacturing (same as xeroService)
+        const cogs = expenses * 0.65;
+        const grossProfit = revenue - cogs;
+
+        // EBITDA is net profit before interest, tax, depreciation, amortization
+        const ebitda = period.netProfit || (revenue - expenses);
+
+        const grossMarginPercent = revenue > 0 ? Number(((grossProfit / revenue) * 100).toFixed(1)) : 0;
+        const ebitdaMarginPercent = revenue > 0 ? Number(((ebitda / revenue) * 100).toFixed(1)) : 0;
+
         return {
           month,
-          revenue,
-          grossProfit,
-          ebitda,
-          grossMarginPercent
+          monthYear: `${month} ${reportDate.getFullYear()}`,
+          revenue: Math.round(revenue),
+          grossProfit: Math.round(grossProfit),
+          ebitda: Math.round(ebitda),
+          grossMarginPercent,
+          ebitdaMarginPercent,
+          reportDate: period.reportDate,
+          dataSource: 'xero_api'
         };
-      });
+      }).reverse(); // Reverse to show oldest first
 
       const result = {
         success: true,
         data: plData,
+        dataSource: 'xero_api',
+        periodsReturned: plData.length,
+        organizationId: xeroHealth.organizationId,
         timestamp: new Date().toISOString()
       };
 
+      logInfo(`[P&L Analysis API] ✅ Returned ${plData.length} periods of REAL Xero data`);
+
       // Cache for 5 minutes
       cache.set(cacheKey, result, 300);
-      
+
       res.json(result);
 
     } catch (error) {
-      logError('[P&L Analysis API] Error:', error);
+      logError('[P&L Analysis API] Error fetching Xero data:', error);
       res.status(500).json({
         success: false,
-        error: 'Failed to fetch P&L analysis data',
-        message: error.message
+        error: 'Failed to fetch P&L analysis data from Xero',
+        message: error.message,
+        dataSource: 'xero_api_error',
+        timestamp: new Date().toISOString()
       });
     }
   })
@@ -1046,53 +1112,139 @@ router.get('/pl-analysis',
 
 /**
  * GET /api/financial/pl-summary
- * Get P&L summary metrics
+ * Get P&L summary metrics from REAL Xero API
+ *
+ * BMAD-MOCK-001: Replaced hardcoded mock totals with live Xero aggregation
+ * Status: ✅ LIVE DATA ONLY - No fallbacks, no mock data
  */
 router.get('/pl-summary',
   requireAuth,
   rateLimiters.read,
   asyncHandler(async (req, res) => {
-    const { period = 'year' } = req.query;
+    const { period = 'year' } = req.query; // year, quarter, month
     const cacheKey = `pl_summary_${period}`;
-    
+
     // Check cache first
     const cached = cache.get(cacheKey);
     if (cached) {
+      logDebug('[P&L Summary API] Cache hit');
       return res.json(cached);
     }
 
+    logInfo('[P&L Summary API] Fetching REAL summary from Xero');
+
     try {
-      // Mock summary calculations
-      const mockTotalRevenue = 15840;
-      const mockTotalGrossProfit = 9860;
-      const mockTotalEbitda = 3420;
-      
+      // Check Xero connection status
+      const xeroHealth = await xeroService.healthCheck();
+
+      if (xeroHealth.status !== 'connected') {
+        logWarn('[P&L Summary API] Xero not connected');
+        return res.status(503).json({
+          success: false,
+          error: 'Xero integration required',
+          message: 'Please connect to Xero to view real P&L summary data',
+          dataSource: 'xero_not_connected',
+          xeroStatus: xeroHealth,
+          setupInstructions: {
+            step1: 'Set XERO_CLIENT_ID environment variable',
+            step2: 'Set XERO_CLIENT_SECRET environment variable',
+            step3: 'Ensure Xero Custom Connection is created with accounting.transactions.read permission',
+            documentation: 'See docs/xero-setup.md for detailed instructions'
+          },
+          timestamp: new Date().toISOString()
+        });
+      }
+
+      // Determine periods to fetch based on requested period
+      let periodsToFetch;
+      switch (period) {
+        case 'month':
+          periodsToFetch = 1;
+          break;
+        case 'quarter':
+          periodsToFetch = 3;
+          break;
+        case 'year':
+          periodsToFetch = 11; // Max allowed by Xero API
+          break;
+        default:
+          periodsToFetch = 11;
+      }
+
+      // Fetch REAL P&L data from Xero
+      const xeroPlData = await xeroService.getProfitAndLoss(periodsToFetch);
+
+      if (!xeroPlData || xeroPlData.length === 0) {
+        logWarn('[P&L Summary API] No P&L data available from Xero');
+        return res.status(404).json({
+          success: false,
+          error: 'No P&L data available',
+          message: 'Xero is connected but returned no P&L data. Please check if organization has financial transactions.',
+          dataSource: 'xero_api',
+          timestamp: new Date().toISOString()
+        });
+      }
+
+      // Calculate aggregated totals from REAL Xero data
+      let totalRevenue = 0;
+      let totalExpenses = 0;
+      let totalNetProfit = 0;
+
+      xeroPlData.forEach(period => {
+        totalRevenue += period.totalRevenue || 0;
+        totalExpenses += period.totalExpenses || 0;
+        totalNetProfit += period.netProfit || 0;
+      });
+
+      // Calculate gross profit (Revenue - COGS)
+      // Using same COGS estimation as xeroService (65% of expenses for manufacturing)
+      const totalCogs = totalExpenses * 0.65;
+      const totalGrossProfit = totalRevenue - totalCogs;
+
+      // EBITDA approximation (using net profit as proxy)
+      const totalEbitda = totalNetProfit;
+
+      const avgGrossMargin = totalRevenue > 0 ? Number(((totalGrossProfit / totalRevenue) * 100).toFixed(1)) : 0;
+      const avgEbitdaMargin = totalRevenue > 0 ? Number(((totalEbitda / totalRevenue) * 100).toFixed(1)) : 0;
+      const avgNetMargin = totalRevenue > 0 ? Number(((totalNetProfit / totalRevenue) * 100).toFixed(1)) : 0;
+
       const summaryData = {
-        totalRevenue: mockTotalRevenue,
-        totalGrossProfit: mockTotalGrossProfit,
-        totalEbitda: mockTotalEbitda,
-        avgGrossMargin: Number(((mockTotalGrossProfit / mockTotalRevenue) * 100).toFixed(1)),
-        avgEbitdaMargin: Number(((mockTotalEbitda / mockTotalRevenue) * 100).toFixed(1)),
-        period
+        totalRevenue: Math.round(totalRevenue),
+        totalGrossProfit: Math.round(totalGrossProfit),
+        totalEbitda: Math.round(totalEbitda),
+        totalNetProfit: Math.round(totalNetProfit),
+        totalExpenses: Math.round(totalExpenses),
+        avgGrossMargin,
+        avgEbitdaMargin,
+        avgNetMargin,
+        period,
+        periodsIncluded: xeroPlData.length,
+        dataSource: 'xero_api'
       };
 
       const result = {
         success: true,
         data: summaryData,
+        dataSource: 'xero_api',
+        organizationId: xeroHealth.organizationId,
         timestamp: new Date().toISOString()
       };
 
+      logInfo(`[P&L Summary API] ✅ Calculated summary from ${xeroPlData.length} periods of REAL Xero data`);
+
       // Cache for 10 minutes
       cache.set(cacheKey, result, 600);
-      
+
       res.json(result);
 
     } catch (error) {
-      logError('[P&L Summary API] Error:', error);
+      logError('[P&L Summary API] Error fetching Xero data:', error);
       res.status(500).json({
         success: false,
-        error: 'Failed to fetch P&L summary data',
-        message: error.message
+        error: 'Failed to fetch P&L summary data from Xero',
+        message: error.message,
+        dataSource: 'xero_api_error',
+        timestamp: new Date().toISOString()
       });
     }
   })

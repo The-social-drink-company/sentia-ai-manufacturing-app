@@ -12,6 +12,9 @@ import FinancialCharts from '@/components/financial/FinancialCharts'
 import FinancialInsights from '@/components/financial/FinancialInsights'
 import ProductPerformanceTable from '@/components/financial/ProductPerformanceTable'
 import { useFinancialReportsData } from '@/hooks/useFinancialData'
+import { useIntegrationStatus } from '@/hooks/useIntegrationStatus'
+import XeroSetupPrompt from '@/components/integrations/XeroSetupPrompt'
+import { KPIStripSkeleton, ChartSkeleton, TableSkeleton } from '@/components/skeletons'
 import { cn } from '@/utils/cn'
 
 const TimeRangeSelector = ({ value, onChange, className }) => {
@@ -44,7 +47,9 @@ const TimeRangeSelector = ({ value, onChange, className }) => {
   )
 }
 
+// eslint-disable-next-line no-unused-vars
 const PageHeader = ({ timeRange, onTimeRangeChange, isLoading, onRefresh, lastUpdated }) => {
+  // TODO: Display lastUpdated timestamp in header
   return (
     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
       <div className="flex items-center space-x-3">
@@ -108,32 +113,26 @@ const ErrorBoundary = ({ error, onRetry }) => (
   </Card>
 )
 
+/**
+ * Financial Reports Loading State (BMAD-UI-002)
+ * Enhanced with specialized skeleton components
+ */
 const LoadingState = () => (
   <div className="space-y-6">
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-      {Array.from({ length: 4 }).map((_, i) => (
-        <Card key={i}>
-          <CardContent className="p-4">
-            <div className="space-y-2">
-              <div className="h-3 bg-gray-200 rounded animate-pulse" />
-              <div className="h-6 bg-gray-200 rounded animate-pulse" />
-              <div className="h-3 bg-gray-200 rounded animate-pulse w-2/3" />
-            </div>
-          </CardContent>
-        </Card>
-      ))}
+    {/* KPI Strip Skeleton */}
+    <KPIStripSkeleton count={4} />
+
+    {/* Financial Charts Skeletons */}
+    <div className="space-y-6">
+      <ChartSkeleton variant="line" showLegend={true} />
+      <ChartSkeleton variant="bar" showLegend={true} />
     </div>
 
-    {Array.from({ length: 3 }).map((_, i) => (
-      <Card key={i}>
-        <CardHeader>
-          <div className="h-6 bg-gray-200 rounded animate-pulse w-1/3" />
-        </CardHeader>
-        <CardContent>
-          <div className="h-64 bg-gray-200 rounded animate-pulse" />
-        </CardContent>
-      </Card>
-    ))}
+    {/* Insights and Product Performance Skeletons */}
+    <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+      <ChartSkeleton variant="pie" showLegend={false} />
+      <TableSkeleton rows={5} columns={4} showHeader={true} />
+    </div>
   </div>
 )
 
@@ -141,9 +140,13 @@ const FinancialReports = () => {
   console.log('[Navigation Debug] FinancialReports component rendering')
 
   const [timeRange, setTimeRange] = useState('year')
-  const [filters, setFilters] = useState({})
+  // eslint-disable-next-line no-unused-vars
+  const [filters, setFilters] = useState({}) // TODO: Implement filter controls
 
-  console.log('[Navigation Debug] FinancialReports state initialized:', { timeRange, filters })
+  // Check Xero integration status
+  const { xero: xeroStatus, loading: integrationLoading } = useIntegrationStatus()
+
+  console.log('[Navigation Debug] FinancialReports state initialized:', { timeRange, filters, xeroStatus })
 
   const {
     kpiData,
@@ -172,6 +175,22 @@ const FinancialReports = () => {
 
   const handleTimeRangeChange = newRange => {
     setTimeRange(newRange)
+  }
+
+  // Show setup prompt if Xero is not connected
+  if (!integrationLoading && xeroStatus && xeroStatus.status !== 'connected') {
+    console.log('[Navigation Debug] FinancialReports showing Xero setup prompt:', xeroStatus.status)
+    return (
+      <div className="p-6 space-y-6">
+        <PageHeader
+          timeRange={timeRange}
+          onTimeRangeChange={handleTimeRangeChange}
+          isLoading={false}
+          onRefresh={handleRefresh}
+        />
+        <XeroSetupPrompt xeroStatus={xeroStatus} />
+      </div>
+    )
   }
 
   if (error) {

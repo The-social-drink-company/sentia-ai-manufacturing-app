@@ -35,7 +35,7 @@
    - ✅ **100% Compliance**: Zero mock data fallbacks remain in codebase
 
 **4. Live Deployment Verified**
-   - ✅ **Development Environment**: https://sentia-manufacturing-dashboard-621h.onrender.com
+   - ✅ **Development Environment**: https://sentia-frontend-prod.onrender.com
    - ✅ **Real Data Confirmed**: Working capital endpoint returning actual business context
    - ✅ **Performance**: Response includes 12-month working capital projections and recent sales data
 

@@ -9,30 +9,9 @@
  * 5. Single source of truth for authentication
  */
 
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { ClerkProvider, useAuth as useClerkAuth, useUser as useClerkUser } from '@clerk/clerk-react'
-
-// Authentication context that always has a value
-const AuthContext = createContext(null)
-
-// Default fallback authentication state
-const FALLBACK_AUTH_STATE = {
-  isLoaded: true,
-  isSignedIn: false,
-  userId: 'guest_user',
-  sessionId: 'guest_session',
-  user: {
-    id: 'guest_user',
-    firstName: 'Guest',
-    lastName: 'User',
-    fullName: 'Guest User',
-    emailAddresses: [{ emailAddress: 'guest@sentia.local' }],
-    publicMetadata: { role: 'viewer' },
-  },
-  signOut: () => Promise.resolve(),
-  getToken: () => Promise.resolve(null),
-  mode: 'fallback',
-}
+import { AuthContext, FALLBACK_AUTH_STATE } from './bulletproofAuthContext'
 
 // Loading screen component
 const LoadingScreen = () => (
@@ -122,10 +101,9 @@ function FallbackAuthProvider({ children }) {
 }
 
 // Main bulletproof auth provider
-export function BulletproofAuthProvider({ children }) {
+function BulletproofAuthProvider({ children }) {
   const [authMode, setAuthMode] = useState('initializing')
   const [error, setError] = useState(null)
-  const [retryCount, setRetryCount] = useState(0)
 
   // Get and validate Clerk key
   const clerkKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
@@ -175,14 +153,13 @@ export function BulletproofAuthProvider({ children }) {
     }
 
     return () => clearTimeout(timeout)
-  }, [isValidKey, retryCount])
+  }, [clerkKey, isValidKey])
 
   useEffect(() => {
     initialize()
   }, [initialize])
 
   const handleRetry = () => {
-    setRetryCount(prev => prev + 1)
     initialize()
   }
 
@@ -229,57 +206,6 @@ export function BulletproofAuthProvider({ children }) {
       </div>
     </AuthContext.Provider>
   )
-}
-
-// Universal auth hook that ALWAYS works
-export function useBulletproofAuth() {
-  // Try to get auth from context first
-  const contextAuth = useContext(AuthContext)
-
-  // If we have context auth, return it
-  if (contextAuth) {
-    return contextAuth
-  }
-
-  // Note: Removed direct Clerk hook usage to prevent context errors
-
-  // Ultimate fallback - always return valid auth state
-  return FALLBACK_AUTH_STATE
-}
-
-// Helper hook to check auth mode
-export function useAuthMode() {
-  const auth = useBulletproofAuth()
-  return auth.mode || 'unknown'
-}
-
-// Helper hook for role-based access
-export function useAuthRole() {
-  const auth = useBulletproofAuth()
-
-  const role = auth.user?.publicMetadata?.role || 'viewer'
-  const permissions = getPermissionsForRole(role)
-
-  return {
-    role,
-    permissions,
-    hasPermission: permission => permissions.includes(permission),
-    isAdmin: role === 'admin',
-    isManager: role === 'manager' || role === 'admin',
-    isAuthenticated: auth.isSignedIn,
-  }
-}
-
-// Permission system
-function getPermissionsForRole(role) {
-  const permissions = {
-    admin: ['*'], // All permissions
-    manager: ['read', 'write', 'update', 'delete', 'manage_team'],
-    operator: ['read', 'write', 'update'],
-    viewer: ['read'],
-  }
-
-  return permissions[role] || permissions.viewer
 }
 
 // Export everything needed

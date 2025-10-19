@@ -11,7 +11,7 @@ import { jsPDF } from 'jspdf'
 import 'jspdf-autotable'
 
 // Excel export utilities
-const createExcelWorkbook = async data => {
+const createExcelWorkbook = async () => {
   // Dynamic import to avoid bundle size issues
   const XLSX = await import('xlsx')
   return XLSX
@@ -691,7 +691,7 @@ export class WorkingCapitalExporter {
       yPosition += 10
 
       if (this.data.risks.risks.length > 0) {
-        this.data.risks.risks.slice(0, 3).forEach((risk, _index) => {
+        this.data.risks.risks.slice(0, 3).forEach((risk, index) => {
           doc.text(`${index + 1}. ${risk.type} (${risk.severity.toUpperCase()})`, 25, yPosition)
           yPosition += 5
           doc.text(`   ${risk.description.substring(0, 80)}...`, 25, yPosition)
@@ -743,12 +743,12 @@ export async function exportWorkingCapitalData(data, format, options = {}) {
 
   switch (format.toLowerCase()) {
     case 'csv':
-      return await exporter.exportCSV()
+      return exporter.exportCSV()
     case 'excel':
     case 'xlsx':
-      return await exporter.exportExcel()
+      return exporter.exportExcel()
     case 'pdf':
-      return await exporter.exportPDF()
+      return exporter.exportPDF()
     case 'json':
       return exporter.exportJSON()
     default:

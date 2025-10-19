@@ -2,6 +2,7 @@ import '@shopify/shopify-api/adapters/node';
 import { shopifyApi, ApiVersion } from '@shopify/shopify-api';
 import redisCacheService from './redis-cache.js';
 import { logDebug, logInfo, logWarn, logError } from './logger.js';
+import sseService from '../server/services/sse/index.cjs';
 
 
 class ShopifyMultiStoreService {
@@ -140,7 +141,16 @@ class ShopifyMultiStoreService {
       return;
     }
 
+    const syncStartTime = Date.now();
     logDebug('SHOPIFY: Starting multi-store sync...');
+
+    // Emit sync started event
+    sseService.emitShopifySyncStarted({
+      totalStores: this.stores.size,
+      activeStores: Array.from(this.stores.values()).filter(s => s.isActive).length,
+      timestamp: new Date().toISOString()
+    });
+
     const syncResults = [];
 
     for (const [storeId, store] of this.stores.entries()) {
@@ -161,6 +171,18 @@ class ShopifyMultiStoreService {
         store.lastSync = new Date().toISOString();
         logDebug(`SHOPIFY: Synced ${store.name} successfully`);
 
+        // Emit store synced event
+        sseService.emitShopifyStoreSynced({
+          storeId,
+          storeName: store.name,
+          region: store.region,
+          orders: storeData.orders,
+          revenue: storeData.sales,
+          netRevenue: storeData.netSales,
+          transactionFees: storeData.transactionFees,
+          timestamp: new Date().toISOString()
+        });
+
       } catch (error) {
         logError(`SHOPIFY: Sync failed for ${store.name}:`, error);
         syncResults.push({
@@ -169,6 +191,14 @@ class ShopifyMultiStoreService {
           error: error.message,
           syncTime: new Date().toISOString()
         });
+
+        // Emit sync error event
+        sseService.emitShopifySyncError({
+          storeId,
+          storeName: store.name,
+          error: error.message,
+          timestamp: new Date().toISOString()
+        });
       }
     }
 
@@ -176,7 +206,25 @@ class ShopifyMultiStoreService {
     const consolidatedData = this.consolidateStoreData(syncResults);
     await redisCacheService.set('shopify:consolidated_data', consolidatedData, 1800); // 30 min cache
 
-    logDebug(`SHOPIFY: Sync completed. ${syncResults.filter(r => r.success).length}/${syncResults.length} stores synced successfully`);
+    const syncDuration = Date.now() - syncStartTime;
+    const successCount = syncResults.filter(r => r.success).length;
+    const totalCount = syncResults.length;
+
+    logDebug(`SHOPIFY: Sync completed. ${successCount}/${totalCount} stores synced successfully in ${syncDuration}ms`);
+
+    // Emit sync completed event
+    sseService.emitShopifySyncCompleted({
+      totalStores: totalCount,
+      successfulStores: successCount,
+      failedStores: totalCount - successCount,
+      totalRevenue: consolidatedData.totalSales || 0,
+      totalNetRevenue: consolidatedData.totalNetSales || 0,
+      totalTransactionFees: consolidatedData.totalTransactionFees || 0,
+      totalOrders: consolidatedData.totalOrders || 0,
+      syncDuration,
+      timestamp: new Date().toISOString()
+    });
+
     return consolidatedData;
   }
 

@@ -14,6 +14,7 @@
  * - Tool execution interface
  */
 
+import process from 'node:process'
 import axios from 'axios'
 import { getMCPConfig } from '../../config/database-config.js'
 
@@ -345,7 +346,9 @@ class MCPClient {
     // Implementation depends on the specific WebSocket setup
 
     return {
-      subscribe: callback => {
+      // TODO: Implement WebSocket subscription when backend is ready
+      // eslint-disable-next-line no-unused-vars
+      subscribe: _callback => {
         console.log('Subscribing to real-time updates')
         // TODO: Implement subscription logic
       },

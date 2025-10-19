@@ -285,8 +285,8 @@ npm audit --audit-level=moderate
 - [ ] DevOps Lead approval
 - [ ] Security review completed
 
-**Tech Lead**: ******\_\_\_****** Date: ******\_\_\_******
-**DevOps Lead**: ******\_\_\_****** Date: ******\_\_\_******
+**Tech Lead**: **\*\***\_\_\_**\*\*** Date: **\*\***\_\_\_**\*\***
+**DevOps Lead**: **\*\***\_\_\_**\*\*** Date: **\*\***\_\_\_**\*\***
 
 ### Business Sign-off
 
@@ -294,8 +294,8 @@ npm audit --audit-level=moderate
 - [ ] UAT completed successfully
 - [ ] Stakeholder notification sent
 
-**Product Owner**: ******\_\_\_****** Date: ******\_\_\_******
-**UAT Lead**: ******\_\_\_****** Date: ******\_\_\_******
+**Product Owner**: **\*\***\_\_\_**\*\*** Date: **\*\***\_\_\_**\*\***
+**UAT Lead**: **\*\***\_\_\_**\*\*** Date: **\*\***\_\_\_**\*\***
 
 ## Emergency Contacts
 

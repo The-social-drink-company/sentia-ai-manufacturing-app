@@ -330,7 +330,6 @@ const addRegionalTable = (pdf, data, margin, startY, contentWidth) => {
   const headerHeight = 15
   const col1Width = contentWidth * 0.33 // 33% for region
   const col2Width = contentWidth * 0.33 // 33% for revenue
-  const col3Width = contentWidth * 0.34 // 34% for EBITDA
 
   // Table header
   pdf.setFillColor(245, 245, 245)
@@ -373,7 +372,6 @@ const addPLTable = (pdf, data, margin, startY, contentWidth) => {
   const col1Width = contentWidth * 0.25 // 25% for month
   const col2Width = contentWidth * 0.25 // 25% for revenue
   const col3Width = contentWidth * 0.25 // 25% for gross profit
-  const col4Width = contentWidth * 0.25 // 25% for EBITDA
 
   // Show only last 6 months for space
   const recentData = data.slice(-6)
@@ -417,7 +415,6 @@ const addProductSalesTable = (pdf, data, margin, startY, contentWidth) => {
   const col1Width = contentWidth * 0.25 // 25% for product name
   const col2Width = contentWidth * 0.25 // 25% for revenue
   const col3Width = contentWidth * 0.25 // 25% for units
-  const col4Width = contentWidth * 0.25 // 25% for growth/market share
 
   // Table header
   pdf.setFillColor(245, 245, 245)
@@ -468,7 +465,9 @@ const addProductSalesTable = (pdf, data, margin, startY, contentWidth) => {
         revenue = parsedItem.revenue || 0
         units = parsedItem.units || 0
         growthRate = parsedItem.growthRate || 0
-      } catch (e) {
+      } catch (error) {
+        console.warn('[pdfService] Failed to parse product sales item', error)
+        // Error intentionally ignored - fallback to default values
         product = 'Invalid Data'
         revenue = 0
         units = 0

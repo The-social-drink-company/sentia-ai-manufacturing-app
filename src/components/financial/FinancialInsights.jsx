@@ -194,6 +194,7 @@ const generateInsights = data => {
 
   // AI recommendations
   if (data.recommendations?.length > 0) {
+    // eslint-disable-next-line no-unused-vars
     data.recommendations.slice(0, 2).forEach((rec, index) => {
       insights.push({
         type: 'recommendation',
@@ -293,4 +294,3 @@ const FinancialInsights = ({ data, loading = false, error = null, className }) =
 }
 
 export default FinancialInsights
-

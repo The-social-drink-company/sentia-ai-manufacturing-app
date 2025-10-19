@@ -16,9 +16,6 @@ import {
 import {
   CubeIcon,
   ChartBarIcon,
-  CurrencyDollarIcon,
-  ArrowUpIcon,
-  ArrowDownIcon,
   StarIcon,
   ExclamationTriangleIcon,
 } from '@heroicons/react/24/solid'
@@ -27,22 +24,13 @@ export default function ABCAnalysis({ data, title }) {
   const [viewMode, setViewMode] = useState('chart') // chart, table, treemap
   const [selectedCategory, setSelectedCategory] = useState('all') // all, A, B, C
   const [sortBy] = useState('value') // value, quantity, percentage
+  const hasData = Array.isArray(data) && data.length > 0
 
-  if (!data || data.length === 0) {
-    return (
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">{title}</h3>
-        <div className="flex items-center justify-center h-64">
-          <p className="text-gray-500 dark:text-gray-400">
-            No inventory data available for ABC analysis
-          </p>
-        </div>
-      </div>
-    )
-  }
-
-  // Perform ABC classification
   const abcData = useMemo(() => {
+    if (!Array.isArray(data) || data.length === 0) {
+      return []
+    }
+
     // Sort items by value (price * quantity) descending
     const sortedItems = [...data].sort((a, b) => {
       const valueA = (a.unitCost || 0) * (a.quantity || 0)
@@ -59,7 +47,7 @@ export default function ABCAnalysis({ data, title }) {
     const classifiedItems = sortedItems.map((item, index) => {
       const itemValue = (item.unitCost || 0) * (item.quantity || 0)
       cumulativeValue += itemValue
-      const cumulativePercentage = (cumulativeValue / totalValue) * 100
+      const cumulativePercentage = totalValue > 0 ? (cumulativeValue / totalValue) * 100 : 0
 
       // ABC Classification Rules
       let category = 'C'
@@ -81,6 +69,19 @@ export default function ABCAnalysis({ data, title }) {
 
     return classifiedItems
   }, [data])
+
+  if (!hasData) {
+    return (
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">{title}</h3>
+        <div className="flex items-center justify-center h-64">
+          <p className="text-gray-500 dark:text-gray-400">
+            No inventory data available for ABC analysis
+          </p>
+        </div>
+      </div>
+    )
+  }
 
   // Calculate summary statistics
   const summaryStats = useMemo(() => {

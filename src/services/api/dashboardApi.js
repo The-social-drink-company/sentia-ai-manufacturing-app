@@ -144,7 +144,8 @@ class DashboardApi {
     return this.getSummary()
   }
 
-  async getKPIs(timeRange = '30d') {
+  // TODO: Use timeRange parameter when backend supports it
+  async getKPIs() {
     return this.getAnalyticsKPIs()
   }
 

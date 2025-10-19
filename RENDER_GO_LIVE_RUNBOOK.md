@@ -4,9 +4,9 @@
 
 This runbook provides step-by-step instructions for migrating Sentia Manufacturing Dashboard from Railway to Render with zero downtime.
 
-**Target Date**: ******\_******
-**Maintenance Window**: ******\_******
-**Rollback Deadline**: ******\_******
+**Target Date**: **\*\***\_**\*\***
+**Maintenance Window**: **\*\***\_**\*\***
+**Rollback Deadline**: **\*\***\_**\*\***
 
 ## 📋 Pre-Migration Checklist (T-7 Days)
 

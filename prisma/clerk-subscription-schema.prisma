@@ -1,0 +1,105 @@
+// ==================== CLERK & SUBSCRIPTION MANAGEMENT ====================
+// Add these models to your main schema.prisma file
+
+// 1. Add clerkUserId to User model:
+model User {
+  // ... existing fields ...
+  clerkUserId String? @unique @map("clerk_user_id") // Clerk user ID
+  // ... rest of fields ...
+}
+
+// 2. Add clerkOrgId and subscription relation to Organization model:
+model Organization {
+  // ... existing fields ...
+  clerkOrgId String? @unique @map("clerk_org_id") // Clerk organization ID
+  slug       String? @unique // URL-friendly identifier
+
+  // Relations
+  subscription Subscription?
+  // ... other existing relations ...
+}
+
+// 3. Add new Subscription model:
+model Subscription {
+  id             String       @id @default(uuid())
+  organizationId String       @unique @map("organization_id")
+  organization   Organization @relation(fields: [organizationId], references: [id])
+
+  // Subscription Details
+  tier     String // ALPHA, PRO, ENTERPRISE
+  status   String // trialing, active, past_due, canceled, unpaid
+
+  // Pricing (stored in cents for precision)
+  pricePerMonth Int     @map("price_per_month") // $295 = 29500 cents
+  currency      String  @default("USD")
+
+  // Billing Periods
+  currentPeriodStart DateTime  @map("current_period_start")
+  currentPeriodEnd   DateTime  @map("current_period_end")
+  trialStart         DateTime? @map("trial_start")
+  trialEnd           DateTime? @map("trial_end")
+
+  // Cancellation
+  cancelAtPeriodEnd Boolean   @default(false) @map("cancel_at_period_end")
+  canceledAt        DateTime? @map("canceled_at")
+  cancelReason      String?   @map("cancel_reason")
+
+  // Payment Integration
+  stripeCustomerId     String? @unique @map("stripe_customer_id")
+  stripeSubscriptionId String? @unique @map("stripe_subscription_id")
+  paymentMethod        String? @map("payment_method") // STRIPE, MANUAL, INVOICE
+
+  // Usage Tracking
+  usageData Json? @map("usage_data") @db.Json // Track API calls, users, etc.
+
+  // Metadata
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([organizationId])
+  @@index([status])
+  @@map("subscriptions")
+}
+
+// 4. Add new SubscriptionInvoice model for billing history:
+model SubscriptionInvoice {
+  id             String   @id @default(uuid())
+  subscriptionId String   @map("subscription_id")
+
+  // Invoice Details
+  invoiceNumber String   @unique @map("invoice_number")
+  amount        Int      // Amount in cents
+  currency      String   @default("USD")
+  status        String   // draft, open, paid, void, uncollectible
+
+  // Billing Period
+  periodStart DateTime @map("period_start")
+  periodEnd   DateTime @map("period_end")
+
+  // Payment
+  dueDate DateTime  @map("due_date")
+  paidAt  DateTime? @map("paid_at")
+
+  // Integration
+  stripeInvoiceId String? @unique @map("stripe_invoice_id")
+  hostedInvoiceUrl String? @map("hosted_invoice_url") // Stripe hosted invoice URL
+  invoicePdfUrl   String? @map("invoice_pdf_url")
+
+  // Metadata
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([subscriptionId])
+  @@index([status])
+  @@index([dueDate])
+  @@map("subscription_invoices")
+}
+
+// MIGRATION INSTRUCTIONS:
+// 1. Copy the clerkUserId field to your User model
+// 2. Copy the clerkOrgId and subscription relation to your Organization model
+// 3. Copy the Subscription model in full
+// 4. Copy the SubscriptionInvoice model in full
+// 5. Run: npx prisma format
+// 6. Run: npx prisma generate
+// 7. Run: npx prisma migrate dev --name add_clerk_subscriptions

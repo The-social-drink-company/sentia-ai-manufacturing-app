@@ -13,7 +13,7 @@ import {
   XMarkIcon,
   ArrowPathIcon,
 } from '@heroicons/react/24/outline'
-import { useXero } from '../contexts/XeroContext'
+import { useXero } from '../contexts/useXero'
 
 const XeroConnectionBanner = ({
   onDismiss = null,

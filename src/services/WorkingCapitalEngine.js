@@ -615,5 +615,3 @@ class WorkingCapitalEngine {
 }
 
 export default WorkingCapitalEngine
-
-

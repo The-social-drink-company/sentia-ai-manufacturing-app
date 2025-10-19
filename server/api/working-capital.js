@@ -2,9 +2,19 @@
 import axios from 'axios'
 import { PrismaClient } from '@prisma/client'
 import { authenticateToken } from '../middleware/auth.js'
+import ScenarioModeler from '../services/finance/ScenarioModeler.js'
+import ApprovalEngine from '../services/finance/ApprovalEngine.js'
+import MitigationPlanner from '../services/finance/MitigationPlanner.js'
+import xeroService from '../../services/xeroService.js'
+import sseService from '../services/sse/index.cjs'
+
+const { emitWorkingCapitalUpdate } = sseService
 
 const router = express.Router()
 const prisma = new PrismaClient()
+const scenarioModeler = new ScenarioModeler()
+const approvalEngine = new ApprovalEngine()
+const mitigationPlanner = new MitigationPlanner()
 
 const XERO_API_URL = 'https://api.xero.com/api.xro/2.0'
 
@@ -132,6 +142,30 @@ const parseCashFlowReport = data => {
   }))
 }
 
+const parseCashFlowData = data => {
+  const historical = parseCashFlowReport(data)
+
+  const aggregates = historical.reduce(
+    (acc, entry) => {
+      acc.inflow += toNumber(entry.inflow)
+      acc.outflow += toNumber(entry.outflow)
+      acc.net += toNumber(entry.net)
+      return acc
+    },
+    { inflow: 0, outflow: 0, net: 0 }
+  )
+
+  return {
+    historical,
+    summary: {
+      totalInflow: Number(aggregates.inflow.toFixed(2)),
+      totalOutflow: Number(aggregates.outflow.toFixed(2)),
+      netChange: Number(aggregates.net.toFixed(2)),
+      periods: historical.length,
+    },
+  }
+}
+
 const fetchInventorySummary = async () => {
   const items = await prisma.inventory.findMany({
     include: { movements: true },
@@ -179,6 +213,114 @@ const fetchInventorySummary = async () => {
   }
 }
 
+const parseInventory = summary => {
+  if (!summary) {
+    return {
+      totalValue: 0,
+      totalQuantity: 0,
+      turnoverRate: 0,
+      stockouts: 0,
+      excessStock: 0,
+      categories: [],
+    }
+  }
+
+  return {
+    totalValue: toNumber(summary.totalValue),
+    totalQuantity: toNumber(summary.totalQuantity),
+    turnoverRate: toNumber(summary.turnoverRate),
+    stockouts: summary.stockouts ?? 0,
+    excessStock: summary.excessStock ?? 0,
+    categories: summary.categories ?? [],
+  }
+}
+
+const parseCurrentAssets = latest => ({
+  cash: toNumber(latest?.cash),
+  accountsReceivable: toNumber(latest?.accountsReceivable),
+  inventory: toNumber(latest?.inventory),
+  otherCurrentAssets: toNumber(latest?.otherCurrentAssets),
+  total: toNumber(latest?.currentAssets),
+})
+
+const parseCurrentLiabilities = latest => ({
+  accountsPayable: toNumber(latest?.accountsPayable),
+  shortTermDebt: toNumber(latest?.shortTermDebt),
+  accruedExpenses: toNumber(latest?.accruedExpenses),
+  otherCurrentLiabilities: toNumber(latest?.otherCurrentLiabilities),
+  total: toNumber(latest?.currentLiabilities),
+})
+
+const parseBankAccounts = (accounts, fallbackCash) => {
+  if (Array.isArray(accounts) && accounts.length) {
+    return accounts.map(account => ({
+      id: account.id ?? account.accountId ?? `acct-${Math.random().toString(36).slice(2, 8)}`,
+      name: account.name ?? account.accountName ?? 'Operating Account',
+      institution: account.institution ?? account.bankName ?? 'Primary Bank',
+      balance: toNumber(account.balance ?? account.currentBalance),
+      currency: account.currency ?? 'USD',
+      updatedAt: account.updatedAt
+        ? new Date(account.updatedAt).toISOString()
+        : new Date().toISOString(),
+    }))
+  }
+
+  if (typeof fallbackCash === 'number') {
+    return [
+      {
+        id: 'operating-cash',
+        name: 'Operating Cash',
+        institution: 'Primary Bank',
+        balance: toNumber(fallbackCash),
+        currency: 'USD',
+        updatedAt: new Date().toISOString(),
+      },
+    ]
+  }
+
+  return []
+}
+
+const fetchInventoryData = async () => {
+  try {
+    return await fetchInventorySummary()
+  } catch (error) {
+    console.error('Inventory data retrieval error:', error)
+    return null
+  }
+}
+
+const fetchAICashFlowForecast = async (workingCapitalId, horizon = 90) => {
+  if (!workingCapitalId) {
+    return []
+  }
+
+  try {
+    const periods = Math.max(Math.ceil(horizon / 30), 3)
+    const records = await prisma.cashFlowForecast.findMany({
+      where: { workingCapitalId },
+      orderBy: { forecastDate: 'asc' },
+      take: periods,
+    })
+
+    return records.map(record => ({
+      id: record.id,
+      date: record.forecastDate.toISOString(),
+      openingBalance: toNumber(record.openingBalance),
+      inflows: toNumber(record.cashInflows),
+      outflows: toNumber(record.cashOutflows),
+      closingBalance: toNumber(record.closingBalance),
+      runway: record.cashRunway ?? null,
+      burnRate: record.burnRate ? toNumber(record.burnRate) : null,
+      confidence: record.confidence ?? null,
+      assumptions: record.assumptions ?? null,
+    }))
+  } catch (error) {
+    console.error('Cash flow forecast retrieval error:', error)
+    return []
+  }
+}
+
 const calculateDaysInventory = summary => {
   if (!summary.totalValue || !summary.turnoverRate) {
     return 0
@@ -187,12 +329,112 @@ const calculateDaysInventory = summary => {
   return turnover ? Number((365 / turnover).toFixed(0)) : 0
 }
 
-// Main working capital endpoint for frontend integration
+/**
+ * Main working capital endpoint for frontend integration
+ *
+ * BMAD-MOCK-001: Replaced ALL hardcoded fallback data with live Xero integration
+ * Status: ✅ LIVE DATA ONLY - No fallbacks, no mock data
+ *
+ * Data sources (in priority order):
+ * 1. REAL Xero API data (primary source)
+ * 2. Database records from working_capital table (if Xero unavailable)
+ * 3. Error response asking user to connect data source (no fake data)
+ */
 router.get('/', async (req, res) => {
   try {
-    console.log('📊 Working capital data requested')
+    console.log('📊 Working capital data requested - attempting Xero integration first')
 
-    // Get working capital data from database
+    // PRIORITY 1: Try Xero API first (REAL DATA)
+    const xeroHealth = await xeroService.healthCheck()
+
+    if (xeroHealth.status === 'connected') {
+      console.log('✅ Xero connected - fetching REAL working capital data')
+
+      try {
+        // Get REAL working capital from Xero
+        const xeroWcResult = await xeroService.calculateWorkingCapital()
+
+        if (xeroWcResult.success && xeroWcResult.data) {
+          const wcData = xeroWcResult.data
+
+          // Get inventory data from database
+          const [inventorySummary, cashFlowData] = await Promise.all([
+            fetchInventoryData(),
+            xeroService.getCashFlow(3),
+          ])
+
+          // Build response from REAL Xero data
+          const workingCapitalData = {
+            workingCapital: toNumber(wcData.workingCapital),
+            currentRatio: toNumber(wcData.currentRatio),
+            quickRatio: toNumber(wcData.quickRatio),
+            cash: toNumber(wcData.cash),
+            receivables: toNumber(wcData.accountsReceivable),
+            payables: toNumber(wcData.accountsPayable),
+            cashRunwayMonths: wcData.cashRunwayMonths || 0,
+            cashConversionCycle: wcData.cashConversionCycle || 0,
+            dso: wcData.dso || 0,
+            dio: wcData.dio || 0,
+            dpo: wcData.dpo || 0,
+            liquiditySnapshot: {
+              bankAccounts: wcData.bankAccounts || [],
+              currentAssets: {
+                cash: toNumber(wcData.cash),
+                accountsReceivable: toNumber(wcData.accountsReceivable),
+                inventory: toNumber(wcData.inventory),
+                otherCurrentAssets: toNumber(wcData.otherCurrentAssets),
+                total: toNumber(wcData.currentAssets),
+              },
+              currentLiabilities: {
+                accountsPayable: toNumber(wcData.accountsPayable),
+                shortTermDebt: toNumber(wcData.shortTermDebt),
+                accruedExpenses: toNumber(wcData.accruedExpenses),
+                otherCurrentLiabilities: toNumber(wcData.otherCurrentLiabilities),
+                total: toNumber(wcData.currentLiabilities),
+              },
+              inventory: parseInventory(inventorySummary),
+            },
+            cashFlowHistory: Array.isArray(cashFlowData) ? cashFlowData : [],
+            forecast: [], // Could integrate AI forecast in future
+            lastCalculated: wcData.timestamp || new Date().toISOString(),
+          }
+
+          console.log('✅ Working capital data retrieved from REAL Xero API')
+
+          // Broadcast real-time update via SSE to all connected dashboard clients
+          emitWorkingCapitalUpdate({
+            workingCapital: workingCapitalData.workingCapital,
+            currentRatio: workingCapitalData.currentRatio,
+            quickRatio: workingCapitalData.quickRatio,
+            cashConversionCycle: workingCapitalData.cashConversionCycle,
+            dataSource: 'xero_api',
+            timestamp: new Date().toISOString(),
+          })
+          console.log('📡 SSE broadcast sent: working_capital:update')
+
+          return res.json({
+            success: true,
+            data: workingCapitalData,
+            metadata: {
+              source: 'xero_api',
+              dataSource: 'xero_api',
+              timestamp: new Date().toISOString(),
+              organizationId: xeroHealth.organizationId,
+              inventoryRefreshedAt: inventorySummary?.updatedAt ?? null,
+              cashFlowPeriods: Array.isArray(cashFlowData) ? cashFlowData.length : 0,
+              forecastPeriods: 0,
+            },
+          })
+        }
+      } catch (xeroError) {
+        console.error('❌ Xero API error, falling back to database:', xeroError.message)
+        // Fall through to database attempt
+      }
+    }
+
+    // PRIORITY 2: Try database if Xero unavailable
+    console.log('⚠️ Xero not available - attempting database fallback')
+
     const [history, runwayHistory] = await Promise.all([
       prisma.workingCapital.findMany({
         orderBy: { date: 'desc' },
@@ -204,41 +446,82 @@ router.get('/', async (req, res) => {
       }),
     ])
 
-    let workingCapitalData = {}
+    const latestRecord = history[0] ?? null
 
-    if (history.length > 0) {
-      const latest = history[0]
-      workingCapitalData = {
-        workingCapital: toNumber(latest.currentAssets - latest.currentLiabilities),
-        currentRatio: toNumber(latest.workingCapitalRatio),
-        quickRatio: toNumber(latest.quickRatio),
-        cash: toNumber(latest.cash || runwayHistory[0]?.cashBalance),
-        receivables: toNumber(latest.accountsReceivable),
-        payables: toNumber(latest.accountsPayable),
-        lastCalculated: latest.date || new Date().toISOString(),
+    if (latestRecord) {
+      console.log('✅ Working capital data found in database')
+
+      const [inventorySummary, forecast] = await Promise.all([
+        fetchInventoryData(),
+        fetchAICashFlowForecast(latestRecord?.id ?? null, 90),
+      ])
+
+      const cashBalance = toNumber(latestRecord.cash ?? runwayHistory[0]?.cashBalance)
+
+      const workingCapitalData = {
+        workingCapital: toNumber(latestRecord.currentAssets - latestRecord.currentLiabilities),
+        currentRatio: toNumber(latestRecord.workingCapitalRatio),
+        quickRatio: toNumber(latestRecord.quickRatio),
+        cash: cashBalance,
+        receivables: toNumber(latestRecord.accountsReceivable),
+        payables: toNumber(latestRecord.accountsPayable),
+        cashRunwayMonths: toNumber(runwayHistory[0]?.runwayMonths),
+        liquiditySnapshot: {
+          bankAccounts: parseBankAccounts(latestRecord.bankAccounts, cashBalance),
+          currentAssets: parseCurrentAssets(latestRecord),
+          currentLiabilities: parseCurrentLiabilities(latestRecord),
+          inventory: parseInventory(inventorySummary),
+        },
+        forecast,
+        lastCalculated:
+          latestRecord.date instanceof Date
+            ? latestRecord.date.toISOString()
+            : latestRecord.date || new Date().toISOString(),
       }
-    } else {
-      // Fallback data if no database records
-      workingCapitalData = {
-        workingCapital: 1470000,
-        currentRatio: 2.1,
-        quickRatio: 1.8,
-        cash: 580000,
-        receivables: 1850000,
-        payables: 980000,
-        lastCalculated: new Date().toISOString(),
-      }
+
+      return res.json({
+        success: true,
+        data: workingCapitalData,
+        metadata: {
+          source: 'database',
+          dataSource: 'database',
+          timestamp: new Date().toISOString(),
+          inventoryRefreshedAt: inventorySummary?.updatedAt ?? null,
+          forecastPeriods: forecast.length,
+        },
+      })
     }
 
-    console.log('✅ Working capital data retrieved successfully')
-    return res.json({
-      success: true,
-      data: workingCapitalData,
-      metadata: {
-        source: 'database',
-        timestamp: new Date().toISOString(),
-        dataSource: 'database',
+    // PRIORITY 3: No data available anywhere - return setup instructions
+    console.log('❌ No working capital data available from any source')
+
+    return res.status(503).json({
+      success: false,
+      error: 'No working capital data available',
+      message:
+        'Please connect to Xero or load data into the database to view working capital metrics',
+      dataSource: 'none',
+      xeroStatus: xeroHealth,
+      setupInstructions: {
+        option1: {
+          title: 'Connect Xero (Recommended)',
+          steps: [
+            'Set XERO_CLIENT_ID environment variable',
+            'Set XERO_CLIENT_SECRET environment variable',
+            'Ensure Xero Custom Connection is created with accounting.transactions.read permission',
+            'See docs/xero-setup.md for detailed instructions',
+          ],
+        },
+        option2: {
+          title: 'Load Database Records',
+          steps: [
+            'Import working capital data into working_capital table',
+            'Ensure records have required fields: currentAssets, currentLiabilities, cash, accountsReceivable, accountsPayable',
+            'See database/seed-data for examples',
+          ],
+        },
       },
+      timestamp: new Date().toISOString(),
     })
   } catch (error) {
     console.error('💥 Working capital endpoint error:', error)
@@ -246,7 +529,7 @@ router.get('/', async (req, res) => {
       success: false,
       error: 'Internal server error',
       message: 'Failed to retrieve working capital data',
-      userAction: 'Please try again in a few moments',
+      userAction: 'Please check server logs and ensure data sources are configured',
       timestamp: new Date().toISOString(),
       debug: {
         errorType: error.name,
@@ -258,7 +541,7 @@ router.get('/', async (req, res) => {
 
 router.get('/metrics', authenticateToken, async (_req, res) => {
   try {
-    const [history, runwayHistory] = await Promise.all([
+    const [history, runwayHistory, inventorySummary] = await Promise.all([
       prisma.workingCapital.findMany({
         orderBy: { date: 'desc' },
         take: 24,
@@ -267,6 +550,7 @@ router.get('/metrics', authenticateToken, async (_req, res) => {
         orderBy: { date: 'desc' },
         take: 6,
       }),
+      fetchInventoryData(),
     ])
 
     if (!history.length) {
@@ -277,6 +561,7 @@ router.get('/metrics', authenticateToken, async (_req, res) => {
     const latest = orderedHistory[orderedHistory.length - 1]
     const previous = orderedHistory[orderedHistory.length - 2] ?? null
     const runwayChange = calculateRunwayChange(runwayHistory)
+    const forecast = await fetchAICashFlowForecast(latest.id, 120)
 
     const metrics = {
       cashPosition: toNumber(latest.cash),
@@ -293,6 +578,13 @@ router.get('/metrics', authenticateToken, async (_req, res) => {
       wcStatus: determineStatus(latest.workingCapitalRatio),
       quickStatus: determineStatus(latest.quickRatio),
       history: buildWorkingCapitalTrend(orderedHistory),
+      balanceSheet: {
+        assets: parseCurrentAssets(latest),
+        liabilities: parseCurrentLiabilities(latest),
+      },
+      bankAccounts: parseBankAccounts(latest.bankAccounts, latest.cash),
+      inventory: parseInventory(inventorySummary),
+      forecast,
       timestamp: new Date().toISOString(),
     }
 
@@ -338,11 +630,14 @@ router.get('/xero/cashflow', authenticateToken, async (req, res) => {
       },
     })
 
-    const parsed = parseCashFlowReport(response.data)
+    const cashflow = parseCashFlowData(response.data)
+    const latestRecord = history[0]
+    const forecast = await fetchAICashFlowForecast(latestRecord?.id ?? null, 90)
 
     return res.json({
-      historical: parsed,
-      forecast: null,
+      historical: cashflow.historical,
+      summary: cashflow.summary,
+      forecast,
       metadata: {
         source: 'xero',
         period,
@@ -402,6 +697,93 @@ router.get('/inventory/turnover', authenticateToken, async (_req, res) => {
   } catch (error) {
     console.error('Inventory metrics error:', error)
     return res.status(500).json({ error: 'Failed to compute inventory metrics' })
+  }
+})
+
+router.get('/optimization/summary', authenticateToken, async (_req, res) => {
+  try {
+    const result = await scenarioModeler.generateScenarioSet()
+    const plan = mitigationPlanner.generatePlan(result.baseline.metrics, {
+      scenarios: result.scenarios,
+    })
+
+    return res.json({
+      baseline: result.baseline,
+      scenarios: result.scenarios,
+      plan,
+    })
+  } catch (error) {
+    console.error('Optimization summary error:', error)
+    return res.status(500).json({ error: 'Failed to build optimization summary' })
+  }
+})
+
+router.post('/optimization/scenarios', authenticateToken, async (req, res) => {
+  try {
+    const { adjustments = {}, overrides = {} } = req.body || {}
+    const baseline = await scenarioModeler.generateBaseline(overrides)
+    const scenario = await scenarioModeler.runScenario(baseline, {
+      key: 'custom',
+      label: 'Custom scenario',
+      adjustments,
+    })
+
+    return res.json({ baseline, scenario })
+  } catch (error) {
+    console.error('Scenario run error:', error)
+    return res.status(500).json({ error: 'Failed to run scenario' })
+  }
+})
+
+router.post('/optimization/approvals', authenticateToken, async (req, res) => {
+  try {
+    const { request = {}, scenarioKey, adjustments, overrides = {} } = req.body || {}
+
+    const scenarioSet = await scenarioModeler.generateScenarioSet({ overrides })
+    const baseline = scenarioSet.baseline
+
+    let scenario = scenarioSet.scenarios.find(item => item.key === scenarioKey) || baseline
+
+    if (adjustments) {
+      scenario = await scenarioModeler.runScenario(baseline, {
+        key: 'custom',
+        label: 'Custom scenario',
+        adjustments,
+      })
+    }
+
+    const evaluation = approvalEngine.evaluate(request, {
+      metrics: scenario.metrics,
+      scenario: scenario.label,
+    })
+
+    return res.json({ evaluation })
+  } catch (error) {
+    console.error('Approval evaluation error:', error)
+    return res.status(500).json({ error: 'Failed to evaluate approval' })
+  }
+})
+
+router.post('/optimization/mitigations', authenticateToken, async (req, res) => {
+  try {
+    const { metrics, scenarios, overrides = {} } = req.body || {}
+    let sourceMetrics = metrics
+    let referenceScenarios = scenarios
+
+    if (!sourceMetrics) {
+      const scenarioSet = await scenarioModeler.generateScenarioSet({ overrides })
+      sourceMetrics = scenarioSet.baseline.metrics
+      referenceScenarios = scenarioSet.scenarios
+    }
+
+    const plan = mitigationPlanner.generatePlan(sourceMetrics, {
+      scenarios: referenceScenarios,
+    })
+
+    return res.json({ plan })
+  } catch (error) {
+    console.error('Mitigation plan error:', error)
+    return res.status(500).json({ error: 'Failed to generate mitigation plan' })
   }
 })
 

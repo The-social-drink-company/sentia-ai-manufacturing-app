@@ -50,8 +50,9 @@ const useEnvironmentAuth = () => {
     const loadClerkAuth = async () => {
       try {
         console.log('[useEnvironmentAuth] Loading Clerk authentication...')
+        // TODO: Properly integrate with Clerk's React context instead of hack
+        // eslint-disable-next-line no-unused-vars
         const clerkAuth = await import('@clerk/clerk-react')
-        const { useAuth } = clerkAuth
 
         // This is a hack to get Clerk's auth state
         // In a real implementation, we'd need to properly integrate with React context

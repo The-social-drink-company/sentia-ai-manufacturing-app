@@ -8,6 +8,10 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
+import { useIntegrationStatus } from '@/hooks/useIntegrationStatus'
+import AmazonSetupPrompt from '@/components/integrations/AmazonSetupPrompt'
+import ShopifySetupPrompt from '@/components/integrations/ShopifySetupPrompt'
+import { DashboardSkeleton } from '@/components/ui/skeletons/DashboardSkeleton'
 import {
   ResponsiveContainer,
   LineChart,
@@ -96,8 +100,21 @@ const RETENTION_ROWS = [
 
 const Analytics = () => {
   const [range, setRange] = useState('30d')
+  const integrations = useIntegrationStatus()
   const kpis = KPI_SERIES[range]
   const revenueData = REVENUE_SERIES[range]
+
+  // Check if Amazon or Shopify need setup
+  const showAmazonSetup = integrations.amazon && integrations.amazon.status !== 'connected'
+  const showShopifySetup =
+    integrations.shopify &&
+    (!integrations.shopify.connected ||
+      integrations.shopify.activeStores < integrations.shopify.totalStores)
+
+  // Show loading skeleton while integration status is loading
+  if (integrations.loading) {
+    return <DashboardSkeleton title="Analytics overview" subtitle="Loading analytics data..." />
+  }
 
   return (
     <section className="space-y-6">
@@ -111,6 +128,12 @@ const Analytics = () => {
         </div>
         <Badge variant="outline">Updated {new Date().toLocaleDateString()}</Badge>
       </header>
+
+      {/* Amazon SP-API Setup Prompt */}
+      {showAmazonSetup && <AmazonSetupPrompt amazonStatus={integrations.amazon} />}
+
+      {/* Shopify Setup Prompt */}
+      {showShopifySetup && <ShopifySetupPrompt shopifyStatus={integrations.shopify} />}
 
       <Card>
         <CardHeader>

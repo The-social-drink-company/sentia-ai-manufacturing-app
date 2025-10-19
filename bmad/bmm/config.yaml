@@ -1,0 +1,9 @@
+# BMM Module Configuration (BMAD Method Module)
+# Generated for test automation workflows
+# Version: 6.0.0-alpha.0
+# Date: 2025-10-19
+
+user_name: BMad
+communication_language: English
+output_folder: "{project-root}/docs"
+test_output_folder: "{project-root}/test-results"

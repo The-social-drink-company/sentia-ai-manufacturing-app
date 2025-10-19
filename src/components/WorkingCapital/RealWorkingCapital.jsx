@@ -1,10 +1,14 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Skeleton } from '@/components/ui/skeleton'
 import { useWorkingCapitalLiveData } from '@/hooks/useWorkingCapitalLiveData'
+import { useIntegrationStatus } from '@/hooks/useIntegrationStatus'
 import { useState, useEffect } from 'react'
 import WorkingCapitalEngine from '@/services/WorkingCapitalEngine'
+import XeroSetupPrompt from '@/components/integrations/XeroSetupPrompt'
 
 const RealWorkingCapital = () => {
   const { data, loading, error, metadata, retryConnection } = useWorkingCapitalLiveData()
+  const integrations = useIntegrationStatus()
   const [enhancedData, setEnhancedData] = useState(null)
   const [analysisLoading, setAnalysisLoading] = useState(false)
   const [engine] = useState(() => new WorkingCapitalEngine())
@@ -28,7 +32,7 @@ const RealWorkingCapital = () => {
     }
   }, [data, loading, error, engine])
 
-  // Loading state
+  // Loading state - Enhanced with proper Skeleton components
   if (loading) {
     return (
       <section className="space-y-6">
@@ -38,14 +42,44 @@ const RealWorkingCapital = () => {
         </header>
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           {[1, 2, 3, 4].map(i => (
-            <Card key={i} className="animate-pulse">
+            <Card key={i}>
               <CardContent className="space-y-2 p-5">
-                <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-                <div className="h-8 bg-gray-200 rounded w-3/4"></div>
-                <div className="h-3 bg-gray-200 rounded w-1/3"></div>
+                <Skeleton className="h-4 w-1/2" />
+                <Skeleton className="h-8 w-3/4" />
+                <Skeleton className="h-3 w-1/3" />
               </CardContent>
             </Card>
           ))}
+        </div>
+        <div className="grid gap-6 lg:grid-cols-2">
+          <Card>
+            <CardHeader>
+              <Skeleton className="h-6 w-48" />
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-3 gap-4">
+                {[1, 2, 3].map(i => (
+                  <div key={i} className="space-y-2">
+                    <Skeleton className="h-4 w-16" />
+                    <Skeleton className="h-6 w-20" />
+                    <Skeleton className="h-3 w-24" />
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <Skeleton className="h-6 w-56" />
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {[1, 2, 3].map(i => (
+                  <Skeleton key={i} className="h-16 w-full" />
+                ))}
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </section>
     )
@@ -60,7 +94,10 @@ const RealWorkingCapital = () => {
           <p className="text-sm text-muted-foreground">Unable to load financial data</p>
         </header>
 
-        {/* Xero connection banners removed - custom connections don't require user interaction */}
+        {/* Xero Setup Prompt - Shows when Xero is not configured */}
+        {integrations.xero && integrations.xero.status !== 'connected' && (
+          <XeroSetupPrompt xeroStatus={integrations.xero} />
+        )}
 
         <Card className="border-red-200 bg-red-50">
           <CardHeader>

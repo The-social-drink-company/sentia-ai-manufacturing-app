@@ -189,7 +189,8 @@ const OEEDisplay = memo(function OEEDisplay({ data, timeRange = '24h', loading =
             </div>
           </div>
         ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Overall OEE Circle */}
           <div className="flex flex-col items-center justify-center p-6">
             <CircularProgress
@@ -349,6 +350,7 @@ const OEEDisplay = memo(function OEEDisplay({ data, timeRange = '24h', loading =
             )}
           </div>
         </div>
+          </>
         )}
       </CardContent>
     </Card>

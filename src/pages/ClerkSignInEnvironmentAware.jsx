@@ -9,15 +9,14 @@ const ClerkSignInEnvironmentAware = () => {
   const [loading, setLoading] = useState(!isDevelopmentMode)
 
   // In development mode, redirect immediately to dashboard
-  if (isDevelopmentMode) {
-    console.log('[Development] Sign-in bypassed, redirecting to dashboard')
-    return <Navigate to="/app/dashboard" replace />
-  }
-
   useEffect(() => {
+    if (isDevelopmentMode) {
+      setLoading(false)
+      return
+    }
+
     const loadAuthComponents = async () => {
       try {
-        // Only load Clerk components in production mode
         const clerkAuth = await import('@clerk/clerk-react')
         setAuthComponents({
           SignIn: clerkAuth.SignIn,
@@ -25,17 +24,19 @@ const ClerkSignInEnvironmentAware = () => {
         })
       } catch (error) {
         console.error('[ClerkSignIn] Failed to load Clerk components:', error)
-        // Fallback to development mode if Clerk fails to load
         setAuthComponents(null)
       } finally {
         setLoading(false)
       }
     }
 
-    if (!isDevelopmentMode) {
-      loadAuthComponents()
-    }
+    loadAuthComponents()
   }, [])
+
+  if (isDevelopmentMode) {
+    console.log('[Development] Sign-in bypassed, redirecting to dashboard')
+    return <Navigate to="/app/dashboard" replace />
+  }
 
   const isSignUp = location.pathname === '/app/sign-up'
 

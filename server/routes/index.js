@@ -4,6 +4,7 @@ import apiRoutes from './api.js'
 import authRoutes from './auth.js'
 import dataRoutes from './data.js'
 import sseRoutes from './sse.js'
+import adminRoutes from './admin/index.js'
 
 export function setupRoutes(app) {
   logInfo('Setting up routes')
@@ -12,6 +13,7 @@ export function setupRoutes(app) {
   app.use('/api/auth', authRoutes)
   app.use('/api/data', dataRoutes)
   app.use('/api', apiRoutes)
+  app.use('/admin', adminRoutes)
 
   // Server-Sent Events
   app.use('/api/events', sseRoutes)

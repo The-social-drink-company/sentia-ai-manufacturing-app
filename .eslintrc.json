@@ -47,7 +47,13 @@
     }
   },
   "rules": {
-    "no-unused-vars": ["error", { "argsIgnorePattern": "^_|next", "varsIgnorePattern": "^_" }],
+    "no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^_|next",
+        "varsIgnorePattern": "^_"
+      }
+    ],
     "react/prop-types": "off",
     "react/react-in-jsx-scope": "off",
     "no-console": "warn",
@@ -64,5 +70,8 @@
     "no-throw-literal": "error",
     "no-return-await": "error",
     "require-await": "warn"
+  },
+  "globals": {
+    "process": "readonly"
   }
 }

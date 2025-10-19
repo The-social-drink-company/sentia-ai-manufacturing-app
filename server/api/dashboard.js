@@ -21,7 +21,7 @@ import xeroService from '../../services/xeroService.js'
 import shopifyMultiStoreService from '../../services/shopify-multistore.js'
 import amazonSPAPIService from '../../services/amazon-sp-api.js'
 import unleashedERPService from '../../services/unleashed-erp.js'
-import { logInfo, logError, logDebug, logWarn } from '../../src/utils/logger.js'
+import { logInfo, logError, logDebug, logWarn } from '../utils/logger.js'
 
 const router = express.Router()
 

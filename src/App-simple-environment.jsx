@@ -5,7 +5,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import LandingPage from '@/pages/LandingPage'
 import DashboardLayout from '@/components/DashboardLayout'
 import ProgressiveDashboardLoader from '@/components/dashboard/ProgressiveDashboardLoader'
-import ClerkSignInEnvironmentAware from '@/pages/ClerkSignInEnvironmentAware'
+import SignInPage from '@/pages/SignInPage'
+import SignUpPage from '@/pages/SignUpPage'
 import ErrorBoundary from '@/components/ErrorBoundary'
 import DebugPanel from '@/components/DebugPanel'
 import { XeroProvider } from '@/contexts/XeroContext'
@@ -206,10 +207,26 @@ const App = () => {
               <Route path="/landing" element={<LandingPage />} />
 
               {/* Authentication Routes */}
-              <Route path="/app/sign-in" element={<ClerkSignInEnvironmentAware />} />
-              <Route path="/app/sign-up" element={<ClerkSignInEnvironmentAware />} />
+              <Route path="/sign-in" element={<SignInPage />} />
+              <Route path="/sign-up" element={<SignUpPage />} />
+              {/* Legacy routes for backward compatibility */}
+              <Route path="/app/sign-in" element={<Navigate to="/sign-in" replace />} />
+              <Route path="/app/sign-up" element={<Navigate to="/sign-up" replace />} />
 
               {/* Protected Dashboard Routes */}
+              <Route
+                path="/dashboard"
+                element={
+                  <ErrorBoundary fallbackMessage="Dashboard failed to load. Please check your connection and try again.">
+                    <ProtectedRoute>
+                      <Suspense fallback={<Loader />}>
+                        <Dashboard />
+                      </Suspense>
+                    </ProtectedRoute>
+                  </ErrorBoundary>
+                }
+              />
+              {/* Legacy /app/dashboard route for backward compatibility */}
               <Route
                 path="/app/dashboard"
                 element={

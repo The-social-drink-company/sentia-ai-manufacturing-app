@@ -10,14 +10,14 @@ import {
   CardFooter
 } from './Card'
 
-describe('Card _Components', () {
-  describe('Card', () {
-    it('renders children _correctly', () {
+describe('Card Components', () => {
+  describe('Card', () => {
+    it('renders children correctly', () => {
       render(<Card>Card content</Card>)
       expect(screen.getByText('Card content')).toBeInTheDocument()
     })
 
-    it('applies default _classes', () {
+    it('applies default classes', () => {
       render(<Card data-testid="card">Content</Card>)
       const card = screen.getByTestId('card')
       expect(card.className).toContain('rounded-xl')
@@ -25,14 +25,14 @@ describe('Card _Components', () {
       expect(card.className).toContain('bg-white')
     })
 
-    it('merges custom _className', () {
+    it('merges custom className', () => {
       render(<Card className="custom-class" data-testid="card">Content</Card>)
       const card = screen.getByTestId('card')
       expect(card.className).toContain('custom-class')
       expect(card.className).toContain('rounded-xl') // Still has defaults
     })
 
-    it('forwards ref _correctly', () {
+    it('forwards ref correctly', () => {
       const ref = vi.fn()
       render(<Card ref={ref}>Content</Card>)
       expect(ref).toHaveBeenCalled()
@@ -40,13 +40,13 @@ describe('Card _Components', () {
     })
   })
 
-  describe('CardHeader', () {
-    it('renders _children', () {
+  describe('CardHeader', () => {
+    it('renders children', () => {
       render(<CardHeader>Header content</CardHeader>)
       expect(screen.getByText('Header content')).toBeInTheDocument()
     })
 
-    it('applies padding and spacing _classes', () {
+    it('applies padding and spacing classes', () => {
       render(<CardHeader data-testid="header">Header</CardHeader>)
       const header = screen.getByTestId('header')
       expect(header.className).toContain('p-6')
@@ -54,14 +54,14 @@ describe('Card _Components', () {
     })
   })
 
-  describe('CardTitle', () {
-    it('renders as h3 _element', () {
+  describe('CardTitle', () => {
+    it('renders as h3 element', () => {
       render(<CardTitle>Title text</CardTitle>)
       const title = screen.getByText('Title text')
       expect(title.tagName).toBe('H3')
     })
 
-    it('applies typography _classes', () {
+    it('applies typography classes', () => {
       render(<CardTitle>Title</CardTitle>)
       const title = screen.getByText('Title')
       expect(title.className).toContain('text-lg')
@@ -69,14 +69,14 @@ describe('Card _Components', () {
     })
   })
 
-  describe('CardDescription', () {
-    it('renders as paragraph _element', () {
+  describe('CardDescription', () => {
+    it('renders as paragraph element', () => {
       render(<CardDescription>Description text</CardDescription>)
       const description = screen.getByText('Description text')
       expect(description.tagName).toBe('P')
     })
 
-    it('applies text styling _classes', () {
+    it('applies text styling classes', () => {
       render(<CardDescription>Description</CardDescription>)
       const description = screen.getByText('Description')
       expect(description.className).toContain('text-sm')
@@ -84,13 +84,13 @@ describe('Card _Components', () {
     })
   })
 
-  describe('CardContent', () {
-    it('renders _children', () {
+  describe('CardContent', () => {
+    it('renders children', () => {
       render(<CardContent>Main content</CardContent>)
       expect(screen.getByText('Main content')).toBeInTheDocument()
     })
 
-    it('applies padding _classes', () {
+    it('applies padding classes', () => {
       render(<CardContent data-testid="content">Content</CardContent>)
       const content = screen.getByTestId('content')
       expect(content.className).toContain('p-6')
@@ -98,13 +98,13 @@ describe('Card _Components', () {
     })
   })
 
-  describe('CardFooter', () {
-    it('renders _children', () {
+  describe('CardFooter', () => {
+    it('renders children', () => {
       render(<CardFooter>Footer content</CardFooter>)
       expect(screen.getByText('Footer content')).toBeInTheDocument()
     })
 
-    it('applies flex and padding _classes', () {
+    it('applies flex and padding classes', () => {
       render(<CardFooter data-testid="footer">Footer</CardFooter>)
       const footer = screen.getByTestId('footer')
       expect(footer.className).toContain('flex')
@@ -112,8 +112,8 @@ describe('Card _Components', () {
     })
   })
 
-  describe('Complete Card _Composition', () {
-    it('renders a complete card with all _subcomponents', () {
+  describe('Complete Card Composition', () => {
+    it('renders a complete card with all subcomponents', () => {
       render(
         <Card>
           <CardHeader>
@@ -135,7 +135,7 @@ describe('Card _Components', () {
       expect(screen.getByText('Action')).toBeInTheDocument()
     })
 
-    it('passes through data attributes and aria _labels', () {
+    it('passes through data attributes and aria labels', () => {
       render(
         <Card data-testid="main-card" aria-label="Main card">
           <CardHeader data-testid="card-header">

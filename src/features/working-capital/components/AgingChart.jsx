@@ -134,8 +134,8 @@ export default function AgingChart({ receivables, payables, title }) {
                   </div>
                   <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden">
                     <div
-                      className={h-full transition-all duration-300 }
-                      style={{ width: ${arPercentage}% }}
+                      className="h-full transition-all duration-300 bg-green-500"
+                      style={{ width: `${arPercentage}%` }}
                     />
                   </div>
                 </div>
@@ -148,8 +148,8 @@ export default function AgingChart({ receivables, payables, title }) {
                   </div>
                   <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden">
                     <div
-                      className={h-full transition-all duration-300 }
-                      style={{ width: ${apPercentage}% }}
+                      className="h-full transition-all duration-300 bg-blue-500"
+                      style={{ width: `${apPercentage}%` }}
                     />
                   </div>
                 </div>

@@ -82,7 +82,10 @@
       "Bash(if not exist docs mkdir docs)",
       "Bash(npx bmad-method:*)",
       "Bash(git log:*)",
-      "Bash(gh pr edit:*)"
+      "Bash(gh pr edit:*)",
+      "Bash(git symbolic-ref:*)",
+      "Bash(gh pr checkout:*)",
+      "Bash(gh pr close:*)"
     ],
     "deny": [],
     "ask": []

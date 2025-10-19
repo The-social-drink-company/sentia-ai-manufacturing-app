@@ -505,29 +505,34 @@ BMAD-METHOD v6a provides the structured, agentic framework needed to transform t
 
 | Story ID | Status | Estimated | Actual | Completion |
 |----------|--------|-----------|--------|------------|
-| BMAD-MOCK-005 | ⏳ PENDING | 2 days | TBD | - |
-| BMAD-MOCK-006 | ⏳ PENDING | 1.5 days | TBD | - |
-| BMAD-MOCK-007 | ✅ COMPLETE | 2 days | 0 days (pre-existing) | 2025-10-19 |
+| BMAD-MOCK-005 (Amazon) | ✅ COMPLETE | 2 days | 2 hours | 2025-10-19 |
+| BMAD-MOCK-006 (Unleashed) | ✅ COMPLETE | 1.5 days | 2.5 hours | 2025-10-19 |
+| BMAD-MOCK-007 (Working Capital) | ✅ COMPLETE | 2 days | 0 days (pre-existing) | 2025-10-19 |
+| BMAD-MOCK-008 (SSE Verification) | ✅ COMPLETE | 0.5 days | 15 min | 2025-10-19 |
+| BMAD-MOCK-009 (API Fallback Docs) | ✅ COMPLETE | 1 day | 45 min | 2025-10-19 |
+| BMAD-MOCK-010 (Math.random Cleanup) | ⏳ PENDING | 5 days | TBD | - |
 
-**Note**: BMAD-MOCK-007 (Working capital fallbacks) was completed during BMAD-MOCK-001.
+**Note**: Stories 005-006 are the RENAMED integration stories (originally in Sprint 2). Story 008-009 added for verification/documentation.
 
-### Epic Summary
+### Epic Summary - CORRECTED
 
-- **Total Stories**: 7 (Original Plan)
-- **Completed**: 7 (100%) ✅ **EPIC COMPLETE**
+- **Total Stories**: 10 (Expanded from original 7)
+- **Completed**: 9 (90%) ✅
   - BMAD-MOCK-001 (Xero): 3 days
   - BMAD-MOCK-002 (Shopify): 6 hours
-  - BMAD-MOCK-003 (Math.random): Pre-existing (0 days)
+  - BMAD-MOCK-003 (Math.random removal): Pre-existing (0 days)
   - BMAD-MOCK-004 (P&L hardcoded): Pre-existing (0 days)
-  - BMAD-MOCK-003-AMAZON (Amazon SP-API): 2 hours
-  - BMAD-MOCK-004-UNLEASHED (Unleashed ERP): 2.5 hours
+  - BMAD-MOCK-005 (Amazon SP-API): 2 hours
+  - BMAD-MOCK-006 (Unleashed ERP): 2.5 hours
   - BMAD-MOCK-007 (Working capital): Pre-existing (0 days)
+  - BMAD-MOCK-008 (SSE verification): 15 min
+  - BMAD-MOCK-009 (API fallback docs): 45 min
 - **In Progress**: 0
-- **Remaining**: 0
-- **Total Estimated**: 17 days (~3.5 weeks)
-- **Actual Spent**: 3.45 days (3.25 + 0.08 + 0.10 + 0.02)
-- **Time Savings**: 13.55 days (80% faster than estimated)
-- **Epic Velocity**: 493% (4.9x faster than estimated)
+- **Remaining**: 1 (BMAD-MOCK-010 - Math.random cleanup)
+- **Total Estimated**: 22 days (~4.5 weeks)
+- **Actual Spent**: 3.58 days
+- **Projected Remaining**: ~5 days (BMAD-MOCK-010)
+- **Epic Status**: 90% complete, 1 story remaining
 
 ### Key Learnings from Sprint 1 (All Stories)
 

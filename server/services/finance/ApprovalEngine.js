@@ -1,6 +1,6 @@
-const logger = require('../../utils/logger')
+import logger from '../../utils/logger.js'
 
-class ApprovalEngine {
+export default class ApprovalEngine {
   constructor(config = {}) {
     this.config = {
       autoApproveLimit: config.autoApproveLimit || 10000,
@@ -17,7 +17,7 @@ class ApprovalEngine {
   }
 
   evaluate(request = {}, context = {}) {
-    logger.info('[ApprovalEngine] Evaluating request', { request })
+    logger.info?.('[ApprovalEngine] Evaluating request', { request })
 
     const metrics = context.metrics || {}
     const scenario = context.scenario || 'baseline'
@@ -115,7 +115,7 @@ class ApprovalEngine {
 
     parts.push(`Scenario: ${scenario}`)
     parts.push(`Risk category: ${riskCategory}`)
-    parts.push(`Requested amount: Â£${Number(request.amount || 0).toLocaleString()}`)
+    parts.push(`Requested amount: £${Number(request.amount || 0).toLocaleString()}`)
 
     if (request.description) {
       parts.push(`Purpose: ${request.description}`)
@@ -156,5 +156,3 @@ class ApprovalEngine {
     return checklist
   }
 }
-
-module.exports = ApprovalEngine

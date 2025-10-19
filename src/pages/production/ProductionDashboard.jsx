@@ -343,7 +343,7 @@ function ProductionDashboard() {
 /**
  * OEECard Component
  */
-function OEECard({ label, value, target, icon: Icon, trend, onClick }) {
+function OEECard({ label, value, target, icon: IconComponent, trend, onClick }) {
   const percentage = value;
   const status = getOEEStatus(percentage, target);
   const trendValue = trend?.value || 0;

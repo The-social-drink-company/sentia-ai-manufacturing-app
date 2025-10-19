@@ -2,18 +2,19 @@ import express from 'express'
 import { requireAdmin } from '../../middleware/adminAuth.js'
 import { requireMfa } from '../../middleware/adminMfa.js'
 import { audit } from '../../middleware/adminAudit.js'
+import { getDashboard, listUsers, createUser, listApprovals, submitApproval } from '../../controllers/admin/index.js'
 
 const router = express.Router()
 
 router.use(requireAdmin)
 
-router.get('/dashboard', (req, res) => {
-  res.status(501).json({ message: 'Admin dashboard endpoint not implemented yet.' })
-})
+router.get('/dashboard', getDashboard)
 
-router.use('/users', requireMfa, audit, (req, res) => {
-  res.status(501).json({ message: 'Admin users endpoints not implemented yet.' })
-})
+router
+  .route('/users')
+  .all(requireMfa, audit)
+  .get(listUsers)
+  .post(createUser)
 
 router.use('/roles', requireMfa, audit, (req, res) => {
   res.status(501).json({ message: 'Admin roles endpoints not implemented yet.' })
@@ -43,8 +44,10 @@ router.use('/environment', requireMfa, audit, (req, res) => {
   res.status(501).json({ message: 'Admin environment endpoints not implemented yet.' })
 })
 
-router.use('/approvals', requireMfa, audit, (req, res) => {
-  res.status(501).json({ message: 'Admin approvals endpoints not implemented yet.' })
-})
+router
+  .route('/approvals')
+  .all(requireMfa, audit)
+  .get(listApprovals)
+  .post(submitApproval)
 
 export default router

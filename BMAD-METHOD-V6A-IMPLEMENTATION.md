@@ -279,14 +279,6 @@ bmad qa review-story --story "connect-xero-financial-data"
 - BMAD-QA-003: Provide Prisma test shim for admin services
 - BMAD-MOCK-010: Purge remaining `Math.random()` mock data across dashboards/services
 - BMAD-ARCH-012: Add Type/JSDoc coverage for finance & integration services
-### QA Automation Follow-Up (2025-10-19)
-- BMAD-QA-001: Install Vitest coverage dependency (`@vitest/coverage-v8`)
-- BMAD-QA-002: Restore Playwright E2E capability (`@playwright/test` + browsers)
-- BMAD-QA-003: Provide Prisma test shim for admin services
-- BMAD-MOCK-010: Purge remaining `Math.random()` mock data across dashboards/services
-- BMAD-ARCH-012: Add Type/JSDoc coverage for finance & integration services
-- BMAD-MOCK-010: Purge remaining `Math.random()` mock data across dashboards/services
-- BMAD-ARCH-012: Add Type/JSDoc coverage for finance & integration services
 
 ## 8. Next Immediate Actions
 
@@ -453,11 +445,9 @@ bmad qa review-story --latest
 
 ## 2025-10-19 Quality Improvements Log
 
-- Completed BMAD Phase 4 implementation task: relocated shared UI helper exports out of `button.jsx` and `badge.jsx` to dedicated variant modules, satisfying Fast Refresh guidance.
-- Updated `docs/lint-backlog.md` to capture the reduced lint backlog (12 warnings remaining).
-- Cleared lint error in `server/api/working-capital.js` by exposing `cashFlowData` in the API payload and metadata, restoring lint suite to warning-only status while auth/error-boundary refactor remains pending.
-- Lifted Shopify integration into `server/api/dashboard.js` executive endpoint plus new sales endpoints, and captured the audit-first findings in `bmad/audit/BMAD-MOCK-002-shopify-code-audit.md` to kick off BMAD-MOCK-002 implementation.
-- Next BMAD action: refactor auth providers and error boundary utilities to eliminate remaining Fast Refresh warnings and close the `react-hooks/exhaustive-deps` item.
+- Completed BMAD Phase 4 implementation task: extracted UI/auth/error-boundary helpers into dedicated modules, clearing Fast Refresh lint warnings across shared primitives and context providers.
+- Updated `docs/lint-backlog.md` to capture the current backlog (2 admin stub errors, 1 auth dependency warning) after the cleanup.
+- Next BMAD action: finish the admin approvals endpoints and tighten the Bulletproof auth callback dependency list to reach a zero-warning lint run.
 
 ---
 
@@ -585,6 +575,9 @@ BMAD-METHOD v6a provides the structured, agentic framework needed to transform t
 - **Pattern Confidence**: HIGH - Integration template proven across 2 external APIs (Xero, Shopify)
 
 **Last Updated**: 2025-10-19 (Sprint 1 Complete)
+
+
+
 
 
 

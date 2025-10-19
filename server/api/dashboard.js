@@ -44,10 +44,12 @@ router.get('/executive', async (req, res) => {
     // Check integration health
     const xeroHealth = await xeroService.healthCheck();
     const shopifyStatus = shopifyMultiStoreService.getConnectionStatus();
+    const amazonConnected = amazonSPAPIService.isConnected;
 
     logDebug('[Dashboard] Integration health:', {
       xero: xeroHealth.status,
-      shopify: shopifyStatus.connected ? `${shopifyStatus.activeStores}/${shopifyStatus.totalStores} stores` : 'not connected'
+      shopify: shopifyStatus.connected ? `${shopifyStatus.activeStores}/${shopifyStatus.totalStores} stores` : 'not connected',
+      amazon: amazonConnected ? 'connected' : 'not connected'
     });
 
     if (xeroHealth.status !== 'connected') {
@@ -70,28 +72,35 @@ router.get('/executive', async (req, res) => {
               { name: 'Xero', status: xeroHealth.status, required: true, story: 'BMAD-MOCK-001' },
               { name: 'Shopify', status: shopifyStatus.connected ? 'connected' : 'pending',
                 required: false, activeStores: shopifyStatus.activeStores, story: 'BMAD-MOCK-002' },
-              { name: 'Amazon SP-API', status: 'pending', required: false, story: 'BMAD-MOCK-003' },
-              { name: 'Unleashed ERP', status: 'pending', required: false, story: 'BMAD-MOCK-004' }
+              { name: 'Amazon SP-API', status: amazonConnected ? 'connected' : 'pending', required: false, story: 'BMAD-MOCK-005' },
+              { name: 'Unleashed ERP', status: 'pending', required: false, story: 'BMAD-MOCK-006' }
             ]
           }
         }
       });
     }
 
-    // Fetch real data from Xero and Shopify in parallel
-    logDebug('[Dashboard] Fetching data from Xero and Shopify...');
-    const [wcData, plData, cfData, shopifyData] = await Promise.all([
+    // Fetch real data from Xero, Shopify, and Amazon in parallel
+    logDebug('[Dashboard] Fetching data from Xero, Shopify, and Amazon...');
+    const [wcData, plData, cfData, shopifyData, amazonOrders, amazonInventory] = await Promise.all([
       xeroService.calculateWorkingCapital(),
       xeroService.getProfitAndLoss(3), // Last 3 months
       xeroService.getCashFlow(3),
       shopifyStatus.connected
         ? shopifyMultiStoreService.getConsolidatedSalesData()
-        : Promise.resolve({ success: false, error: 'Not connected' })
+        : Promise.resolve({ success: false, error: 'Not connected' }),
+      amazonConnected
+        ? amazonSPAPIService.getOrderMetrics().catch(() => null)
+        : Promise.resolve(null),
+      amazonConnected
+        ? amazonSPAPIService.getInventorySummary().catch(() => null)
+        : Promise.resolve(null)
     ]);
 
     logDebug('[Dashboard] Data fetched:', {
       xero: { workingCapital: wcData?.success, profitLoss: plData?.length, cashFlow: !!cfData },
-      shopify: { success: shopifyData?.success, stores: shopifyData?.stores?.length }
+      shopify: { success: shopifyData?.success, stores: shopifyData?.stores?.length },
+      amazon: { orders: amazonOrders?.totalOrders || 0, inventory: amazonInventory?.totalSKUs || 0 }
     });
 
     // Calculate month-over-month change
@@ -121,6 +130,13 @@ router.get('/executive', async (req, res) => {
           avgNetOrderValue: shopifyData.avgNetOrderValue || 0,
           storeCount: shopifyData.stores?.length || 0,
           dataSource: shopifyData.dataSource
+        } : null,
+        // Amazon sales breakdown
+        amazon: amazonOrders ? {
+          revenue: amazonOrders.totalRevenue || 0,
+          orders: amazonOrders.totalOrders || 0,
+          avgOrderValue: amazonOrders.averageOrderValue || 0,
+          unshippedOrders: amazonOrders.unshippedOrders || 0
         } : null
       },
       sales: shopifyData.success ? {
@@ -151,7 +167,12 @@ router.get('/executive', async (req, res) => {
         grossMargin: plData?.[0]?.grossMargin || 0,
         profitMargin: plData?.[0]?.profitMargin || 0,
         netProfit: plData?.[0]?.netProfit || 0
-      }
+      },
+      inventory: amazonInventory ? {
+        totalSKUs: amazonInventory.totalSKUs || 0,
+        totalQuantity: amazonInventory.totalQuantity || 0,
+        lowStockItems: amazonInventory.lowStockItems || 0
+      } : null
     };
 
     const responseTime = Date.now() - startTime;
@@ -180,7 +201,11 @@ router.get('/executive', async (req, res) => {
           dataAvailable: true,
           dataSource: 'xero_api',
           periodsIncluded: plData?.length || 0,
-          xeroConnected: true
+          integrationStatus: {
+            xero: true,
+            shopify: shopifyData?.success || false,
+            amazon: amazonConnected || false
+          }
         }
       }
     });

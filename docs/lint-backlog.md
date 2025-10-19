@@ -1,28 +1,32 @@
 # Lint Backlog Tracker
 
-_Last updated: 2025-10-19 (Command: `pnpm run lint`)_
+_Last updated: 2025-10-19 (Command: pnpm run lint)_
 
 Summary:
-- **12 total findings** (0 errors, 12 warnings)
-- Warning buckets: `react-refresh/only-export-components` (12), `react-hooks/exhaustive-deps` (1)
+- **3 total findings** (2 errors, 1 warning)
+- Errors: 
+o-unused-vars (2) in server/routes/admin/index.js
+- Warnings: eact-hooks/exhaustive-deps (1) in src/auth/BulletproofAuthProvider.jsx
 
 ## Issue Clusters
 
-### 1. Fast Refresh Export Hygiene (`react-refresh/only-export-components`)
-- Files: `src/auth/BulletproofAuthProvider.jsx`, `src/auth/DevelopmentAuthProvider.jsx`, `src/components/ErrorBoundary.jsx`, `src/contexts/XeroContext.jsx` (now flagged after lifting context helper).
-- Context: Files export helper constants or hooks alongside components, breaking Fast Refresh expectations.
-- **Follow-up**: Extract helper logic into colocated modules (auth providers, error boundary utilities) or wrap helpers inside component scope.
+### 1. Admin Route Stubs (
+o-unused-vars)
+- File: server/routes/admin/index.js
+- Context: Placeholder handlers listApprovals and submitApproval remain unused while the admin API surface is still scaffold-only.
+- **Follow-up**: Implement the endpoints or remove the unused stubs once routing strategy is finalised.
 
-### 2. Hook Dependency Hygiene (`react-hooks/exhaustive-deps`)
-- File: `src/auth/BulletproofAuthProvider.jsx:178`
-- Context: `useCallback` omits `clerkKey` from its dependency list.
-- **Follow-up**: Add `clerkKey` to the dependency array or refactor to avoid stale closures.
+### 2. Hook Dependency Hygiene (eact-hooks/exhaustive-deps)
+- File: src/auth/BulletproofAuthProvider.jsx:157
+- Context: initialize callback closes over clerkKey; add it to dependency array or restructure the setup flow.
+- **Follow-up**: Align with the upcoming auth hardening story so the callback and key validation are centralised.
 
 ## Recently Resolved
-- 2025-10-19: Cleared Fast Refresh warnings in `src/components/ui/{button.jsx,badge.jsx}` by moving shared variant exports into `button-variants.js` / new `badge-variants.js` modules.
-- 2025-10-19: Replaced `process.env` check in `src/components/integrations/XeroSetupPrompt.jsx` with Vite-friendly `import.meta.env` usage to satisfy lint.
+- 2025-10-19: Eliminated Fast Refresh warnings across BulletproofAuthProvider, DevelopmentAuthProvider, ErrorBoundary, and XeroContext by extracting shared hooks/utilities into dedicated modules.
+- 2025-10-19: Split shared variant helpers out of src/components/ui/{button.jsx,badge.jsx} to dedicated modules and replaced the process.env gate in XeroSetupPrompt with import.meta.env checks.
 
 ## Tracking & Next Actions
-1. Schedule a refactor for auth providers to relocate MFA helpers and exported constants.
-2. Patch the remaining hook dependency warning in `BulletproofAuthProvider` once auth refactor work resumes.
-3. Evaluate `ErrorBoundary` and `XeroContext` for companion utility modules so Fast Refresh warnings clear globally.
+1. Wire the admin approvals router to real controllers (or trim the placeholders) to clear 
+o-unused-vars.
+2. Update the initialize callback in BulletproofAuthProvider so dependency analysis stays clean.
+3. Continue documenting BMAD lint progress after tackling the remaining auth dependency warning.

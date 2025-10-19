@@ -2,6 +2,7 @@ import axios from 'axios';
 import crypto from 'crypto';
 import redisCacheService from './redis-cache.js';
 import { logDebug, logInfo, logWarn, logError } from '../src/utils/logger';
+import sseService from '../server/services/sse/index.cjs';
 
 
 class UnleashedERPService {
@@ -359,24 +360,60 @@ class UnleashedERPService {
   }
 
   async syncResourceData() {
-    // Mock resource data since Unleashed doesn't have a specific resource endpoint
-    const mockResources = [
-      { id: 'line_1', name: 'Production Line 1', status: 'active', utilization: 87 },
-      { id: 'line_2', name: 'Production Line 2', status: 'active', utilization: 92 },
-      { id: 'packaging', name: 'Packaging Unit', status: 'maintenance', utilization: 0 },
-      { id: 'quality_station', name: 'Quality Control', status: 'active', utilization: 76 }
-    ];
+    // NOTE: Unleashed API doesn't have a specific resource/equipment endpoint
+    // Calculate resource utilization from AssemblyJobs data instead
+    try {
+      const response = await this.client.get('/AssemblyJobs', {
+        params: {
+          pageSize: 100,
+          page: 1,
+          orderBy: 'ModifiedOn',
+          orderDirection: 'Desc'
+        }
+      });
 
-    const resourceMetrics = {
-      totalResources: mockResources.length,
-      activeResources: mockResources.filter(r => r.status === 'active').length,
-      averageUtilization: mockResources.reduce((sum, r) => sum + r.utilization, 0) / mockResources.length
-    };
+      const assemblyJobs = response.data?.Items || [];
+      const activeJobs = assemblyJobs.filter(job => job.JobStatus === 'InProgress');
+      const plannedJobs = assemblyJobs.filter(job => job.JobStatus === 'Planned');
 
-    return {
-      metrics: resourceMetrics,
-      status: mockResources
-    };
+      // Calculate utilization from real job data
+      // Assume manufacturing capacity of 4 concurrent production lines
+      const maxCapacity = 4;
+      const averageUtilization = Math.min((activeJobs.length / maxCapacity) * 100, 100);
+
+      const resourceMetrics = {
+        activeJobs: activeJobs.length,
+        plannedJobs: plannedJobs.length,
+        totalCapacity: maxCapacity,
+        averageUtilization: parseFloat(averageUtilization.toFixed(1)),
+        utilizationDetails: {
+          note: 'Calculated from AssemblyJobs (Unleashed API has no direct resource endpoint)',
+          activeJobCount: activeJobs.length,
+          maxConcurrentCapacity: maxCapacity
+        }
+      };
+
+      return {
+        metrics: resourceMetrics,
+        status: [] // No specific resource status available from Unleashed API
+      };
+
+    } catch (error) {
+      logError('UNLEASHED ERP: Resource data calculation failed:', error);
+      return {
+        metrics: {
+          activeJobs: 0,
+          plannedJobs: 0,
+          totalCapacity: 4,
+          averageUtilization: 0,
+          utilizationDetails: {
+            note: 'Data unavailable - Unleashed API connection error',
+            error: error.message
+          }
+        },
+        status: []
+      };
+    }
   }
 
   consolidateManufacturingData(syncResults) {

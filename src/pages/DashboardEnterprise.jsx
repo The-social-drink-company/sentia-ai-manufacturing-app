@@ -2,7 +2,7 @@ import { Suspense, lazy, useState, useEffect, useCallback } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { useXero } from '@/contexts/useXero'
-import { useSSE } from '@/services/sse/useSSE'
+import { useSSE } from '@/hooks/useSSE'
 import KPIGrid from '@/components/dashboard/KPIGrid'
 import WorkingCapitalCard from '@/components/dashboard/WorkingCapitalCard'
 

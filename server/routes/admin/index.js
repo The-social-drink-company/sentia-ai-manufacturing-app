@@ -15,6 +15,15 @@ import {
   getApprovalHistory,
   requestMFACode,
   verifyMFACode,
+  getFeatureFlags,
+  createFeatureFlag,
+  toggleFeatureFlag,
+  getIntegrations,
+  getIntegrationById,
+  testIntegration,
+  syncIntegration,
+  pauseIntegration,
+  resumeIntegration,
 } from '../../controllers/admin/index.js'
 
 const router = express.Router()
@@ -33,13 +42,48 @@ router.use('/roles', requireMfa, audit, (req, res) => {
   res.status(501).json({ message: 'Admin roles endpoints not implemented yet.' })
 })
 
-router.use('/feature-flags', requireMfa, audit, (req, res) => {
-  res.status(501).json({ message: 'Admin feature flags endpoints not implemented yet.' })
-})
+// Feature Flags endpoints
+router
+  .route('/feature-flags')
+  .all(requireMfa, audit)
+  .get(getFeatureFlags)
+  .post(createFeatureFlag)
 
-router.use('/integrations', requireMfa, audit, (req, res) => {
-  res.status(501).json({ message: 'Admin integrations endpoints not implemented yet.' })
-})
+router
+  .route('/feature-flags/:id/toggle')
+  .all(requireMfa, audit)
+  .post(toggleFeatureFlag)
+
+// Integrations endpoints
+router
+  .route('/integrations')
+  .all(requireMfa, audit)
+  .get(getIntegrations)
+
+router
+  .route('/integrations/:id')
+  .all(requireMfa, audit)
+  .get(getIntegrationById)
+
+router
+  .route('/integrations/:id/test')
+  .all(requireMfa, audit)
+  .post(testIntegration)
+
+router
+  .route('/integrations/:id/sync')
+  .all(requireMfa, audit)
+  .post(syncIntegration)
+
+router
+  .route('/integrations/:id/pause')
+  .all(requireMfa, audit)
+  .post(pauseIntegration)
+
+router
+  .route('/integrations/:id/resume')
+  .all(requireMfa, audit)
+  .post(resumeIntegration)
 
 router.use('/queues', requireMfa, audit, (req, res) => {
   res.status(501).json({ message: 'Admin queues endpoints not implemented yet.' })

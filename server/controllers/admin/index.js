@@ -10,4 +10,13 @@ export {
   getApprovalHistory,
 } from './approvalsController.js'
 export { requestMFACode, verifyMFACode } from './mfaController.js'
-// TODO: add exports for roles, feature flags, integrations, queues, audit, system health, environment
+export { getFeatureFlags, createFeatureFlag, toggleFeatureFlag } from './featureFlagsController.js'
+export {
+  getIntegrations,
+  getIntegrationById,
+  testIntegration,
+  syncIntegration,
+  pauseIntegration,
+  resumeIntegration,
+} from './integrationsController.js'
+// TODO: add exports for roles, queues, audit, system health, environment

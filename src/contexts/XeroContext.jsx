@@ -5,18 +5,9 @@
  * across all components that need financial data.
  */
 
-import { createContext, useContext, useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback } from 'react'
+import { XeroContext } from './xero-context-shared'
 import { logInfo, logWarn, logError } from '../utils/structuredLogger'
-
-const XeroContext = createContext()
-
-export const useXero = () => {
-  const context = useContext(XeroContext)
-  if (!context) {
-    throw new Error('useXero must be used within a XeroProvider')
-  }
-  return context
-}
 
 export const XeroProvider = ({ children }) => {
   const [isConnected, setIsConnected] = useState(false)
@@ -133,3 +124,6 @@ export const XeroProvider = ({ children }) => {
 
   return <XeroContext.Provider value={value}>{children}</XeroContext.Provider>
 }
+
+
+

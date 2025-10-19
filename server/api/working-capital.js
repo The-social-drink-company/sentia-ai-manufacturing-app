@@ -394,6 +394,7 @@ router.get('/', async (req, res) => {
               },
               inventory: parseInventory(inventorySummary),
             },
+            cashFlowHistory: Array.isArray(cashFlowData) ? cashFlowData : [],
             forecast: [], // Could integrate AI forecast in future
             lastCalculated: wcData.timestamp || new Date().toISOString(),
           }
@@ -420,6 +421,7 @@ router.get('/', async (req, res) => {
               timestamp: new Date().toISOString(),
               organizationId: xeroHealth.organizationId,
               inventoryRefreshedAt: inventorySummary?.updatedAt ?? null,
+              cashFlowPeriods: Array.isArray(cashFlowData) ? cashFlowData.length : 0,
               forecastPeriods: 0,
             },
           })

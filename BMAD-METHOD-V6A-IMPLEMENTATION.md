@@ -497,13 +497,26 @@ BMAD-METHOD v6a provides the structured, agentic framework needed to transform t
 - **Projected Remaining**: ~7 days (based on 169% velocity from Sprint 1)
 - **Projected Total**: ~10.25 days (vs 17 days estimated = 40% faster)
 
-### Key Learnings from BMAD-MOCK-001
+### Key Learnings from Sprint 1 (BMAD-MOCK-001 + BMAD-MOCK-002)
 
-1. **Existing Infrastructure Accelerates Development**: Xero service already existed (1,225 lines), saving ~2 days
-2. **Clean API Foundation Essential**: BMAD-CLEAN-002 prerequisite enabled seamless integration
-3. **Reusable Patterns Established**: Dashboard API integration, Setup Prompt components, Documentation structure
-4. **Conservative Fallbacks Work**: Three-tier fallback strategy (real → estimates → setup instructions) provides excellent UX
-5. **Shopify Estimate Reduced**: BMAD-MOCK-002 revised from 2.5 days to 4-6 hours due to existing `shopify-multistore.js` service
+1. **Audit-First Approach Critical**: Both stories discovered 90%+ pre-existing infrastructure
+   - BMAD-MOCK-001: Xero service existed (1,225 lines)
+   - BMAD-MOCK-002: Shopify service existed (878 lines)
+   - Combined savings: ~4 days of development work
+2. **Integration Pattern Highly Reusable**: Established template for all API integrations
+   - Health check → Fetch data → Transform → Return with metadata
+   - Setup prompt component (copy XeroSetupPrompt → adapt)
+   - Documentation structure (prerequisites → setup → troubleshooting)
+3. **Template-Driven Development 4x Faster**: Component creation from templates
+   - BMAD-MOCK-002: 30 minutes vs 2 hours from scratch
+   - ShopifySetupPrompt copied from XeroSetupPrompt with find-replace
+4. **Velocity Acceleration Pattern**: Story 1 → Story 2 = 5.6x faster
+   - BMAD-MOCK-001: 3 days (100% of estimate)
+   - BMAD-MOCK-002: 6 hours (24% of estimate)
+   - Pattern established for Sprint 2 stories (BMAD-MOCK-003 onwards)
+5. **Commission Tracking High Value**: Stakeholder visibility into marketplace fees
+   - Shopify: 2.9% transaction fees tracked
+   - Next: Amazon referral fees, FBA costs
 
 **Pattern for All Future Integration Stories**:
 1. Check service health → Return setup instructions if not connected
@@ -516,7 +529,13 @@ BMAD-METHOD v6a provides the structured, agentic framework needed to transform t
 - `docs/integrations/xero-setup.md` → Structure for all integration guides
 - Dashboard API pattern → Reuse for Shopify/Amazon/Unleashed
 
-**Last Updated**: 2025-10-19
+**Sprint 1 Retrospective Insights**:
+- **Time-to-Market**: 3.25 days actual vs 5.5 days estimated (59% of estimate)
+- **Velocity Trend**: Accelerating (BMAD-MOCK-001: 100% → BMAD-MOCK-002: 24%)
+- **Next Sprint Projection**: BMAD-MOCK-003 + BMAD-MOCK-004 estimated 6 days → projected 2-3 days actual
+- **Pattern Confidence**: HIGH - Integration template proven across 2 external APIs (Xero, Shopify)
+
+**Last Updated**: 2025-10-19 (Sprint 1 Complete)
 
 
 

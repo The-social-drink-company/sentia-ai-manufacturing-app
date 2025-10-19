@@ -4,12 +4,12 @@ _Last updated: 2025-10-19 (Command: `pnpm run lint`)_
 
 Summary:
 - **12 total findings** (0 errors, 12 warnings)
-- Warning buckets: `react-refresh/only-export-components` (11), `react-hooks/exhaustive-deps` (1)
+- Warning buckets: `react-refresh/only-export-components` (12), `react-hooks/exhaustive-deps` (1)
 
 ## Issue Clusters
 
 ### 1. Fast Refresh Export Hygiene (`react-refresh/only-export-components`)
-- Files: `src/auth/BulletproofAuthProvider.jsx`, `src/auth/DevelopmentAuthProvider.jsx`, `src/components/ErrorBoundary.jsx`, `src/contexts/XeroContext.jsx`.
+- Files: `src/auth/BulletproofAuthProvider.jsx`, `src/auth/DevelopmentAuthProvider.jsx`, `src/components/ErrorBoundary.jsx`, `src/contexts/XeroContext.jsx` (now flagged after lifting context helper).
 - Context: Files export helper constants or hooks alongside components, breaking Fast Refresh expectations.
 - **Follow-up**: Extract helper logic into colocated modules (auth providers, error boundary utilities) or wrap helpers inside component scope.
 

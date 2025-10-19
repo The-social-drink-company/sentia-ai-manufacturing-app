@@ -1,7 +1,7 @@
 import React, { useContext } from 'react'
 
 import { AuthContext, UserContext, SessionContext, OrganizationContext } from './developmentContext'
-import { mockAuthState, mockUser, mockSession, mockOrganization } from './MockUser'
+import { mockUser, mockSession, mockOrganization } from './MockUser'
 import DevelopmentAuthProvider from './DevelopmentAuthProvider.jsx'
 
 export function useAuth() {

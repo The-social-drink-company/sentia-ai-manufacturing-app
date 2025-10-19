@@ -150,7 +150,7 @@ const AuthenticationProvider = ({ children }) => {
       try {
         if (isDevelopmentMode) {
           console.log('[Environment] Loading Development Authentication Provider')
-          const devAuth = await import('./auth/DevelopmentAuthProvider.jsx')
+          const devAuth = await import('./auth/developmentMocks.js')
           setAuthComponents({
             ClerkProvider: devAuth.ClerkProvider,
             SignedIn: devAuth.SignedIn,
@@ -170,7 +170,7 @@ const AuthenticationProvider = ({ children }) => {
       } catch (error) {
         console.error('[Environment] Failed to load authentication provider:', error)
         // Fallback to development mode on error
-        const devAuth = await import('./auth/DevelopmentAuthProvider.jsx')
+        const devAuth = await import('./auth/developmentMocks.js')
         setAuthComponents({
           ClerkProvider: devAuth.ClerkProvider,
           SignedIn: devAuth.SignedIn,
@@ -244,7 +244,7 @@ const ProtectedRoute = ({ children }) => {
       try {
         if (isDevelopmentMode) {
           console.log('[Navigation Debug] Loading development auth components')
-          const devAuth = await import('./auth/DevelopmentAuthProvider.jsx')
+          const devAuth = await import('./auth/developmentMocks.js')
           setAuthComponents({
             SignedIn: devAuth.SignedIn,
             SignedOut: devAuth.SignedOut,
@@ -262,7 +262,7 @@ const ProtectedRoute = ({ children }) => {
       } catch (error) {
         console.error('[Navigation Debug] [ProtectedRoute] Failed to load auth components:', error)
         // Fallback to development mode
-        const devAuth = await import('./auth/DevelopmentAuthProvider.jsx')
+        const devAuth = await import('./auth/developmentMocks.js')
         setAuthComponents({
           SignedIn: devAuth.SignedIn,
           SignedOut: devAuth.SignedOut,

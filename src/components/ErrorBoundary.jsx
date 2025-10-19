@@ -111,29 +111,6 @@ class ErrorBoundary extends React.Component {
   }
 }
 
-// Higher-order component for wrapping components with error boundary
-export const withErrorBoundary = (Component, fallbackMessage) => {
-  return function WithErrorBoundaryComponent(props) {
-    return (
-      <ErrorBoundary fallbackMessage={fallbackMessage}>
-        <Component {...props} />
-      </ErrorBoundary>
-    )
-  }
-}
-
-// Hook for programmatic error reporting
-export const useErrorHandler = () => {
-  return (error, errorInfo) => {
-    console.error('[useErrorHandler] Error:', error)
-
-    // In production, send to error reporting service
-    if (import.meta.env.NODE_ENV === 'production') {
-      // TODO: Send to error reporting service
-      console.error('Production error reported:', { error, errorInfo })
-    }
-  }
-}
-
 export default ErrorBoundary
+
 

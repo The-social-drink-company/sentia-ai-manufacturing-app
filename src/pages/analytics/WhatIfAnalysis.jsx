@@ -406,7 +406,7 @@ function ParameterSlider({
   baseline,
   format,
   onChange,
-  icon: IconComponent,
+  icon: IconComponent, // eslint-disable-line no-unused-vars
 }) {
   const percentChange = ((value - baseline) / baseline) * 100
   const isIncreased = value > baseline

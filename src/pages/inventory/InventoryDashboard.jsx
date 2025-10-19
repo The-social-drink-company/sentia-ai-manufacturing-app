@@ -61,7 +61,7 @@ function InventoryMetricCard({
   value,
   unit,
   trend,
-  icon: IconComponent,
+  icon: IconComponent, // eslint-disable-line no-unused-vars
   format = 'number',
 }) {
   const StatusIcon = trend >= 0 ? TrendingUp : TrendingDown

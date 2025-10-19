@@ -70,24 +70,30 @@ app.use(logger)
 // API ROUTES (HIGHEST PRIORITY)
 // ==========================================
 
-// Health check endpoint
+// Health check endpoint (for Render healthCheckPath: /api/health)
+const healthResponse = () => ({
+  status: 'healthy',
+  service: 'sentia-manufacturing-dashboard',
+  version: '2.0.0-bulletproof',
+  environment: process.env.NODE_ENV || 'development',
+  timestamp: new Date().toISOString(),
+  uptime: process.uptime(),
+  clerk: {
+    configured: isClerkConfigured,
+    publishableKey: process.env.VITE_CLERK_PUBLISHABLE_KEY ? 'SET' : 'NOT_SET',
+  },
+  authentication: {
+    mode: isDevelopmentMode ? 'development-bypass' : 'production-clerk',
+    developmentMode: isDevelopmentMode,
+  },
+})
+
 app.get('/health', (req, res) => {
-  res.json({
-    status: 'healthy',
-    service: 'sentia-manufacturing-dashboard',
-    version: '2.0.0-bulletproof',
-    environment: process.env.NODE_ENV || 'development',
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-    clerk: {
-      configured: isClerkConfigured,
-      publishableKey: process.env.VITE_CLERK_PUBLISHABLE_KEY ? 'SET' : 'NOT_SET',
-    },
-    authentication: {
-      mode: isDevelopmentMode ? 'development-bypass' : 'production-clerk',
-      developmentMode: isDevelopmentMode,
-    },
-  })
+  res.json(healthResponse())
+})
+
+app.get('/api/health', (req, res) => {
+  res.json(healthResponse())
 })
 
 app.get('/ready', (req, res) => {

@@ -88,7 +88,7 @@ services:
       corepack enable &&
       pnpm exec prisma migrate resolve --rolled-back 20251017171256_init || true &&
       pnpm exec prisma migrate deploy &&
-      pnpm run start
+      pnpm run start:render
     healthCheckPath: /api/health
     envVars:
       - key: NODE_ENV

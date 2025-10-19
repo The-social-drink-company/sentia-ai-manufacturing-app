@@ -87,7 +87,11 @@
       "Bash(gh pr checkout:*)",
       "Bash(gh pr close:*)",
       "Bash(git ls-tree:*)",
-      "Bash(gh repo edit:*)"
+      "Bash(gh repo edit:*)",
+      "Bash(pnpm exec prisma migrate:*)",
+      "Read(//c/**)",
+      "Bash(git check-ignore:*)",
+      "Bash(git describe:*)"
     ],
     "deny": [],
     "ask": []

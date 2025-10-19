@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { CubeIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline'
+import { useIntegrationStatus } from '@/hooks/useIntegrationStatus'
+import AmazonSetupPrompt from '@/components/integrations/AmazonSetupPrompt'
+import UnleashedSetupPrompt from '@/components/integrations/UnleashedSetupPrompt'
 
 const currencyFormatter = new Intl.NumberFormat('en-GB', {
   style: 'currency',
@@ -14,6 +17,9 @@ const InventoryManagement = () => {
   const [inventory, setInventory] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+
+  // Check integration status for inventory-related services
+  const { amazon: amazonStatus, unleashed: unleashedStatus, loading: integrationLoading } = useIntegrationStatus()
 
   const apiBase = import.meta.env.VITE_API_BASE_URL || '/api'
 
@@ -48,6 +54,19 @@ const InventoryManagement = () => {
       .sort((a, b) => Number(a.quantity ?? 0) - Number(b.quantity ?? 0))
       .slice(0, 5)
   }, [inventory])
+
+  // Show setup prompts if integrations are not connected
+  const showAmazonPrompt = !integrationLoading && amazonStatus && amazonStatus.status !== 'connected'
+  const showUnleashedPrompt = !integrationLoading && unleashedStatus && unleashedStatus.status !== 'connected'
+
+  if (showAmazonPrompt || showUnleashedPrompt) {
+    return (
+      <div className="space-y-6">
+        {showAmazonPrompt && <AmazonSetupPrompt amazonStatus={amazonStatus} />}
+        {showUnleashedPrompt && <UnleashedSetupPrompt unleashedStatus={unleashedStatus} />}
+      </div>
+    )
+  }
 
   if (loading) {
     return (

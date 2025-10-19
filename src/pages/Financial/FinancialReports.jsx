@@ -12,6 +12,8 @@ import FinancialCharts from '@/components/financial/FinancialCharts'
 import FinancialInsights from '@/components/financial/FinancialInsights'
 import ProductPerformanceTable from '@/components/financial/ProductPerformanceTable'
 import { useFinancialReportsData } from '@/hooks/useFinancialData'
+import { useIntegrationStatus } from '@/hooks/useIntegrationStatus'
+import XeroSetupPrompt from '@/components/integrations/XeroSetupPrompt'
 import { cn } from '@/utils/cn'
 
 const TimeRangeSelector = ({ value, onChange, className }) => {
@@ -146,7 +148,10 @@ const FinancialReports = () => {
   // eslint-disable-next-line no-unused-vars
   const [filters, setFilters] = useState({}) // TODO: Implement filter controls
 
-  console.log('[Navigation Debug] FinancialReports state initialized:', { timeRange, filters })
+  // Check Xero integration status
+  const { xero: xeroStatus, loading: integrationLoading } = useIntegrationStatus()
+
+  console.log('[Navigation Debug] FinancialReports state initialized:', { timeRange, filters, xeroStatus })
 
   const {
     kpiData,
@@ -175,6 +180,22 @@ const FinancialReports = () => {
 
   const handleTimeRangeChange = newRange => {
     setTimeRange(newRange)
+  }
+
+  // Show setup prompt if Xero is not connected
+  if (!integrationLoading && xeroStatus && xeroStatus.status !== 'connected') {
+    console.log('[Navigation Debug] FinancialReports showing Xero setup prompt:', xeroStatus.status)
+    return (
+      <div className="p-6 space-y-6">
+        <PageHeader
+          timeRange={timeRange}
+          onTimeRangeChange={handleTimeRangeChange}
+          isLoading={false}
+          onRefresh={handleRefresh}
+        />
+        <XeroSetupPrompt xeroStatus={xeroStatus} />
+      </div>
+    )
   }
 
   if (error) {

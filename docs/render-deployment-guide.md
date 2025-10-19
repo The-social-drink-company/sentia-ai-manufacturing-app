@@ -111,7 +111,27 @@ grep -A 3 "name: sentia-mcp-prod" render.yaml
 
 ---
 
-### Issue #3: Environment Variables Missing
+### Issue #3: Prisma pgvector Version Mismatch
+
+**Symptoms**:
+- Deploy logs show `extension "vector" has no installation script nor update path for version "0.5.1"`
+- Prisma migrate step fails with error `P3018`
+- Render deployment aborts after `prisma migrate deploy`
+
+**Root Cause**: Prisma pinned the pgvector extension to version `0.5.1`, but Render-managed PostgreSQL exposes a different available version.
+
+**Resolution Steps**:
+1. Update `prisma/schema.prisma` to remove the version pin: `extensions = [pgvector(map: "vector")]`.
+2. Commit the schema change and redeploy (Render reruns `prisma migrate deploy` automatically).
+3. If deploy still fails, run `SELECT * FROM pg_available_extensions WHERE name = 'vector';` on the database to confirm available versions.
+
+**Verification**:
+- Render deploy logs show `Database schema is up to date!` after the migration step.
+- Optional: run `pnpm exec prisma migrate deploy --preview-feature --schema prisma/schema.prisma` against staging/dev database.
+- Confirm AI features relying on `vector(1536)` columns remain accessible.
+---
+
+### Issue #4: Environment Variables Missing
 
 **Symptoms**:
 - Service starts but returns errors
@@ -178,7 +198,7 @@ VITE_API_BASE_URL=https://sentia-backend-prod.onrender.com
 
 ---
 
-### Issue #4: Database Connection Errors
+### Issue #5: Database Connection Errors
 
 **Symptoms**:
 - Service logs show "ECONNREFUSED" or "Connection refused"

@@ -52,3 +52,7 @@ Report prepared 2025-10-20.
 - Latest commit on both heads: `0a7cee55 fix(prisma): Remove pgvector version specification to fix P3018 deployment error`.
 - No CLI visibility into PR state; confirm on GitHub directly if needed.
 - Render deployment health remains unverified from this sandbox—manual dashboard check is required.
+
+## Lint Status Update (2025-10-20)
+- `pnpm run lint` now passes with zero findings after updating `src/auth/BulletproofAuthProvider.jsx` dependencies and removing unused retry state.
+- `docs/lint-backlog.md` refreshed to reflect clean lint baseline.

@@ -81,6 +81,8 @@ docker run --name sentia-pg -e POSTGRES_PASSWORD=postgres -p 5432:5432 \
 
 Once the container is healthy, apply the migration and seed data as described above.
 
+> **Render Tip:** Managed PostgreSQL instances on Render may expose pgvector versions that lag upstream releases. Keep the datasource configuration version-agnostic (`extensions = [pgvector(map: "vector")]`) and, if migrations fail, run `SELECT * FROM pg_available_extensions WHERE name = ''vector'';` to confirm supported versions before retrying.
+
 ## Troubleshooting
 
 - **`P1012 Environment variable not found: DATABASE_URL`:** export the connection string or use `direnv`/dotenv before running Prisma commands.

@@ -355,7 +355,6 @@ class APIIntegration {
    * Calculate financial metrics from available data
    */
   calculateFinancialMetrics() {
-
     // Base calculations on real business patterns
     const baseRevenue = 3170000 // £3.17M annual
     const monthlyRevenue = baseRevenue / 12
@@ -531,11 +530,3 @@ class APIIntegration {
 }
 
 export default APIIntegration
-
-
-
-
-
-
-
-

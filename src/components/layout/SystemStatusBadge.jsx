@@ -51,10 +51,7 @@ const SystemStatusBadge = ({ status = 'operational' }) => {
       aria-label={`System status: ${config.label}`}
     >
       {/* Status Dot Indicator */}
-      <span
-        className={cn('h-2 w-2 rounded-full', config.dotColor)}
-        aria-hidden="true"
-      />
+      <span className={cn('h-2 w-2 rounded-full', config.dotColor)} aria-hidden="true" />
 
       {/* Status Label */}
       <span>{config.label}</span>

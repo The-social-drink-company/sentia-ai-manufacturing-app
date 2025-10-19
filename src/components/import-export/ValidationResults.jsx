@@ -5,49 +5,49 @@
  * Supports filtering, sorting, and error report download
  */
 
-import { useState } from 'react';
+import { useState } from 'react'
 import {
   CheckCircleIcon,
   XCircleIcon,
   ExclamationTriangleIcon,
   FunnelIcon,
   ArrowDownTrayIcon,
-} from '@heroicons/react/24/outline';
+} from '@heroicons/react/24/outline'
 
 export default function ValidationResults({ validation }) {
-  const [filterType, setFilterType] = useState('all'); // all, errors, warnings
+  const [filterType, setFilterType] = useState('all') // all, errors, warnings
   // TODO: Add sort UI when needed
   // eslint-disable-next-line no-unused-vars
-  const [sortBy, setSortBy] = useState('rowNumber'); // rowNumber, type
+  const [sortBy, setSortBy] = useState('rowNumber') // rowNumber, type
 
   if (!validation) {
-    return null;
+    return null
   }
 
-  const { totalRows, validRows, invalidRows, errors = [], warnings = [] } = validation;
+  const { totalRows, validRows, invalidRows, errors = [], warnings = [] } = validation
 
   // Filter errors
   const filteredErrors =
     filterType === 'all'
       ? errors
       : filterType === 'errors'
-      ? errors.filter((e) => e.errors && e.errors.length > 0)
-      : [];
+        ? errors.filter(e => e.errors && e.errors.length > 0)
+        : []
 
   // Sort errors
   const sortedErrors = [...filteredErrors].sort((a, b) => {
     if (sortBy === 'rowNumber') {
-      return a.rowNumber - b.rowNumber;
+      return a.rowNumber - b.rowNumber
     }
-    return 0;
-  });
+    return 0
+  })
 
   const handleDownloadReport = () => {
     // Generate CSV error report
     const csvContent = [
       ['Row Number', 'Field', 'Error Type', 'Message', 'Value'].join(','),
-      ...errors.flatMap((rowError) =>
-        (rowError.errors || []).map((error) =>
+      ...errors.flatMap(rowError =>
+        (rowError.errors || []).map(error =>
           [
             rowError.rowNumber,
             error.field || '',
@@ -57,18 +57,18 @@ export default function ValidationResults({ validation }) {
           ].join(',')
         )
       ),
-    ].join('\n');
+    ].join('\n')
 
-    const blob = new Blob([csvContent], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `validation-errors-${new Date().toISOString()}.csv`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  };
+    const blob = new Blob([csvContent], { type: 'text/csv' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `validation-errors-${new Date().toISOString()}.csv`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+  }
 
   return (
     <div className="space-y-4">
@@ -81,8 +81,18 @@ export default function ValidationResults({ validation }) {
               <p className="text-3xl font-bold text-gray-900 mt-1">{totalRows}</p>
             </div>
             <div className="p-3 bg-gray-100 rounded-full">
-              <svg className="h-8 w-8 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              <svg
+                className="h-8 w-8 text-gray-600"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
               </svg>
             </div>
           </div>
@@ -106,9 +116,7 @@ export default function ValidationResults({ validation }) {
             <div>
               <p className="text-sm font-medium text-red-700">Invalid Rows</p>
               <p className="text-3xl font-bold text-red-900 mt-1">{invalidRows}</p>
-              <p className="text-xs text-red-600 mt-1">
-                {errors.length} validation errors
-              </p>
+              <p className="text-xs text-red-600 mt-1">{errors.length} validation errors</p>
             </div>
             <XCircleIcon className="h-12 w-12 text-red-600" />
           </div>
@@ -132,9 +140,7 @@ export default function ValidationResults({ validation }) {
                     </li>
                   ))}
                   {warnings.length > 5 && (
-                    <li className="text-yellow-600">
-                      ...and {warnings.length - 5} more warnings
-                    </li>
+                    <li className="text-yellow-600">...and {warnings.length - 5} more warnings</li>
                   )}
                 </ul>
               </div>
@@ -153,7 +159,7 @@ export default function ValidationResults({ validation }) {
                 <FunnelIcon className="h-4 w-4 text-gray-500" />
                 <select
                   value={filterType}
-                  onChange={(e) => setFilterType(e.target.value)}
+                  onChange={e => setFilterType(e.target.value)}
                   className="text-sm border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                 >
                   <option value="all">All Issues</option>
@@ -186,7 +192,8 @@ export default function ValidationResults({ validation }) {
                         Row {rowError.rowNumber}
                       </span>
                       <span className="text-xs text-gray-500">
-                        {rowError.errors?.length || 0} error{rowError.errors?.length !== 1 ? 's' : ''}
+                        {rowError.errors?.length || 0} error
+                        {rowError.errors?.length !== 1 ? 's' : ''}
                       </span>
                     </div>
 
@@ -196,18 +203,18 @@ export default function ValidationResults({ validation }) {
                           <XCircleIcon className="h-4 w-4 text-red-500 mt-0.5 flex-shrink-0" />
                           <div className="flex-1 min-w-0">
                             <p className="text-sm text-gray-900">
-                              <span className="font-medium">{error.field}:</span>{' '}
-                              {error.message}
+                              <span className="font-medium">{error.field}:</span> {error.message}
                             </p>
                             {error.value !== undefined && error.value !== null && (
                               <p className="text-xs text-gray-500 mt-1">
-                                Value: <code className="bg-gray-100 px-1 py-0.5 rounded">{String(error.value)}</code>
+                                Value:{' '}
+                                <code className="bg-gray-100 px-1 py-0.5 rounded">
+                                  {String(error.value)}
+                                </code>
                               </p>
                             )}
                             {error.suggestion && (
-                              <p className="text-xs text-blue-600 mt-1">
-                                💡 {error.suggestion}
-                              </p>
+                              <p className="text-xs text-blue-600 mt-1">💡 {error.suggestion}</p>
                             )}
                           </div>
                           <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
@@ -228,9 +235,7 @@ export default function ValidationResults({ validation }) {
       {errors.length === 0 && (
         <div className="bg-green-50 border border-green-200 rounded-lg p-8 text-center">
           <CheckCircleIcon className="h-12 w-12 text-green-600 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-green-900 mb-2">
-            All validation checks passed!
-          </h3>
+          <h3 className="text-lg font-medium text-green-900 mb-2">All validation checks passed!</h3>
           <p className="text-sm text-green-700">
             All {totalRows} rows are valid and ready for import.
           </p>
@@ -247,5 +252,5 @@ export default function ValidationResults({ validation }) {
         </p>
       </div>
     </div>
-  );
+  )
 }

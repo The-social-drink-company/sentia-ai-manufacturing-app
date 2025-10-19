@@ -20,13 +20,14 @@ function Skeleton({ className, variant = 'shimmer', ...props }) {
   // Animation variants
   const animations = {
     // Shimmer: Gradient animation from left to right
-    shimmer: 'relative overflow-hidden after:absolute after:inset-0 after:-translate-x-full after:animate-shimmer after:bg-gradient-to-r after:from-transparent after:via-white/20 after:to-transparent motion-reduce:after:animate-none',
+    shimmer:
+      'relative overflow-hidden after:absolute after:inset-0 after:-translate-x-full after:animate-shimmer after:bg-gradient-to-r after:from-transparent after:via-white/20 after:to-transparent motion-reduce:after:animate-none',
 
     // Pulse: Tailwind's default pulse animation
     pulse: 'animate-pulse motion-reduce:animate-none',
 
     // None: No animation (for prefers-reduced-motion)
-    none: ''
+    none: '',
   }
 
   return (

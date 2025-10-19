@@ -134,7 +134,9 @@ export async function createFeatureFlag(req, res) {
       lastModifiedBy: userId,
     })
 
-    logger.info(`[FeatureFlagsController] Created feature flag ${flag.id} (${flag.key}) by user ${userId}`)
+    logger.info(
+      `[FeatureFlagsController] Created feature flag ${flag.id} (${flag.key}) by user ${userId}`
+    )
 
     res.status(201).json({
       success: true,
@@ -202,7 +204,9 @@ export async function toggleFeatureFlag(req, res) {
       })
     }
 
-    logger.info(`[FeatureFlagsController] Toggled feature flag ${id} to ${enabled} by user ${userId}`)
+    logger.info(
+      `[FeatureFlagsController] Toggled feature flag ${id} to ${enabled} by user ${userId}`
+    )
 
     res.json({
       success: true,

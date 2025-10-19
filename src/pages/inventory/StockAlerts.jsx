@@ -10,8 +10,8 @@
  * - Alert history and trends
  */
 
-import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   AlertTriangle,
   AlertCircle,
@@ -25,7 +25,7 @@ import {
   ArrowRight,
   Tag,
   X,
-} from 'lucide-react';
+} from 'lucide-react'
 import {
   ResponsiveContainer,
   BarChart,
@@ -40,8 +40,8 @@ import {
   PieChart,
   Pie,
   Cell,
-} from 'recharts';
-import { useSSE } from '../../hooks/useSSE';
+} from 'recharts'
+import { useSSE } from '../../hooks/useSSE'
 
 // Alert types and severity
 const ALERT_TYPES = {
@@ -50,27 +50,49 @@ const ALERT_TYPES = {
   OVERSTOCK: { label: 'Overstock', icon: Package, color: 'yellow' },
   EXPIRING_SOON: { label: 'Expiring Soon', icon: Clock, color: 'orange' },
   DEAD_STOCK: { label: 'Dead Stock', icon: TrendingDown, color: 'gray' },
-};
+}
 
 const ALERT_SEVERITY = {
-  critical: { label: 'Critical', color: 'bg-red-500', textColor: 'text-red-600', borderColor: 'border-red-500' },
-  high: { label: 'High', color: 'bg-orange-500', textColor: 'text-orange-600', borderColor: 'border-orange-500' },
-  medium: { label: 'Medium', color: 'bg-yellow-500', textColor: 'text-yellow-600', borderColor: 'border-yellow-500' },
-  low: { label: 'Low', color: 'bg-blue-500', textColor: 'text-blue-600', borderColor: 'border-blue-500' },
-};
+  critical: {
+    label: 'Critical',
+    color: 'bg-red-500',
+    textColor: 'text-red-600',
+    borderColor: 'border-red-500',
+  },
+  high: {
+    label: 'High',
+    color: 'bg-orange-500',
+    textColor: 'text-orange-600',
+    borderColor: 'border-orange-500',
+  },
+  medium: {
+    label: 'Medium',
+    color: 'bg-yellow-500',
+    textColor: 'text-yellow-600',
+    borderColor: 'border-yellow-500',
+  },
+  low: {
+    label: 'Low',
+    color: 'bg-blue-500',
+    textColor: 'text-blue-600',
+    borderColor: 'border-blue-500',
+  },
+}
 
 /**
  * Stock Alert Card
  */
 function StockAlertCard({ alert, onAction, onDismiss }) {
-  const alertType = ALERT_TYPES[alert.type] || ALERT_TYPES.LOW_STOCK;
-  const severity = ALERT_SEVERITY[alert.severity] || ALERT_SEVERITY.medium;
-  const Icon = alertType.icon;
+  const alertType = ALERT_TYPES[alert.type] || ALERT_TYPES.LOW_STOCK
+  const severity = ALERT_SEVERITY[alert.severity] || ALERT_SEVERITY.medium
+  const Icon = alertType.icon
 
-  const [showActions, setShowActions] = useState(false);
+  const [showActions, setShowActions] = useState(false)
 
   return (
-    <div className={`rounded-lg border-2 ${severity.borderColor} bg-white p-4 hover:shadow-md transition-shadow`}>
+    <div
+      className={`rounded-lg border-2 ${severity.borderColor} bg-white p-4 hover:shadow-md transition-shadow`}
+    >
       {/* Header */}
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-3 flex-1">
@@ -80,17 +102,16 @@ function StockAlertCard({ alert, onAction, onDismiss }) {
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-1">
               <h4 className="font-semibold text-gray-900">{alert.sku}</h4>
-              <span className={`px-2 py-0.5 rounded text-xs font-medium ${severity.color} text-white`}>
+              <span
+                className={`px-2 py-0.5 rounded text-xs font-medium ${severity.color} text-white`}
+              >
                 {severity.label}
               </span>
             </div>
             <p className="text-sm text-gray-600">{alert.productName}</p>
           </div>
         </div>
-        <button
-          onClick={() => onDismiss(alert.id)}
-          className="text-gray-400 hover:text-gray-600"
-        >
+        <button onClick={() => onDismiss(alert.id)} className="text-gray-400 hover:text-gray-600">
           <X className="w-4 h-4" />
         </button>
       </div>
@@ -105,11 +126,15 @@ function StockAlertCard({ alert, onAction, onDismiss }) {
         {alert.currentStock !== undefined && (
           <div className="flex items-center justify-between text-sm">
             <span className="text-gray-600">Current Stock:</span>
-            <span className={`font-medium ${
-              alert.currentStock === 0 ? 'text-red-600' :
-              alert.currentStock < alert.reorderPoint ? 'text-orange-600' :
-              'text-gray-900'
-            }`}>
+            <span
+              className={`font-medium ${
+                alert.currentStock === 0
+                  ? 'text-red-600'
+                  : alert.currentStock < alert.reorderPoint
+                    ? 'text-orange-600'
+                    : 'text-gray-900'
+              }`}
+            >
               {alert.currentStock} units
             </span>
           </div>
@@ -132,11 +157,15 @@ function StockAlertCard({ alert, onAction, onDismiss }) {
         {alert.daysUntilExpiry && (
           <div className="flex items-center justify-between text-sm">
             <span className="text-gray-600">Days Until Expiry:</span>
-            <span className={`font-medium ${
-              alert.daysUntilExpiry <= 7 ? 'text-red-600' :
-              alert.daysUntilExpiry <= 30 ? 'text-orange-600' :
-              'text-gray-900'
-            }`}>
+            <span
+              className={`font-medium ${
+                alert.daysUntilExpiry <= 7
+                  ? 'text-red-600'
+                  : alert.daysUntilExpiry <= 30
+                    ? 'text-orange-600'
+                    : 'text-gray-900'
+              }`}
+            >
               {alert.daysUntilExpiry} days
             </span>
           </div>
@@ -150,9 +179,7 @@ function StockAlertCard({ alert, onAction, onDismiss }) {
         )}
 
         {alert.message && (
-          <div className="mt-2 p-2 bg-gray-50 rounded text-sm text-gray-700">
-            {alert.message}
-          </div>
+          <div className="mt-2 p-2 bg-gray-50 rounded text-sm text-gray-700">{alert.message}</div>
         )}
       </div>
 
@@ -163,7 +190,9 @@ function StockAlertCard({ alert, onAction, onDismiss }) {
           className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1"
         >
           Quick Actions
-          <ArrowRight className={`w-4 h-4 transition-transform ${showActions ? 'rotate-90' : ''}`} />
+          <ArrowRight
+            className={`w-4 h-4 transition-transform ${showActions ? 'rotate-90' : ''}`}
+          />
         </button>
 
         {showActions && (
@@ -233,7 +262,7 @@ function StockAlertCard({ alert, onAction, onDismiss }) {
         Alert created: {new Date(alert.createdAt).toLocaleString()}
       </div>
     </div>
-  );
+  )
 }
 
 /**
@@ -241,16 +270,26 @@ function StockAlertCard({ alert, onAction, onDismiss }) {
  */
 function AlertSummaryCards({ summary }) {
   const cards = [
-    { label: 'Critical Alerts', value: summary.critical || 0, color: 'bg-red-500', icon: AlertTriangle },
+    {
+      label: 'Critical Alerts',
+      value: summary.critical || 0,
+      color: 'bg-red-500',
+      icon: AlertTriangle,
+    },
     { label: 'High Priority', value: summary.high || 0, color: 'bg-orange-500', icon: AlertCircle },
-    { label: 'Medium Priority', value: summary.medium || 0, color: 'bg-yellow-500', icon: AlertCircle },
+    {
+      label: 'Medium Priority',
+      value: summary.medium || 0,
+      color: 'bg-yellow-500',
+      icon: AlertCircle,
+    },
     { label: 'Total Alerts', value: summary.total || 0, color: 'bg-blue-500', icon: Package },
-  ];
+  ]
 
   return (
     <div className="grid md:grid-cols-4 gap-4">
-      {cards.map((card) => {
-        const Icon = card.icon;
+      {cards.map(card => {
+        const Icon = card.icon
         return (
           <div key={card.label} className="bg-white rounded-lg shadow p-6">
             <div className="flex items-center justify-between mb-3">
@@ -261,10 +300,10 @@ function AlertSummaryCards({ summary }) {
             <div className="text-3xl font-bold text-gray-900">{card.value}</div>
             <div className="text-sm text-gray-600 mt-1">{card.label}</div>
           </div>
-        );
+        )
       })}
     </div>
-  );
+  )
 }
 
 /**
@@ -274,19 +313,21 @@ function AlertsByTypeChart({ alertsData }) {
   const chartData = Object.entries(ALERT_TYPES).map(([key, type]) => ({
     name: type.label,
     count: alertsData[key] || 0,
-    color: type.color === 'red' ? '#ef4444' :
-           type.color === 'orange' ? '#f97316' :
-           type.color === 'yellow' ? '#eab308' :
-           '#6b7280',
-  }));
+    color:
+      type.color === 'red'
+        ? '#ef4444'
+        : type.color === 'orange'
+          ? '#f97316'
+          : type.color === 'yellow'
+            ? '#eab308'
+            : '#6b7280',
+  }))
 
-  const total = chartData.reduce((sum, item) => sum + item.count, 0);
+  const total = chartData.reduce((sum, item) => sum + item.count, 0)
 
   return (
     <div className="bg-white rounded-lg shadow p-6">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">
-        Alerts by Type
-      </h3>
+      <h3 className="text-lg font-semibold text-gray-900 mb-4">Alerts by Type</h3>
 
       <div className="grid md:grid-cols-2 gap-6">
         <ResponsiveContainer width="100%" height={200}>
@@ -314,13 +355,10 @@ function AlertsByTypeChart({ alertsData }) {
             {chartData
               .filter(d => d.count > 0)
               .sort((a, b) => b.count - a.count)
-              .map((item) => (
+              .map(item => (
                 <div key={item.name} className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <div
-                      className="w-3 h-3 rounded-full"
-                      style={{ backgroundColor: item.color }}
-                    />
+                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }} />
                     <span className="text-sm text-gray-700">{item.name}</span>
                   </div>
                   <span className="text-sm font-medium text-gray-900">
@@ -332,7 +370,7 @@ function AlertsByTypeChart({ alertsData }) {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 /**
@@ -341,19 +379,19 @@ function AlertsByTypeChart({ alertsData }) {
 function AlertTrendChart({ trendData }) {
   return (
     <div className="bg-white rounded-lg shadow p-6">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">
-        Alert Trend (Last 30 Days)
-      </h3>
+      <h3 className="text-lg font-semibold text-gray-900 mb-4">Alert Trend (Last 30 Days)</h3>
 
       <ResponsiveContainer width="100%" height={250}>
         <LineChart data={trendData}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis
             dataKey="date"
-            tickFormatter={(date) => new Date(date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })}
+            tickFormatter={date =>
+              new Date(date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })
+            }
           />
           <YAxis />
-          <Tooltip labelFormatter={(date) => new Date(date).toLocaleDateString()} />
+          <Tooltip labelFormatter={date => new Date(date).toLocaleDateString()} />
           <Legend />
 
           <Line
@@ -383,17 +421,17 @@ function AlertTrendChart({ trendData }) {
         </LineChart>
       </ResponsiveContainer>
     </div>
-  );
+  )
 }
 
 /**
  * Main Stock Alerts Component
  */
 export default function StockAlerts() {
-  const queryClient = useQueryClient();
-  const [filterSeverity, setFilterSeverity] = useState('ALL');
-  const [filterType, setFilterType] = useState('ALL');
-  const [showDismissed, setShowDismissed] = useState(false);
+  const queryClient = useQueryClient()
+  const [filterSeverity, setFilterSeverity] = useState('ALL')
+  const [filterType, setFilterType] = useState('ALL')
+  const [showDismissed, setShowDismissed] = useState(false)
 
   // Fetch alerts
   const { data, isLoading, error } = useQuery({
@@ -403,31 +441,31 @@ export default function StockAlerts() {
         severity: filterSeverity,
         type: filterType,
         includeDismissed: showDismissed.toString(),
-      });
+      })
       const response = await fetch(`/api/v1/inventory/alerts?${params}`, {
         credentials: 'include',
-      });
-      if (!response.ok) throw new Error('Failed to fetch alerts');
-      const result = await response.json();
-      return result.data;
+      })
+      if (!response.ok) throw new Error('Failed to fetch alerts')
+      const result = await response.json()
+      return result.data
     },
     refetchInterval: 30000,
-  });
+  })
 
   // Dismiss alert mutation
   const dismissAlertMutation = useMutation({
-    mutationFn: async (alertId) => {
+    mutationFn: async alertId => {
       const response = await fetch(`/api/v1/inventory/alerts/${alertId}/dismiss`, {
         method: 'PATCH',
         credentials: 'include',
-      });
-      if (!response.ok) throw new Error('Failed to dismiss alert');
-      return response.json();
+      })
+      if (!response.ok) throw new Error('Failed to dismiss alert')
+      return response.json()
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['inventory', 'alerts']);
+      queryClient.invalidateQueries(['inventory', 'alerts'])
     },
-  });
+  })
 
   // Handle action mutation
   const handleActionMutation = useMutation({
@@ -437,26 +475,26 @@ export default function StockAlerts() {
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({ action, sku: alert.sku, warehouse: alert.warehouse }),
-      });
-      if (!response.ok) throw new Error(`Failed to execute ${action}`);
-      return response.json();
+      })
+      if (!response.ok) throw new Error(`Failed to execute ${action}`)
+      return response.json()
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['inventory', 'alerts']);
+      queryClient.invalidateQueries(['inventory', 'alerts'])
     },
-  });
+  })
 
   // SSE for real-time alerts
   const { connected } = useSSE('inventory', {
     enabled: true,
-    onMessage: (message) => {
+    onMessage: message => {
       if (message.type === 'inventory:alert') {
-        queryClient.invalidateQueries(['inventory', 'alerts']);
+        queryClient.invalidateQueries(['inventory', 'alerts'])
         // Show toast notification for new alert
-        console.log('New inventory alert:', message.data);
+        console.log('New inventory alert:', message.data)
       }
     },
-  });
+  })
 
   if (isLoading) {
     return (
@@ -466,7 +504,7 @@ export default function StockAlerts() {
           <p className="text-gray-600">Loading alerts...</p>
         </div>
       </div>
-    );
+    )
   }
 
   if (error) {
@@ -474,22 +512,18 @@ export default function StockAlerts() {
       <div className="bg-red-50 border border-red-200 rounded-lg p-6">
         <p className="text-red-800">Error loading alerts: {error.message}</p>
       </div>
-    );
+    )
   }
 
-  const {
-    alerts = [],
-    summary = {},
-    byType = {},
-    trend = [],
-  } = data || {};
+  const { alerts = [], summary = {}, byType = {}, trend = [] } = data || {}
 
   // Filter alerts
   const filteredAlerts = alerts.filter(alert => {
-    const matchesSeverity = filterSeverity === 'ALL' || alert.severity === filterSeverity.toLowerCase();
-    const matchesType = filterType === 'ALL' || alert.type === filterType;
-    return matchesSeverity && matchesType;
-  });
+    const matchesSeverity =
+      filterSeverity === 'ALL' || alert.severity === filterSeverity.toLowerCase()
+    const matchesType = filterType === 'ALL' || alert.type === filterType
+    return matchesSeverity && matchesType
+  })
 
   return (
     <div className="space-y-6">
@@ -512,7 +546,7 @@ export default function StockAlerts() {
         <div className="flex items-center gap-3">
           <select
             value={filterSeverity}
-            onChange={(e) => setFilterSeverity(e.target.value)}
+            onChange={e => setFilterSeverity(e.target.value)}
             className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
           >
             <option value="ALL">All Severities</option>
@@ -525,7 +559,7 @@ export default function StockAlerts() {
 
           <select
             value={filterType}
-            onChange={(e) => setFilterType(e.target.value)}
+            onChange={e => setFilterType(e.target.value)}
             className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
           >
             <option value="ALL">All Types</option>
@@ -540,7 +574,7 @@ export default function StockAlerts() {
             <input
               type="checkbox"
               checked={showDismissed}
-              onChange={(e) => setShowDismissed(e.target.checked)}
+              onChange={e => setShowDismissed(e.target.checked)}
               className="rounded"
             />
             Show Dismissed
@@ -575,17 +609,17 @@ export default function StockAlerts() {
           </div>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredAlerts.map((alert) => (
+            {filteredAlerts.map(alert => (
               <StockAlertCard
                 key={alert.id}
                 alert={alert}
                 onAction={(action, alert) => handleActionMutation.mutate({ action, alert })}
-                onDismiss={(id) => dismissAlertMutation.mutate(id)}
+                onDismiss={id => dismissAlertMutation.mutate(id)}
               />
             ))}
           </div>
         )}
       </div>
     </div>
-  );
+  )
 }

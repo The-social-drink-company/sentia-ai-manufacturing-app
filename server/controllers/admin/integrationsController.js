@@ -113,7 +113,9 @@ export async function testIntegration(req, res) {
 
     const result = await IntegrationService.testConnection(id)
 
-    logger.info(`[IntegrationsController] Tested integration ${id}: ${result.healthy ? 'HEALTHY' : 'FAILED'}`)
+    logger.info(
+      `[IntegrationsController] Tested integration ${id}: ${result.healthy ? 'HEALTHY' : 'FAILED'}`
+    )
 
     res.json({
       success: true,

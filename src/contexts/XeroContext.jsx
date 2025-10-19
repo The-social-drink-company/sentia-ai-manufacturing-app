@@ -124,6 +124,3 @@ export const XeroProvider = ({ children }) => {
 
   return <XeroContext.Provider value={value}>{children}</XeroContext.Provider>
 }
-
-
-

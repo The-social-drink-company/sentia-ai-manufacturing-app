@@ -433,11 +433,11 @@ tests/
 
 The MCP integration has been successfully implemented, tested, documented, and deployed. All systems are operational and ready for production use.
 
-| Role             | Name   | Date     | Signature    |
-| ---------------- | ------ | -------- | ------------ |
-| Development Lead | [Name] | Dec 2024 | ****\_\_**** |
-| Operations Lead  | [Name] | Dec 2024 | ****\_\_**** |
-| Project Manager  | [Name] | Dec 2024 | ****\_\_**** |
+| Role             | Name   | Date     | Signature        |
+| ---------------- | ------ | -------- | ---------------- |
+| Development Lead | [Name] | Dec 2024 | \***\*\_\_\*\*** |
+| Operations Lead  | [Name] | Dec 2024 | \***\*\_\_\*\*** |
+| Project Manager  | [Name] | Dec 2024 | \***\*\_\_\*\*** |
 
 ---
 

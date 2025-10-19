@@ -1,7 +1,7 @@
-import React from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useSSE } from '@/hooks/useSSE';
-import { useNavigate } from 'react-router-dom';
+import React from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useSSE } from '@/hooks/useSSE'
+import { useNavigate } from 'react-router-dom'
 import {
   Activity,
   AlertTriangle,
@@ -12,7 +12,7 @@ import {
   Gauge,
   Package,
   AlertCircle,
-} from 'lucide-react';
+} from 'lucide-react'
 
 /**
  * ProductionDashboard Component
@@ -25,44 +25,44 @@ import {
  * - Real-time updates via SSE
  */
 function ProductionDashboard() {
-  const navigate = useNavigate();
-  const queryClient = useQueryClient();
+  const navigate = useNavigate()
+  const queryClient = useQueryClient()
 
   // Fetch production overview data
   const { data: overviewData, isLoading } = useQuery({
     queryKey: ['production', 'overview'],
     queryFn: async () => {
-      const response = await fetch('/api/v1/production/overview');
-      if (!response.ok) throw new Error('Failed to fetch production overview');
-      const result = await response.json();
-      return result.data;
+      const response = await fetch('/api/v1/production/overview')
+      if (!response.ok) throw new Error('Failed to fetch production overview')
+      const result = await response.json()
+      return result.data
     },
     refetchInterval: 30000, // Refetch every 30 seconds as fallback
-  });
+  })
 
   // SSE for real-time production updates
   const { connected } = useSSE('production', {
     enabled: true,
-    onMessage: (message) => {
+    onMessage: message => {
       // Invalidate queries based on update type
       if (message.type === 'job:status') {
-        queryClient.invalidateQueries(['production', 'overview']);
-        queryClient.invalidateQueries(['production', 'jobs']);
+        queryClient.invalidateQueries(['production', 'overview'])
+        queryClient.invalidateQueries(['production', 'jobs'])
       }
       if (message.type === 'oee:update') {
-        queryClient.invalidateQueries(['production', 'overview']);
-        queryClient.invalidateQueries(['production', 'oee']);
+        queryClient.invalidateQueries(['production', 'overview'])
+        queryClient.invalidateQueries(['production', 'oee'])
       }
       if (message.type === 'downtime:event') {
-        queryClient.invalidateQueries(['production', 'overview']);
-        queryClient.invalidateQueries(['production', 'downtime']);
+        queryClient.invalidateQueries(['production', 'overview'])
+        queryClient.invalidateQueries(['production', 'downtime'])
       }
       if (message.type === 'quality:alert') {
-        queryClient.invalidateQueries(['production', 'overview']);
-        queryClient.invalidateQueries(['production', 'quality']);
+        queryClient.invalidateQueries(['production', 'overview'])
+        queryClient.invalidateQueries(['production', 'quality'])
       }
     },
-  });
+  })
 
   if (isLoading) {
     return (
@@ -72,16 +72,10 @@ function ProductionDashboard() {
           <p className="text-gray-600">Loading production dashboard...</p>
         </div>
       </div>
-    );
+    )
   }
 
-  const {
-    activeJobs = [],
-    oee = {},
-    downtime = {},
-    quality = {},
-    alerts = [],
-  } = overviewData || {};
+  const { activeJobs = [], oee = {}, downtime = {}, quality = {}, alerts = [] } = overviewData || {}
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -97,10 +91,10 @@ function ProductionDashboard() {
           <div className="flex items-center gap-3">
             {/* SSE Status Indicator */}
             <div className="flex items-center gap-2 px-3 py-2 bg-white rounded-lg border border-gray-200">
-              <div className={`w-3 h-3 rounded-full ${connected ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`} />
-              <span className="text-sm text-gray-700">
-                {connected ? 'Live' : 'Disconnected'}
-              </span>
+              <div
+                className={`w-3 h-3 rounded-full ${connected ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`}
+              />
+              <span className="text-sm text-gray-700">{connected ? 'Live' : 'Disconnected'}</span>
             </div>
           </div>
         </div>
@@ -117,7 +111,10 @@ function ProductionDashboard() {
               </h2>
               <div className="space-y-2">
                 {alerts.slice(0, 3).map((alert, index) => (
-                  <div key={index} className="flex items-center justify-between bg-white rounded p-3">
+                  <div
+                    key={index}
+                    className="flex items-center justify-between bg-white rounded p-3"
+                  >
                     <div>
                       <p className="font-medium text-red-900">{alert.title}</p>
                       <p className="text-sm text-red-700">{alert.description}</p>
@@ -196,7 +193,7 @@ function ProductionDashboard() {
                 </div>
               ) : (
                 <div className="grid md:grid-cols-2 gap-4">
-                  {activeJobs.slice(0, 4).map((job) => (
+                  {activeJobs.slice(0, 4).map(job => (
                     <JobCard
                       key={job.id}
                       job={job}
@@ -292,11 +289,11 @@ function ProductionDashboard() {
                   <p className="text-sm font-medium text-gray-700 mb-2">Recent Events</p>
                   {downtime.events.slice(0, 3).map((event, index) => (
                     <div key={index} className="flex items-start gap-2 p-2 bg-gray-50 rounded">
-                      <AlertCircle className={`w-4 h-4 flex-shrink-0 mt-0.5 ${getSeverityColor(event.severity)}`} />
+                      <AlertCircle
+                        className={`w-4 h-4 flex-shrink-0 mt-0.5 ${getSeverityColor(event.severity)}`}
+                      />
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-900 truncate">
-                          {event.reason}
-                        </p>
+                        <p className="text-sm font-medium text-gray-900 truncate">{event.reason}</p>
                         <p className="text-xs text-gray-600">{event.duration} min</p>
                       </div>
                     </div>
@@ -312,14 +309,8 @@ function ProductionDashboard() {
           <div className="bg-white rounded-lg shadow p-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
             <div className="space-y-2">
-              <ActionButton
-                label="View Job Board"
-                onClick={() => navigate('/production/jobs')}
-              />
-              <ActionButton
-                label="OEE Dashboard"
-                onClick={() => navigate('/production/oee')}
-              />
+              <ActionButton label="View Job Board" onClick={() => navigate('/production/jobs')} />
+              <ActionButton label="OEE Dashboard" onClick={() => navigate('/production/oee')} />
               <ActionButton
                 label="Downtime Tracker"
                 onClick={() => navigate('/production/downtime')}
@@ -337,25 +328,25 @@ function ProductionDashboard() {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 /**
  * OEECard Component
  */
 function OEECard({ label, value, target, icon, trend, onClick }) {
-  const percentage = value;
-  const status = getOEEStatus(percentage, target);
-  const trendValue = trend?.value || 0;
-  const trendDirection = trendValue > 0 ? 'up' : trendValue < 0 ? 'down' : 'neutral';
-  const IconMarkup = icon ? React.createElement(icon, { className: 'w-6 h-6 text-gray-700' }) : null;
+  const percentage = value
+  const status = getOEEStatus(percentage, target)
+  const trendValue = trend?.value || 0
+  const trendDirection = trendValue > 0 ? 'up' : trendValue < 0 ? 'down' : 'neutral'
+  const IconMarkup = icon ? React.createElement(icon, { className: 'w-6 h-6 text-gray-700' }) : null
 
   const statusColors = {
     excellent: 'border-green-500 bg-green-50',
     good: 'border-blue-500 bg-blue-50',
     warning: 'border-yellow-500 bg-yellow-50',
     critical: 'border-red-500 bg-red-50',
-  };
+  }
 
   return (
     <button
@@ -370,14 +361,20 @@ function OEECard({ label, value, target, icon, trend, onClick }) {
       <div className="flex items-baseline gap-2">
         <span className="text-3xl font-bold text-gray-900">{percentage.toFixed(1)}%</span>
         {trendDirection !== 'neutral' && (
-          <span className={`text-sm font-medium flex items-center gap-1 ${trendDirection === 'up' ? 'text-green-600' : 'text-red-600'}`}>
-            {trendDirection === 'up' ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
+          <span
+            className={`text-sm font-medium flex items-center gap-1 ${trendDirection === 'up' ? 'text-green-600' : 'text-red-600'}`}
+          >
+            {trendDirection === 'up' ? (
+              <TrendingUp className="w-4 h-4" />
+            ) : (
+              <TrendingDown className="w-4 h-4" />
+            )}
             {Math.abs(trendValue).toFixed(1)}%
           </span>
         )}
       </div>
     </button>
-  );
+  )
 }
 
 /**
@@ -390,9 +387,9 @@ function JobCard({ job, onClick }) {
     completed: { label: 'Completed', className: 'bg-green-100 text-green-800' },
     failed: { label: 'Failed', className: 'bg-red-100 text-red-800' },
     paused: { label: 'Paused', className: 'bg-yellow-100 text-yellow-800' },
-  };
+  }
 
-  const config = statusConfig[job.status] || statusConfig.scheduled;
+  const config = statusConfig[job.status] || statusConfig.scheduled
 
   return (
     <button
@@ -412,9 +409,7 @@ function JobCard({ job, onClick }) {
         <span className="text-gray-600">
           {job.completedUnits || 0} / {job.targetUnits} units
         </span>
-        <span className="font-semibold text-gray-900">
-          {job.progress || 0}%
-        </span>
+        <span className="font-semibold text-gray-900">{job.progress || 0}%</span>
       </div>
       {job.status === 'in_progress' && (
         <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
@@ -425,7 +420,7 @@ function JobCard({ job, onClick }) {
         </div>
       )}
     </button>
-  );
+  )
 }
 
 /**
@@ -437,17 +432,18 @@ function MetricCard({ label, value, target, status, inverse = false }) {
     good: 'text-blue-600',
     warning: 'text-yellow-600',
     critical: 'text-red-600',
-  };
+  }
 
   return (
     <div className="p-4 bg-gray-50 rounded-lg">
       <p className="text-sm text-gray-600 mb-1">{label}</p>
       <p className={`text-2xl font-bold ${statusColors[status]}`}>{value}</p>
       <p className="text-xs text-gray-500 mt-1">
-        Target: {inverse ? '<' : '>'}{target}%
+        Target: {inverse ? '<' : '>'}
+        {target}%
       </p>
     </div>
-  );
+  )
 }
 
 /**
@@ -461,7 +457,7 @@ function ActionButton({ label, onClick }) {
     >
       {label}
     </button>
-  );
+  )
 }
 
 /**
@@ -469,17 +465,17 @@ function ActionButton({ label, onClick }) {
  */
 
 function getOEEStatus(value, target) {
-  if (value >= target) return 'excellent';
-  if (value >= target * 0.95) return 'good';
-  if (value >= target * 0.85) return 'warning';
-  return 'critical';
+  if (value >= target) return 'excellent'
+  if (value >= target * 0.95) return 'good'
+  if (value >= target * 0.85) return 'warning'
+  return 'critical'
 }
 
 function getQualityStatus(value, target) {
-  if (value >= target) return 'excellent';
-  if (value >= target * 0.98) return 'good';
-  if (value >= target * 0.95) return 'warning';
-  return 'critical';
+  if (value >= target) return 'excellent'
+  if (value >= target * 0.98) return 'good'
+  if (value >= target * 0.95) return 'warning'
+  return 'critical'
 }
 
 function getSeverityColor(severity) {
@@ -488,8 +484,8 @@ function getSeverityColor(severity) {
     medium: 'text-yellow-600',
     high: 'text-orange-600',
     critical: 'text-red-600',
-  };
-  return colors[severity] || colors.medium;
+  }
+  return colors[severity] || colors.medium
 }
 
-export default ProductionDashboard;
+export default ProductionDashboard

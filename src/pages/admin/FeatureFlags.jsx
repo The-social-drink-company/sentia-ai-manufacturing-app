@@ -1,10 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import {
-  getFeatureFlags,
-  toggleFeatureFlag,
-  getFeatureFlagHistory,
-} from '@/services/api/adminApi'
+import { getFeatureFlags, toggleFeatureFlag, getFeatureFlagHistory } from '@/services/api/adminApi'
 import {
   ToggleLeft,
   ToggleRight,
@@ -48,7 +44,9 @@ const EnvironmentToggle = ({ flag, environment, onToggle, disabled }) => {
       disabled={disabled || pending}
       onClick={() => onToggle(environment, !enabled)}
       className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-sm transition ${
-        enabled ? 'border-green-200 bg-green-50 text-green-700 hover:bg-green-100' : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+        enabled
+          ? 'border-green-200 bg-green-50 text-green-700 hover:bg-green-100'
+          : 'border-gray-200 text-gray-600 hover:bg-gray-50'
       } ${pending ? 'opacity-70 cursor-not-allowed' : ''}`}
     >
       <Icon className={`h-4 w-4 ${tone}`} />
@@ -66,13 +64,19 @@ const HistoryList = ({ entries }) => {
   return (
     <ul className="space-y-2 text-xs text-gray-600">
       {entries.slice(0, 4).map(item => (
-        <li key={item.id || item.timestamp} className="rounded border border-gray-100 bg-gray-50 p-2">
+        <li
+          key={item.id || item.timestamp}
+          className="rounded border border-gray-100 bg-gray-50 p-2"
+        >
           <div className="flex items-center justify-between text-[11px] text-gray-500">
             <span>{item.environment || 'unknown env'}</span>
-            <span>{item.timestamp ? new Date(item.timestamp).toLocaleString() : 'unknown time'}</span>
+            <span>
+              {item.timestamp ? new Date(item.timestamp).toLocaleString() : 'unknown time'}
+            </span>
           </div>
           <p>
-            {(item.actor || item.performedBy || 'System')} {(item.action || item.event || 'updated flag')}
+            {item.actor || item.performedBy || 'System'}{' '}
+            {item.action || item.event || 'updated flag'}
           </p>
         </li>
       ))}
@@ -94,9 +98,15 @@ const FeatureFlagCard = ({ flag, history, onToggle, loading }) => {
           </div>
           <p className="text-sm text-gray-500">{flag.description || 'No description provided.'}</p>
           <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-gray-500">
-            <span className="rounded bg-gray-100 px-2 py-0.5">Category: {flag.category || 'general'}</span>
-            <span className="rounded bg-gray-100 px-2 py-0.5">Default: {flag.defaultEnabled ? 'On' : 'Off'}</span>
-            <span className="rounded bg-gray-100 px-2 py-0.5">Impact: {flag.impact || 'unknown'}</span>
+            <span className="rounded bg-gray-100 px-2 py-0.5">
+              Category: {flag.category || 'general'}
+            </span>
+            <span className="rounded bg-gray-100 px-2 py-0.5">
+              Default: {flag.defaultEnabled ? 'On' : 'Off'}
+            </span>
+            <span className="rounded bg-gray-100 px-2 py-0.5">
+              Impact: {flag.impact || 'unknown'}
+            </span>
           </div>
         </div>
         <div className="text-xs text-gray-500">
@@ -122,7 +132,8 @@ const FeatureFlagCard = ({ flag, history, onToggle, loading }) => {
           <div className="rounded-lg border border-gray-100 bg-gray-50 p-4 text-sm text-gray-600">
             <p className="font-medium text-gray-700">Operational guidance</p>
             <p className="mt-1">
-              {flag.guidance || 'Coordinate with engineering before toggling production flags. Always notify customer success if user experience is affected.'}
+              {flag.guidance ||
+                'Coordinate with engineering before toggling production flags. Always notify customer success if user experience is affected.'}
             </p>
             {flag.impact === 'high' && (
               <p className="mt-2 text-xs text-red-600">
@@ -212,7 +223,8 @@ export default function FeatureFlags() {
         <div>
           <h1 className="text-2xl font-semibold text-gray-900">Feature Flags</h1>
           <p className="text-sm text-gray-500">
-            Manage rollout controls per environment. Production toggles require MFA and record audit history.
+            Manage rollout controls per environment. Production toggles require MFA and record audit
+            history.
           </p>
         </div>
         <div className="flex items-center gap-3 text-xs text-gray-500">
@@ -230,13 +242,17 @@ export default function FeatureFlags() {
           <p className="text-2xl font-semibold text-gray-900">{enabledProd}</p>
         </div>
         <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-          <p className="text-xs font-medium uppercase tracking-wide text-gray-500">Pending approvals</p>
+          <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
+            Pending approvals
+          </p>
           <p className="text-2xl font-semibold text-amber-600">{pendingApproval}</p>
         </div>
       </section>
 
       {flagsQuery.isLoading && (
-        <div className="rounded-xl border border-gray-200 bg-white p-6 text-sm text-gray-500">Loading feature flags...</div>
+        <div className="rounded-xl border border-gray-200 bg-white p-6 text-sm text-gray-500">
+          Loading feature flags...
+        </div>
       )}
 
       {!flagsQuery.isLoading && flags.length === 0 && (

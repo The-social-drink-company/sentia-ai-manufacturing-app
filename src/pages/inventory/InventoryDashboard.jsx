@@ -10,8 +10,8 @@
  * - SKU performance tracking
  */
 
-import { useState } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   Package,
   TrendingUp,
@@ -23,7 +23,7 @@ import {
   Activity,
   Filter,
   Download,
-} from 'lucide-react';
+} from 'lucide-react'
 import {
   ResponsiveContainer,
   BarChart,
@@ -43,29 +43,36 @@ import {
   Scatter,
   ScatterChart,
   ZAxis,
-} from 'recharts';
-import { useSSE } from '../../hooks/useSSE';
+} from 'recharts'
+import { useSSE } from '../../hooks/useSSE'
 
 // Warehouse locations
 const WAREHOUSES = {
   UK: { id: 'uk', name: 'UK Warehouse', color: '#3b82f6' },
   EU: { id: 'eu', name: 'EU Warehouse', color: '#10b981' },
   USA: { id: 'usa', name: 'USA Warehouse', color: '#f59e0b' },
-};
+}
 
 /**
  * Inventory Metric Card
  */
-// eslint-disable-next-line no-unused-vars
-function InventoryMetricCard({ label, value, unit, trend, icon: IconComponent, format = 'number' }) {
-  const StatusIcon = trend >= 0 ? TrendingUp : TrendingDown;
-  const trendColor = trend >= 0 ? 'text-green-600' : 'text-red-600';
+function InventoryMetricCard({
+  label,
+  value,
+  unit,
+  trend,
+  icon: IconComponent,
+  format = 'number',
+}) {
+  const StatusIcon = trend >= 0 ? TrendingUp : TrendingDown
+  const trendColor = trend >= 0 ? 'text-green-600' : 'text-red-600'
 
-  const formattedValue = format === 'currency'
-    ? `£${value.toLocaleString()}`
-    : format === 'percentage'
-    ? `${value.toFixed(1)}%`
-    : value.toLocaleString();
+  const formattedValue =
+    format === 'currency'
+      ? `£${value.toLocaleString()}`
+      : format === 'percentage'
+        ? `${value.toFixed(1)}%`
+        : value.toLocaleString()
 
   return (
     <div className="bg-white rounded-lg shadow p-6">
@@ -88,13 +95,11 @@ function InventoryMetricCard({ label, value, unit, trend, icon: IconComponent, f
       {trend !== undefined && (
         <div className={`flex items-center gap-1 mt-2 ${trendColor}`}>
           <StatusIcon className="w-4 h-4" />
-          <span className="text-sm font-medium">
-            {Math.abs(trend).toFixed(1)}% vs last month
-          </span>
+          <span className="text-sm font-medium">{Math.abs(trend).toFixed(1)}% vs last month</span>
         </div>
       )}
     </div>
-  );
+  )
 }
 
 /**
@@ -103,16 +108,14 @@ function InventoryMetricCard({ label, value, unit, trend, icon: IconComponent, f
 function WarehouseComparisonChart({ warehouseData }) {
   return (
     <div className="bg-white rounded-lg shadow p-6">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">
-        Stock Levels by Warehouse
-      </h3>
+      <h3 className="text-lg font-semibold text-gray-900 mb-4">Stock Levels by Warehouse</h3>
 
       <ResponsiveContainer width="100%" height={300}>
         <BarChart data={warehouseData}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="warehouse" />
           <YAxis label={{ value: 'Units', angle: -90, position: 'insideLeft' }} />
-          <Tooltip formatter={(value) => value.toLocaleString()} />
+          <Tooltip formatter={value => value.toLocaleString()} />
           <Legend />
 
           <Bar dataKey="inStock" stackId="a" fill="#10b981" name="In Stock" />
@@ -123,32 +126,40 @@ function WarehouseComparisonChart({ warehouseData }) {
 
       {/* Warehouse Stats Grid */}
       <div className="mt-6 grid grid-cols-3 gap-4">
-        {warehouseData.map((warehouse) => (
+        {warehouseData.map(warehouse => (
           <div key={warehouse.id} className="p-4 bg-gray-50 rounded-lg">
             <h4 className="font-semibold text-gray-900 mb-2">{warehouse.warehouse}</h4>
             <div className="space-y-1 text-sm">
               <div className="flex items-center justify-between">
                 <span className="text-gray-600">Total:</span>
-                <span className="font-medium text-gray-900">{warehouse.inStock.toLocaleString()}</span>
+                <span className="font-medium text-gray-900">
+                  {warehouse.inStock.toLocaleString()}
+                </span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-gray-600">Available:</span>
-                <span className="font-medium text-green-600">{warehouse.available.toLocaleString()}</span>
+                <span className="font-medium text-green-600">
+                  {warehouse.available.toLocaleString()}
+                </span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-gray-600">Reserved:</span>
-                <span className="font-medium text-orange-600">{warehouse.reserved.toLocaleString()}</span>
+                <span className="font-medium text-orange-600">
+                  {warehouse.reserved.toLocaleString()}
+                </span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-gray-600">Value:</span>
-                <span className="font-medium text-gray-900">£{warehouse.value.toLocaleString()}</span>
+                <span className="font-medium text-gray-900">
+                  £{warehouse.value.toLocaleString()}
+                </span>
               </div>
             </div>
           </div>
         ))}
       </div>
     </div>
-  );
+  )
 }
 
 /**
@@ -156,16 +167,29 @@ function WarehouseComparisonChart({ warehouseData }) {
  */
 function ABCAnalysisChart({ abcData }) {
   const chartData = [
-    { category: 'A - High Value', count: abcData.categoryA?.count || 0, value: abcData.categoryA?.value || 0, color: '#ef4444' },
-    { category: 'B - Medium Value', count: abcData.categoryB?.count || 0, value: abcData.categoryB?.value || 0, color: '#f59e0b' },
-    { category: 'C - Low Value', count: abcData.categoryC?.count || 0, value: abcData.categoryC?.value || 0, color: '#10b981' },
-  ];
+    {
+      category: 'A - High Value',
+      count: abcData.categoryA?.count || 0,
+      value: abcData.categoryA?.value || 0,
+      color: '#ef4444',
+    },
+    {
+      category: 'B - Medium Value',
+      count: abcData.categoryB?.count || 0,
+      value: abcData.categoryB?.value || 0,
+      color: '#f59e0b',
+    },
+    {
+      category: 'C - Low Value',
+      count: abcData.categoryC?.count || 0,
+      value: abcData.categoryC?.value || 0,
+      color: '#10b981',
+    },
+  ]
 
   return (
     <div className="bg-white rounded-lg shadow p-6">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">
-        ABC Analysis
-      </h3>
+      <h3 className="text-lg font-semibold text-gray-900 mb-4">ABC Analysis</h3>
       <p className="text-sm text-gray-600 mb-4">
         Classification of SKUs by value contribution (A: 80%, B: 15%, C: 5%)
       </p>
@@ -178,7 +202,9 @@ function ABCAnalysisChart({ abcData }) {
               cx="50%"
               cy="50%"
               labelLine={false}
-              label={({ category, value }) => `${category.split(' - ')[0]}: £${(value/1000).toFixed(0)}k`}
+              label={({ category, value }) =>
+                `${category.split(' - ')[0]}: £${(value / 1000).toFixed(0)}k`
+              }
               outerRadius={80}
               fill="#8884d8"
               dataKey="value"
@@ -187,19 +213,16 @@ function ABCAnalysisChart({ abcData }) {
                 <Cell key={`cell-${index}`} fill={entry.color} />
               ))}
             </Pie>
-            <Tooltip formatter={(value) => `£${value.toLocaleString()}`} />
+            <Tooltip formatter={value => `£${value.toLocaleString()}`} />
           </PieChart>
         </ResponsiveContainer>
 
         <div className="flex flex-col justify-center">
           <div className="space-y-4">
-            {chartData.map((item) => (
+            {chartData.map(item => (
               <div key={item.category} className="p-3 bg-gray-50 rounded-lg">
                 <div className="flex items-center gap-2 mb-2">
-                  <div
-                    className="w-3 h-3 rounded-full"
-                    style={{ backgroundColor: item.color }}
-                  />
+                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }} />
                   <span className="font-semibold text-gray-900">{item.category}</span>
                 </div>
                 <div className="grid grid-cols-2 gap-2 text-sm">
@@ -209,7 +232,9 @@ function ABCAnalysisChart({ abcData }) {
                   </div>
                   <div>
                     <span className="text-gray-600">Value:</span>
-                    <span className="ml-2 font-medium text-gray-900">£{(item.value/1000).toFixed(0)}k</span>
+                    <span className="ml-2 font-medium text-gray-900">
+                      £{(item.value / 1000).toFixed(0)}k
+                    </span>
                   </div>
                 </div>
               </div>
@@ -218,7 +243,7 @@ function ABCAnalysisChart({ abcData }) {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 /**
@@ -236,12 +261,21 @@ function StockTurnoverChart({ turnoverData }) {
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis
             dataKey="month"
-            tickFormatter={(month) => new Date(month).toLocaleDateString('en-GB', { month: 'short' })}
+            tickFormatter={month => new Date(month).toLocaleDateString('en-GB', { month: 'short' })}
           />
-          <YAxis yAxisId="left" label={{ value: 'Turnover Ratio', angle: -90, position: 'insideLeft' }} />
-          <YAxis yAxisId="right" orientation="right" label={{ value: 'Days', angle: 90, position: 'insideRight' }} />
+          <YAxis
+            yAxisId="left"
+            label={{ value: 'Turnover Ratio', angle: -90, position: 'insideLeft' }}
+          />
+          <YAxis
+            yAxisId="right"
+            orientation="right"
+            label={{ value: 'Days', angle: 90, position: 'insideRight' }}
+          />
           <Tooltip
-            labelFormatter={(month) => new Date(month).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })}
+            labelFormatter={month =>
+              new Date(month).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })
+            }
           />
           <Legend />
 
@@ -295,30 +329,30 @@ function StockTurnoverChart({ turnoverData }) {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 /**
  * Top SKUs Table
  */
 function TopSKUsTable({ skus, metric = 'value' }) {
-  const [sortBy, setSortBy] = useState(metric);
-  const [sortOrder, setSortOrder] = useState('desc');
+  const [sortBy, setSortBy] = useState(metric)
+  const [sortOrder, setSortOrder] = useState('desc')
 
   const sortedSKUs = [...skus].sort((a, b) => {
-    const aVal = a[sortBy];
-    const bVal = b[sortBy];
-    return sortOrder === 'asc' ? aVal - bVal : bVal - aVal;
-  });
+    const aVal = a[sortBy]
+    const bVal = b[sortBy]
+    return sortOrder === 'asc' ? aVal - bVal : bVal - aVal
+  })
 
-  const handleSort = (column) => {
+  const handleSort = column => {
     if (sortBy === column) {
-      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')
     } else {
-      setSortBy(column);
-      setSortOrder('desc');
+      setSortBy(column)
+      setSortOrder('desc')
     }
-  };
+  }
 
   return (
     <div className="bg-white rounded-lg shadow overflow-hidden">
@@ -360,7 +394,7 @@ function TopSKUsTable({ skus, metric = 'value' }) {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {sortedSKUs.slice(0, 10).map((sku) => (
+            {sortedSKUs.slice(0, 10).map(sku => (
               <tr key={sku.sku} className="hover:bg-gray-50">
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="font-medium text-gray-900">{sku.sku}</div>
@@ -378,11 +412,15 @@ function TopSKUsTable({ skus, metric = 'value' }) {
                   <div className="text-sm text-gray-900">{sku.turnover.toFixed(1)}x</div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <span className={`px-2 py-1 text-xs font-medium rounded ${
-                    sku.status === 'in_stock' ? 'bg-green-100 text-green-700' :
-                    sku.status === 'low_stock' ? 'bg-yellow-100 text-yellow-700' :
-                    'bg-red-100 text-red-700'
-                  }`}>
+                  <span
+                    className={`px-2 py-1 text-xs font-medium rounded ${
+                      sku.status === 'in_stock'
+                        ? 'bg-green-100 text-green-700'
+                        : sku.status === 'low_stock'
+                          ? 'bg-yellow-100 text-yellow-700'
+                          : 'bg-red-100 text-red-700'
+                    }`}
+                  >
                     {sku.status.replace('_', ' ')}
                   </span>
                 </td>
@@ -392,41 +430,41 @@ function TopSKUsTable({ skus, metric = 'value' }) {
         </table>
       </div>
     </div>
-  );
+  )
 }
 
 /**
  * Main Inventory Dashboard Component
  */
 export default function InventoryDashboard() {
-  const queryClient = useQueryClient();
-  const [selectedWarehouse, setSelectedWarehouse] = useState('all');
-  const [dateRange, setDateRange] = useState('month');
+  const queryClient = useQueryClient()
+  const [selectedWarehouse, setSelectedWarehouse] = useState('all')
+  const [dateRange, setDateRange] = useState('month')
 
   // Fetch inventory data
   const { data, isLoading, error } = useQuery({
     queryKey: ['inventory', 'dashboard', selectedWarehouse, dateRange],
     queryFn: async () => {
-      const params = new URLSearchParams({ warehouse: selectedWarehouse, dateRange });
+      const params = new URLSearchParams({ warehouse: selectedWarehouse, dateRange })
       const response = await fetch(`/api/v1/inventory/dashboard?${params}`, {
         credentials: 'include',
-      });
-      if (!response.ok) throw new Error('Failed to fetch inventory data');
-      const result = await response.json();
-      return result.data;
+      })
+      if (!response.ok) throw new Error('Failed to fetch inventory data')
+      const result = await response.json()
+      return result.data
     },
     refetchInterval: 60000, // Refetch every minute
-  });
+  })
 
   // SSE for real-time inventory updates
   const { connected } = useSSE('inventory', {
     enabled: true,
-    onMessage: (message) => {
+    onMessage: message => {
       if (message.type === 'inventory:update' || message.type === 'inventory:alert') {
-        queryClient.invalidateQueries(['inventory', 'dashboard']);
+        queryClient.invalidateQueries(['inventory', 'dashboard'])
       }
     },
-  });
+  })
 
   if (isLoading) {
     return (
@@ -436,7 +474,7 @@ export default function InventoryDashboard() {
           <p className="text-gray-600">Loading inventory data...</p>
         </div>
       </div>
-    );
+    )
   }
 
   if (error) {
@@ -444,16 +482,10 @@ export default function InventoryDashboard() {
       <div className="bg-red-50 border border-red-200 rounded-lg p-6">
         <p className="text-red-800">Error loading inventory data: {error.message}</p>
       </div>
-    );
+    )
   }
 
-  const {
-    overview = {},
-    warehouses = [],
-    abc = {},
-    turnover = [],
-    topSKUs = [],
-  } = data || {};
+  const { overview = {}, warehouses = [], abc = {}, turnover = [], topSKUs = [] } = data || {}
 
   return (
     <div className="space-y-6">
@@ -476,7 +508,7 @@ export default function InventoryDashboard() {
         <div className="flex items-center gap-3">
           <select
             value={selectedWarehouse}
-            onChange={(e) => setSelectedWarehouse(e.target.value)}
+            onChange={e => setSelectedWarehouse(e.target.value)}
             className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
           >
             <option value="all">All Warehouses</option>
@@ -489,7 +521,7 @@ export default function InventoryDashboard() {
 
           <select
             value={dateRange}
-            onChange={(e) => setDateRange(e.target.value)}
+            onChange={e => setDateRange(e.target.value)}
             className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
           >
             <option value="week">This Week</option>
@@ -554,5 +586,5 @@ export default function InventoryDashboard() {
       {/* Top SKUs Table */}
       <TopSKUsTable skus={topSKUs} />
     </div>
-  );
+  )
 }

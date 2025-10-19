@@ -1,5 +1,5 @@
-import React from 'react';
-import { useSSE } from '@/hooks/useSSE';
+import React from 'react'
+import { useSSE } from '@/hooks/useSSE'
 import {
   DollarSign,
   Package,
@@ -10,7 +10,7 @@ import {
   ArrowUp,
   ArrowDown,
   Minus,
-} from 'lucide-react';
+} from 'lucide-react'
 
 /**
  * KPIStrip Component
@@ -39,12 +39,12 @@ function KPIStrip({ data, onKPIClick }) {
   // eslint-disable-next-line no-unused-vars
   const { lastMessage } = useSSE('dashboard', {
     enabled: true,
-    onMessage: (message) => {
+    onMessage: message => {
       if (message.type === 'kpi:update') {
         // Parent component handles query invalidation via TanStack Query
       }
     },
-  });
+  })
 
   if (!data) {
     return (
@@ -56,7 +56,7 @@ function KPIStrip({ data, onKPIClick }) {
           </div>
         ))}
       </div>
-    );
+    )
   }
 
   const kpis = [
@@ -171,15 +171,15 @@ function KPIStrip({ data, onKPIClick }) {
         models: data.forecast?.models || 0,
       },
     },
-  ];
+  ]
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
-      {kpis.map((kpi) => (
+      {kpis.map(kpi => (
         <KPICard key={kpi.id} kpi={kpi} onClick={() => onKPIClick && onKPIClick(kpi)} />
       ))}
     </div>
-  );
+  )
 }
 
 /**
@@ -193,9 +193,9 @@ function KPICard({ kpi, onClick }) {
     good: 'border-blue-500 bg-blue-50',
     warning: 'border-yellow-500 bg-yellow-50',
     critical: 'border-red-500 bg-red-50',
-  };
+  }
 
-  const Icon = kpi.icon;
+  const Icon = kpi.icon
 
   return (
     <div
@@ -219,7 +219,9 @@ function KPICard({ kpi, onClick }) {
       <div className="mb-2">
         <div className="text-2xl font-bold text-gray-900">
           {formatValue(kpi.value, kpi.format)}
-          {kpi.suffix && <span className="text-sm font-normal text-gray-600 ml-1">{kpi.suffix}</span>}
+          {kpi.suffix && (
+            <span className="text-sm font-normal text-gray-600 ml-1">{kpi.suffix}</span>
+          )}
         </div>
         <TrendBadge comparison={kpi.comparison} />
       </div>
@@ -255,11 +257,15 @@ function KPICard({ kpi, onClick }) {
           {kpi.id === 'ccc' && (
             <>
               <div>DIO: {kpi.details.dio}d</div>
-              <div>DSO: {kpi.details.dso}d | DPO: {kpi.details.dpo}d</div>
+              <div>
+                DSO: {kpi.details.dso}d | DPO: {kpi.details.dpo}d
+              </div>
             </>
           )}
           {kpi.id === 'otd' && (
-            <div>{kpi.details.onTime} / {kpi.details.total} deliveries</div>
+            <div>
+              {kpi.details.onTime} / {kpi.details.total} deliveries
+            </div>
           )}
           {kpi.id === 'forecast' && (
             <>
@@ -270,7 +276,7 @@ function KPICard({ kpi, onClick }) {
         </div>
       )}
     </div>
-  );
+  )
 }
 
 /**
@@ -282,65 +288,64 @@ function StatusBadge({ status }) {
     good: { label: 'Good', className: 'bg-blue-600 text-white' },
     warning: { label: 'Warning', className: 'bg-yellow-600 text-white' },
     critical: { label: 'Critical', className: 'bg-red-600 text-white' },
-  };
+  }
 
-  const { label, className } = config[status] || config.good;
+  const { label, className } = config[status] || config.good
 
-  return (
-    <span className={`px-2 py-1 rounded text-xs font-semibold ${className}`}>
-      {label}
-    </span>
-  );
+  return <span className={`px-2 py-1 rounded text-xs font-semibold ${className}`}>{label}</span>
 }
 
 /**
  * TrendBadge Component
  */
 function TrendBadge({ comparison }) {
-  if (!comparison) return null;
+  if (!comparison) return null
 
-  const { label, value, type } = comparison;
+  const { label, value, type } = comparison
 
   const config = {
     up: { icon: ArrowUp, className: 'text-green-600 bg-green-100' },
     down: { icon: ArrowDown, className: 'text-red-600 bg-red-100' },
     neutral: { icon: Minus, className: 'text-gray-600 bg-gray-100' },
-  };
+  }
 
-  const { icon: Icon, className } = config[type] || config.neutral;
+  const { icon: Icon, className } = config[type] || config.neutral
 
   return (
-    <div className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-medium mt-1 ${className}`}>
+    <div
+      className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-medium mt-1 ${className}`}
+    >
       <Icon className="w-3 h-3" />
       <span>{label}</span>
       {value !== null && value !== undefined && (
         <span className="font-semibold">
-          {value > 0 ? '+' : ''}{value.toFixed(1)}
+          {value > 0 ? '+' : ''}
+          {value.toFixed(1)}
         </span>
       )}
     </div>
-  );
+  )
 }
 
 /**
  * Sparkline Component
  */
 function Sparkline({ data, color = '#3b82f6' }) {
-  if (!data || data.length === 0) return null;
+  if (!data || data.length === 0) return null
 
-  const width = 100;
-  const height = 20;
-  const max = Math.max(...data);
-  const min = Math.min(...data);
-  const range = max - min || 1;
+  const width = 100
+  const height = 20
+  const max = Math.max(...data)
+  const min = Math.min(...data)
+  const range = max - min || 1
 
   const points = data
     .map((value, index) => {
-      const x = (index / (data.length - 1)) * width;
-      const y = height - ((value - min) / range) * height;
-      return `${x},${y}`;
+      const x = (index / (data.length - 1)) * width
+      const y = height - ((value - min) / range) * height
+      return `${x},${y}`
     })
-    .join(' ');
+    .join(' ')
 
   return (
     <svg width="100%" height={height} viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none">
@@ -353,7 +358,7 @@ function Sparkline({ data, color = '#3b82f6' }) {
         strokeLinejoin="round"
       />
     </svg>
-  );
+  )
 }
 
 /**
@@ -361,7 +366,7 @@ function Sparkline({ data, color = '#3b82f6' }) {
  */
 
 function formatValue(value, format) {
-  if (value === null || value === undefined) return 'N/A';
+  if (value === null || value === undefined) return 'N/A'
 
   switch (format) {
     case 'currency':
@@ -369,52 +374,52 @@ function formatValue(value, format) {
         style: 'currency',
         currency: 'GBP',
         minimumFractionDigits: 0,
-      }).format(value);
+      }).format(value)
     case 'percentage':
-      return `${value.toFixed(1)}%`;
+      return `${value.toFixed(1)}%`
     case 'number':
-      return value.toLocaleString();
+      return value.toLocaleString()
     default:
-      return value;
+      return value
   }
 }
 
 function getTrend(change) {
-  if (change > 0) return 'up';
-  if (change < 0) return 'down';
-  return 'neutral';
+  if (change > 0) return 'up'
+  if (change < 0) return 'down'
+  return 'neutral'
 }
 
 function getStatus(target, actual) {
-  if (!target || !actual) return 'good';
-  const percentage = (actual / target) * 100;
-  if (percentage >= 100) return 'excellent';
-  if (percentage >= 90) return 'good';
-  if (percentage >= 75) return 'warning';
-  return 'critical';
+  if (!target || !actual) return 'good'
+  const percentage = (actual / target) * 100
+  if (percentage >= 100) return 'excellent'
+  if (percentage >= 90) return 'good'
+  if (percentage >= 75) return 'warning'
+  return 'critical'
 }
 
 function getCCCStatus(days) {
-  if (!days) return 'good';
-  if (days < 40) return 'excellent';
-  if (days < 55) return 'good';
-  if (days < 70) return 'warning';
-  return 'critical';
+  if (!days) return 'good'
+  if (days < 40) return 'excellent'
+  if (days < 55) return 'good'
+  if (days < 70) return 'warning'
+  return 'critical'
 }
 
 function getOEEStatus(oee) {
-  if (!oee) return 'neutral';
-  if (oee >= 85) return 'up';
-  if (oee >= 75) return 'neutral';
-  return 'down';
+  if (!oee) return 'neutral'
+  if (oee >= 85) return 'up'
+  if (oee >= 75) return 'neutral'
+  return 'down'
 }
 
 function getPercentageStatus(actual, target) {
-  if (!actual) return 'good';
-  if (actual >= target) return 'excellent';
-  if (actual >= target * 0.9) return 'good';
-  if (actual >= target * 0.75) return 'warning';
-  return 'critical';
+  if (!actual) return 'good'
+  if (actual >= target) return 'excellent'
+  if (actual >= target * 0.9) return 'good'
+  if (actual >= target * 0.75) return 'warning'
+  return 'critical'
 }
 
 function getSparklineColor(status) {
@@ -423,8 +428,8 @@ function getSparklineColor(status) {
     good: '#3b82f6',
     warning: '#f59e0b',
     critical: '#ef4444',
-  };
-  return colors[status] || colors.good;
+  }
+  return colors[status] || colors.good
 }
 
-export default KPIStrip;
+export default KPIStrip

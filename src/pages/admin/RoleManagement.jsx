@@ -1,4 +1,3 @@
-
 import { useEffect, useMemo, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
@@ -89,7 +88,9 @@ const PermissionToggle = ({ permission, onToggle }) => {
             </span>
           )}
         </div>
-        <p className="mt-1 text-xs text-gray-500">{permission.description || 'No description provided.'}</p>
+        <p className="mt-1 text-xs text-gray-500">
+          {permission.description || 'No description provided.'}
+        </p>
       </div>
     </label>
   )
@@ -100,10 +101,10 @@ const RoleSummaryCard = ({ icon: Icon, label, value, helper, tone = 'default' })
     tone === 'success'
       ? 'text-green-600'
       : tone === 'warning'
-      ? 'text-amber-600'
-      : tone === 'danger'
-      ? 'text-red-600'
-      : 'text-gray-900'
+        ? 'text-amber-600'
+        : tone === 'danger'
+          ? 'text-red-600'
+          : 'text-gray-900'
 
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
@@ -134,7 +135,6 @@ export default function RoleManagement() {
   })
 
   const roles = useMemo(() => normalizeRoles(rolesQuery.data), [rolesQuery.data])
-
 
   useEffect(() => {
     if (!selectedRoleId && roles.length > 0) {
@@ -167,9 +167,15 @@ export default function RoleManagement() {
     enabled: Boolean(selectedRoleId),
   })
 
-  const permissions = useMemo(() => normalizePermissions(permissionsQuery.data), [permissionsQuery.data])
+  const permissions = useMemo(
+    () => normalizePermissions(permissionsQuery.data),
+    [permissionsQuery.data]
+  )
   const groupedPermissions = useMemo(() => groupPermissions(permissions), [permissions])
-  const assignmentItems = useMemo(() => normalizeAssignments(assignmentsQuery.data), [assignmentsQuery.data])
+  const assignmentItems = useMemo(
+    () => normalizeAssignments(assignmentsQuery.data),
+    [assignmentsQuery.data]
+  )
 
   const updateMutation = useMutation({
     mutationFn: async updatedPermissions => {
@@ -339,7 +345,9 @@ export default function RoleManagement() {
           <div className="rounded-xl border border-gray-200 bg-white shadow-sm">
             <div className="border-b border-gray-200 px-6 py-4">
               <h3 className="text-sm font-semibold text-gray-700">Recent assignment activity</h3>
-              <p className="text-xs text-gray-500">Last five role changes across the organization.</p>
+              <p className="text-xs text-gray-500">
+                Last five role changes across the organization.
+              </p>
             </div>
             <ul className="divide-y divide-gray-100">
               {assignmentsQuery.isLoading && (
@@ -352,11 +360,19 @@ export default function RoleManagement() {
                 <li key={item.id || item.timestamp} className="px-6 py-4 text-sm text-gray-600">
                   <div className="flex items-center justify-between gap-4">
                     <div>
-                      <p className="font-medium text-gray-900">{item.userName || item.user || 'Unknown user'}</p>
-                      <p className="text-xs text-gray-500">{item.action || item.event || 'Updated role'}</p>
+                      <p className="font-medium text-gray-900">
+                        {item.userName || item.user || 'Unknown user'}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {item.action || item.event || 'Updated role'}
+                      </p>
                     </div>
                     <div className="text-right text-xs text-gray-500">
-                      <p>{item.timestamp ? new Date(item.timestamp).toLocaleString() : 'Unknown time'}</p>
+                      <p>
+                        {item.timestamp
+                          ? new Date(item.timestamp).toLocaleString()
+                          : 'Unknown time'}
+                      </p>
                       {item.actor && <p>By {item.actor}</p>}
                     </div>
                   </div>

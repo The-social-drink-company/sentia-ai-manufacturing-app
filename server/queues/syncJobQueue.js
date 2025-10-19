@@ -102,7 +102,7 @@ export async function initializeSyncJobWorker() {
     })
 
     // Worker event handlers
-    syncJobWorker.on('completed', (job) => {
+    syncJobWorker.on('completed', job => {
       logger.info(`[SyncJobQueue] Job ${job.id} completed for sync job ${job.data.syncJobId}`)
     })
 
@@ -110,7 +110,7 @@ export async function initializeSyncJobWorker() {
       logger.error(`[SyncJobQueue] Job ${job.id} failed for sync job ${job.data.syncJobId}:`, error)
     })
 
-    syncJobWorker.on('error', (error) => {
+    syncJobWorker.on('error', error => {
       logger.error('[SyncJobQueue] Worker error:', error)
     })
 
@@ -207,7 +207,9 @@ async function processSyncJob(job) {
   const startTime = Date.now()
 
   try {
-    logger.info(`[SyncJobQueue] Processing job ${job.id} for integration ${integrationId}, type ${syncType}`)
+    logger.info(
+      `[SyncJobQueue] Processing job ${job.id} for integration ${integrationId}, type ${syncType}`
+    )
 
     // Fetch sync job from database
     const syncJob = await prisma.adminSyncJob.findUnique({
@@ -289,7 +291,9 @@ async function processSyncJob(job) {
       },
     })
 
-    logger.info(`[SyncJobQueue] Job ${job.id} executed successfully for sync job ${syncJobId} (${duration}ms)`)
+    logger.info(
+      `[SyncJobQueue] Job ${job.id} executed successfully for sync job ${syncJobId} (${duration}ms)`
+    )
 
     return {
       success: true,
@@ -353,7 +357,9 @@ async function processSyncJob(job) {
  */
 async function executeXeroSync(syncJob, integration) {
   const integrationId = integration?.id ?? 'unknown'
-  logger.info(`[SyncJobQueue] Executing Xero sync for job ${syncJob.id} (integration ${integrationId})`)
+  logger.info(
+    `[SyncJobQueue] Executing Xero sync for job ${syncJob.id} (integration ${integrationId})`
+  )
 
   // TODO: Week 3 - Implement actual Xero API sync
   // Will fetch: accounts receivable, accounts payable, bank accounts
@@ -433,23 +439,24 @@ export async function shutdownSyncJobQueue() {
 
 // Auto-initialize on import (for server startup)
 if (process.env.NODE_ENV !== 'test') {
-  initializeSyncJobQueue().catch((error) => {
+  initializeSyncJobQueue().catch(error => {
     logger.error('[SyncJobQueue] Auto-initialization failed:', error)
   })
 
-  initializeSyncJobWorker().catch((error) => {
+  initializeSyncJobWorker().catch(error => {
     logger.error('[SyncJobQueue] Worker auto-initialization failed:', error)
   })
 
-  initializeSyncJobQueueEvents().catch((error) => {
+  initializeSyncJobQueueEvents().catch(error => {
     logger.error('[SyncJobQueue] Queue events auto-initialization failed:', error)
   })
 }
 
-
 async function executeShopifySync(syncJob, integration) {
   const integrationId = integration?.id ?? 'unknown'
-  logger.info(`[SyncJobQueue] Executing Shopify sync for job ${syncJob.id} (integration ${integrationId})`)
+  logger.info(
+    `[SyncJobQueue] Executing Shopify sync for job ${syncJob.id} (integration ${integrationId})`
+  )
 
   return {
     success: true,
@@ -462,7 +469,9 @@ async function executeShopifySync(syncJob, integration) {
 
 async function executeAmazonSync(syncJob, integration) {
   const integrationId = integration?.id ?? 'unknown'
-  logger.info(`[SyncJobQueue] Executing Amazon sync for job ${syncJob.id} (integration ${integrationId})`)
+  logger.info(
+    `[SyncJobQueue] Executing Amazon sync for job ${syncJob.id} (integration ${integrationId})`
+  )
 
   return {
     success: true,
@@ -475,7 +484,9 @@ async function executeAmazonSync(syncJob, integration) {
 
 async function executeUnleashedSync(syncJob, integration) {
   const integrationId = integration?.id ?? 'unknown'
-  logger.info(`[SyncJobQueue] Executing Unleashed sync for job ${syncJob.id} (integration ${integrationId})`)
+  logger.info(
+    `[SyncJobQueue] Executing Unleashed sync for job ${syncJob.id} (integration ${integrationId})`
+  )
 
   return {
     success: true,

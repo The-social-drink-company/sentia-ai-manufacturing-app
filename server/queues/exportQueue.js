@@ -7,20 +7,20 @@
  * @module queues/exportQueue
  */
 
-const { Queue, Worker, QueueEvents } = require('bullmq');
-const { getRedisClient } = require('../config/redis');
-const { generateExport } = require('../services/import/ExportGenerator');
-const { logAudit } = require('../services/audit/AuditLogger');
-const { EXPORT_ACTIONS, STATUS, SEVERITY } = require('../services/audit/AuditCategories');
-const { PrismaClient } = require('@prisma/client');
+const { Queue, Worker, QueueEvents } = require('bullmq')
+const { getRedisClient } = require('../config/redis')
+const { generateExport } = require('../services/import/ExportGenerator')
+const { logAudit } = require('../services/audit/AuditLogger')
+const { EXPORT_ACTIONS, STATUS, SEVERITY } = require('../services/audit/AuditCategories')
+const { PrismaClient } = require('@prisma/client')
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient()
 
 // ============================================================================
 // Queue Configuration
 // ============================================================================
 
-const QUEUE_NAME = 'export-queue';
+const QUEUE_NAME = 'export-queue'
 
 const QUEUE_OPTIONS = {
   connection: null, // Will be set dynamically
@@ -39,48 +39,48 @@ const QUEUE_OPTIONS = {
       count: 5000, // Keep max 5000 failed jobs
     },
   },
-};
+}
 
 // ============================================================================
 // Queue Instance
 // ============================================================================
 
-let exportQueue;
-let exportWorker;
-let exportQueueEvents;
+let exportQueue
+let exportWorker
+let exportQueueEvents
 
 /**
  * Initialize export queue
  */
 async function initializeExportQueue() {
   if (exportQueue) {
-    console.log('Export queue already initialized');
-    return exportQueue;
+    console.log('Export queue already initialized')
+    return exportQueue
   }
 
   try {
-    const redis = await getRedisClient();
+    const redis = await getRedisClient()
 
     // Create queue
     exportQueue = new Queue(QUEUE_NAME, {
       ...QUEUE_OPTIONS,
       connection: redis,
-    });
+    })
 
     // Create queue events listener
     exportQueueEvents = new QueueEvents(QUEUE_NAME, {
       connection: redis,
-    });
+    })
 
     // Set up event listeners
-    setupQueueEventListeners();
+    setupQueueEventListeners()
 
-    console.log(`✅ Export queue initialized: ${QUEUE_NAME}`);
+    console.log(`✅ Export queue initialized: ${QUEUE_NAME}`)
 
-    return exportQueue;
+    return exportQueue
   } catch (error) {
-    console.error('Failed to initialize export queue:', error);
-    throw error;
+    console.error('Failed to initialize export queue:', error)
+    throw error
   }
 }
 
@@ -89,36 +89,32 @@ async function initializeExportQueue() {
  */
 async function initializeExportWorker() {
   if (exportWorker) {
-    console.log('Export worker already initialized');
-    return exportWorker;
+    console.log('Export worker already initialized')
+    return exportWorker
   }
 
   try {
-    const redis = await getRedisClient();
+    const redis = await getRedisClient()
 
     // Create worker
-    exportWorker = new Worker(
-      QUEUE_NAME,
-      processExportJobWrapper,
-      {
-        connection: redis,
-        concurrency: 3, // Process up to 3 exports concurrently
-        limiter: {
-          max: 20, // Max 20 jobs per duration
-          duration: 60000, // per 60 seconds
-        },
-      }
-    );
+    exportWorker = new Worker(QUEUE_NAME, processExportJobWrapper, {
+      connection: redis,
+      concurrency: 3, // Process up to 3 exports concurrently
+      limiter: {
+        max: 20, // Max 20 jobs per duration
+        duration: 60000, // per 60 seconds
+      },
+    })
 
     // Set up worker event listeners
-    setupWorkerEventListeners();
+    setupWorkerEventListeners()
 
-    console.log(`✅ Export worker initialized with concurrency: 3`);
+    console.log(`✅ Export worker initialized with concurrency: 3`)
 
-    return exportWorker;
+    return exportWorker
   } catch (error) {
-    console.error('Failed to initialize export worker:', error);
-    throw error;
+    console.error('Failed to initialize export worker:', error)
+    throw error
   }
 }
 
@@ -130,9 +126,9 @@ async function initializeExportWorker() {
  * Wrapper for export job processing with error handling
  */
 async function processExportJobWrapper(job) {
-  const { exportJobId, userId, dataType, format, filters, options } = job.data;
+  const { exportJobId, userId, dataType, format, filters, options } = job.data
 
-  console.log(`Processing export job: ${exportJobId} (Bull Job ID: ${job.id})`);
+  console.log(`Processing export job: ${exportJobId} (Bull Job ID: ${job.id})`)
 
   try {
     // Update job status to EXPORTING
@@ -142,23 +138,23 @@ async function processExportJobWrapper(job) {
         status: 'EXPORTING',
         startedAt: new Date(),
       },
-    });
+    })
 
     // Fetch data based on dataType
-    const data = await fetchDataForExport(dataType, filters);
+    const data = await fetchDataForExport(dataType, filters)
 
     // Progress update
-    await job.updateProgress(50);
+    await job.updateProgress(50)
 
     // Generate export
     const result = await generateExport(data, format, {
       ...options,
       userId,
       filename: options.filename || `export-${exportJobId}.${format}`,
-    });
+    })
 
     // Progress update
-    await job.updateProgress(100);
+    await job.updateProgress(100)
 
     // Update job status to COMPLETED
     await prisma.exportJob.update({
@@ -170,7 +166,7 @@ async function processExportJobWrapper(job) {
         fileSize: result.size,
         rowCount: result.rowCount,
       },
-    });
+    })
 
     // Create File record
     await prisma.file.create({
@@ -182,7 +178,7 @@ async function processExportJobWrapper(job) {
         mimeType: getMimeType(format),
         uploadedBy: userId,
       },
-    });
+    })
 
     // Log audit trail
     await logAudit({
@@ -199,14 +195,13 @@ async function processExportJobWrapper(job) {
         fileSize: result.size,
         duration: result.duration,
       },
-    });
+    })
 
-    console.log(`✅ Export job ${exportJobId} completed successfully`);
+    console.log(`✅ Export job ${exportJobId} completed successfully`)
 
-    return result;
-
+    return result
   } catch (error) {
-    console.error(`❌ Export job ${exportJobId} failed:`, error);
+    console.error(`❌ Export job ${exportJobId} failed:`, error)
 
     // Update job status to FAILED
     await prisma.exportJob.update({
@@ -216,7 +211,7 @@ async function processExportJobWrapper(job) {
         completedAt: new Date(),
         errors: [{ error: error.message }],
       },
-    });
+    })
 
     // Log audit trail
     await logAudit({
@@ -228,9 +223,9 @@ async function processExportJobWrapper(job) {
       status: STATUS.FAILURE,
       severity: SEVERITY.ERROR,
       errorMessage: error.message,
-    });
+    })
 
-    throw error;
+    throw error
   }
 }
 
@@ -238,19 +233,19 @@ async function processExportJobWrapper(job) {
  * Fetch data for export based on data type
  */
 async function fetchDataForExport(dataType, filters = {}) {
-  const { startDate, endDate, status, limit, offset } = filters;
+  const { startDate, endDate, status, limit, offset } = filters
 
   // Build where clause
-  const where = {};
+  const where = {}
 
   if (startDate || endDate) {
-    where.createdAt = {};
-    if (startDate) where.createdAt.gte = new Date(startDate);
-    if (endDate) where.createdAt.lte = new Date(endDate);
+    where.createdAt = {}
+    if (startDate) where.createdAt.gte = new Date(startDate)
+    if (endDate) where.createdAt.lte = new Date(endDate)
   }
 
   if (status) {
-    where.status = status;
+    where.status = status
   }
 
   // Fetch data based on type
@@ -260,7 +255,7 @@ async function fetchDataForExport(dataType, filters = {}) {
         where,
         take: limit,
         skip: offset,
-      });
+      })
 
     case 'INVENTORY':
       return await prisma.inventory.findMany({
@@ -270,7 +265,7 @@ async function fetchDataForExport(dataType, filters = {}) {
         },
         take: limit,
         skip: offset,
-      });
+      })
 
     case 'ORDERS':
       return await prisma.order.findMany({
@@ -281,45 +276,45 @@ async function fetchDataForExport(dataType, filters = {}) {
         },
         take: limit,
         skip: offset,
-      });
+      })
 
     case 'CUSTOMERS':
       return await prisma.customer.findMany({
         where,
         take: limit,
         skip: offset,
-      });
+      })
 
     case 'SUPPLIERS':
       return await prisma.supplier.findMany({
         where,
         take: limit,
         skip: offset,
-      });
+      })
 
     case 'FORECASTS':
       return await prisma.forecast.findMany({
         where,
         take: limit,
         skip: offset,
-      });
+      })
 
     case 'OPTIMIZATIONS':
       return await prisma.optimization.findMany({
         where,
         take: limit,
         skip: offset,
-      });
+      })
 
     case 'AUDIT_LOGS':
       return await prisma.auditLog.findMany({
         where,
         take: limit,
         skip: offset,
-      });
+      })
 
     default:
-      throw new Error(`Unsupported data type: ${dataType}`);
+      throw new Error(`Unsupported data type: ${dataType}`)
   }
 }
 
@@ -332,9 +327,9 @@ function getMimeType(format) {
     xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     pdf: 'application/pdf',
     json: 'application/json',
-  };
+  }
 
-  return mimeTypes[format] || 'application/octet-stream';
+  return mimeTypes[format] || 'application/octet-stream'
 }
 
 // ============================================================================
@@ -346,7 +341,7 @@ function getMimeType(format) {
  */
 async function addExportJob(exportJobId, userId, dataType, format, filters = {}, options = {}) {
   if (!exportQueue) {
-    await initializeExportQueue();
+    await initializeExportQueue()
   }
 
   const jobData = {
@@ -357,17 +352,17 @@ async function addExportJob(exportJobId, userId, dataType, format, filters = {},
     filters,
     options,
     timestamp: new Date().toISOString(),
-  };
+  }
 
   const jobOptions = {
     jobId: `export-${exportJobId}`,
     priority: options.priority || 5,
-  };
+  }
 
   try {
-    const job = await exportQueue.add('export', jobData, jobOptions);
+    const job = await exportQueue.add('export', jobData, jobOptions)
 
-    console.log(`Export job added to queue: ${job.id}`);
+    console.log(`Export job added to queue: ${job.id}`)
 
     // Log audit trail
     await logAudit({
@@ -383,11 +378,11 @@ async function addExportJob(exportJobId, userId, dataType, format, filters = {},
         format,
         priority: jobOptions.priority,
       },
-    });
+    })
 
-    return job;
+    return job
   } catch (error) {
-    console.error('Failed to add export job to queue:', error);
+    console.error('Failed to add export job to queue:', error)
 
     await logAudit({
       userId,
@@ -398,9 +393,9 @@ async function addExportJob(exportJobId, userId, dataType, format, filters = {},
       status: STATUS.FAILURE,
       severity: SEVERITY.ERROR,
       errorMessage: error.message,
-    });
+    })
 
-    throw error;
+    throw error
   }
 }
 
@@ -409,18 +404,18 @@ async function addExportJob(exportJobId, userId, dataType, format, filters = {},
  */
 async function getExportJobStatus(exportJobId) {
   if (!exportQueue) {
-    await initializeExportQueue();
+    await initializeExportQueue()
   }
 
-  const bullJobId = `export-${exportJobId}`;
-  const job = await exportQueue.getJob(bullJobId);
+  const bullJobId = `export-${exportJobId}`
+  const job = await exportQueue.getJob(bullJobId)
 
   if (!job) {
-    return { exists: false };
+    return { exists: false }
   }
 
-  const state = await job.getState();
-  const progress = await job.progress;
+  const state = await job.getState()
+  const progress = await job.progress
 
   return {
     exists: true,
@@ -432,7 +427,7 @@ async function getExportJobStatus(exportJobId) {
     finishedOn: job.finishedOn,
     returnvalue: job.returnvalue,
     failedReason: job.failedReason,
-  };
+  }
 }
 
 /**
@@ -440,18 +435,18 @@ async function getExportJobStatus(exportJobId) {
  */
 async function cancelExportJob(exportJobId, userId) {
   if (!exportQueue) {
-    await initializeExportQueue();
+    await initializeExportQueue()
   }
 
-  const bullJobId = `export-${exportJobId}`;
-  const job = await exportQueue.getJob(bullJobId);
+  const bullJobId = `export-${exportJobId}`
+  const job = await exportQueue.getJob(bullJobId)
 
   if (!job) {
-    throw new Error(`Export job not found: ${exportJobId}`);
+    throw new Error(`Export job not found: ${exportJobId}`)
   }
 
   try {
-    await job.remove();
+    await job.remove()
 
     // Update database
     await prisma.exportJob.update({
@@ -460,7 +455,7 @@ async function cancelExportJob(exportJobId, userId) {
         status: 'CANCELLED',
         completedAt: new Date(),
       },
-    });
+    })
 
     // Log audit trail
     await logAudit({
@@ -470,14 +465,14 @@ async function cancelExportJob(exportJobId, userId) {
       resourceType: 'EXPORT_JOB',
       resourceId: exportJobId,
       status: STATUS.SUCCESS,
-    });
+    })
 
-    console.log(`Export job cancelled: ${exportJobId}`);
+    console.log(`Export job cancelled: ${exportJobId}`)
 
-    return { success: true };
+    return { success: true }
   } catch (error) {
-    console.error('Failed to cancel export job:', error);
-    throw error;
+    console.error('Failed to cancel export job:', error)
+    throw error
   }
 }
 
@@ -486,18 +481,18 @@ async function cancelExportJob(exportJobId, userId) {
  */
 async function retryExportJob(exportJobId, userId) {
   if (!exportQueue) {
-    await initializeExportQueue();
+    await initializeExportQueue()
   }
 
-  const bullJobId = `export-${exportJobId}`;
-  const job = await exportQueue.getJob(bullJobId);
+  const bullJobId = `export-${exportJobId}`
+  const job = await exportQueue.getJob(bullJobId)
 
   if (!job) {
-    throw new Error(`Export job not found: ${exportJobId}`);
+    throw new Error(`Export job not found: ${exportJobId}`)
   }
 
   try {
-    await job.retry();
+    await job.retry()
 
     // Update database
     await prisma.exportJob.update({
@@ -506,7 +501,7 @@ async function retryExportJob(exportJobId, userId) {
         status: 'PENDING',
         errors: [],
       },
-    });
+    })
 
     // Log audit trail
     await logAudit({
@@ -516,14 +511,14 @@ async function retryExportJob(exportJobId, userId) {
       resourceType: 'EXPORT_JOB',
       resourceId: exportJobId,
       status: STATUS.SUCCESS,
-    });
+    })
 
-    console.log(`Export job retried: ${exportJobId}`);
+    console.log(`Export job retried: ${exportJobId}`)
 
-    return { success: true };
+    return { success: true }
   } catch (error) {
-    console.error('Failed to retry export job:', error);
-    throw error;
+    console.error('Failed to retry export job:', error)
+    throw error
   }
 }
 
@@ -536,7 +531,7 @@ async function retryExportJob(exportJobId, userId) {
  */
 async function getQueueMetrics() {
   if (!exportQueue) {
-    await initializeExportQueue();
+    await initializeExportQueue()
   }
 
   const [waiting, active, completed, failed, delayed] = await Promise.all([
@@ -545,7 +540,7 @@ async function getQueueMetrics() {
     exportQueue.getCompletedCount(),
     exportQueue.getFailedCount(),
     exportQueue.getDelayedCount(),
-  ]);
+  ])
 
   return {
     queueName: QUEUE_NAME,
@@ -555,7 +550,7 @@ async function getQueueMetrics() {
     failed,
     delayed,
     total: waiting + active + completed + failed + delayed,
-  };
+  }
 }
 
 /**
@@ -563,12 +558,12 @@ async function getQueueMetrics() {
  */
 async function getJobsByStatus(status, start = 0, end = 99) {
   if (!exportQueue) {
-    await initializeExportQueue();
+    await initializeExportQueue()
   }
 
-  const jobs = await exportQueue.getJobs(status, start, end);
+  const jobs = await exportQueue.getJobs(status, start, end)
 
-  return jobs.map((job) => ({
+  return jobs.map(job => ({
     id: job.id,
     name: job.name,
     data: job.data,
@@ -578,7 +573,7 @@ async function getJobsByStatus(status, start = 0, end = 99) {
     processedOn: job.processedOn,
     finishedOn: job.finishedOn,
     failedReason: job.failedReason,
-  }));
+  }))
 }
 
 /**
@@ -586,14 +581,14 @@ async function getJobsByStatus(status, start = 0, end = 99) {
  */
 async function cleanOldJobs(grace = 86400000) {
   if (!exportQueue) {
-    await initializeExportQueue();
+    await initializeExportQueue()
   }
 
   // grace = 24 hours in milliseconds
-  await exportQueue.clean(grace, 1000, 'completed');
-  await exportQueue.clean(grace * 7, 5000, 'failed'); // Keep failed jobs for 7 days
+  await exportQueue.clean(grace, 1000, 'completed')
+  await exportQueue.clean(grace * 7, 5000, 'failed') // Keep failed jobs for 7 days
 
-  console.log('Old export jobs cleaned');
+  console.log('Old export jobs cleaned')
 }
 
 // ============================================================================
@@ -604,38 +599,38 @@ async function cleanOldJobs(grace = 86400000) {
  * Set up queue event listeners
  */
 function setupQueueEventListeners() {
-  if (!exportQueueEvents) return;
+  if (!exportQueueEvents) return
 
   exportQueueEvents.on('completed', ({ jobId }) => {
-    console.log(`✅ Export job completed: ${jobId}`);
-  });
+    console.log(`✅ Export job completed: ${jobId}`)
+  })
 
   exportQueueEvents.on('failed', ({ jobId, failedReason }) => {
-    console.error(`❌ Export job failed: ${jobId}`, failedReason);
-  });
+    console.error(`❌ Export job failed: ${jobId}`, failedReason)
+  })
 
   exportQueueEvents.on('progress', ({ jobId, data }) => {
-    console.log(`Export job progress: ${jobId} - ${data}%`);
-  });
+    console.log(`Export job progress: ${jobId} - ${data}%`)
+  })
 }
 
 /**
  * Set up worker event listeners
  */
 function setupWorkerEventListeners() {
-  if (!exportWorker) return;
+  if (!exportWorker) return
 
-  exportWorker.on('completed', (job) => {
-    console.log(`Worker completed job: ${job.id}`);
-  });
+  exportWorker.on('completed', job => {
+    console.log(`Worker completed job: ${job.id}`)
+  })
 
   exportWorker.on('failed', (job, error) => {
-    console.error(`Worker failed job: ${job.id}`, error.message);
-  });
+    console.error(`Worker failed job: ${job.id}`, error.message)
+  })
 
-  exportWorker.on('error', (error) => {
-    console.error('Export worker error:', error);
-  });
+  exportWorker.on('error', error => {
+    console.error('Export worker error:', error)
+  })
 }
 
 // ============================================================================
@@ -648,22 +643,22 @@ function setupWorkerEventListeners() {
 async function closeExportQueue() {
   try {
     if (exportWorker) {
-      await exportWorker.close();
-      console.log('Export worker closed');
+      await exportWorker.close()
+      console.log('Export worker closed')
     }
 
     if (exportQueueEvents) {
-      await exportQueueEvents.close();
-      console.log('Export queue events closed');
+      await exportQueueEvents.close()
+      console.log('Export queue events closed')
     }
 
     if (exportQueue) {
-      await exportQueue.close();
-      console.log('Export queue closed');
+      await exportQueue.close()
+      console.log('Export queue closed')
     }
   } catch (error) {
-    console.error('Error closing export queue:', error);
-    throw error;
+    console.error('Error closing export queue:', error)
+    throw error
   }
 }
 
@@ -692,4 +687,4 @@ module.exports = {
 
   // Queue instance (for testing)
   getQueue: () => exportQueue,
-};
+}

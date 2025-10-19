@@ -40,13 +40,13 @@ All services are deployed from the `development` branch. CI should run linting, 
 
 ## Environment Variable Matrix (Four-Service Configuration)
 
-| Service                        | Required Keys                                                                                                                                                                                                                                                        | Notes                                                                                                             |
-| ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| **Service 1: Frontend**        | `VITE_API_BASE_URL`, `VITE_CLERK_PUBLISHABLE_KEY`                                                                                                                                                                                                                    | `VITE_API_BASE_URL` automatically injected from Service 2 URL; Clerk key must match backend value.          |
-| **Service 2: Backend API**     | `NODE_ENV=production`, `PORT=10001`, `DATABASE_URL`, `MCP_SERVER_URL`, `CLERK_SECRET_KEY`, `VITE_CLERK_PUBLISHABLE_KEY`                                                                                                                                              | `DATABASE_URL` pulled from Service 4 database binding; `MCP_SERVER_URL` points to Service 3; Clerk keys marked `sync: false` and must be entered manually. |
-| **Service 3: MCP Server**      | `NODE_ENV=production`, `PORT=10000`, `DATABASE_URL`, `LOG_LEVEL=info`, `XERO_CLIENT_ID`, `XERO_CLIENT_SECRET`, `SHOPIFY_API_KEY`, `SHOPIFY_API_SECRET`, `SHOPIFY_ACCESS_TOKEN`, `AMAZON_SP_API_KEY`, `AMAZON_SP_API_SECRET`, `UNLEASHED_API_ID`, `UNLEASHED_API_KEY` | `DATABASE_URL` pulled from Service 4 binding; credentials can remain blank for read-only demos; auto-sync manager reports missing secrets via status endpoints. |
-| **Service 4: Database**        | (Managed by Render)                                                                                                                                                                                                                                                   | Connection string automatically provided to Services 2 and 3 via Render service bindings.          |
-| **Shared (Optional)**          | `VITE_FORCE_MOCK_AUTH`, `ENABLE_SSE`, `ENABLE_AI_FEATURES`, `REDIS_URL`                                                                                                                                                                                              | Optional toggles; defaults from `enhancedEnvValidator` maintain safe configuration.                               |
+| Service                    | Required Keys                                                                                                                                                                                                                                                        | Notes                                                                                                                                                           |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Service 1: Frontend**    | `VITE_API_BASE_URL`, `VITE_CLERK_PUBLISHABLE_KEY`                                                                                                                                                                                                                    | `VITE_API_BASE_URL` automatically injected from Service 2 URL; Clerk key must match backend value.                                                              |
+| **Service 2: Backend API** | `NODE_ENV=production`, `PORT=10001`, `DATABASE_URL`, `MCP_SERVER_URL`, `CLERK_SECRET_KEY`, `VITE_CLERK_PUBLISHABLE_KEY`                                                                                                                                              | `DATABASE_URL` pulled from Service 4 database binding; `MCP_SERVER_URL` points to Service 3; Clerk keys marked `sync: false` and must be entered manually.      |
+| **Service 3: MCP Server**  | `NODE_ENV=production`, `PORT=10000`, `DATABASE_URL`, `LOG_LEVEL=info`, `XERO_CLIENT_ID`, `XERO_CLIENT_SECRET`, `SHOPIFY_API_KEY`, `SHOPIFY_API_SECRET`, `SHOPIFY_ACCESS_TOKEN`, `AMAZON_SP_API_KEY`, `AMAZON_SP_API_SECRET`, `UNLEASHED_API_ID`, `UNLEASHED_API_KEY` | `DATABASE_URL` pulled from Service 4 binding; credentials can remain blank for read-only demos; auto-sync manager reports missing secrets via status endpoints. |
+| **Service 4: Database**    | (Managed by Render)                                                                                                                                                                                                                                                  | Connection string automatically provided to Services 2 and 3 via Render service bindings.                                                                       |
+| **Shared (Optional)**      | `VITE_FORCE_MOCK_AUTH`, `ENABLE_SSE`, `ENABLE_AI_FEATURES`, `REDIS_URL`                                                                                                                                                                                              | Optional toggles; defaults from `enhancedEnvValidator` maintain safe configuration.                                                                             |
 
 ## Deployment Steps (Four-Service Workflow)
 
@@ -56,6 +56,7 @@ All services are deployed from the `development` branch. CI should run linting, 
    - Ensure environment variables configured in Render dashboard for each service
 
 2. **Build Validation (Local)**
+
    ```bash
    pnpm run build    # generates dist/ and Prisma client
    ```
@@ -94,12 +95,14 @@ All services are deployed from the `development` branch. CI should run linting, 
 ## Verification Checklist (Four-Service Validation)
 
 ### Service 1: Frontend (Static Site)
+
 - ✅ **URL availability** - Load the frontend URL and verify page loads
 - ✅ **Authentication** - Confirm Clerk loads (or mock auth banner when using `VITE_FORCE_MOCK_AUTH`)
 - ✅ **Client-side routing** - Navigate to different routes, verify rewrites working
 - ✅ **API communication** - Verify frontend successfully connects to Service 2 (Backend API)
 
 ### Service 2: Backend API (Web Service)
+
 - ✅ **Health endpoint** - `curl https://<backend>/api/health` returns `{ status: "ok" }` with service metadata
 - ✅ **Database connectivity** - Inspect logs for successful Prisma connection to Service 4
 - ✅ **MCP communication** - Verify Backend API successfully calls Service 3 (MCP Server)
@@ -107,6 +110,7 @@ All services are deployed from the `development` branch. CI should run linting, 
 - ✅ **Real-time channels** - Open dashboard and validate Socket.IO handshake success
 
 ### Service 3: MCP Server (Web Service)
+
 - ✅ **Health endpoint** - `curl https://<mcp>/health` reports integration readiness
 - ✅ **Database connectivity** - Verify MCP server connects to Service 4 successfully
 - ✅ **External API status** - Check status endpoint for Shopify/Xero/Unleashed/Amazon connectivity
@@ -114,12 +118,14 @@ All services are deployed from the `development` branch. CI should run linting, 
 - ✅ **Missing credentials handling** - Verify graceful degradation when credentials unavailable
 
 ### Service 4: Database (PostgreSQL)
+
 - ✅ **Connection from Service 2** - Backend API Prisma queries successful
 - ✅ **Connection from Service 3** - MCP Server database writes successful
 - ✅ **pgvector extension** - Verify extension enabled for AI/ML features
 - ✅ **Migrations applied** - Check all Prisma migrations applied successfully
 
 ### Integration Testing
+
 - ✅ **Frontend → Backend → Database** - Complete data flow working
 - ✅ **Backend → MCP → External APIs** - Integration flow functional
 - ✅ **Real-time updates** - SSE/WebSocket updates propagating to frontend

@@ -231,7 +231,9 @@ class MfaService {
       limit.attempts += 1
     }
 
-    logger.warn(`[MfaService] User ${userId} failed attempts: ${this.rateLimits.get(userId).attempts}`)
+    logger.warn(
+      `[MfaService] User ${userId} failed attempts: ${this.rateLimits.get(userId).attempts}`
+    )
   }
 
   /**

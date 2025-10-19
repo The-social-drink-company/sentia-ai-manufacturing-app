@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import React, { useState } from 'react'
+import { useParams, useNavigate } from 'react-router-dom'
+import { useQuery } from '@tanstack/react-query'
 import {
   LineChart,
   Line,
@@ -14,16 +14,8 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-} from 'recharts';
-import {
-  Download,
-  ArrowLeft,
-  TrendingUp,
-  Target,
-  Brain,
-  FileText,
-  Share2,
-} from 'lucide-react';
+} from 'recharts'
+import { Download, ArrowLeft, TrendingUp, Target, Brain, FileText, Share2 } from 'lucide-react'
 
 /**
  * ForecastResults Component
@@ -37,34 +29,34 @@ import {
  * - Export forecast data functionality
  */
 function ForecastResults() {
-  const { forecastId } = useParams();
-  const navigate = useNavigate();
+  const { forecastId } = useParams()
+  const navigate = useNavigate()
 
-  const [chartView, setChartView] = useState('forecast'); // forecast, residuals, features
-  const [showConfidenceInterval, setShowConfidenceInterval] = useState(true);
+  const [chartView, setChartView] = useState('forecast') // forecast, residuals, features
+  const [showConfidenceInterval, setShowConfidenceInterval] = useState(true)
 
   // Fetch forecast results
   const { data: forecast, isLoading } = useQuery({
     queryKey: ['forecasts', 'results', forecastId],
     queryFn: async () => {
-      const response = await fetch(`/api/v1/forecasts/${forecastId}`);
-      if (!response.ok) throw new Error('Failed to fetch forecast results');
-      const result = await response.json();
-      return result.data;
+      const response = await fetch(`/api/v1/forecasts/${forecastId}`)
+      if (!response.ok) throw new Error('Failed to fetch forecast results')
+      const result = await response.json()
+      return result.data
     },
-  });
+  })
 
-  const handleExport = (format) => {
+  const handleExport = format => {
     // TODO: Implement export functionality
-    console.log('Export forecast as:', format);
-    const dataStr = JSON.stringify(forecast, null, 2);
-    const dataBlob = new Blob([dataStr], { type: 'application/json' });
-    const url = URL.createObjectURL(dataBlob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `forecast-${forecastId}.${format}`;
-    link.click();
-  };
+    console.log('Export forecast as:', format)
+    const dataStr = JSON.stringify(forecast, null, 2)
+    const dataBlob = new Blob([dataStr], { type: 'application/json' })
+    const url = URL.createObjectURL(dataBlob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `forecast-${forecastId}.${format}`
+    link.click()
+  }
 
   if (isLoading) {
     return (
@@ -74,11 +66,11 @@ function ForecastResults() {
           <p className="text-gray-600">Loading forecast results...</p>
         </div>
       </div>
-    );
+    )
   }
 
-  const accuracy = forecast.metrics.mape ? 100 - forecast.metrics.mape : null;
-  const isGoodAccuracy = accuracy && accuracy >= 85;
+  const accuracy = forecast.metrics.mape ? 100 - forecast.metrics.mape : null
+  const isGoodAccuracy = accuracy && accuracy >= 85
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -147,12 +139,18 @@ function ForecastResults() {
 
       {/* Accuracy Summary */}
       <div className="grid md:grid-cols-4 gap-4 mb-6">
-        <div className={`rounded-lg p-6 ${isGoodAccuracy ? 'bg-green-50 border-2 border-green-500' : 'bg-yellow-50 border-2 border-yellow-500'}`}>
+        <div
+          className={`rounded-lg p-6 ${isGoodAccuracy ? 'bg-green-50 border-2 border-green-500' : 'bg-yellow-50 border-2 border-yellow-500'}`}
+        >
           <div className="flex items-center gap-2 mb-2">
-            <Target className={`w-5 h-5 ${isGoodAccuracy ? 'text-green-600' : 'text-yellow-600'}`} />
+            <Target
+              className={`w-5 h-5 ${isGoodAccuracy ? 'text-green-600' : 'text-yellow-600'}`}
+            />
             <span className="text-sm font-medium text-gray-700">Accuracy</span>
           </div>
-          <p className={`text-3xl font-bold ${isGoodAccuracy ? 'text-green-900' : 'text-yellow-900'}`}>
+          <p
+            className={`text-3xl font-bold ${isGoodAccuracy ? 'text-green-900' : 'text-yellow-900'}`}
+          >
             {accuracy ? `${accuracy.toFixed(1)}%` : 'N/A'}
           </p>
           <p className="text-sm text-gray-600 mt-1">
@@ -165,9 +163,7 @@ function ForecastResults() {
             <TrendingUp className="w-5 h-5 text-blue-600" />
             <span className="text-sm font-medium text-gray-700">MAPE</span>
           </div>
-          <p className="text-3xl font-bold text-gray-900">
-            {forecast.metrics.mape.toFixed(2)}%
-          </p>
+          <p className="text-3xl font-bold text-gray-900">{forecast.metrics.mape.toFixed(2)}%</p>
           <p className="text-sm text-gray-600 mt-1">Mean Absolute % Error</p>
         </div>
 
@@ -176,9 +172,7 @@ function ForecastResults() {
             <TrendingUp className="w-5 h-5 text-blue-600" />
             <span className="text-sm font-medium text-gray-700">RMSE</span>
           </div>
-          <p className="text-3xl font-bold text-gray-900">
-            {forecast.metrics.rmse.toFixed(2)}
-          </p>
+          <p className="text-3xl font-bold text-gray-900">{forecast.metrics.rmse.toFixed(2)}</p>
           <p className="text-sm text-gray-600 mt-1">Root Mean Squared Error</p>
         </div>
 
@@ -187,9 +181,7 @@ function ForecastResults() {
             <TrendingUp className="w-5 h-5 text-blue-600" />
             <span className="text-sm font-medium text-gray-700">R²</span>
           </div>
-          <p className="text-3xl font-bold text-gray-900">
-            {forecast.metrics.r2.toFixed(3)}
-          </p>
+          <p className="text-3xl font-bold text-gray-900">{forecast.metrics.r2.toFixed(3)}</p>
           <p className="text-sm text-gray-600 mt-1">Coefficient of Determination</p>
         </div>
       </div>
@@ -234,14 +226,12 @@ function ForecastResults() {
       {chartView === 'forecast' && (
         <div className="bg-white rounded-lg shadow p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">
-              Actual vs. Predicted Demand
-            </h2>
+            <h2 className="text-lg font-semibold text-gray-900">Actual vs. Predicted Demand</h2>
             <label className="flex items-center gap-2 text-sm text-gray-700">
               <input
                 type="checkbox"
                 checked={showConfidenceInterval}
-                onChange={(e) => setShowConfidenceInterval(e.target.checked)}
+                onChange={e => setShowConfidenceInterval(e.target.checked)}
                 className="w-4 h-4"
               />
               Show Confidence Interval
@@ -259,7 +249,9 @@ function ForecastResults() {
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
               <XAxis
                 dataKey="date"
-                tickFormatter={(date) => new Date(date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
+                tickFormatter={date =>
+                  new Date(date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
+                }
                 style={{ fontSize: '12px' }}
               />
               <YAxis
@@ -279,12 +271,7 @@ function ForecastResults() {
                     fill="url(#confidenceArea)"
                     name="95% Confidence Interval"
                   />
-                  <Area
-                    type="monotone"
-                    dataKey="lowerBound"
-                    stroke="none"
-                    fill="white"
-                  />
+                  <Area type="monotone" dataKey="lowerBound" stroke="none" fill="white" />
                 </>
               )}
 
@@ -316,12 +303,10 @@ function ForecastResults() {
       {/* Residual Analysis View */}
       {chartView === 'residuals' && (
         <div className="bg-white rounded-lg shadow p-6 mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">
-            Residual Analysis
-          </h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">Residual Analysis</h2>
           <p className="text-sm text-gray-600 mb-4">
-            Residuals show the difference between actual and predicted values.
-            Random scatter indicates a good model fit.
+            Residuals show the difference between actual and predicted values. Random scatter
+            indicates a good model fit.
           </p>
 
           <ResponsiveContainer width="100%" height={400}>
@@ -329,7 +314,9 @@ function ForecastResults() {
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
               <XAxis
                 dataKey="date"
-                tickFormatter={(date) => new Date(date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
+                tickFormatter={date =>
+                  new Date(date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
+                }
                 style={{ fontSize: '12px' }}
               />
               <YAxis
@@ -338,12 +325,7 @@ function ForecastResults() {
               />
               <Tooltip />
               <Legend />
-              <Bar
-                dataKey="residual"
-                fill="#8b5cf6"
-                name="Residual"
-                radius={[4, 4, 0, 0]}
-              />
+              <Bar dataKey="residual" fill="#8b5cf6" name="Residual" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -354,9 +336,7 @@ function ForecastResults() {
         <div className="bg-white rounded-lg shadow p-6 mb-6">
           <div className="flex items-center gap-2 mb-4">
             <Brain className="w-5 h-5 text-purple-600" />
-            <h2 className="text-lg font-semibold text-gray-900">
-              Feature Importance
-            </h2>
+            <h2 className="text-lg font-semibold text-gray-900">Feature Importance</h2>
           </div>
           <p className="text-sm text-gray-600 mb-4">
             Shows which features contributed most to the forecast predictions.
@@ -388,9 +368,7 @@ function ForecastResults() {
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center gap-2 mb-4">
             <FileText className="w-5 h-5 text-blue-600" />
-            <h2 className="text-lg font-semibold text-gray-900">
-              Explainable AI Insights
-            </h2>
+            <h2 className="text-lg font-semibold text-gray-900">Explainable AI Insights</h2>
           </div>
 
           <div className="space-y-3">
@@ -399,9 +377,7 @@ function ForecastResults() {
                 <h3 className="font-semibold text-blue-900 mb-1">{insight.title}</h3>
                 <p className="text-sm text-blue-800">{insight.description}</p>
                 {insight.impact && (
-                  <p className="text-xs text-blue-600 mt-2">
-                    Impact: {insight.impact}
-                  </p>
+                  <p className="text-xs text-blue-600 mt-2">Impact: {insight.impact}</p>
                 )}
               </div>
             ))}
@@ -409,14 +385,14 @@ function ForecastResults() {
         </div>
       )}
     </div>
-  );
+  )
 }
 
 /**
  * ForecastTooltip Component
  */
 function ForecastTooltip({ active, payload, label }) {
-  if (!active || !payload || payload.length === 0) return null;
+  if (!active || !payload || payload.length === 0) return null
 
   return (
     <div className="bg-white border border-gray-200 rounded shadow-lg p-3">
@@ -434,14 +410,12 @@ function ForecastTooltip({ active, payload, label }) {
             {entry.name}
           </span>
           <span className="font-semibold">
-            {entry.value !== null && entry.value !== undefined
-              ? entry.value.toFixed(0)
-              : 'N/A'}
+            {entry.value !== null && entry.value !== undefined ? entry.value.toFixed(0) : 'N/A'}
           </span>
         </div>
       ))}
     </div>
-  );
+  )
 }
 
-export default ForecastResults;
+export default ForecastResults

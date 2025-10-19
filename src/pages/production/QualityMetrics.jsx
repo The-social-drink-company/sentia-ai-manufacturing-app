@@ -10,8 +10,8 @@
  * - Root cause tracking
  */
 
-import { useState } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   CheckCircle2,
   XCircle,
@@ -23,7 +23,7 @@ import {
   Target,
   Filter,
   Calendar,
-} from 'lucide-react';
+} from 'lucide-react'
 import {
   ResponsiveContainer,
   BarChart,
@@ -41,8 +41,8 @@ import {
   Scatter,
   ScatterChart,
   ZAxis,
-} from 'recharts';
-import { useSSE } from '../../hooks/useSSE';
+} from 'recharts'
+import { useSSE } from '../../hooks/useSSE'
 
 /**
  * Quality Metric Card
@@ -53,37 +53,45 @@ function QualityMetricCard({ label, value, target, unit, trend, icon: IconCompon
     good: 'border-green-500 bg-green-50',
     warning: 'border-yellow-500 bg-yellow-50',
     poor: 'border-red-500 bg-red-50',
-  };
+  }
 
-  const StatusIcon = trend >= 0 ? TrendingUp : TrendingDown;
-  const trendColor = trend >= 0 ? 'text-green-600' : 'text-red-600';
+  const StatusIcon = trend >= 0 ? TrendingUp : TrendingDown
+  const trendColor = trend >= 0 ? 'text-green-600' : 'text-red-600'
 
   return (
     <div className={`rounded-lg border-2 ${statusColors[status]} p-6`}>
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
-          <div className={`p-3 rounded-lg ${
-            status === 'good' ? 'bg-green-600' :
-            status === 'warning' ? 'bg-yellow-600' :
-            'bg-red-600'
-          }`}>
+          <div
+            className={`p-3 rounded-lg ${
+              status === 'good'
+                ? 'bg-green-600'
+                : status === 'warning'
+                  ? 'bg-yellow-600'
+                  : 'bg-red-600'
+            }`}
+          >
             <IconComponent className="w-6 h-6 text-white" />
           </div>
           <div>
             <p className="text-sm font-medium text-gray-600">{label}</p>
-            <p className="text-xs text-gray-500">Target: {target}{unit}</p>
+            <p className="text-xs text-gray-500">
+              Target: {target}
+              {unit}
+            </p>
           </div>
         </div>
       </div>
 
       <div className="flex items-baseline gap-2 mb-2">
-        <span className="text-4xl font-bold text-gray-900">{value}{unit}</span>
+        <span className="text-4xl font-bold text-gray-900">
+          {value}
+          {unit}
+        </span>
         {trend !== undefined && (
           <div className={`flex items-center gap-1 ${trendColor}`}>
             <StatusIcon className="w-4 h-4" />
-            <span className="text-sm font-medium">
-              {Math.abs(trend).toFixed(1)}%
-            </span>
+            <span className="text-sm font-medium">{Math.abs(trend).toFixed(1)}%</span>
           </div>
         )}
       </div>
@@ -91,15 +99,17 @@ function QualityMetricCard({ label, value, target, unit, trend, icon: IconCompon
       <div className="relative w-full bg-gray-200 rounded-full h-2">
         <div
           className={`h-2 rounded-full ${
-            status === 'good' ? 'bg-green-500' :
-            status === 'warning' ? 'bg-yellow-500' :
-            'bg-red-500'
+            status === 'good'
+              ? 'bg-green-500'
+              : status === 'warning'
+                ? 'bg-yellow-500'
+                : 'bg-red-500'
           }`}
           style={{ width: `${Math.min((value / target) * 100, 100)}%` }}
         />
       </div>
     </div>
-  );
+  )
 }
 
 /**
@@ -107,25 +117,23 @@ function QualityMetricCard({ label, value, target, unit, trend, icon: IconCompon
  */
 function ParetoChart({ defectTypes }) {
   // Calculate Pareto data
-  const sorted = [...defectTypes].sort((a, b) => b.count - a.count);
-  const total = sorted.reduce((sum, d) => sum + d.count, 0);
+  const sorted = [...defectTypes].sort((a, b) => b.count - a.count)
+  const total = sorted.reduce((sum, d) => sum + d.count, 0)
 
-  let cumulative = 0;
+  let cumulative = 0
   const paretoData = sorted.map(defect => {
-    cumulative += defect.count;
+    cumulative += defect.count
     return {
       type: defect.type,
       count: defect.count,
       percentage: (defect.count / total) * 100,
       cumulative: (cumulative / total) * 100,
-    };
-  });
+    }
+  })
 
   return (
     <div className="bg-white rounded-lg shadow p-6">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">
-        Pareto Analysis - Defect Types
-      </h3>
+      <h3 className="text-lg font-semibold text-gray-900 mb-4">Pareto Analysis - Defect Types</h3>
       <p className="text-sm text-gray-600 mb-4">
         Focus on the vital few defects that cause most quality issues (80/20 rule)
       </p>
@@ -139,15 +147,13 @@ function ParetoChart({ defectTypes }) {
             yAxisId="right"
             orientation="right"
             domain={[0, 100]}
-            tickFormatter={(v) => `${v}%`}
+            tickFormatter={v => `${v}%`}
             label={{ value: 'Cumulative %', angle: 90, position: 'insideRight' }}
           />
           <Tooltip
             formatter={(value, name) => [
               name === 'cumulative' ? `${value.toFixed(1)}%` : value,
-              name === 'count' ? 'Defects' :
-              name === 'percentage' ? 'Percentage' :
-              'Cumulative %'
+              name === 'count' ? 'Defects' : name === 'percentage' ? 'Percentage' : 'Cumulative %',
             ]}
           />
           <Legend />
@@ -162,31 +168,35 @@ function ParetoChart({ defectTypes }) {
             name="Cumulative %"
             dot={{ fill: '#ef4444', r: 5 }}
           />
-          <ReferenceLine yAxisId="right" y={80} stroke="#10b981" strokeDasharray="3 3" label="80%" />
+          <ReferenceLine
+            yAxisId="right"
+            y={80}
+            stroke="#10b981"
+            strokeDasharray="3 3"
+            label="80%"
+          />
         </ComposedChart>
       </ResponsiveContainer>
 
       {/* Defect Summary */}
       <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
-        {paretoData.slice(0, 4).map((defect) => (
+        {paretoData.slice(0, 4).map(defect => (
           <div key={defect.type} className="text-center p-3 bg-gray-50 rounded-lg">
             <div className="text-2xl font-bold text-gray-900">{defect.count}</div>
             <div className="text-xs text-gray-600 mt-1">{defect.type}</div>
-            <div className="text-xs text-gray-500 mt-1">
-              {defect.percentage.toFixed(1)}%
-            </div>
+            <div className="text-xs text-gray-500 mt-1">{defect.percentage.toFixed(1)}%</div>
           </div>
         ))}
       </div>
     </div>
-  );
+  )
 }
 
 /**
  * Statistical Process Control (SPC) Chart
  */
 function SPCChart({ spcData, metric }) {
-  const { dataPoints, ucl, lcl, mean, sigma } = spcData;
+  const { dataPoints, ucl, lcl, mean, sigma } = spcData
 
   return (
     <div className="bg-white rounded-lg shadow p-6">
@@ -202,12 +212,14 @@ function SPCChart({ spcData, metric }) {
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis
             dataKey="timestamp"
-            tickFormatter={(ts) => new Date(ts).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
+            tickFormatter={ts =>
+              new Date(ts).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })
+            }
           />
           <YAxis domain={[Math.max(0, lcl - 5), ucl + 5]} />
           <Tooltip
-            labelFormatter={(ts) => new Date(ts).toLocaleString()}
-            formatter={(value) => value.toFixed(2)}
+            labelFormatter={ts => new Date(ts).toLocaleString()}
+            formatter={value => value.toFixed(2)}
           />
           <Legend />
 
@@ -222,9 +234,9 @@ function SPCChart({ spcData, metric }) {
             dataKey="value"
             stroke="#3b82f6"
             strokeWidth={2}
-            dot={(props) => {
-              const { cx, cy, payload } = props;
-              const isOutOfControl = payload.value > ucl || payload.value < lcl;
+            dot={props => {
+              const { cx, cy, payload } = props
+              const isOutOfControl = payload.value > ucl || payload.value < lcl
               return (
                 <circle
                   cx={cx}
@@ -234,7 +246,7 @@ function SPCChart({ spcData, metric }) {
                   stroke={isOutOfControl ? '#dc2626' : '#2563eb'}
                   strokeWidth={2}
                 />
-              );
+              )
             }}
           />
         </LineChart>
@@ -260,7 +272,7 @@ function SPCChart({ spcData, metric }) {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 /**
@@ -278,24 +290,20 @@ function FPYTrendChart({ trendData }) {
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis
             dataKey="date"
-            tickFormatter={(date) => new Date(date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })}
+            tickFormatter={date =>
+              new Date(date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })
+            }
           />
-          <YAxis domain={[0, 100]} tickFormatter={(v) => `${v}%`} />
+          <YAxis domain={[0, 100]} tickFormatter={v => `${v}%`} />
           <Tooltip
-            labelFormatter={(date) => new Date(date).toLocaleDateString()}
-            formatter={(value) => `${value.toFixed(1)}%`}
+            labelFormatter={date => new Date(date).toLocaleDateString()}
+            formatter={value => `${value.toFixed(1)}%`}
           />
           <Legend />
 
           <ReferenceLine y={99} stroke="#10b981" strokeDasharray="3 3" label="Target: 99%" />
 
-          <Area
-            type="monotone"
-            dataKey="fpy"
-            fill="#3b82f6"
-            fillOpacity={0.1}
-            stroke="none"
-          />
+          <Area type="monotone" dataKey="fpy" fill="#3b82f6" fillOpacity={0.1} stroke="none" />
           <Line
             type="monotone"
             dataKey="fpy"
@@ -316,7 +324,7 @@ function FPYTrendChart({ trendData }) {
         </ComposedChart>
       </ResponsiveContainer>
     </div>
-  );
+  )
 }
 
 /**
@@ -325,9 +333,7 @@ function FPYTrendChart({ trendData }) {
 function QualityAlertsPanel({ alerts }) {
   return (
     <div className="bg-white rounded-lg shadow p-6">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">
-        Quality Alerts ({alerts.length})
-      </h3>
+      <h3 className="text-lg font-semibold text-gray-900 mb-4">Quality Alerts ({alerts.length})</h3>
 
       <div className="space-y-3 max-h-96 overflow-y-auto">
         {alerts.length === 0 ? (
@@ -336,21 +342,27 @@ function QualityAlertsPanel({ alerts }) {
             <p className="text-gray-600">No quality alerts</p>
           </div>
         ) : (
-          alerts.map((alert) => (
+          alerts.map(alert => (
             <div
               key={alert.id}
               className={`p-4 rounded-lg border-2 ${
-                alert.severity === 'critical' ? 'border-red-500 bg-red-50' :
-                alert.severity === 'high' ? 'border-orange-500 bg-orange-50' :
-                'border-yellow-500 bg-yellow-50'
+                alert.severity === 'critical'
+                  ? 'border-red-500 bg-red-50'
+                  : alert.severity === 'high'
+                    ? 'border-orange-500 bg-orange-50'
+                    : 'border-yellow-500 bg-yellow-50'
               }`}
             >
               <div className="flex items-start gap-3">
-                <AlertTriangle className={`w-5 h-5 mt-0.5 ${
-                  alert.severity === 'critical' ? 'text-red-600' :
-                  alert.severity === 'high' ? 'text-orange-600' :
-                  'text-yellow-600'
-                }`} />
+                <AlertTriangle
+                  className={`w-5 h-5 mt-0.5 ${
+                    alert.severity === 'critical'
+                      ? 'text-red-600'
+                      : alert.severity === 'high'
+                        ? 'text-orange-600'
+                        : 'text-yellow-600'
+                  }`}
+                />
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-1">
                     <h4 className="font-semibold text-gray-900">{alert.title}</h4>
@@ -372,7 +384,7 @@ function QualityAlertsPanel({ alerts }) {
         )}
       </div>
     </div>
-  );
+  )
 }
 
 /**
@@ -382,9 +394,7 @@ function RootCauseTable({ rootCauses }) {
   return (
     <div className="bg-white rounded-lg shadow overflow-hidden">
       <div className="p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">
-          Root Cause Analysis
-        </h3>
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Root Cause Analysis</h3>
       </div>
 
       <div className="overflow-x-auto">
@@ -409,7 +419,7 @@ function RootCauseTable({ rootCauses }) {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {rootCauses.map((cause) => (
+            {rootCauses.map(cause => (
               <tr key={cause.id} className="hover:bg-gray-50">
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="text-sm font-medium text-gray-900">{cause.description}</div>
@@ -418,11 +428,15 @@ function RootCauseTable({ rootCauses }) {
                   <div className="text-sm text-gray-900">{cause.occurrences}</div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <span className={`px-2 py-1 text-xs font-medium rounded border ${
-                    cause.impact === 'high' ? 'bg-red-100 text-red-700 border-red-300' :
-                    cause.impact === 'medium' ? 'bg-yellow-100 text-yellow-700 border-yellow-300' :
-                    'bg-green-100 text-green-700 border-green-300'
-                  }`}>
+                  <span
+                    className={`px-2 py-1 text-xs font-medium rounded border ${
+                      cause.impact === 'high'
+                        ? 'bg-red-100 text-red-700 border-red-300'
+                        : cause.impact === 'medium'
+                          ? 'bg-yellow-100 text-yellow-700 border-yellow-300'
+                          : 'bg-green-100 text-green-700 border-green-300'
+                    }`}
+                  >
                     {cause.impact}
                   </span>
                 </td>
@@ -432,11 +446,15 @@ function RootCauseTable({ rootCauses }) {
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <span className={`px-2 py-1 text-xs font-medium rounded ${
-                    cause.status === 'resolved' ? 'bg-green-100 text-green-700' :
-                    cause.status === 'investigating' ? 'bg-blue-100 text-blue-700' :
-                    'bg-yellow-100 text-yellow-700'
-                  }`}>
+                  <span
+                    className={`px-2 py-1 text-xs font-medium rounded ${
+                      cause.status === 'resolved'
+                        ? 'bg-green-100 text-green-700'
+                        : cause.status === 'investigating'
+                          ? 'bg-blue-100 text-blue-700'
+                          : 'bg-yellow-100 text-yellow-700'
+                    }`}
+                  >
                     {cause.status}
                   </span>
                 </td>
@@ -446,41 +464,41 @@ function RootCauseTable({ rootCauses }) {
         </table>
       </div>
     </div>
-  );
+  )
 }
 
 /**
  * Main Quality Metrics Component
  */
 export default function QualityMetrics() {
-  const queryClient = useQueryClient();
-  const [dateRange, setDateRange] = useState('today');
-  const [selectedProduct, setSelectedProduct] = useState('all');
+  const queryClient = useQueryClient()
+  const [dateRange, setDateRange] = useState('today')
+  const [selectedProduct, setSelectedProduct] = useState('all')
 
   // Fetch quality data
   const { data, isLoading, error } = useQuery({
     queryKey: ['production', 'quality', dateRange, selectedProduct],
     queryFn: async () => {
-      const params = new URLSearchParams({ dateRange, product: selectedProduct });
+      const params = new URLSearchParams({ dateRange, product: selectedProduct })
       const response = await fetch(`/api/v1/production/quality?${params}`, {
         credentials: 'include',
-      });
-      if (!response.ok) throw new Error('Failed to fetch quality data');
-      const result = await response.json();
-      return result.data;
+      })
+      if (!response.ok) throw new Error('Failed to fetch quality data')
+      const result = await response.json()
+      return result.data
     },
     refetchInterval: 30000,
-  });
+  })
 
   // SSE for real-time quality updates
   const { connected } = useSSE('production', {
     enabled: true,
-    onMessage: (message) => {
+    onMessage: message => {
       if (message.type === 'quality:alert' || message.type === 'quality:update') {
-        queryClient.invalidateQueries(['production', 'quality']);
+        queryClient.invalidateQueries(['production', 'quality'])
       }
     },
-  });
+  })
 
   if (isLoading) {
     return (
@@ -490,7 +508,7 @@ export default function QualityMetrics() {
           <p className="text-gray-600">Loading quality data...</p>
         </div>
       </div>
-    );
+    )
   }
 
   if (error) {
@@ -498,7 +516,7 @@ export default function QualityMetrics() {
       <div className="bg-red-50 border border-red-200 rounded-lg p-6">
         <p className="text-red-800">Error loading quality data: {error.message}</p>
       </div>
-    );
+    )
   }
 
   const {
@@ -508,7 +526,7 @@ export default function QualityMetrics() {
     spc = {},
     alerts = [],
     rootCauses = [],
-  } = data || {};
+  } = data || {}
 
   return (
     <div className="space-y-6">
@@ -531,7 +549,7 @@ export default function QualityMetrics() {
         <div className="flex items-center gap-3">
           <select
             value={dateRange}
-            onChange={(e) => setDateRange(e.target.value)}
+            onChange={e => setDateRange(e.target.value)}
             className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
           >
             <option value="today">Today</option>
@@ -542,7 +560,7 @@ export default function QualityMetrics() {
 
           <select
             value={selectedProduct}
-            onChange={(e) => setSelectedProduct(e.target.value)}
+            onChange={e => setSelectedProduct(e.target.value)}
             className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
           >
             <option value="all">All Products</option>
@@ -609,5 +627,5 @@ export default function QualityMetrics() {
       {/* Root Cause Analysis */}
       <RootCauseTable rootCauses={rootCauses} />
     </div>
-  );
+  )
 }

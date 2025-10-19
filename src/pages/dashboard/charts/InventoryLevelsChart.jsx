@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'
 import {
   AreaChart,
   Area,
@@ -13,8 +13,8 @@ import {
   Legend,
   ResponsiveContainer,
   ReferenceLine,
-} from 'recharts';
-import ChartCard from './ChartCard';
+} from 'recharts'
+import ChartCard from './ChartCard'
 
 /**
  * InventoryLevelsChart Component
@@ -42,15 +42,15 @@ function InventoryLevelsChart({
   onRefresh,
   onExport,
 }) {
-  const [timeRange, setTimeRange] = useState('30d'); // 7d, 30d, 90d
-  const [view, setView] = useState('value'); // value, units, sku
+  const [timeRange, setTimeRange] = useState('30d') // 7d, 30d, 90d
+  const [view, setView] = useState('value') // value, units, sku
 
   // Filter data based on time range
-  const filteredData = filterDataByTimeRange(data, timeRange);
+  const filteredData = filterDataByTimeRange(data, timeRange)
 
   // Custom tooltip
   const CustomTooltip = ({ active, payload, label }) => {
-    if (!active || !payload || payload.length === 0) return null;
+    if (!active || !payload || payload.length === 0) return null
 
     return (
       <div className="bg-white border border-gray-200 rounded shadow-lg p-3">
@@ -60,23 +60,20 @@ function InventoryLevelsChart({
         {payload.map((entry, index) => (
           <div key={index} className="flex items-center justify-between gap-4 text-sm">
             <span className="flex items-center gap-2">
-              <span
-                className="w-3 h-3 rounded"
-                style={{ backgroundColor: entry.color }}
-              />
+              <span className="w-3 h-3 rounded" style={{ backgroundColor: entry.color }} />
               {entry.name}
             </span>
             <span className="font-semibold">{formatValue(entry.value, entry.dataKey)}</span>
           </div>
         ))}
       </div>
-    );
-  };
+    )
+  }
 
   // Time range selector
   const timeRangeActions = (
     <div className="flex items-center gap-1 bg-gray-100 rounded p-1">
-      {['7d', '30d', '90d'].map((range) => (
+      {['7d', '30d', '90d'].map(range => (
         <button
           key={range}
           onClick={() => setTimeRange(range)}
@@ -90,7 +87,7 @@ function InventoryLevelsChart({
         </button>
       ))}
     </div>
-  );
+  )
 
   return (
     <ChartCard
@@ -107,9 +104,7 @@ function InventoryLevelsChart({
         <button
           onClick={() => setView('value')}
           className={`px-3 py-1 rounded text-sm ${
-            view === 'value'
-              ? 'bg-blue-100 text-blue-700'
-              : 'text-gray-600 hover:bg-gray-100'
+            view === 'value' ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:bg-gray-100'
           }`}
         >
           Value
@@ -152,7 +147,7 @@ function InventoryLevelsChart({
             <YAxis
               stroke="#6b7280"
               style={{ fontSize: '12px' }}
-              tickFormatter={(value) => `£${(value / 1000).toFixed(0)}k`}
+              tickFormatter={value => `£${(value / 1000).toFixed(0)}k`}
             />
             <Tooltip content={<CustomTooltip />} />
             <Legend wrapperStyle={{ fontSize: '14px' }} />
@@ -225,18 +220,8 @@ function InventoryLevelsChart({
             <YAxis stroke="#6b7280" style={{ fontSize: '12px' }} />
             <Tooltip content={<CustomTooltip />} />
             <Legend wrapperStyle={{ fontSize: '14px' }} />
-            <Bar
-              dataKey="currentStock"
-              name="Current Stock"
-              fill="#3b82f6"
-              radius={[4, 4, 0, 0]}
-            />
-            <Bar
-              dataKey="reorderPoint"
-              name="Reorder Point"
-              fill="#e5e7eb"
-              radius={[4, 4, 0, 0]}
-            />
+            <Bar dataKey="currentStock" name="Current Stock" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+            <Bar dataKey="reorderPoint" name="Reorder Point" fill="#e5e7eb" radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       )}
@@ -279,7 +264,7 @@ function InventoryLevelsChart({
           <div>
             <h5 className="text-xs font-medium text-gray-600 mb-3">Stock Status by SKU</h5>
             <div className="grid md:grid-cols-3 gap-2">
-              {skuData.slice(0, 6).map((sku) => (
+              {skuData.slice(0, 6).map(sku => (
                 <SKUStatusCard key={sku.sku} sku={sku} />
               ))}
             </div>
@@ -294,7 +279,7 @@ function InventoryLevelsChart({
         )}
       </div>
     </ChartCard>
-  );
+  )
 }
 
 /**
@@ -306,7 +291,7 @@ function SummaryMetric({ label, value, prefix = '', suffix = '', decimals = 0, c
     green: 'text-green-600',
     purple: 'text-purple-600',
     red: 'text-red-600',
-  };
+  }
 
   return (
     <div className="bg-gray-50 rounded-lg p-3">
@@ -317,43 +302,41 @@ function SummaryMetric({ label, value, prefix = '', suffix = '', decimals = 0, c
         <span className="text-sm font-normal text-gray-600 ml-1">{suffix}</span>
       </div>
     </div>
-  );
+  )
 }
 
 /**
  * SKUStatusCard Component
  */
 function SKUStatusCard({ sku }) {
-  const stockPercent = (sku.currentStock / sku.reorderPoint) * 100;
-  let status = 'healthy';
-  let statusColor = 'green';
+  const stockPercent = (sku.currentStock / sku.reorderPoint) * 100
+  let status = 'healthy'
+  let statusColor = 'green'
 
   if (stockPercent < 50) {
-    status = 'critical';
-    statusColor = 'red';
+    status = 'critical'
+    statusColor = 'red'
   } else if (stockPercent < 100) {
-    status = 'warning';
-    statusColor = 'yellow';
+    status = 'warning'
+    statusColor = 'yellow'
   }
 
   const colorClasses = {
     green: 'bg-green-100 text-green-800',
     yellow: 'bg-yellow-100 text-yellow-800',
     red: 'bg-red-100 text-red-800',
-  };
+  }
 
   return (
     <div className="bg-white border border-gray-200 rounded p-2">
       <div className="flex items-center justify-between mb-1">
         <span className="text-xs font-mono font-medium">{sku.sku}</span>
-        <span className={`text-xs px-2 py-0.5 rounded ${colorClasses[statusColor]}`}>
-          {status}
-        </span>
+        <span className={`text-xs px-2 py-0.5 rounded ${colorClasses[statusColor]}`}>{status}</span>
       </div>
       <div className="text-sm font-semibold">{sku.currentStock} units</div>
       <div className="text-xs text-gray-600">ROP: {sku.reorderPoint}</div>
     </div>
-  );
+  )
 }
 
 /**
@@ -361,39 +344,39 @@ function SKUStatusCard({ sku }) {
  */
 
 function filterDataByTimeRange(data, range) {
-  if (!data || data.length === 0) return [];
+  if (!data || data.length === 0) return []
 
-  const now = new Date();
+  const now = new Date()
   const ranges = {
     '7d': 7,
     '30d': 30,
     '90d': 90,
-  };
+  }
 
-  const daysAgo = ranges[range] || 30;
-  const cutoffDate = new Date(now.getTime() - daysAgo * 24 * 60 * 60 * 1000);
+  const daysAgo = ranges[range] || 30
+  const cutoffDate = new Date(now.getTime() - daysAgo * 24 * 60 * 60 * 1000)
 
-  return data.filter((item) => new Date(item.date) >= cutoffDate);
+  return data.filter(item => new Date(item.date) >= cutoffDate)
 }
 
 function formatDate(dateStr) {
-  const date = new Date(dateStr);
-  return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+  const date = new Date(dateStr)
+  return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
 function formatDateTick(dateStr) {
-  const date = new Date(dateStr);
-  return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+  const date = new Date(dateStr)
+  return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
 }
 
 function formatValue(value, dataKey) {
   if (dataKey === 'inventoryValue') {
-    return `£${value.toLocaleString()}`;
+    return `£${value.toLocaleString()}`
   }
   if (dataKey === 'currentStock' || dataKey === 'totalUnits' || dataKey === 'reorderPoint') {
-    return `${value.toLocaleString()} units`;
+    return `${value.toLocaleString()} units`
   }
-  return value.toLocaleString();
+  return value.toLocaleString()
 }
 
 function getTimeRangeLabel(range) {
@@ -401,36 +384,36 @@ function getTimeRangeLabel(range) {
     '7d': 'Last 7 days',
     '30d': 'Last 30 days',
     '90d': 'Last 90 days',
-  };
-  return labels[range] || 'Last 30 days';
+  }
+  return labels[range] || 'Last 30 days'
 }
 
 function calculateLatest(data, key) {
-  if (!data || data.length === 0) return 0;
-  return data[data.length - 1]?.[key] || 0;
+  if (!data || data.length === 0) return 0
+  return data[data.length - 1]?.[key] || 0
 }
 
 function calculateAverage(data, key) {
-  if (!data || data.length === 0) return 0;
-  const total = data.reduce((sum, item) => sum + (item[key] || 0), 0);
-  return total / data.length;
+  if (!data || data.length === 0) return 0
+  const total = data.reduce((sum, item) => sum + (item[key] || 0), 0)
+  return total / data.length
 }
 
 function calculateReorderPoint(data) {
   // Simple calculation: average of latest reorder points
-  if (!data || data.length === 0) return 0;
-  const recent = data.slice(-7); // Last 7 days
-  return calculateAverage(recent, 'reorderPoint') || 500; // Default 500
+  if (!data || data.length === 0) return 0
+  const recent = data.slice(-7) // Last 7 days
+  return calculateAverage(recent, 'reorderPoint') || 500 // Default 500
 }
 
 function calculateSafetyStock(data) {
   // Safety stock is typically 30-50% of reorder point
-  return calculateReorderPoint(data) * 0.4;
+  return calculateReorderPoint(data) * 0.4
 }
 
 function calculateBelowReorderPoint(skuData) {
-  if (!skuData || skuData.length === 0) return 0;
-  return skuData.filter((sku) => sku.currentStock < sku.reorderPoint).length;
+  if (!skuData || skuData.length === 0) return 0
+  return skuData.filter(sku => sku.currentStock < sku.reorderPoint).length
 }
 
-export default InventoryLevelsChart;
+export default InventoryLevelsChart

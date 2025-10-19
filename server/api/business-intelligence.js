@@ -19,7 +19,7 @@ router.use(authenticateToken)
 /**
  * Standard "coming soon" response for AI features
  */
-const getComingSoonResponse = (feature) => ({
+const getComingSoonResponse = feature => ({
   success: true,
   data: [],
   message: `${feature} feature coming soon. AI orchestration with Claude 3 Sonnet and GPT-4 will be available in a future release.`,
@@ -29,7 +29,7 @@ const getComingSoonResponse = (feature) => ({
     'Multi-model ensemble predictions (Claude + GPT-4)',
     'Automated recommendation system',
     'Predictive analytics across all business areas',
-    'Strategic KPI forecasting with confidence intervals'
+    'Strategic KPI forecasting with confidence intervals',
   ],
   meta: {
     available: false,

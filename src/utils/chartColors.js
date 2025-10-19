@@ -6,35 +6,35 @@
 
 export const chartColors = {
   // Primary colors
-  primary: '#3B82F6',      // Blue - Main brand color
-  secondary: '#8B5CF6',    // Purple - Secondary actions
-  success: '#10B981',      // Green - Positive metrics
-  warning: '#F59E0B',      // Amber - Warnings/thresholds
-  danger: '#EF4444',       // Red - Critical/negative
-  info: '#14B8A6',         // Teal - Informational
+  primary: '#3B82F6', // Blue - Main brand color
+  secondary: '#8B5CF6', // Purple - Secondary actions
+  success: '#10B981', // Green - Positive metrics
+  warning: '#F59E0B', // Amber - Warnings/thresholds
+  danger: '#EF4444', // Red - Critical/negative
+  info: '#14B8A6', // Teal - Informational
 
   // Market-specific colors
-  ukMarket: '#3B82F6',     // Blue - UK market
-  usaMarket: '#F97316',    // Orange - USA market
-  euMarket: '#10B981',     // Green - EU market (if needed)
+  ukMarket: '#3B82F6', // Blue - UK market
+  usaMarket: '#F97316', // Orange - USA market
+  euMarket: '#10B981', // Green - EU market (if needed)
 
   // Financial metrics
-  revenue: '#3B82F6',      // Blue
-  grossProfit: '#10B981',  // Green
-  ebitda: '#F59E0B',       // Amber
-  grossMargin: '#8B5CF6',  // Purple
-  netProfit: '#14B8A6',    // Teal
+  revenue: '#3B82F6', // Blue
+  grossProfit: '#10B981', // Green
+  ebitda: '#F59E0B', // Amber
+  grossMargin: '#8B5CF6', // Purple
+  netProfit: '#14B8A6', // Teal
   operatingCosts: '#EF4444', // Red
 
   // Inventory/Stock
-  currentStock: '#8B5CF6',  // Purple
-  reorderLevel: '#F97316',  // Orange
-  safetyStock: '#10B981',   // Green
-  outOfStock: '#EF4444',    // Red
+  currentStock: '#8B5CF6', // Purple
+  reorderLevel: '#F97316', // Orange
+  safetyStock: '#10B981', // Green
+  outOfStock: '#EF4444', // Red
 
   // Sales/Units
-  unitsSold: '#EF4444',     // Red (from mockup)
-  revenueBar: '#14B8A6',    // Teal (from mockup)
+  unitsSold: '#EF4444', // Red (from mockup)
+  revenueBar: '#14B8A6', // Teal (from mockup)
 
   // Neutral colors
   gray: {
@@ -51,8 +51,8 @@ export const chartColors = {
   },
 
   // Chart UI elements
-  grid: '#E5E7EB',          // Light gray for grid lines
-  axis: '#6B7280',          // Medium gray for axis labels
+  grid: '#E5E7EB', // Light gray for grid lines
+  axis: '#6B7280', // Medium gray for axis labels
   tooltip: {
     background: '#FFFFFF',
     border: '#E5E7EB',
@@ -65,12 +65,17 @@ export const chartColors = {
  * @param {string} type - Chart type (sales, financial, inventory)
  * @returns {string[]} Array of colors
  */
-export const getChartColorArray = (type) => {
+export const getChartColorArray = type => {
   switch (type) {
     case 'sales':
       return [chartColors.danger, chartColors.info, chartColors.success]
     case 'financial':
-      return [chartColors.revenue, chartColors.grossProfit, chartColors.ebitda, chartColors.grossMargin]
+      return [
+        chartColors.revenue,
+        chartColors.grossProfit,
+        chartColors.ebitda,
+        chartColors.grossMargin,
+      ]
     case 'inventory':
       return [chartColors.currentStock, chartColors.reorderLevel, chartColors.safetyStock]
     case 'market':

@@ -14,7 +14,7 @@ This document defines the 7 major epics required to transform the Sentia Manufac
 
 **Total Stories**: 78 stories across 7 epics
 **Total Estimated Time**: 20-22 weeks
-**Current Progress**: 28% complete (22/78 stories - EPIC-001: 4/4, EPIC-002: 10/10, EPIC-003: 8/8, EPIC-006: 0/10)
+**Current Progress**: 31% complete (24/78 stories - EPIC-001: 4/4, EPIC-002: 10/10, EPIC-003: 8/8, EPIC-006: 2/10)
 
 ---
 
@@ -976,14 +976,15 @@ Professional UX builds user trust and adoption. Poor error handling and empty st
 
 ---
 
-## EPIC-006: Clerk Authentication Enhancement ⏳ **PENDING**
+## EPIC-006: Clerk Authentication Enhancement ⏳ **IN PROGRESS**
 
-**Status**: ⏳ PENDING (Planning Complete)
+**Status**: ⏳ IN PROGRESS (20% complete - Phase 1: 2/4 stories)
 **Priority**: HIGH
 **Duration**: 1.5-2 days estimated, ~4-6 hours projected (with 4.1x-7.3x velocity)
-**Stories**: 0/10 complete
+**Stories**: 2/10 complete (20%)
 **Depends On**: EPIC-003 (Frontend Polish - 100% complete) ✅
 **Planning Complete**: 2025-10-19
+**Sprint Started**: 2025-10-19
 
 ### Epic Goal
 

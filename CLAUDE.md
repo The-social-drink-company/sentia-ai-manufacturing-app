@@ -165,7 +165,7 @@ if (xeroData?.success) {
 - **Functionality**: CSV/XLSX/JSON import/export with validation and transformation
 - **Components**:
   - BullMQ queues with Redis backend (importQueue.js, exportQueue.js)
-  - RESTful API routes with RBAC (/api/import/*, /api/export/*)
+  - RESTful API routes with RBAC (/api/import/_, /api/export/_)
   - Service layer (ValidationEngine, DataTransformer, ImportProcessor, ExportGenerator)
   - Security services (CSRF, RateLimiter, InputSanitizer, Encryption)
   - Admin UI (IntegrationManagement.jsx)
@@ -315,14 +315,15 @@ All environments deployed on Render with proper CI/CD:
 
 **Current Production Services** (All deploy from `development` branch):
 
-| Service | URL | Status | Purpose |
-|---------|-----|--------|---------|
-| **Frontend** | https://sentia-frontend-prod.onrender.com | ✅ Active | React application UI |
-| **Backend API** | https://sentia-backend-prod.onrender.com | 🔄 Active | Express REST API + Prisma |
-| **MCP Server** | https://sentia-mcp-prod.onrender.com | 🔄 Active | External API integrations |
-| **Database** | Internal PostgreSQL 17 | ✅ Active | Main data store |
+| Service         | URL                                       | Status    | Purpose                   |
+| --------------- | ----------------------------------------- | --------- | ------------------------- |
+| **Frontend**    | https://sentia-frontend-prod.onrender.com | ✅ Active | React application UI      |
+| **Backend API** | https://sentia-backend-prod.onrender.com  | 🔄 Active | Express REST API + Prisma |
+| **MCP Server**  | https://sentia-mcp-prod.onrender.com      | 🔄 Active | External API integrations |
+| **Database**    | Internal PostgreSQL 17                    | ✅ Active | Main data store           |
 
 **Health Check Endpoints**:
+
 - MCP: https://sentia-mcp-prod.onrender.com/health
 - Backend: https://sentia-backend-prod.onrender.com/api/health
 
@@ -542,13 +543,14 @@ scripts/               # Utility scripts
 
 **Current Production Services** (All deploy from `main` branch):
 
-| Service | URL | Status | Purpose |
-|---------|-----|--------|---------|
-| **Frontend** | https://sentia-frontend-prod.onrender.com | ✅ Active | React application UI |
-| **Backend API** | https://sentia-backend-prod.onrender.com | 🔄 Active | Express REST API + Prisma |
-| **MCP Server** | https://sentia-mcp-prod.onrender.com | 🔄 Active | External API integrations |
+| Service         | URL                                       | Status    | Purpose                   |
+| --------------- | ----------------------------------------- | --------- | ------------------------- |
+| **Frontend**    | https://sentia-frontend-prod.onrender.com | ✅ Active | React application UI      |
+| **Backend API** | https://sentia-backend-prod.onrender.com  | 🔄 Active | Express REST API + Prisma |
+| **MCP Server**  | https://sentia-mcp-prod.onrender.com      | 🔄 Active | External API integrations |
 
 **Health Check Endpoints**:
+
 - Frontend: https://sentia-frontend-prod.onrender.com
 - Backend: https://sentia-backend-prod.onrender.com/api/health
 - MCP: https://sentia-mcp-prod.onrender.com/health
@@ -608,6 +610,7 @@ scripts/               # Utility scripts
 An intelligent autonomous system that automatically manages git commit, push, and PR operations during development, eliminating the "GitHub mess" problem.
 
 **Documentation**:
+
 - **Complete Specification**: [docs/AUTONOMOUS_GIT_AGENT.md](docs/AUTONOMOUS_GIT_AGENT.md) (500+ lines)
 - **Quick Reference**: [.claude-git-agent-rules.md](.claude-git-agent-rules.md)
 - **Summary**: [AUTONOMOUS_GIT_SUMMARY.md](AUTONOMOUS_GIT_SUMMARY.md)
@@ -615,17 +618,20 @@ An intelligent autonomous system that automatically manages git commit, push, an
 #### How It Works
 
 **Three-Tier Trigger System:**
+
 1. **PRIMARY (Task-Based)**: Auto-commits when TodoWrite tasks are completed
 2. **SECONDARY (Change-Based)**: Auto-commits when 5+ files modified OR 150+ lines changed
 3. **TERTIARY (Time-Based)**: Safety WIP commits every 30 minutes if uncommitted changes exist
 
 **Automatic Operations:**
+
 - ✅ **Smart Commits**: Auto-generated commit messages from task content and file analysis
 - ✅ **Conventional Format**: Follows `type: subject` format (feat, fix, docs, refactor, etc.)
 - ✅ **Auto-Push**: Pushes to main branch every 5 commits OR 1 hour (whichever first)
 - ✅ **PR Suggestions**: Asks user when feature/epic milestones are reached
 
 **Key Benefits:**
+
 - Never lose work (automatic safety checkpoints)
 - Clean, meaningful commit history
 - Small, reviewable commits
@@ -633,12 +639,14 @@ An intelligent autonomous system that automatically manages git commit, push, an
 - Eliminates "GitHub mess" problem permanently
 
 **Safety Rules:**
+
 - ❌ NEVER auto-commits to `test` or `production` branches
 - ❌ NEVER creates PRs without asking first
 - ❌ NEVER pushes if merge conflicts exist
 - ✅ ONLY operates on `main` branch (unless explicitly told otherwise)
 
 **Session Example:**
+
 ```
 User works on feature → Claude completes tasks → Auto-commits after each task
 After 5 commits → Auto-pushes to main

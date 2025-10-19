@@ -153,7 +153,9 @@ class IntegrationService {
 
       // Validate integration type
       if (!this.INTEGRATION_TYPES.includes(type)) {
-        throw new Error(`Invalid integration type: ${type}. Must be one of: ${this.INTEGRATION_TYPES.join(', ')}`)
+        throw new Error(
+          `Invalid integration type: ${type}. Must be one of: ${this.INTEGRATION_TYPES.join(', ')}`
+        )
       }
 
       // Create integration
@@ -175,7 +177,9 @@ class IntegrationService {
         },
       })
 
-      logger.info(`[IntegrationService] Created integration ${integration.id} (${integration.name})`)
+      logger.info(
+        `[IntegrationService] Created integration ${integration.id} (${integration.name})`
+      )
 
       return integration
     } catch (error) {
@@ -197,7 +201,7 @@ class IntegrationService {
     try {
       // Disallow credential updates (use rotateCredentials instead)
       const disallowedFields = ['apiKey', 'apiSecret', 'accessToken', 'refreshToken']
-      const hasDisallowedField = disallowedFields.some((field) => field in updates)
+      const hasDisallowedField = disallowedFields.some(field => field in updates)
 
       if (hasDisallowedField) {
         throw new Error(
@@ -277,7 +281,9 @@ class IntegrationService {
 
       try {
         // Dynamic import of integration module
-        const integrationModule = await import(`../../integrations/${integration.type.toLowerCase()}.js`)
+        const integrationModule = await import(
+          `../../integrations/${integration.type.toLowerCase()}.js`
+        )
 
         // Call health check function
         if (typeof integrationModule.healthCheck !== 'function') {
@@ -296,7 +302,9 @@ class IntegrationService {
         // Record successful health check
         await this._recordHealthCheck(id, responseTime, true)
 
-        logger.info(`[IntegrationService] Health check successful for ${integration.name} (${responseTime}ms)`)
+        logger.info(
+          `[IntegrationService] Health check successful for ${integration.name} (${responseTime}ms)`
+        )
 
         return {
           healthy: true,
@@ -309,7 +317,10 @@ class IntegrationService {
         // Record failed health check
         await this._recordHealthCheck(id, responseTime, false, healthError.message)
 
-        logger.error(`[IntegrationService] Health check failed for ${integration.name}:`, healthError)
+        logger.error(
+          `[IntegrationService] Health check failed for ${integration.name}:`,
+          healthError
+        )
 
         return {
           healthy: false,
@@ -362,7 +373,9 @@ class IntegrationService {
         },
       })
 
-      logger.info(`[IntegrationService] Created sync job ${syncJob.id} for integration ${integration.name}`)
+      logger.info(
+        `[IntegrationService] Created sync job ${syncJob.id} for integration ${integration.name}`
+      )
 
       return {
         syncJob,
@@ -609,7 +622,7 @@ class IntegrationService {
         return 0
       }
 
-      const successCount = syncJobs.filter((job) => job.status === 'COMPLETED').length
+      const successCount = syncJobs.filter(job => job.status === 'COMPLETED').length
       const uptime = (successCount / syncJobs.length) * 100
 
       return Math.round(uptime * 100) / 100 // Round to 2 decimal places

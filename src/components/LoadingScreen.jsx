@@ -21,9 +21,7 @@ const LoadingScreen = ({ message = 'Loading...' }) => {
         <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-4 border-blue-500 border-t-transparent" />
 
         {/* Loading message with uppercase tracking */}
-        <p className="text-sm uppercase tracking-wider text-slate-300">
-          {message}
-        </p>
+        <p className="text-sm uppercase tracking-wider text-slate-300">{message}</p>
       </div>
     </div>
   )

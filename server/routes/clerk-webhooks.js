@@ -92,7 +92,9 @@ function verifyWebhookSignature(req) {
 async function handleUserCreated(data) {
   const { id: clerkUserId, email_addresses, first_name, last_name, public_metadata } = data
 
-  const primaryEmail = email_addresses.find(e => e.id === data.primary_email_address_id)?.email_address
+  const primaryEmail = email_addresses.find(
+    e => e.id === data.primary_email_address_id
+  )?.email_address
 
   // Create user in database
   const user = await prisma.user.create({
@@ -116,7 +118,9 @@ async function handleUserCreated(data) {
 async function handleUserUpdated(data) {
   const { id: clerkUserId, email_addresses, first_name, last_name, public_metadata } = data
 
-  const primaryEmail = email_addresses.find(e => e.id === data.primary_email_address_id)?.email_address
+  const primaryEmail = email_addresses.find(
+    e => e.id === data.primary_email_address_id
+  )?.email_address
 
   const user = await prisma.user.update({
     where: { clerkUserId },

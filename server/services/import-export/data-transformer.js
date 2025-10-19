@@ -3,7 +3,7 @@
  * Transforms imported data to internal format and prepares export data
  */
 
-import { logInfo, logDebug } from '../../utils/logger.js';
+import { logInfo, logDebug } from '../../utils/logger.js'
 
 class DataTransformer {
   /**
@@ -13,23 +13,23 @@ class DataTransformer {
    * @returns {Array} Transformed data
    */
   transformImportData(csvData, mapping) {
-    logDebug(`Transforming ${csvData.length} rows with mapping`, mapping);
+    logDebug(`Transforming ${csvData.length} rows with mapping`, mapping)
 
     return csvData.map((row, index) => {
-      const transformed = {};
+      const transformed = {}
 
       for (const [internalField, externalField] of Object.entries(mapping)) {
-        let value = row[externalField];
+        let value = row[externalField]
 
         // Apply transformations
-        value = this.applyTransformations(internalField, value);
+        value = this.applyTransformations(internalField, value)
 
-        transformed[internalField] = value;
+        transformed[internalField] = value
       }
 
-      transformed._rowIndex = index + 1;
-      return transformed;
-    });
+      transformed._rowIndex = index + 1
+      return transformed
+    })
   }
 
   /**
@@ -37,12 +37,12 @@ class DataTransformer {
    */
   applyTransformations(field, value) {
     if (value === null || value === undefined || value === '') {
-      return null;
+      return null
     }
 
     // Date transformations
     if (field.toLowerCase().includes('date') || field.toLowerCase().includes('time')) {
-      return this.parseDate(value);
+      return this.parseDate(value)
     }
 
     // Number transformations
@@ -52,53 +52,53 @@ class DataTransformer {
       field.toLowerCase().includes('revenue') ||
       field.toLowerCase().includes('price')
     ) {
-      return this.parseNumber(value);
+      return this.parseNumber(value)
     }
 
     // Boolean transformations
     if (field.toLowerCase().includes('active') || field.toLowerCase().includes('enabled')) {
-      return this.parseBoolean(value);
+      return this.parseBoolean(value)
     }
 
     // String trimming
     if (typeof value === 'string') {
-      return value.trim();
+      return value.trim()
     }
 
-    return value;
+    return value
   }
 
   /**
    * Parse date value
    */
   parseDate(value) {
-    if (value instanceof Date) return value;
+    if (value instanceof Date) return value
 
-    const parsed = Date.parse(value);
-    return isNaN(parsed) ? null : new Date(parsed);
+    const parsed = Date.parse(value)
+    return isNaN(parsed) ? null : new Date(parsed)
   }
 
   /**
    * Parse number value
    */
   parseNumber(value) {
-    if (typeof value === 'number') return value;
+    if (typeof value === 'number') return value
 
     // Remove currency symbols and commas
-    const cleaned = String(value).replace(/[$,]/g, '');
-    const parsed = parseFloat(cleaned);
+    const cleaned = String(value).replace(/[$,]/g, '')
+    const parsed = parseFloat(cleaned)
 
-    return isNaN(parsed) ? null : parsed;
+    return isNaN(parsed) ? null : parsed
   }
 
   /**
    * Parse boolean value
    */
   parseBoolean(value) {
-    if (typeof value === 'boolean') return value;
+    if (typeof value === 'boolean') return value
 
-    const str = String(value).toLowerCase();
-    return ['true', '1', 'yes', 'y'].includes(str);
+    const str = String(value).toLowerCase()
+    return ['true', '1', 'yes', 'y'].includes(str)
   }
 
   /**
@@ -109,34 +109,34 @@ class DataTransformer {
    * @returns {Object} Transformed export data
    */
   transformExportData(data, format, options = {}) {
-    logDebug(`Transforming ${data.length} rows for ${format} export`);
+    logDebug(`Transforming ${data.length} rows for ${format} export`)
 
     if (format === 'json') {
-      return this.transformToJSON(data, options);
+      return this.transformToJSON(data, options)
     }
 
     if (format === 'csv' || format === 'xlsx') {
-      return this.transformToTabular(data, options);
+      return this.transformToTabular(data, options)
     }
 
-    throw new Error(`Unsupported export format: ${format}`);
+    throw new Error(`Unsupported export format: ${format}`)
   }
 
   /**
    * Transform to JSON format
    */
   transformToJSON(data, options) {
-    let transformed = data;
+    let transformed = data
 
     // Apply field filtering
     if (options.fields) {
-      transformed = data.map((row) => {
-        const filtered = {};
-        options.fields.forEach((field) => {
-          filtered[field] = row[field];
-        });
-        return filtered;
-      });
+      transformed = data.map(row => {
+        const filtered = {}
+        options.fields.forEach(field => {
+          filtered[field] = row[field]
+        })
+        return filtered
+      })
     }
 
     return {
@@ -146,7 +146,7 @@ class DataTransformer {
         exportedAt: new Date().toISOString(),
         format: 'json',
       },
-    };
+    }
   }
 
   /**
@@ -154,37 +154,37 @@ class DataTransformer {
    */
   transformToTabular(data, options) {
     if (data.length === 0) {
-      return { headers: [], rows: [] };
+      return { headers: [], rows: [] }
     }
 
     // Determine headers
-    const headers = options.fields || Object.keys(data[0]);
+    const headers = options.fields || Object.keys(data[0])
 
     // Transform rows
-    const rows = data.map((row) => {
-      return headers.map((header) => {
-        let value = row[header];
+    const rows = data.map(row => {
+      return headers.map(header => {
+        let value = row[header]
 
         // Format dates
         if (value instanceof Date) {
-          return value.toISOString().split('T')[0];
+          return value.toISOString().split('T')[0]
         }
 
         // Format nulls
         if (value === null || value === undefined) {
-          return '';
+          return ''
         }
 
         // Format numbers
         if (typeof value === 'number') {
-          return options.formatNumbers ? value.toLocaleString() : value;
+          return options.formatNumbers ? value.toLocaleString() : value
         }
 
-        return value;
-      });
-    });
+        return value
+      })
+    })
 
-    return { headers, rows };
+    return { headers, rows }
   }
 
   /**
@@ -194,51 +194,53 @@ class DataTransformer {
    * @returns {Object} Detected column types
    */
   detectColumnTypes(data, sampleSize = 100) {
-    const sample = data.slice(0, sampleSize);
-    const types = {};
+    const sample = data.slice(0, sampleSize)
+    const types = {}
 
-    if (sample.length === 0) return types;
+    if (sample.length === 0) return types
 
-    const headers = Object.keys(sample[0]);
-    logInfo(`Detecting column types for ${headers.length} columns from ${sample.length} sample rows`);
+    const headers = Object.keys(sample[0])
+    logInfo(
+      `Detecting column types for ${headers.length} columns from ${sample.length} sample rows`
+    )
 
-    headers.forEach((header) => {
-      const values = sample.map((row) => row[header]).filter((v) => v !== null && v !== undefined);
+    headers.forEach(header => {
+      const values = sample.map(row => row[header]).filter(v => v !== null && v !== undefined)
 
       if (values.length === 0) {
-        types[header] = 'string';
-        return;
+        types[header] = 'string'
+        return
       }
 
       // Check if all values are numbers
-      const allNumbers = values.every((v) => typeof v === 'number' || !isNaN(parseFloat(v)));
+      const allNumbers = values.every(v => typeof v === 'number' || !isNaN(parseFloat(v)))
       if (allNumbers) {
-        types[header] = 'number';
-        return;
+        types[header] = 'number'
+        return
       }
 
       // Check if all values are dates
-      const allDates = values.every((v) => !isNaN(Date.parse(v)));
+      const allDates = values.every(v => !isNaN(Date.parse(v)))
       if (allDates) {
-        types[header] = 'date';
-        return;
+        types[header] = 'date'
+        return
       }
 
       // Check if all values are booleans
-      const allBooleans = values.every((v) =>
+      const allBooleans = values.every(v =>
         ['true', 'false', '1', '0', 'yes', 'no'].includes(String(v).toLowerCase())
-      );
+      )
       if (allBooleans) {
-        types[header] = 'boolean';
-        return;
+        types[header] = 'boolean'
+        return
       }
 
-      types[header] = 'string';
-    });
+      types[header] = 'string'
+    })
 
-    logInfo('Column type detection complete', { types });
-    return types;
+    logInfo('Column type detection complete', { types })
+    return types
   }
 }
 
-export default DataTransformer;
+export default DataTransformer

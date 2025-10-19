@@ -13,14 +13,14 @@
  * Used by: BullMQ import-queue workers
  */
 
-const { PrismaClient } = require('@prisma/client');
-const csv = require('csv-parser');
-const XLSX = require('xlsx');
-const fs = require('fs');
-const { validateRow } = require('./ValidationEngine');
-const { transformRow } = require('./DataTransformer');
+const { PrismaClient } = require('@prisma/client')
+const csv = require('csv-parser')
+const XLSX = require('xlsx')
+const fs = require('fs')
+const { validateRow } = require('./ValidationEngine')
+const { transformRow } = require('./DataTransformer')
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient()
 
 /**
  * ============================================================================
@@ -36,14 +36,14 @@ const prisma = new PrismaClient();
  */
 async function parseCSV(filePath) {
   return new Promise((resolve, reject) => {
-    const rows = [];
+    const rows = []
 
     fs.createReadStream(filePath)
       .pipe(csv())
-      .on('data', (row) => rows.push(row))
+      .on('data', row => rows.push(row))
       .on('end', () => resolve(rows))
-      .on('error', (error) => reject(error));
-  });
+      .on('error', error => reject(error))
+  })
 }
 
 /**
@@ -54,14 +54,14 @@ async function parseCSV(filePath) {
  */
 async function parseExcel(filePath) {
   try {
-    const workbook = XLSX.readFile(filePath);
-    const sheetName = workbook.SheetNames[0];
-    const sheet = workbook.Sheets[sheetName];
-    const rows = XLSX.utils.sheet_to_json(sheet);
+    const workbook = XLSX.readFile(filePath)
+    const sheetName = workbook.SheetNames[0]
+    const sheet = workbook.Sheets[sheetName]
+    const rows = XLSX.utils.sheet_to_json(sheet)
 
-    return rows;
+    return rows
   } catch (error) {
-    throw new Error(`Failed to parse Excel file: ${error.message}`);
+    throw new Error(`Failed to parse Excel file: ${error.message}`)
   }
 }
 
@@ -75,13 +75,13 @@ async function parseExcel(filePath) {
 async function parseFile(filePath, fileType) {
   switch (fileType.toUpperCase()) {
     case 'CSV':
-      return parseCSV(filePath);
+      return parseCSV(filePath)
     case 'EXCEL':
     case 'XLSX':
     case 'XLS':
-      return parseExcel(filePath);
+      return parseExcel(filePath)
     default:
-      throw new Error(`Unsupported file type: ${fileType}`);
+      throw new Error(`Unsupported file type: ${fileType}`)
   }
 }
 
@@ -102,10 +102,10 @@ async function processImportJob(jobId, progressCallback) {
   const job = await prisma.importJob.findUnique({
     where: { id: jobId },
     include: { file: true },
-  });
+  })
 
   if (!job) {
-    throw new Error(`Import job not found: ${jobId}`);
+    throw new Error(`Import job not found: ${jobId}`)
   }
 
   // Update job status
@@ -115,27 +115,27 @@ async function processImportJob(jobId, progressCallback) {
       status: 'IMPORTING',
       startedAt: new Date(),
     },
-  });
+  })
 
   try {
     // Parse file
-    const rows = await parseFile(job.file.filePath, job.file.fileType);
+    const rows = await parseFile(job.file.filePath, job.file.fileType)
 
     // Get schema for validation
-    const schema = getSchemaForDataType(job.dataType);
+    const schema = getSchemaForDataType(job.dataType)
 
     // Process rows in batches
-    const batchSize = 100;
+    const batchSize = 100
     const results = {
       totalRows: rows.length,
       processedRows: 0,
       succeededRows: 0,
       failedRows: 0,
       errors: [],
-    };
+    }
 
     for (let i = 0; i < rows.length; i += batchSize) {
-      const batch = rows.slice(i, i + batchSize);
+      const batch = rows.slice(i, i + batchSize)
 
       const batchResults = await processBatch(
         batch,
@@ -144,13 +144,13 @@ async function processImportJob(jobId, progressCallback) {
         schema,
         job.dataType,
         job.options
-      );
+      )
 
       // Update results
-      results.processedRows += batchResults.processed;
-      results.succeededRows += batchResults.succeeded;
-      results.failedRows += batchResults.failed;
-      results.errors.push(...batchResults.errors);
+      results.processedRows += batchResults.processed
+      results.succeededRows += batchResults.succeeded
+      results.failedRows += batchResults.failed
+      results.errors.push(...batchResults.errors)
 
       // Update job progress
       await prisma.importJob.update({
@@ -160,7 +160,7 @@ async function processImportJob(jobId, progressCallback) {
           succeededRows: results.succeededRows,
           failedRows: results.failedRows,
         },
-      });
+      })
 
       // Report progress
       if (progressCallback) {
@@ -169,7 +169,7 @@ async function processImportJob(jobId, progressCallback) {
           progress: Math.floor((results.processedRows / results.totalRows) * 100),
           processedRows: results.processedRows,
           totalRows: results.totalRows,
-        });
+        })
       }
     }
 
@@ -186,9 +186,9 @@ async function processImportJob(jobId, progressCallback) {
           failedRows: results.failedRows,
         },
       },
-    });
+    })
 
-    return results;
+    return results
   } catch (error) {
     // Mark job as failed
     await prisma.importJob.update({
@@ -198,9 +198,9 @@ async function processImportJob(jobId, progressCallback) {
         completedAt: new Date(),
         errors: [{ error: error.message }],
       },
-    });
+    })
 
-    throw error;
+    throw error
   }
 }
 
@@ -221,49 +221,49 @@ async function processBatch(rows, mapping, transformations, schema, dataType, op
     succeeded: 0,
     failed: 0,
     errors: [],
-  };
+  }
 
   for (const row of rows) {
     try {
       // Transform row using mapping
-      const transformedRow = transformRow(row, mapping, transformations);
+      const transformedRow = transformRow(row, mapping, transformations)
 
       // Validate row
-      const validation = await validateRow(transformedRow, schema);
+      const validation = await validateRow(transformedRow, schema)
 
       if (!validation.valid) {
         if (options?.skipErrors) {
-          results.failed++;
+          results.failed++
           results.errors.push({
             row: results.processed + 1,
             errors: validation.errors,
             data: transformedRow,
-          });
+          })
         } else {
-          throw new Error(`Validation failed: ${validation.errors.map(e => e.message).join(', ')}`);
+          throw new Error(`Validation failed: ${validation.errors.map(e => e.message).join(', ')}`)
         }
       } else {
         // Insert data based on type
-        await insertData(dataType, transformedRow);
-        results.succeeded++;
+        await insertData(dataType, transformedRow)
+        results.succeeded++
       }
 
-      results.processed++;
+      results.processed++
     } catch (error) {
-      results.failed++;
+      results.failed++
       results.errors.push({
         row: results.processed + 1,
         error: error.message,
         data: row,
-      });
+      })
 
       if (!options?.skipErrors) {
-        throw error;
+        throw error
       }
     }
   }
 
-  return results;
+  return results
 }
 
 /**
@@ -282,22 +282,22 @@ async function processBatch(rows, mapping, transformations, schema, dataType, op
 async function insertData(dataType, data) {
   switch (dataType) {
     case 'PRODUCTS':
-      return prisma.product.create({ data });
+      return prisma.product.create({ data })
 
     case 'INVENTORY':
-      return prisma.inventory.create({ data });
+      return prisma.inventory.create({ data })
 
     case 'ORDERS':
-      return prisma.order.create({ data });
+      return prisma.order.create({ data })
 
     case 'CUSTOMERS':
-      return prisma.customer.create({ data });
+      return prisma.customer.create({ data })
 
     case 'SUPPLIERS':
-      return prisma.supplier.create({ data });
+      return prisma.supplier.create({ data })
 
     default:
-      throw new Error(`Unsupported data type: ${dataType}`);
+      throw new Error(`Unsupported data type: ${dataType}`)
   }
 }
 
@@ -342,9 +342,9 @@ function getSchemaForDataType(dataType) {
         { name: 'orderDate', type: 'date', required: true },
       ],
     },
-  };
+  }
 
-  return schemas[dataType] || { fields: [] };
+  return schemas[dataType] || { fields: [] }
 }
 
 /**
@@ -361,4 +361,4 @@ module.exports = {
   processBatch,
   insertData,
   getSchemaForDataType,
-};
+}

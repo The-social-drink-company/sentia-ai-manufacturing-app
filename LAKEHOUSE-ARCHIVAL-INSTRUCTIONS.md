@@ -21,7 +21,9 @@ The `sentia-financial-lakehouse/` directory contains a complete standalone Finan
 ## Lakehouse Overview
 
 ### What It Is
+
 A complete microservices platform for financial data intelligence with:
+
 - DuckDB + Parquet analytics engine
 - Multi-LLM AI orchestration (GPT-4, Claude 3, Gemini)
 - Data adapters for Xero, QuickBooks, SAP
@@ -29,6 +31,7 @@ A complete microservices platform for financial data intelligence with:
 - React dashboard UI
 
 ### Current State
+
 - **Code**: 1,231 lines across 6 files
 - **Architecture**: Complete microservices (ports 8100-8103, 3100)
 - **Integration**: Zero references in main application
@@ -234,12 +237,14 @@ sentia-financial-lakehouse/
 ## Benefits of Archival
 
 ### For Main Repository:
+
 - ✅ Reduced complexity (1,231 lines removed)
 - ✅ Cleaner eslint configuration
 - ✅ Clearer project focus
 - ✅ Faster builds and tests
 
 ### For Lakehouse Project:
+
 - ✅ Independent development
 - ✅ Own release cycle
 - ✅ Dedicated documentation
@@ -261,12 +266,15 @@ sentia-financial-lakehouse/
 ## References
 
 **Main Repository**:
+
 - https://github.com/The-social-drink-company/sentia-ai-manufacturing-app
 
 **New Lakehouse Repository** (to be created):
+
 - https://github.com/The-social-drink-company/sentia-financial-lakehouse
 
 **BMAD Documentation**:
+
 - BMAD-CLEAN-002: Technical debt cleanup story
 - DECISION-001: Lakehouse subtree decision (Option A)
 

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useMutation } from '@tanstack/react-query';
+import React, { useState } from 'react'
+import { useMutation } from '@tanstack/react-query'
 import {
   LineChart,
   Line,
@@ -17,7 +17,7 @@ import {
   Legend,
   ResponsiveContainer,
   ReferenceLine,
-} from 'recharts';
+} from 'recharts'
 import {
   Play,
   RotateCcw,
@@ -27,7 +27,7 @@ import {
   Users,
   Download,
   AlertTriangle,
-} from 'lucide-react';
+} from 'lucide-react'
 
 /**
  * WhatIfAnalysis Component
@@ -48,78 +48,80 @@ import {
 function WhatIfAnalysis() {
   // Baseline state (current reality)
   const [baseline] = useState({
-    price: 25.00,
+    price: 25.0,
     demand: 10000,
-    cogs: 12.50,
+    cogs: 12.5,
     marketingSpend: 5000,
     conversionRate: 3.5,
-  });
+  })
 
   // Scenario state (what-if parameters)
-  const [scenario, setScenario] = useState({ ...baseline });
+  const [scenario, setScenario] = useState({ ...baseline })
 
-  const [showComparison, setShowComparison] = useState(false);
-  const [sensitivityMetric, setSensitivityMetric] = useState('revenue');
+  const [showComparison, setShowComparison] = useState(false)
+  const [sensitivityMetric, setSensitivityMetric] = useState('revenue')
 
   // Calculate scenario mutation
   const calculateScenarioMutation = useMutation({
-    mutationFn: async (params) => {
+    mutationFn: async params => {
       const response = await fetch('/api/v1/analytics/what-if/calculate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(params),
-      });
-      if (!response.ok) throw new Error('Failed to calculate scenario');
-      return response.json();
+      })
+      if (!response.ok) throw new Error('Failed to calculate scenario')
+      return response.json()
     },
-  });
+  })
 
   const handleRunScenario = () => {
     calculateScenarioMutation.mutate({
       baseline,
       scenario,
-    });
-    setShowComparison(true);
-  };
+    })
+    setShowComparison(true)
+  }
 
   const handleReset = () => {
-    setScenario({ ...baseline });
-    setShowComparison(false);
-    calculateScenarioMutation.reset();
-  };
+    setScenario({ ...baseline })
+    setShowComparison(false)
+    calculateScenarioMutation.reset()
+  }
 
   const handleExport = () => {
-    console.log('Export scenario results');
+    console.log('Export scenario results')
     const exportData = {
       baseline,
       scenario,
       results: calculateScenarioMutation.data?.data,
       timestamp: new Date().toISOString(),
-    };
-    const dataStr = JSON.stringify(exportData, null, 2);
-    const dataBlob = new Blob([dataStr], { type: 'application/json' });
-    const url = URL.createObjectURL(dataBlob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `what-if-scenario-${Date.now()}.json`;
-    link.click();
-  };
+    }
+    const dataStr = JSON.stringify(exportData, null, 2)
+    const dataBlob = new Blob([dataStr], { type: 'application/json' })
+    const url = URL.createObjectURL(dataBlob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `what-if-scenario-${Date.now()}.json`
+    link.click()
+  }
 
   // Calculate impacts
-  const baselineRevenue = baseline.price * baseline.demand;
-  const baselineProfit = (baseline.price - baseline.cogs) * baseline.demand - baseline.marketingSpend;
-  const baselineMargin = ((baseline.price - baseline.cogs) / baseline.price) * 100;
+  const baselineRevenue = baseline.price * baseline.demand
+  const baselineProfit =
+    (baseline.price - baseline.cogs) * baseline.demand - baseline.marketingSpend
+  const baselineMargin = ((baseline.price - baseline.cogs) / baseline.price) * 100
 
-  const scenarioRevenue = scenario.price * scenario.demand;
-  const scenarioProfit = (scenario.price - scenario.cogs) * scenario.demand - scenario.marketingSpend;
-  const scenarioMargin = ((scenario.price - scenario.cogs) / scenario.price) * 100;
+  const scenarioRevenue = scenario.price * scenario.demand
+  const scenarioProfit =
+    (scenario.price - scenario.cogs) * scenario.demand - scenario.marketingSpend
+  const scenarioMargin = ((scenario.price - scenario.cogs) / scenario.price) * 100
 
-  const revenueChange = ((scenarioRevenue - baselineRevenue) / baselineRevenue) * 100;
-  const profitChange = ((scenarioProfit - baselineProfit) / baselineProfit) * 100;
-  const marginChange = scenarioMargin - baselineMargin;
+  const revenueChange = ((scenarioRevenue - baselineRevenue) / baselineRevenue) * 100
+  const profitChange = ((scenarioProfit - baselineProfit) / baselineProfit) * 100
+  const marginChange = scenarioMargin - baselineMargin
 
   // Sensitivity analysis data
-  const sensitivityData = generateSensitivityData(baseline, sensitivityMetric);
+  const sensitivityData = generateSensitivityData(baseline, sensitivityMetric)
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -135,9 +137,7 @@ function WhatIfAnalysis() {
         {/* Parameter Controls */}
         <div className="lg:col-span-1 space-y-6">
           <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">
-              Scenario Parameters
-            </h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Scenario Parameters</h2>
 
             <div className="space-y-6">
               {/* Price Slider */}
@@ -146,10 +146,10 @@ function WhatIfAnalysis() {
                 value={scenario.price}
                 min={baseline.price * 0.5}
                 max={baseline.price * 2}
-                step={0.50}
+                step={0.5}
                 baseline={baseline.price}
-                format={(v) => `£${v.toFixed(2)}`}
-                onChange={(value) => setScenario({ ...scenario, price: value })}
+                format={v => `£${v.toFixed(2)}`}
+                onChange={value => setScenario({ ...scenario, price: value })}
                 icon={DollarSign}
               />
 
@@ -161,8 +161,8 @@ function WhatIfAnalysis() {
                 max={baseline.demand * 1.7}
                 step={100}
                 baseline={baseline.demand}
-                format={(v) => v.toLocaleString()}
-                onChange={(value) => setScenario({ ...scenario, demand: value })}
+                format={v => v.toLocaleString()}
+                onChange={value => setScenario({ ...scenario, demand: value })}
                 icon={Package}
               />
 
@@ -174,8 +174,8 @@ function WhatIfAnalysis() {
                 max={baseline.cogs * 1.5}
                 step={0.25}
                 baseline={baseline.cogs}
-                format={(v) => `£${v.toFixed(2)}`}
-                onChange={(value) => setScenario({ ...scenario, cogs: value })}
+                format={v => `£${v.toFixed(2)}`}
+                onChange={value => setScenario({ ...scenario, cogs: value })}
                 icon={TrendingUp}
               />
 
@@ -187,8 +187,8 @@ function WhatIfAnalysis() {
                 max={baseline.marketingSpend * 3}
                 step={500}
                 baseline={baseline.marketingSpend}
-                format={(v) => `£${v.toLocaleString()}`}
-                onChange={(value) => setScenario({ ...scenario, marketingSpend: value })}
+                format={v => `£${v.toLocaleString()}`}
+                onChange={value => setScenario({ ...scenario, marketingSpend: value })}
                 icon={Users}
               />
 
@@ -200,8 +200,8 @@ function WhatIfAnalysis() {
                 max={10.0}
                 step={0.1}
                 baseline={baseline.conversionRate}
-                format={(v) => `${v.toFixed(1)}%`}
-                onChange={(value) => setScenario({ ...scenario, conversionRate: value })}
+                format={v => `${v.toFixed(1)}%`}
+                onChange={value => setScenario({ ...scenario, conversionRate: value })}
                 icon={TrendingUp}
               />
             </div>
@@ -305,12 +305,10 @@ function WhatIfAnalysis() {
           {/* Sensitivity Analysis */}
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-gray-900">
-                Sensitivity Analysis
-              </h2>
+              <h2 className="text-lg font-semibold text-gray-900">Sensitivity Analysis</h2>
               <select
                 value={sensitivityMetric}
-                onChange={(e) => setSensitivityMetric(e.target.value)}
+                onChange={e => setSensitivityMetric(e.target.value)}
                 className="border border-gray-300 rounded-lg p-2 text-sm"
               >
                 <option value="revenue">Revenue Sensitivity</option>
@@ -353,9 +351,7 @@ function WhatIfAnalysis() {
             <div className="bg-white rounded-lg shadow p-6">
               <div className="flex items-center gap-2 mb-4">
                 <AlertTriangle className="w-5 h-5 text-yellow-600" />
-                <h2 className="text-lg font-semibold text-gray-900">
-                  Scenario Insights
-                </h2>
+                <h2 className="text-lg font-semibold text-gray-900">Scenario Insights</h2>
               </div>
 
               <div className="space-y-3">
@@ -395,17 +391,26 @@ function WhatIfAnalysis() {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 /**
  * ParameterSlider Component
  */
-// eslint-disable-next-line no-unused-vars
-function ParameterSlider({ label, value, min, max, step, baseline, format, onChange, icon: IconComponent }) {
-  const percentChange = ((value - baseline) / baseline) * 100;
-  const isIncreased = value > baseline;
-  const isDecreased = value < baseline;
+function ParameterSlider({
+  label,
+  value,
+  min,
+  max,
+  step,
+  baseline,
+  format,
+  onChange,
+  icon: IconComponent,
+}) {
+  const percentChange = ((value - baseline) / baseline) * 100
+  const isIncreased = value > baseline
+  const isDecreased = value < baseline
 
   return (
     <div>
@@ -423,61 +428,69 @@ function ParameterSlider({ label, value, min, max, step, baseline, format, onCha
         max={max}
         step={step}
         value={value}
-        onChange={(e) => onChange(parseFloat(e.target.value))}
+        onChange={e => onChange(parseFloat(e.target.value))}
         className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
       />
 
       <div className="flex items-center justify-between mt-1 text-xs text-gray-500">
         <span>{format(min)}</span>
-        <span className={`font-medium ${isIncreased ? 'text-green-600' : isDecreased ? 'text-red-600' : 'text-gray-600'}`}>
-          {percentChange > 0 ? '+' : ''}{percentChange.toFixed(1)}% vs baseline
+        <span
+          className={`font-medium ${isIncreased ? 'text-green-600' : isDecreased ? 'text-red-600' : 'text-gray-600'}`}
+        >
+          {percentChange > 0 ? '+' : ''}
+          {percentChange.toFixed(1)}% vs baseline
         </span>
         <span>{format(max)}</span>
       </div>
     </div>
-  );
+  )
 }
 
 /**
  * ImpactCard Component
  */
 function ImpactCard({ label, baseline, scenario, change, format }) {
-  const isPositive = change > 0;
-  const isNegative = change < 0;
+  const isPositive = change > 0
+  const isNegative = change < 0
 
-  const formatValue = (value) => {
+  const formatValue = value => {
     if (format === 'currency') {
-      return `£${value.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+      return `£${value.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`
     }
     if (format === 'percentage') {
-      return `${value.toFixed(1)}%`;
+      return `${value.toFixed(1)}%`
     }
-    return value.toLocaleString();
-  };
+    return value.toLocaleString()
+  }
 
   return (
-    <div className={`rounded-lg p-6 border-2 ${isPositive ? 'border-green-500 bg-green-50' : isNegative ? 'border-red-500 bg-red-50' : 'border-gray-300 bg-gray-50'}`}>
+    <div
+      className={`rounded-lg p-6 border-2 ${isPositive ? 'border-green-500 bg-green-50' : isNegative ? 'border-red-500 bg-red-50' : 'border-gray-300 bg-gray-50'}`}
+    >
       <p className="text-sm font-medium text-gray-700 mb-1">{label}</p>
-      <p className={`text-2xl font-bold mb-1 ${isPositive ? 'text-green-900' : isNegative ? 'text-red-900' : 'text-gray-900'}`}>
+      <p
+        className={`text-2xl font-bold mb-1 ${isPositive ? 'text-green-900' : isNegative ? 'text-red-900' : 'text-gray-900'}`}
+      >
         {formatValue(scenario)}
       </p>
       <div className="flex items-center gap-2">
-        <span className="text-xs text-gray-600">
-          Baseline: {formatValue(baseline)}
-        </span>
-        <span className={`text-xs font-semibold ${isPositive ? 'text-green-700' : isNegative ? 'text-red-700' : 'text-gray-700'}`}>
-          {change > 0 ? '+' : ''}{change.toFixed(1)}%
+        <span className="text-xs text-gray-600">Baseline: {formatValue(baseline)}</span>
+        <span
+          className={`text-xs font-semibold ${isPositive ? 'text-green-700' : isNegative ? 'text-red-700' : 'text-gray-700'}`}
+        >
+          {change > 0 ? '+' : ''}
+          {change.toFixed(1)}%
         </span>
       </div>
     </div>
-  );
+  )
 }
 
 /**
  * ScenarioInsight Component
  */
 function ScenarioInsight({ condition, severity, title, message }) {
-  if (!condition) return null;
+  if (!condition) return null
 
   const severityConfig = {
     success: {
@@ -498,9 +511,9 @@ function ScenarioInsight({ condition, severity, title, message }) {
       text: 'text-red-900',
       icon: '⚠',
     },
-  };
+  }
 
-  const config = severityConfig[severity];
+  const config = severityConfig[severity]
 
   return (
     <div className={`p-4 rounded-lg border ${config.bg} ${config.border}`}>
@@ -512,7 +525,7 @@ function ScenarioInsight({ condition, severity, title, message }) {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 /**
@@ -526,33 +539,33 @@ function generateSensitivityData(baseline, metric) {
     { name: 'COGS', key: 'cogs' },
     { name: 'Marketing', key: 'marketingSpend' },
     { name: 'Conv. Rate', key: 'conversionRate' },
-  ];
+  ]
 
-  return parameters.map((param) => {
-    const negativeScenario = { ...baseline, [param.key]: baseline[param.key] * 0.8 };
-    const positiveScenario = { ...baseline, [param.key]: baseline[param.key] * 1.2 };
+  return parameters.map(param => {
+    const negativeScenario = { ...baseline, [param.key]: baseline[param.key] * 0.8 }
+    const positiveScenario = { ...baseline, [param.key]: baseline[param.key] * 1.2 }
 
-    const baselineValue = calculateMetric(baseline, metric);
-    const negativeValue = calculateMetric(negativeScenario, metric);
-    const positiveValue = calculateMetric(positiveScenario, metric);
+    const baselineValue = calculateMetric(baseline, metric)
+    const negativeValue = calculateMetric(negativeScenario, metric)
+    const positiveValue = calculateMetric(positiveScenario, metric)
 
     return {
       parameter: param.name,
       negative: ((negativeValue - baselineValue) / baselineValue) * 100,
       positive: ((positiveValue - baselineValue) / baselineValue) * 100,
-    };
-  });
+    }
+  })
 }
 
 function calculateMetric(scenario, metric) {
-  const revenue = scenario.price * scenario.demand;
-  const profit = (scenario.price - scenario.cogs) * scenario.demand - scenario.marketingSpend;
-  const margin = ((scenario.price - scenario.cogs) / scenario.price) * 100;
+  const revenue = scenario.price * scenario.demand
+  const profit = (scenario.price - scenario.cogs) * scenario.demand - scenario.marketingSpend
+  const margin = ((scenario.price - scenario.cogs) / scenario.price) * 100
 
-  if (metric === 'revenue') return revenue;
-  if (metric === 'profit') return profit;
-  if (metric === 'margin') return margin;
-  return 0;
+  if (metric === 'revenue') return revenue
+  if (metric === 'profit') return profit
+  if (metric === 'margin') return margin
+  return 0
 }
 
-export default WhatIfAnalysis;
+export default WhatIfAnalysis

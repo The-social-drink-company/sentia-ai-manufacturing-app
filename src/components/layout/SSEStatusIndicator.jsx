@@ -30,11 +30,10 @@ const combineClasses = (...tokens) => tokens.filter(Boolean).join(' ')
 const SSEStatusIndicator = ({ channel = 'dashboard', className, showLatency = true }) => {
   const { connected, reconnecting, status, latency, error } = useSSE(channel)
 
-  const meta = useMemo(() => getStatusMeta({ connected, reconnecting, status }), [
-    connected,
-    reconnecting,
-    status,
-  ])
+  const meta = useMemo(
+    () => getStatusMeta({ connected, reconnecting, status }),
+    [connected, reconnecting, status]
+  )
 
   const latencyDisplay =
     showLatency && typeof latency === 'number' ? `${Math.round(latency)}ms` : null

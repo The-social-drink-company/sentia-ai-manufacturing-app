@@ -21,9 +21,7 @@ class CashConversionCycle {
 
     const status = this.determineStatus(ccc)
     const variance = ccc - this.config.targetCCC
-    const variancePercent = this.config.targetCCC
-      ? (variance / this.config.targetCCC) * 100
-      : 0
+    const variancePercent = this.config.targetCCC ? (variance / this.config.targetCCC) * 100 : 0
 
     return {
       ccc: Number(ccc.toFixed(2)),
@@ -83,37 +81,42 @@ class CashConversionCycle {
     }
 
     if (!actions.length) {
-      actions.push('Undertake joint finance/procurement working session to identify additional efficiency levers.')
+      actions.push(
+        'Undertake joint finance/procurement working session to identify additional efficiency levers.'
+      )
     }
 
-    actions.push(`Overall CCC is ${ccc.toFixed(1)} days versus target ${this.config.targetCCC} days.`)
+    actions.push(
+      `Overall CCC is ${ccc.toFixed(1)} days versus target ${this.config.targetCCC} days.`
+    )
 
     return actions
   }
 
   async fetchFinancialData() {
     try {
-      const [inventoryAgg, revenueOrders, cogsTransactions, receivablesAgg, payablesAgg] = await Promise.all([
-        prisma.inventory.aggregate({
-          _sum: { totalValue: true },
-        }),
-        prisma.salesOrder.aggregate({
-          where: { status: 'COMPLETED' },
-          _sum: { totalAmount: true },
-        }),
-        prisma.inventoryTransaction.aggregate({
-          where: { transactionType: 'SALE' },
-          _sum: { value: true },
-        }),
-        prisma.invoice.aggregate({
-          where: { status: 'UNPAID' },
-          _sum: { totalAmount: true },
-        }),
-        prisma.purchaseOrder.aggregate({
-          where: { status: 'PENDING_PAYMENT' },
-          _sum: { totalCost: true },
-        }),
-      ])
+      const [inventoryAgg, revenueOrders, cogsTransactions, receivablesAgg, payablesAgg] =
+        await Promise.all([
+          prisma.inventory.aggregate({
+            _sum: { totalValue: true },
+          }),
+          prisma.salesOrder.aggregate({
+            where: { status: 'COMPLETED' },
+            _sum: { totalAmount: true },
+          }),
+          prisma.inventoryTransaction.aggregate({
+            where: { transactionType: 'SALE' },
+            _sum: { value: true },
+          }),
+          prisma.invoice.aggregate({
+            where: { status: 'UNPAID' },
+            _sum: { totalAmount: true },
+          }),
+          prisma.purchaseOrder.aggregate({
+            where: { status: 'PENDING_PAYMENT' },
+            _sum: { totalCost: true },
+          }),
+        ])
 
       const revenue = revenueOrders._sum.totalAmount || 0
       const cogs = cogsTransactions._sum.value || revenue * 0.65

@@ -101,7 +101,12 @@ const KPICard = ({
   const getTrendAriaLabel = () => {
     if (!trend) return ''
 
-    const direction = trend.direction === 'up' ? 'increased' : trend.direction === 'down' ? 'decreased' : 'unchanged'
+    const direction =
+      trend.direction === 'up'
+        ? 'increased'
+        : trend.direction === 'down'
+          ? 'decreased'
+          : 'unchanged'
     return `Trend: ${direction} by ${Math.abs(trend.value)}%`
   }
 
@@ -127,9 +132,7 @@ const KPICard = ({
       </div>
 
       {/* Value */}
-      <div className="mb-2 text-3xl font-bold sm:text-4xl">
-        {getFormattedValue()}
-      </div>
+      <div className="mb-2 text-3xl font-bold sm:text-4xl">{getFormattedValue()}</div>
 
       {/* Label */}
       <div className="mb-3 text-sm text-white/80">{label}</div>

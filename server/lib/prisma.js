@@ -10,9 +10,7 @@ const globalKey = Symbol.for('sentia.prisma')
 const globalCache = globalThis[globalKey] || {}
 
 if (!globalCache.prisma) {
-  const logLevels = process.env.NODE_ENV === 'development'
-    ? ['info', 'warn', 'error']
-    : ['error']
+  const logLevels = process.env.NODE_ENV === 'development' ? ['info', 'warn', 'error'] : ['error']
 
   globalCache.prisma = new PrismaClient({
     log: logLevels,

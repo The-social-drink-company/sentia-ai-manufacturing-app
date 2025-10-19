@@ -115,7 +115,9 @@ class ScenarioModeler {
     logger.info('[ScenarioModeler] Fetching baseline data...')
     const financials = await this.cccService.fetchFinancialData()
     const cashBalance = overrides.cashBalance ?? (await this.cashRunwayService.fetchCashBalance())
-    const burnRate = overrides.burnRate ?? (await this.cashRunwayService.calculateBurnRate(this.config.burnRateWindow))
+    const burnRate =
+      overrides.burnRate ??
+      (await this.cashRunwayService.calculateBurnRate(this.config.burnRateWindow))
 
     return {
       ...financials,
@@ -209,8 +211,14 @@ class ScenarioModeler {
     }
 
     const runwayImpact = {
-      runwayMonths: impactNumber(baselineMetrics.runway.runwayMonths, scenarioMetrics.runway.runwayMonths),
-      cashBalance: impactNumber(baselineMetrics.runway.cashBalance, scenarioMetrics.runway.cashBalance),
+      runwayMonths: impactNumber(
+        baselineMetrics.runway.runwayMonths,
+        scenarioMetrics.runway.runwayMonths
+      ),
+      cashBalance: impactNumber(
+        baselineMetrics.runway.cashBalance,
+        scenarioMetrics.runway.cashBalance
+      ),
       burnRate: impactNumber(baselineMetrics.runway.burnRate, scenarioMetrics.runway.burnRate),
       status: scenarioMetrics.runway.status,
     }

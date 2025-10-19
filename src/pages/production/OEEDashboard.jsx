@@ -9,8 +9,8 @@
  * - Shift comparison
  */
 
-import { useState } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   Activity,
   TrendingUp,
@@ -25,7 +25,7 @@ import {
   Calendar,
   ChevronDown,
   ChevronUp,
-} from 'lucide-react';
+} from 'lucide-react'
 import {
   ResponsiveContainer,
   LineChart,
@@ -45,32 +45,37 @@ import {
   PolarAngleAxis,
   PolarRadiusAxis,
   Radar,
-} from 'recharts';
-import { useSSE } from '../../hooks/useSSE';
+} from 'recharts'
+import { useSSE } from '../../hooks/useSSE'
 
 /**
  * OEE Metric Card Component
  */
 // eslint-disable-next-line no-unused-vars
 function OEEMetricCard({ label, value, target, formula, breakdown, icon: Icon, color }) {
-  const [showBreakdown, setShowBreakdown] = useState(false);
+  const [showBreakdown, setShowBreakdown] = useState(false)
 
-  const percentage = value;
-  const targetPercentage = target;
-  const difference = percentage - targetPercentage;
-  const status = percentage >= targetPercentage ? 'good' : percentage >= targetPercentage - 5 ? 'warning' : 'poor';
+  const percentage = value
+  const targetPercentage = target
+  const difference = percentage - targetPercentage
+  const status =
+    percentage >= targetPercentage
+      ? 'good'
+      : percentage >= targetPercentage - 5
+        ? 'warning'
+        : 'poor'
 
   const statusColors = {
     good: 'border-green-500 bg-green-50',
     warning: 'border-yellow-500 bg-yellow-50',
     poor: 'border-red-500 bg-red-50',
-  };
+  }
 
   const trendColors = {
     good: 'text-green-600',
     warning: 'text-yellow-600',
     poor: 'text-red-600',
-  };
+  }
 
   return (
     <div className={`rounded-lg border-2 ${statusColors[status]} p-6 transition-all`}>
@@ -98,7 +103,8 @@ function OEEMetricCard({ label, value, target, formula, breakdown, icon: Icon, c
         <div className="flex items-baseline gap-2">
           <span className="text-4xl font-bold text-gray-900">{percentage.toFixed(1)}%</span>
           <span className={`text-sm font-medium ${trendColors[status]}`}>
-            {difference >= 0 ? '+' : ''}{difference.toFixed(1)}%
+            {difference >= 0 ? '+' : ''}
+            {difference.toFixed(1)}%
           </span>
         </div>
         <div className="flex items-center gap-2 mt-2">
@@ -115,9 +121,11 @@ function OEEMetricCard({ label, value, target, formula, breakdown, icon: Icon, c
       <div className="relative w-full bg-gray-200 rounded-full h-3 mb-4">
         <div
           className={`h-3 rounded-full transition-all ${
-            status === 'good' ? 'bg-green-500' :
-            status === 'warning' ? 'bg-yellow-500' :
-            'bg-red-500'
+            status === 'good'
+              ? 'bg-green-500'
+              : status === 'warning'
+                ? 'bg-yellow-500'
+                : 'bg-red-500'
           }`}
           style={{ width: `${Math.min(percentage, 100)}%` }}
         />
@@ -139,44 +147,44 @@ function OEEMetricCard({ label, value, target, formula, breakdown, icon: Icon, c
         </div>
       )}
     </div>
-  );
+  )
 }
 
 /**
  * Machine OEE Table
  */
 function MachineOEETable({ machines }) {
-  const [sortBy, setSortBy] = useState('oee');
-  const [sortOrder, setSortOrder] = useState('desc');
+  const [sortBy, setSortBy] = useState('oee')
+  const [sortOrder, setSortOrder] = useState('desc')
 
   const sortedMachines = [...machines].sort((a, b) => {
-    const aVal = a[sortBy];
-    const bVal = b[sortBy];
-    return sortOrder === 'asc' ? aVal - bVal : bVal - aVal;
-  });
+    const aVal = a[sortBy]
+    const bVal = b[sortBy]
+    return sortOrder === 'asc' ? aVal - bVal : bVal - aVal
+  })
 
-  const handleSort = (column) => {
+  const handleSort = column => {
     if (sortBy === column) {
-      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')
     } else {
-      setSortBy(column);
-      setSortOrder('desc');
+      setSortBy(column)
+      setSortOrder('desc')
     }
-  };
+  }
 
   const getStatusBadge = (value, target) => {
-    const status = value >= target ? 'good' : value >= target - 5 ? 'warning' : 'poor';
+    const status = value >= target ? 'good' : value >= target - 5 ? 'warning' : 'poor'
     const colors = {
       good: 'bg-green-100 text-green-700 border-green-300',
       warning: 'bg-yellow-100 text-yellow-700 border-yellow-300',
       poor: 'bg-red-100 text-red-700 border-red-300',
-    };
+    }
     return (
       <span className={`px-2 py-1 rounded text-xs font-medium border ${colors[status]}`}>
         {value.toFixed(1)}%
       </span>
-    );
-  };
+    )
+  }
 
   return (
     <div className="bg-white rounded-lg shadow overflow-hidden">
@@ -217,16 +225,14 @@ function MachineOEETable({ machines }) {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {sortedMachines.map((machine) => (
+            {sortedMachines.map(machine => (
               <tr key={machine.id} className="hover:bg-gray-50">
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center">
                     <div className="font-medium text-gray-900">{machine.name}</div>
                   </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {getStatusBadge(machine.oee, 85)}
-                </td>
+                <td className="px-6 py-4 whitespace-nowrap">{getStatusBadge(machine.oee, 85)}</td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   {getStatusBadge(machine.availability, 90)}
                 </td>
@@ -237,11 +243,15 @@ function MachineOEETable({ machines }) {
                   {getStatusBadge(machine.quality, 99)}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <span className={`px-2 py-1 rounded text-xs font-medium ${
-                    machine.status === 'running' ? 'bg-green-100 text-green-700' :
-                    machine.status === 'idle' ? 'bg-yellow-100 text-yellow-700' :
-                    'bg-red-100 text-red-700'
-                  }`}>
+                  <span
+                    className={`px-2 py-1 rounded text-xs font-medium ${
+                      machine.status === 'running'
+                        ? 'bg-green-100 text-green-700'
+                        : machine.status === 'idle'
+                          ? 'bg-yellow-100 text-yellow-700'
+                          : 'bg-red-100 text-red-700'
+                    }`}
+                  >
                     {machine.status}
                   </span>
                 </td>
@@ -251,7 +261,7 @@ function MachineOEETable({ machines }) {
         </table>
       </div>
     </div>
-  );
+  )
 }
 
 /**
@@ -265,22 +275,20 @@ function SixBigLossesChart({ lossData }) {
     { category: 'Reduced Speed', value: lossData.reducedSpeed || 0, color: '#eab308' },
     { category: 'Startup Rejects', value: lossData.startupRejects || 0, color: '#84cc16' },
     { category: 'Production Rejects', value: lossData.productionRejects || 0, color: '#22c55e' },
-  ];
+  ]
 
-  const totalLoss = losses.reduce((sum, loss) => sum + loss.value, 0);
+  const totalLoss = losses.reduce((sum, loss) => sum + loss.value, 0)
 
   return (
     <div className="bg-white rounded-lg shadow p-6">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">
-        Six Big Losses Analysis
-      </h3>
+      <h3 className="text-lg font-semibold text-gray-900 mb-4">Six Big Losses Analysis</h3>
 
       <ResponsiveContainer width="100%" height={300}>
         <BarChart data={losses} layout="vertical">
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis type="number" domain={[0, 100]} tickFormatter={(v) => `${v}%`} />
+          <XAxis type="number" domain={[0, 100]} tickFormatter={v => `${v}%`} />
           <YAxis type="category" dataKey="category" width={150} />
-          <Tooltip formatter={(value) => `${value.toFixed(1)}%`} />
+          <Tooltip formatter={value => `${value.toFixed(1)}%`} />
           <Bar dataKey="value" fill="#3b82f6">
             {losses.map((entry, index) => (
               <Bar key={`cell-${index}`} fill={entry.color} />
@@ -290,17 +298,12 @@ function SixBigLossesChart({ lossData }) {
       </ResponsiveContainer>
 
       <div className="mt-4 grid grid-cols-2 md:grid-cols-3 gap-4">
-        {losses.map((loss) => (
+        {losses.map(loss => (
           <div key={loss.category} className="flex items-center gap-2">
-            <div
-              className="w-3 h-3 rounded-full"
-              style={{ backgroundColor: loss.color }}
-            />
+            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: loss.color }} />
             <div className="flex-1">
               <p className="text-xs text-gray-600">{loss.category}</p>
-              <p className="text-sm font-medium text-gray-900">
-                {loss.value.toFixed(1)}%
-              </p>
+              <p className="text-sm font-medium text-gray-900">{loss.value.toFixed(1)}%</p>
             </div>
           </div>
         ))}
@@ -313,7 +316,7 @@ function SixBigLossesChart({ lossData }) {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 /**
@@ -322,33 +325,27 @@ function SixBigLossesChart({ lossData }) {
 function OEETrendChart({ trendData }) {
   return (
     <div className="bg-white rounded-lg shadow p-6">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">
-        OEE Trend (Last 30 Days)
-      </h3>
+      <h3 className="text-lg font-semibold text-gray-900 mb-4">OEE Trend (Last 30 Days)</h3>
 
       <ResponsiveContainer width="100%" height={300}>
         <ComposedChart data={trendData}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis
             dataKey="date"
-            tickFormatter={(date) => new Date(date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })}
+            tickFormatter={date =>
+              new Date(date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })
+            }
           />
-          <YAxis domain={[0, 100]} tickFormatter={(v) => `${v}%`} />
+          <YAxis domain={[0, 100]} tickFormatter={v => `${v}%`} />
           <Tooltip
-            labelFormatter={(date) => new Date(date).toLocaleDateString()}
-            formatter={(value) => `${value.toFixed(1)}%`}
+            labelFormatter={date => new Date(date).toLocaleDateString()}
+            formatter={value => `${value.toFixed(1)}%`}
           />
           <Legend />
 
           <ReferenceLine y={85} stroke="#10b981" strokeDasharray="3 3" label="Target: 85%" />
 
-          <Area
-            type="monotone"
-            dataKey="oee"
-            fill="#3b82f6"
-            fillOpacity={0.1}
-            stroke="none"
-          />
+          <Area type="monotone" dataKey="oee" fill="#3b82f6" fillOpacity={0.1} stroke="none" />
           <Line
             type="monotone"
             dataKey="availability"
@@ -363,13 +360,7 @@ function OEETrendChart({ trendData }) {
             strokeWidth={2}
             dot={false}
           />
-          <Line
-            type="monotone"
-            dataKey="quality"
-            stroke="#10b981"
-            strokeWidth={2}
-            dot={false}
-          />
+          <Line type="monotone" dataKey="quality" stroke="#10b981" strokeWidth={2} dot={false} />
           <Line
             type="monotone"
             dataKey="oee"
@@ -380,7 +371,7 @@ function OEETrendChart({ trendData }) {
         </ComposedChart>
       </ResponsiveContainer>
     </div>
-  );
+  )
 }
 
 /**
@@ -388,26 +379,36 @@ function OEETrendChart({ trendData }) {
  */
 function ShiftComparisonChart({ shiftData }) {
   const radarData = [
-    { metric: 'OEE', ...shiftData.reduce((acc, shift) => ({ ...acc, [shift.name]: shift.oee }), {}) },
-    { metric: 'Availability', ...shiftData.reduce((acc, shift) => ({ ...acc, [shift.name]: shift.availability }), {}) },
-    { metric: 'Performance', ...shiftData.reduce((acc, shift) => ({ ...acc, [shift.name]: shift.performance }), {}) },
-    { metric: 'Quality', ...shiftData.reduce((acc, shift) => ({ ...acc, [shift.name]: shift.quality }), {}) },
-  ];
+    {
+      metric: 'OEE',
+      ...shiftData.reduce((acc, shift) => ({ ...acc, [shift.name]: shift.oee }), {}),
+    },
+    {
+      metric: 'Availability',
+      ...shiftData.reduce((acc, shift) => ({ ...acc, [shift.name]: shift.availability }), {}),
+    },
+    {
+      metric: 'Performance',
+      ...shiftData.reduce((acc, shift) => ({ ...acc, [shift.name]: shift.performance }), {}),
+    },
+    {
+      metric: 'Quality',
+      ...shiftData.reduce((acc, shift) => ({ ...acc, [shift.name]: shift.quality }), {}),
+    },
+  ]
 
-  const colors = ['#3b82f6', '#10b981', '#f59e0b'];
+  const colors = ['#3b82f6', '#10b981', '#f59e0b']
 
   return (
     <div className="bg-white rounded-lg shadow p-6">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">
-        Shift Comparison
-      </h3>
+      <h3 className="text-lg font-semibold text-gray-900 mb-4">Shift Comparison</h3>
 
       <ResponsiveContainer width="100%" height={300}>
         <RadarChart data={radarData}>
           <PolarGrid />
           <PolarAngleAxis dataKey="metric" />
           <PolarRadiusAxis domain={[0, 100]} />
-          <Tooltip formatter={(value) => `${value.toFixed(1)}%`} />
+          <Tooltip formatter={value => `${value.toFixed(1)}%`} />
           <Legend />
 
           {shiftData.map((shift, index) => (
@@ -423,41 +424,41 @@ function ShiftComparisonChart({ shiftData }) {
         </RadarChart>
       </ResponsiveContainer>
     </div>
-  );
+  )
 }
 
 /**
  * Main OEE Dashboard Component
  */
 export default function OEEDashboard() {
-  const queryClient = useQueryClient();
-  const [dateRange, setDateRange] = useState('today');
-  const [selectedMachine, setSelectedMachine] = useState('all');
+  const queryClient = useQueryClient()
+  const [dateRange, setDateRange] = useState('today')
+  const [selectedMachine, setSelectedMachine] = useState('all')
 
   // Fetch OEE data
   const { data, isLoading, error } = useQuery({
     queryKey: ['production', 'oee', dateRange, selectedMachine],
     queryFn: async () => {
-      const params = new URLSearchParams({ dateRange, machine: selectedMachine });
+      const params = new URLSearchParams({ dateRange, machine: selectedMachine })
       const response = await fetch(`/api/v1/production/oee?${params}`, {
         credentials: 'include',
-      });
-      if (!response.ok) throw new Error('Failed to fetch OEE data');
-      const result = await response.json();
-      return result.data;
+      })
+      if (!response.ok) throw new Error('Failed to fetch OEE data')
+      const result = await response.json()
+      return result.data
     },
     refetchInterval: 30000,
-  });
+  })
 
   // SSE for real-time OEE updates
   const { connected } = useSSE('production', {
     enabled: true,
-    onMessage: (message) => {
+    onMessage: message => {
       if (message.type === 'oee:update') {
-        queryClient.invalidateQueries(['production', 'oee']);
+        queryClient.invalidateQueries(['production', 'oee'])
       }
     },
-  });
+  })
 
   if (isLoading) {
     return (
@@ -467,7 +468,7 @@ export default function OEEDashboard() {
           <p className="text-gray-600">Loading OEE data...</p>
         </div>
       </div>
-    );
+    )
   }
 
   if (error) {
@@ -475,10 +476,10 @@ export default function OEEDashboard() {
       <div className="bg-red-50 border border-red-200 rounded-lg p-6">
         <p className="text-red-800">Error loading OEE data: {error.message}</p>
       </div>
-    );
+    )
   }
 
-  const { overall, machines = [], trend = [], shifts = [], losses = {} } = data || {};
+  const { overall, machines = [], trend = [], shifts = [], losses = {} } = data || {}
 
   return (
     <div className="space-y-6">
@@ -501,7 +502,7 @@ export default function OEEDashboard() {
         <div className="flex items-center gap-3">
           <select
             value={dateRange}
-            onChange={(e) => setDateRange(e.target.value)}
+            onChange={e => setDateRange(e.target.value)}
             className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
           >
             <option value="today">Today</option>
@@ -512,7 +513,7 @@ export default function OEEDashboard() {
 
           <select
             value={selectedMachine}
-            onChange={(e) => setSelectedMachine(e.target.value)}
+            onChange={e => setSelectedMachine(e.target.value)}
             className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
           >
             <option value="all">All Machines</option>
@@ -558,7 +559,7 @@ export default function OEEDashboard() {
           formula="A × P × Q"
           breakdown={{
             'World Class': '85%+',
-            'Current': `${(overall?.oee || 0).toFixed(1)}%`,
+            Current: `${(overall?.oee || 0).toFixed(1)}%`,
           }}
           icon={Activity}
           color="bg-blue-600"
@@ -572,7 +573,7 @@ export default function OEEDashboard() {
           breakdown={{
             'Planned Time': `${overall?.breakdown?.plannedTime || 0} min`,
             'Run Time': `${overall?.breakdown?.runTime || 0} min`,
-            'Downtime': `${overall?.breakdown?.downtime || 0} min`,
+            Downtime: `${overall?.breakdown?.downtime || 0} min`,
           }}
           icon={Clock}
           color="bg-purple-600"
@@ -619,9 +620,7 @@ export default function OEEDashboard() {
 
         {/* Quick Stats */}
         <div className="bg-white rounded-lg shadow p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            Quick Statistics
-          </h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Statistics</h3>
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <span className="text-gray-600">Best Performing Machine</span>
@@ -645,8 +644,11 @@ export default function OEEDashboard() {
               <span className="text-gray-600">Defect Rate</span>
               <span className="font-semibold text-red-600">
                 {overall?.breakdown?.rejectCount && overall?.breakdown?.totalCount
-                  ? ((overall.breakdown.rejectCount / overall.breakdown.totalCount) * 100).toFixed(2)
-                  : 0}%
+                  ? ((overall.breakdown.rejectCount / overall.breakdown.totalCount) * 100).toFixed(
+                      2
+                    )
+                  : 0}
+                %
               </span>
             </div>
           </div>
@@ -656,5 +658,5 @@ export default function OEEDashboard() {
       {/* Machine Breakdown Table */}
       <MachineOEETable machines={machines} />
     </div>
-  );
+  )
 }

@@ -9,8 +9,8 @@
  * - Priority indicators and time tracking
  */
 
-import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   DndContext,
   DragOverlay,
@@ -19,15 +19,14 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
-} from '@dnd-kit/core';
+} from '@dnd-kit/core'
 import {
   SortableContext,
-
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
-import { useSortable } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
+} from '@dnd-kit/sortable'
+import { useSortable } from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 import {
   Clock,
   AlertCircle,
@@ -40,17 +39,22 @@ import {
   Package,
   TrendingUp,
   X,
-} from 'lucide-react';
-import { useSSE } from '../../hooks/useSSE';
+} from 'lucide-react'
+import { useSSE } from '../../hooks/useSSE'
 
 // Job statuses
 const JOB_STATUSES = {
   PENDING: { id: 'pending', label: 'Pending', color: 'gray', icon: Clock },
   IN_PROGRESS: { id: 'in_progress', label: 'In Progress', color: 'blue', icon: Play },
-  QUALITY_CHECK: { id: 'quality_check', label: 'Quality Check', color: 'yellow', icon: AlertCircle },
+  QUALITY_CHECK: {
+    id: 'quality_check',
+    label: 'Quality Check',
+    color: 'yellow',
+    icon: AlertCircle,
+  },
   COMPLETE: { id: 'complete', label: 'Complete', color: 'green', icon: CheckCircle2 },
   ON_HOLD: { id: 'on_hold', label: 'On Hold', color: 'red', icon: Pause },
-};
+}
 
 // Priority levels
 const PRIORITY_LEVELS = {
@@ -58,56 +62,46 @@ const PRIORITY_LEVELS = {
   MEDIUM: { label: 'Medium', color: 'bg-blue-100 text-blue-700 border-blue-300' },
   HIGH: { label: 'High', color: 'bg-orange-100 text-orange-700 border-orange-300' },
   URGENT: { label: 'Urgent', color: 'bg-red-100 text-red-700 border-red-300' },
-};
+}
 
 /**
  * Sortable Job Card
  */
 function SortableJobCard({ job, onClick }) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: job.id });
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: job.id,
+  })
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1,
-  };
+  }
 
   return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      {...attributes}
-      {...listeners}
-      className="cursor-move"
-    >
+    <div ref={setNodeRef} style={style} {...attributes} {...listeners} className="cursor-move">
       <JobCard job={job} onClick={onClick} />
     </div>
-  );
+  )
 }
 
 /**
  * Job Card Component
  */
 function JobCard({ job, onClick }) {
-  const priority = PRIORITY_LEVELS[job.priority] || PRIORITY_LEVELS.MEDIUM;
+  const priority = PRIORITY_LEVELS[job.priority] || PRIORITY_LEVELS.MEDIUM
 
   // Calculate progress percentage
-  const progress = job.completedQuantity && job.targetQuantity
-    ? (job.completedQuantity / job.targetQuantity) * 100
-    : 0;
+  const progress =
+    job.completedQuantity && job.targetQuantity
+      ? (job.completedQuantity / job.targetQuantity) * 100
+      : 0
 
   // Calculate time elapsed
-  const startTime = job.startTime ? new Date(job.startTime) : null;
+  const startTime = job.startTime ? new Date(job.startTime) : null
   const elapsedHours = startTime
     ? Math.floor((Date.now() - startTime.getTime()) / (1000 * 60 * 60))
-    : 0;
+    : 0
 
   return (
     <div
@@ -126,8 +120,8 @@ function JobCard({ job, onClick }) {
           <p className="text-sm text-gray-600">{job.productName}</p>
         </div>
         <button
-          onClick={(e) => {
-            e.stopPropagation();
+          onClick={e => {
+            e.stopPropagation()
             // Handle menu open
           }}
           className="text-gray-400 hover:text-gray-600"
@@ -140,7 +134,9 @@ function JobCard({ job, onClick }) {
       {job.targetQuantity && (
         <div className="mb-3">
           <div className="flex items-center justify-between text-xs text-gray-600 mb-1">
-            <span>{job.completedQuantity || 0} / {job.targetQuantity} units</span>
+            <span>
+              {job.completedQuantity || 0} / {job.targetQuantity} units
+            </span>
             <span>{progress.toFixed(0)}%</span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2">
@@ -171,9 +167,7 @@ function JobCard({ job, onClick }) {
         {startTime && (
           <div className="flex items-center gap-2 text-sm text-gray-600">
             <Clock className="w-4 h-4" />
-            <span>
-              {elapsedHours > 0 ? `${elapsedHours}h elapsed` : 'Just started'}
-            </span>
+            <span>{elapsedHours > 0 ? `${elapsedHours}h elapsed` : 'Just started'}</span>
           </div>
         )}
 
@@ -197,15 +191,15 @@ function JobCard({ job, onClick }) {
         </div>
       )}
     </div>
-  );
+  )
 }
 
 /**
  * Job Column Component
  */
 function JobColumn({ status, jobs }) {
-  const StatusIcon = JOB_STATUSES[status].icon;
-  const statusConfig = JOB_STATUSES[status];
+  const StatusIcon = JOB_STATUSES[status].icon
+  const statusConfig = JOB_STATUSES[status]
 
   const colorClasses = {
     gray: 'bg-gray-50 border-gray-300 text-gray-700',
@@ -213,49 +207,46 @@ function JobColumn({ status, jobs }) {
     yellow: 'bg-yellow-50 border-yellow-300 text-yellow-700',
     green: 'bg-green-50 border-green-300 text-green-700',
     red: 'bg-red-50 border-red-300 text-red-700',
-  };
+  }
 
   return (
     <div className="flex flex-col h-full bg-gray-50 rounded-lg p-4">
       {/* Column Header */}
-      <div className={`flex items-center gap-2 p-3 rounded-lg border mb-4 ${colorClasses[statusConfig.color]}`}>
+      <div
+        className={`flex items-center gap-2 p-3 rounded-lg border mb-4 ${colorClasses[statusConfig.color]}`}
+      >
         <StatusIcon className="w-5 h-5" />
         <h3 className="font-semibold">{statusConfig.label}</h3>
-        <span className="ml-auto text-sm font-medium">
-          {jobs.length}
-        </span>
+        <span className="ml-auto text-sm font-medium">{jobs.length}</span>
       </div>
 
       {/* Job Cards */}
-      <SortableContext
-        items={jobs.map(job => job.id)}
-        strategy={verticalListSortingStrategy}
-      >
+      <SortableContext items={jobs.map(job => job.id)} strategy={verticalListSortingStrategy}>
         <div className="flex-1 space-y-3 overflow-y-auto">
           {jobs.length === 0 ? (
-            <div className="text-center text-sm text-gray-400 py-8">
-              No jobs in this status
-            </div>
+            <div className="text-center text-sm text-gray-400 py-8">No jobs in this status</div>
           ) : (
             jobs.map(job => (
               <SortableJobCard
                 key={job.id}
                 job={job}
-                onClick={() => {/* Will be handled by parent */}}
+                onClick={() => {
+                  /* Will be handled by parent */
+                }}
               />
             ))
           )}
         </div>
       </SortableContext>
     </div>
-  );
+  )
 }
 
 /**
  * Job Details Modal
  */
 function JobDetailsModal({ job, onClose, onUpdate }) {
-    if (!job) return null;
+  if (!job) return null
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
@@ -266,10 +257,7 @@ function JobDetailsModal({ job, onClose, onUpdate }) {
             <h2 className="text-2xl font-bold text-gray-900">Job #{job.jobNumber}</h2>
             <p className="text-gray-600 mt-1">{job.productName}</p>
           </div>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
-          >
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
             <X className="w-6 h-6" />
           </button>
         </div>
@@ -279,12 +267,10 @@ function JobDetailsModal({ job, onClose, onUpdate }) {
           {/* Status and Priority */}
           <div className="grid md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Status
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
               <select
                 value={job.status}
-                onChange={(e) => onUpdate({ ...job, status: e.target.value })}
+                onChange={e => onUpdate({ ...job, status: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
               >
                 {Object.values(JOB_STATUSES).map(status => (
@@ -296,12 +282,10 @@ function JobDetailsModal({ job, onClose, onUpdate }) {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Priority
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Priority</label>
               <select
                 value={job.priority}
-                onChange={(e) => onUpdate({ ...job, priority: e.target.value })}
+                onChange={e => onUpdate({ ...job, priority: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
               >
                 {Object.keys(PRIORITY_LEVELS).map(priority => (
@@ -365,9 +349,7 @@ function JobDetailsModal({ job, onClose, onUpdate }) {
           {job.notes && (
             <div>
               <h3 className="text-lg font-semibold text-gray-900 mb-3">Notes</h3>
-              <p className="text-gray-700 bg-gray-50 p-4 rounded-lg">
-                {job.notes}
-              </p>
+              <p className="text-gray-700 bg-gray-50 p-4 rounded-lg">{job.notes}</p>
             </div>
           )}
 
@@ -403,7 +385,7 @@ function JobDetailsModal({ job, onClose, onUpdate }) {
           <button
             onClick={() => {
               // Handle save
-              onClose();
+              onClose()
             }}
             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
@@ -412,18 +394,18 @@ function JobDetailsModal({ job, onClose, onUpdate }) {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 /**
  * Main Production Job Board Component
  */
 export default function ProductionJobBoard() {
-  const queryClient = useQueryClient();
-  const [selectedJob, setSelectedJob] = useState(null);
-  const [activeId, setActiveId] = useState(null);
-  const [filterPriority, setFilterPriority] = useState('ALL');
-  const [searchQuery, setSearchQuery] = useState('');
+  const queryClient = useQueryClient()
+  const [selectedJob, setSelectedJob] = useState(null)
+  const [activeId, setActiveId] = useState(null)
+  const [filterPriority, setFilterPriority] = useState('ALL')
+  const [searchQuery, setSearchQuery] = useState('')
 
   // Fetch jobs
   const { data, isLoading, error } = useQuery({
@@ -431,13 +413,13 @@ export default function ProductionJobBoard() {
     queryFn: async () => {
       const response = await fetch('/api/v1/production/jobs', {
         credentials: 'include',
-      });
-      if (!response.ok) throw new Error('Failed to fetch jobs');
-      const result = await response.json();
-      return result.data;
+      })
+      if (!response.ok) throw new Error('Failed to fetch jobs')
+      const result = await response.json()
+      return result.data
     },
     refetchInterval: 30000, // Fallback polling every 30s
-  });
+  })
 
   // Update job status mutation
   const updateJobMutation = useMutation({
@@ -447,25 +429,25 @@ export default function ProductionJobBoard() {
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify(updates),
-      });
-      if (!response.ok) throw new Error('Failed to update job');
-      return response.json();
+      })
+      if (!response.ok) throw new Error('Failed to update job')
+      return response.json()
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['production', 'jobs']);
-      queryClient.invalidateQueries(['production', 'overview']);
+      queryClient.invalidateQueries(['production', 'jobs'])
+      queryClient.invalidateQueries(['production', 'overview'])
     },
-  });
+  })
 
   // SSE for real-time job updates
   const { connected } = useSSE('production', {
     enabled: true,
-    onMessage: (message) => {
+    onMessage: message => {
       if (message.type === 'job:status' || message.type === 'job:progress') {
-        queryClient.invalidateQueries(['production', 'jobs']);
+        queryClient.invalidateQueries(['production', 'jobs'])
       }
     },
-  });
+  })
 
   // Drag and drop sensors
   const sensors = useSensors(
@@ -473,69 +455,73 @@ export default function ProductionJobBoard() {
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     })
-  );
+  )
 
   // Handle drag end
-  const handleDragEnd = (event) => {
-    const { active, over } = event;
+  const handleDragEnd = event => {
+    const { active, over } = event
 
     if (!over) {
-      setActiveId(null);
-      return;
+      setActiveId(null)
+      return
     }
 
-    const jobId = active.id;
-    const newStatus = over.id;
+    const jobId = active.id
+    const newStatus = over.id
 
     // Find the job
     const job = Object.values(jobsByStatus)
       .flat()
-      .find(j => j.id === jobId);
+      .find(j => j.id === jobId)
 
     if (job && job.status !== newStatus) {
       // Update job status
       updateJobMutation.mutate({
         jobId,
         updates: { status: newStatus },
-      });
+      })
     }
 
-    setActiveId(null);
-  };
+    setActiveId(null)
+  }
 
-  const handleDragStart = (event) => {
-    setActiveId(event.active.id);
-  };
+  const handleDragStart = event => {
+    setActiveId(event.active.id)
+  }
 
   // Group jobs by status
-  const jobsByStatus = data?.jobs?.reduce((acc, job) => {
-    const status = job.status || 'pending';
-    if (!acc[status]) acc[status] = [];
-    acc[status].push(job);
-    return acc;
-  }, {}) || {};
+  const jobsByStatus =
+    data?.jobs?.reduce((acc, job) => {
+      const status = job.status || 'pending'
+      if (!acc[status]) acc[status] = []
+      acc[status].push(job)
+      return acc
+    }, {}) || {}
 
   // Ensure all statuses have arrays
   Object.keys(JOB_STATUSES).forEach(status => {
-    if (!jobsByStatus[status]) jobsByStatus[status] = [];
-  });
+    if (!jobsByStatus[status]) jobsByStatus[status] = []
+  })
 
   // Apply filters
   const filteredJobsByStatus = Object.keys(jobsByStatus).reduce((acc, status) => {
     acc[status] = jobsByStatus[status].filter(job => {
-      const matchesPriority = filterPriority === 'ALL' || job.priority === filterPriority;
-      const matchesSearch = !searchQuery ||
+      const matchesPriority = filterPriority === 'ALL' || job.priority === filterPriority
+      const matchesSearch =
+        !searchQuery ||
         job.jobNumber?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        job.productName?.toLowerCase().includes(searchQuery.toLowerCase());
-      return matchesPriority && matchesSearch;
-    });
-    return acc;
-  }, {});
+        job.productName?.toLowerCase().includes(searchQuery.toLowerCase())
+      return matchesPriority && matchesSearch
+    })
+    return acc
+  }, {})
 
   // Get active job for drag overlay
   const activeJob = activeId
-    ? Object.values(jobsByStatus).flat().find(job => job.id === activeId)
-    : null;
+    ? Object.values(jobsByStatus)
+        .flat()
+        .find(job => job.id === activeId)
+    : null
 
   if (isLoading) {
     return (
@@ -545,7 +531,7 @@ export default function ProductionJobBoard() {
           <p className="text-gray-600">Loading jobs...</p>
         </div>
       </div>
-    );
+    )
   }
 
   if (error) {
@@ -553,7 +539,7 @@ export default function ProductionJobBoard() {
       <div className="bg-red-50 border border-red-200 rounded-lg p-6">
         <p className="text-red-800">Error loading jobs: {error.message}</p>
       </div>
-    );
+    )
   }
 
   return (
@@ -579,12 +565,12 @@ export default function ProductionJobBoard() {
             type="text"
             placeholder="Search jobs..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={e => setSearchQuery(e.target.value)}
             className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
           />
           <select
             value={filterPriority}
-            onChange={(e) => setFilterPriority(e.target.value)}
+            onChange={e => setFilterPriority(e.target.value)}
             className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
           >
             <option value="ALL">All Priorities</option>
@@ -606,15 +592,8 @@ export default function ProductionJobBoard() {
       >
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 min-h-[600px]">
           {Object.keys(JOB_STATUSES).map(status => (
-            <SortableContext
-              key={status}
-              items={[status]}
-              strategy={verticalListSortingStrategy}
-            >
-              <JobColumn
-                status={status}
-                jobs={filteredJobsByStatus[status] || []}
-              />
+            <SortableContext key={status} items={[status]} strategy={verticalListSortingStrategy}>
+              <JobColumn status={status} jobs={filteredJobsByStatus[status] || []} />
             </SortableContext>
           ))}
         </div>
@@ -633,14 +612,14 @@ export default function ProductionJobBoard() {
         <JobDetailsModal
           job={selectedJob}
           onClose={() => setSelectedJob(null)}
-          onUpdate={(updatedJob) => {
+          onUpdate={updatedJob => {
             updateJobMutation.mutate({
               jobId: updatedJob.id,
               updates: updatedJob,
-            });
+            })
           }}
         />
       )}
     </div>
-  );
+  )
 }

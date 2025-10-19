@@ -18,10 +18,10 @@
  * - PDF (official documentation)
  */
 
-const { PrismaClient } = require('@prisma/client');
-const { maskPII } = require('../audit/pii-masker');
+const { PrismaClient } = require('@prisma/client')
+const { maskPII } = require('../audit/pii-masker')
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient()
 
 /**
  * ============================================================================
@@ -39,7 +39,7 @@ const prisma = new PrismaClient();
  * @returns {Promise<Object>} GDPR data access report
  */
 async function generateGDPRDataAccessReport(userId, options = {}) {
-  const { format = 'json', maskSensitive = false } = options;
+  const { format = 'json', maskSensitive = false } = options
 
   try {
     // Gather all user data
@@ -49,10 +49,10 @@ async function generateGDPRDataAccessReport(userId, options = {}) {
         roles: true,
         sessions: true,
       },
-    });
+    })
 
     if (!userData) {
-      throw new Error(`User not found: ${userId}`);
+      throw new Error(`User not found: ${userId}`)
     }
 
     // Gather audit logs
@@ -60,16 +60,16 @@ async function generateGDPRDataAccessReport(userId, options = {}) {
       where: { userId },
       orderBy: { timestamp: 'desc' },
       take: 1000, // Limit to recent 1000 events
-    });
+    })
 
     // Gather import/export jobs
     const importJobs = await prisma.importJob.findMany({
       where: { userId },
-    });
+    })
 
     const exportJobs = await prisma.exportJob.findMany({
       where: { userId },
-    });
+    })
 
     // Build report
     const report = {
@@ -96,13 +96,13 @@ async function generateGDPRDataAccessReport(userId, options = {}) {
         rightToDataPortability: 'Request export in machine-readable format',
         rightToObject: 'Contact support to object to processing',
       },
-    };
+    }
 
     // Format report
-    return formatReport(report, format);
+    return formatReport(report, format)
   } catch (error) {
-    console.error('GDPR Data Access Report failed:', error);
-    throw error;
+    console.error('GDPR Data Access Report failed:', error)
+    throw error
   }
 }
 
@@ -136,9 +136,9 @@ async function generateGDPRDataDeletionReport(userId, deletionResults) {
       completedAt: new Date().toISOString(),
       verifiedBy: 'SYSTEM',
     },
-  };
+  }
 
-  return report;
+  return report
 }
 
 /**
@@ -153,14 +153,14 @@ async function generateGDPRDataPortabilityReport(userId) {
   const report = await generateGDPRDataAccessReport(userId, {
     format: 'json',
     maskSensitive: false,
-  });
+  })
 
   return {
     ...report,
     reportType: 'GDPR_DATA_PORTABILITY',
     format: 'JSON',
     specification: 'JSON according to RFC 8259',
-  };
+  }
 }
 
 /**
@@ -181,22 +181,18 @@ async function generateGDPRDataPortabilityReport(userId) {
  * @returns {Promise<Object>} SOC2 audit trail report
  */
 async function generateSOC2AuditTrailReport(params = {}) {
-  const {
-    startDate,
-    endDate,
-    category,
-  } = params;
+  const { startDate, endDate, category } = params
 
-  const where = {};
+  const where = {}
 
   if (startDate || endDate) {
-    where.timestamp = {};
-    if (startDate) where.timestamp.gte = new Date(startDate);
-    if (endDate) where.timestamp.lte = new Date(endDate);
+    where.timestamp = {}
+    if (startDate) where.timestamp.gte = new Date(startDate)
+    if (endDate) where.timestamp.lte = new Date(endDate)
   }
 
   if (category) {
-    where.category = category;
+    where.category = category
   }
 
   const auditLogs = await prisma.auditLog.findMany({
@@ -212,7 +208,7 @@ async function generateSOC2AuditTrailReport(params = {}) {
         },
       },
     },
-  });
+  })
 
   // Calculate statistics
   const stats = {
@@ -221,18 +217,18 @@ async function generateSOC2AuditTrailReport(params = {}) {
     bySeverity: {},
     byStatus: {},
     uniqueUsers: new Set(auditLogs.map(log => log.userId)).size,
-  };
+  }
 
   auditLogs.forEach(log => {
     // Count by category
-    stats.byCategory[log.category] = (stats.byCategory[log.category] || 0) + 1;
+    stats.byCategory[log.category] = (stats.byCategory[log.category] || 0) + 1
 
     // Count by severity
-    stats.bySeverity[log.severity] = (stats.bySeverity[log.severity] || 0) + 1;
+    stats.bySeverity[log.severity] = (stats.bySeverity[log.severity] || 0) + 1
 
     // Count by status
-    stats.byStatus[log.status] = (stats.byStatus[log.status] || 0) + 1;
-  });
+    stats.byStatus[log.status] = (stats.byStatus[log.status] || 0) + 1
+  })
 
   const report = {
     reportType: 'SOC2_AUDIT_TRAIL',
@@ -259,9 +255,9 @@ async function generateSOC2AuditTrailReport(params = {}) {
       piiMasked: true,
       secretsMasked: true,
     },
-  };
+  }
 
-  return report;
+  return report
 }
 
 /**
@@ -275,30 +271,30 @@ async function generateSOC2AuditTrailReport(params = {}) {
  * @returns {Promise<Object>} SOC2 access control report
  */
 async function generateSOC2AccessControlReport(params = {}) {
-  const { startDate, endDate } = params;
+  const { startDate, endDate } = params
 
   const where = {
     category: 'SECURITY',
-  };
+  }
 
   if (startDate || endDate) {
-    where.timestamp = {};
-    if (startDate) where.timestamp.gte = new Date(startDate);
-    if (endDate) where.timestamp.lte = new Date(endDate);
+    where.timestamp = {}
+    if (startDate) where.timestamp.gte = new Date(startDate)
+    if (endDate) where.timestamp.lte = new Date(endDate)
   }
 
   // Get security events
   const securityEvents = await prisma.auditLog.findMany({
     where,
     orderBy: { timestamp: 'desc' },
-  });
+  })
 
   // Get all users and their roles
   const users = await prisma.user.findMany({
     include: {
       roles: true,
     },
-  });
+  })
 
   // Calculate access control metrics
   const metrics = {
@@ -311,27 +307,27 @@ async function generateSOC2AccessControlReport(params = {}) {
       permissionDenied: 0,
       suspiciousActivity: 0,
     },
-  };
+  }
 
   // Count users by role
   users.forEach(user => {
     user.roles.forEach(role => {
-      metrics.usersByRole[role.name] = (metrics.usersByRole[role.name] || 0) + 1;
-    });
-  });
+      metrics.usersByRole[role.name] = (metrics.usersByRole[role.name] || 0) + 1
+    })
+  })
 
   // Count security events
   securityEvents.forEach(event => {
     if (event.action.includes('UNAUTHORIZED')) {
-      metrics.securityEvents.unauthorizedAccess++;
+      metrics.securityEvents.unauthorizedAccess++
     }
     if (event.action.includes('PERMISSION_DENIED')) {
-      metrics.securityEvents.permissionDenied++;
+      metrics.securityEvents.permissionDenied++
     }
     if (event.action.includes('SUSPICIOUS')) {
-      metrics.securityEvents.suspiciousActivity++;
+      metrics.securityEvents.suspiciousActivity++
     }
-  });
+  })
 
   const report = {
     reportType: 'SOC2_ACCESS_CONTROL',
@@ -361,9 +357,9 @@ async function generateSOC2AccessControlReport(params = {}) {
       sessionManagement: true,
       auditLogging: true,
     },
-  };
+  }
 
-  return report;
+  return report
 }
 
 /**
@@ -380,24 +376,19 @@ async function generateSOC2AccessControlReport(params = {}) {
  * @returns {Promise<Object>} Data retention report
  */
 async function generateDataRetentionReport() {
-  const { RETENTION_PERIODS } = require('./retention');
+  const { RETENTION_PERIODS } = require('./retention')
 
   // Get current data counts
-  const [
-    totalAuditLogs,
-    archivedAuditLogs,
-    totalImportJobs,
-    totalExportJobs,
-    totalFiles,
-  ] = await Promise.all([
-    prisma.auditLog.count(),
-    prisma.auditLog.count({ where: { archived: true } }),
-    prisma.importJob.count(),
-    prisma.exportJob.count(),
-    prisma.file.count(),
-  ]);
+  const [totalAuditLogs, archivedAuditLogs, totalImportJobs, totalExportJobs, totalFiles] =
+    await Promise.all([
+      prisma.auditLog.count(),
+      prisma.auditLog.count({ where: { archived: true } }),
+      prisma.importJob.count(),
+      prisma.exportJob.count(),
+      prisma.file.count(),
+    ])
 
-  const environment = process.env.NODE_ENV || 'development';
+  const environment = process.env.NODE_ENV || 'development'
 
   const report = {
     reportType: 'DATA_RETENTION_COMPLIANCE',
@@ -426,9 +417,9 @@ async function generateDataRetentionReport() {
       archivalBeforeDeletion: true,
       backupsCreated: true,
     },
-  };
+  }
 
-  return report;
+  return report
 }
 
 /**
@@ -447,16 +438,16 @@ async function generateDataRetentionReport() {
 function formatReport(report, format) {
   switch (format) {
     case 'json':
-      return report;
+      return report
 
     case 'csv':
-      return formatReportAsCSV(report);
+      return formatReportAsCSV(report)
 
     case 'pdf':
-      return formatReportAsPDF(report);
+      return formatReportAsPDF(report)
 
     default:
-      return report;
+      return report
   }
 }
 
@@ -472,34 +463,34 @@ function formatReportAsCSV(report) {
     `Report Type: ${report.reportType}`,
     `Generated: ${report.generatedAt || report.requestDate}`,
     '',
-  ];
+  ]
 
   // Add summary section
   if (report.summary) {
-    lines.push('Summary');
+    lines.push('Summary')
     Object.entries(report.summary).forEach(([key, value]) => {
-      lines.push(`${key},${value}`);
-    });
-    lines.push('');
+      lines.push(`${key},${value}`)
+    })
+    lines.push('')
   }
 
   // Add statistics section
   if (report.statistics) {
-    lines.push('Statistics');
+    lines.push('Statistics')
     Object.entries(report.statistics).forEach(([key, value]) => {
       if (typeof value === 'object') {
-        lines.push(`${key}`);
+        lines.push(`${key}`)
         Object.entries(value).forEach(([subKey, subValue]) => {
-          lines.push(`  ${subKey},${subValue}`);
-        });
+          lines.push(`  ${subKey},${subValue}`)
+        })
       } else {
-        lines.push(`${key},${value}`);
+        lines.push(`${key},${value}`)
       }
-    });
-    lines.push('');
+    })
+    lines.push('')
   }
 
-  return lines.join('\n');
+  return lines.join('\n')
 }
 
 /**
@@ -510,31 +501,31 @@ function formatReportAsCSV(report) {
  */
 async function formatReportAsPDF(report) {
   // Placeholder: Implement using pdfkit or similar library
-  const PDFDocument = require('pdfkit');
-  const doc = new PDFDocument();
+  const PDFDocument = require('pdfkit')
+  const doc = new PDFDocument()
 
-  doc.fontSize(16).text(`Compliance Report: ${report.reportType}`, { align: 'center' });
-  doc.moveDown();
-  doc.fontSize(12).text(`Generated: ${report.generatedAt || report.requestDate}`);
-  doc.moveDown();
+  doc.fontSize(16).text(`Compliance Report: ${report.reportType}`, { align: 'center' })
+  doc.moveDown()
+  doc.fontSize(12).text(`Generated: ${report.generatedAt || report.requestDate}`)
+  doc.moveDown()
 
   // Add summary
   if (report.summary) {
-    doc.fontSize(14).text('Summary', { underline: true });
+    doc.fontSize(14).text('Summary', { underline: true })
     Object.entries(report.summary).forEach(([key, value]) => {
-      doc.fontSize(10).text(`${key}: ${value}`);
-    });
-    doc.moveDown();
+      doc.fontSize(10).text(`${key}: ${value}`)
+    })
+    doc.moveDown()
   }
 
-  doc.end();
+  doc.end()
 
   return new Promise((resolve, reject) => {
-    const chunks = [];
-    doc.on('data', chunk => chunks.push(chunk));
-    doc.on('end', () => resolve(Buffer.concat(chunks)));
-    doc.on('error', reject);
-  });
+    const chunks = []
+    doc.on('data', chunk => chunks.push(chunk))
+    doc.on('end', () => resolve(Buffer.concat(chunks)))
+    doc.on('error', reject)
+  })
 }
 
 /**
@@ -558,4 +549,4 @@ module.exports = {
 
   // Utilities
   formatReport,
-};
+}

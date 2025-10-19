@@ -577,13 +577,7 @@ class ApprovalService {
       data: { status: 'EXPIRED' },
     })
 
-    await this._createHistoryEntry(
-      approvalId,
-      'PENDING',
-      'EXPIRED',
-      'SYSTEM',
-      'Request expired'
-    )
+    await this._createHistoryEntry(approvalId, 'PENDING', 'EXPIRED', 'SYSTEM', 'Request expired')
 
     logger.info(`[ApprovalService] Expired request: ${approvalId}`)
     return approval

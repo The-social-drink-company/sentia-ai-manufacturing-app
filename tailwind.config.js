@@ -159,37 +159,37 @@ export default {
       // Typography scale (BMAD-UI-001) - 11 sizes from xs to 7xl
       // Usage: text-xs, text-sm, text-base, text-lg, etc.
       fontSize: {
-        'xs': ['12px', { lineHeight: '16px' }],      // Extra small
-        'sm': ['14px', { lineHeight: '20px' }],      // Small
-        'base': ['16px', { lineHeight: '24px' }],    // Base (body text)
-        'lg': ['18px', { lineHeight: '28px' }],      // Large
-        'xl': ['20px', { lineHeight: '28px' }],      // Extra large
-        '2xl': ['24px', { lineHeight: '32px' }],     // 2X large
-        '3xl': ['30px', { lineHeight: '36px' }],     // 3X large
-        '4xl': ['36px', { lineHeight: '40px' }],     // 4X large
-        '5xl': ['48px', { lineHeight: '1' }],        // 5X large (headings)
-        '6xl': ['60px', { lineHeight: '1' }],        // 6X large (hero)
-        '7xl': ['72px', { lineHeight: '1' }],        // 7X large (display)
+        xs: ['12px', { lineHeight: '16px' }], // Extra small
+        sm: ['14px', { lineHeight: '20px' }], // Small
+        base: ['16px', { lineHeight: '24px' }], // Base (body text)
+        lg: ['18px', { lineHeight: '28px' }], // Large
+        xl: ['20px', { lineHeight: '28px' }], // Extra large
+        '2xl': ['24px', { lineHeight: '32px' }], // 2X large
+        '3xl': ['30px', { lineHeight: '36px' }], // 3X large
+        '4xl': ['36px', { lineHeight: '40px' }], // 4X large
+        '5xl': ['48px', { lineHeight: '1' }], // 5X large (headings)
+        '6xl': ['60px', { lineHeight: '1' }], // 6X large (hero)
+        '7xl': ['72px', { lineHeight: '1' }], // 7X large (display)
       },
       // Spacing system with 4px base unit (BMAD-UI-001)
       // Extends Tailwind's default spacing scale
       spacing: {
-        '0.5': '2px',   // 0.5 * 4px
-        '1': '4px',     // 1 * 4px (base unit)
-        '1.5': '6px',   // 1.5 * 4px
-        '2': '8px',     // 2 * 4px
-        '2.5': '10px',  // 2.5 * 4px
-        '3': '12px',    // 3 * 4px
-        '4': '16px',    // 4 * 4px
-        '5': '20px',    // 5 * 4px
-        '6': '24px',    // 6 * 4px
-        '8': '32px',    // 8 * 4px
-        '10': '40px',   // 10 * 4px
-        '12': '48px',   // 12 * 4px
-        '16': '64px',   // 16 * 4px
-        '20': '80px',   // 20 * 4px
-        '24': '96px',   // 24 * 4px
-        '32': '128px',  // 32 * 4px
+        0.5: '2px', // 0.5 * 4px
+        1: '4px', // 1 * 4px (base unit)
+        1.5: '6px', // 1.5 * 4px
+        2: '8px', // 2 * 4px
+        2.5: '10px', // 2.5 * 4px
+        3: '12px', // 3 * 4px
+        4: '16px', // 4 * 4px
+        5: '20px', // 5 * 4px
+        6: '24px', // 6 * 4px
+        8: '32px', // 8 * 4px
+        10: '40px', // 10 * 4px
+        12: '48px', // 12 * 4px
+        16: '64px', // 16 * 4px
+        20: '80px', // 20 * 4px
+        24: '96px', // 24 * 4px
+        32: '128px', // 32 * 4px
         // Legacy spacing (keep for backwards compatibility)
         18: '4.5rem',
         88: '22rem',
@@ -277,9 +277,9 @@ export default {
 
         // UI/UX Mockup Design System Gradients (BMAD-UI-001)
         'gradient-revenue': 'linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%)', // Blue → Purple
-        'gradient-units': 'linear-gradient(135deg, #10B981 0%, #3B82F6 100%)',   // Green → Blue
-        'gradient-margin': 'linear-gradient(135deg, #F59E0B 0%, #F97316 100%)',  // Amber → Orange
-        'gradient-wc': 'linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%)',      // Purple → Pink
+        'gradient-units': 'linear-gradient(135deg, #10B981 0%, #3B82F6 100%)', // Green → Blue
+        'gradient-margin': 'linear-gradient(135deg, #F59E0B 0%, #F97316 100%)', // Amber → Orange
+        'gradient-wc': 'linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%)', // Purple → Pink
         'gradient-hero': 'linear-gradient(135deg, #3B82F6 0%, #1E40AF 50%, #8B5CF6 100%)', // Hero section
 
         shimmer: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent)',

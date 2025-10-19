@@ -8,15 +8,15 @@
 
 ## 📊 Executive Summary
 
-| Category | Status | Progress |
-|----------|--------|----------|
-| **Documentation** | ✅ Complete | 100% |
-| **DNS Configuration** | ⏳ Pending | 0% |
-| **API Token** | ⏳ Pending | 0% |
-| **SSL/TLS Setup** | ⏳ Pending | 0% |
-| **Email Verification** | ⏳ Pending | 0% |
-| **Security Settings** | ⏳ Pending | 0% |
-| **`.env.local` Config** | ⚠️ Partial | 20% |
+| Category                | Status      | Progress |
+| ----------------------- | ----------- | -------- |
+| **Documentation**       | ✅ Complete | 100%     |
+| **DNS Configuration**   | ⏳ Pending  | 0%       |
+| **API Token**           | ⏳ Pending  | 0%       |
+| **SSL/TLS Setup**       | ⏳ Pending  | 0%       |
+| **Email Verification**  | ⏳ Pending  | 0%       |
+| **Security Settings**   | ⏳ Pending  | 0%       |
+| **`.env.local` Config** | ⚠️ Partial  | 20%      |
 
 **Overall Status**: 📝 **READY FOR CONFIGURATION** - All documentation complete, implementation pending
 
@@ -27,31 +27,33 @@
 ### 1. Documentation & Security Guides
 
 #### Files Created:
+
 - ✅ **[docs/CLOUDFLARE_SETUP.md](docs/CLOUDFLARE_SETUP.md)** (354 lines)
-  * Complete DNS configuration guide
-  * SSL/TLS setup instructions
-  * Email verification procedures
-  * Security best practices
-  * API token creation guide
-  * Troubleshooting procedures
-  * Emergency response protocols
+  - Complete DNS configuration guide
+  - SSL/TLS setup instructions
+  - Email verification procedures
+  - Security best practices
+  - API token creation guide
+  - Troubleshooting procedures
+  - Emergency response protocols
 
 - ✅ **[SECURITY.md](SECURITY.md)** (361 lines)
-  * Comprehensive security policy
-  * Credential management guidelines
-  * Incident response plan
-  * GDPR compliance procedures
-  * Development security practices
-  * Security checklists
+  - Comprehensive security policy
+  - Credential management guidelines
+  - Incident response plan
+  - GDPR compliance procedures
+  - Development security practices
+  - Security checklists
 
 - ✅ **[.env.example](.env.example)** (260+ lines)
-  * All environment variables documented
-  * Safe placeholder values
-  * Inline comments and instructions
-  * Cloudflare configuration section
-  * CapLiquify domain settings
+  - All environment variables documented
+  - Safe placeholder values
+  - Inline comments and instructions
+  - Cloudflare configuration section
+  - CapLiquify domain settings
 
 #### Security Hardening:
+
 - ✅ Removed exposed credentials from `.env.example`
 - ✅ Updated `.gitignore` to exclude credential files
 - ✅ Removed tracked files with real credentials
@@ -60,6 +62,7 @@
 ### 2. Environment File Structure
 
 ✅ **`.env.local` created** with proper structure:
+
 ```bash
 ✅ CapLiquify domain configuration (lines 35-37)
 ✅ Cloudflare configuration section (lines 40-60)
@@ -80,6 +83,7 @@
 #### Action Required:
 
 The **R2 Account Token** you created has **WRONG permissions**:
+
 - ❌ Account.Workers R2 SQL
 - ❌ Account.Workers R2 Data Catalog
 - ❌ Account.Workers R2 Storage
@@ -89,11 +93,13 @@ You clicked "Roll" which just regenerated the token secret, but it still has wro
 #### ✅ Correct Token Configuration:
 
 **Step 1**: Create New Token
+
 1. Go to: https://dash.cloudflare.com/profile/api-tokens
 2. Click **"Create Token"**
 3. Select template: **"Edit zone DNS"** (if available)
 
 **Step 2**: Configure Permissions
+
 ```
 Token Name: DNS Management - CapLiquify
 
@@ -108,6 +114,7 @@ TTL: 1 year (or as desired)
 ```
 
 **Step 3**: Save Token
+
 1. Copy the token secret (shown only once!)
 2. Add to `.env.local` line 47:
    ```bash
@@ -116,6 +123,7 @@ TTL: 1 year (or as desired)
 3. Save to password manager
 
 **Step 4**: Delete Old R2 Token
+
 1. Go back to API Tokens list
 2. Find "R2 Account Token 100 Days"
 3. Click (•••) → "Delete"
@@ -143,6 +151,7 @@ CLOUDFLARE_EMAIL=your-email@capliquify.com
 #### How to Find Zone ID and Account ID:
 
 **Method 1: From Domain Overview** (Easiest)
+
 1. Go to: https://dash.cloudflare.com
 2. Click on: **capliquify.com**
 3. Look at **right sidebar** → "API" section
@@ -154,6 +163,7 @@ CLOUDFLARE_EMAIL=your-email@capliquify.com
 5. Click to copy each one
 
 **Method 2: From URL**
+
 1. Go to: https://dash.cloudflare.com
 2. Look at browser URL:
    ```
@@ -181,6 +191,7 @@ CLOUDFLARE_EMAIL=dudley@capliquify.com
 Go to: https://dash.cloudflare.com → **capliquify.com** → **DNS** → **Records**
 
 ##### Record 1: Root Domain
+
 ```
 Type: CNAME
 Name: @
@@ -191,6 +202,7 @@ Status: ❌ TO DO
 ```
 
 ##### Record 2: WWW Subdomain
+
 ```
 Type: CNAME
 Name: www
@@ -201,6 +213,7 @@ Status: ❌ TO DO
 ```
 
 ##### Record 3: Clerk Authentication
+
 ```
 Type: CNAME
 Name: auth
@@ -213,6 +226,7 @@ Status: ❌ TO DO
 **CRITICAL**: Proxy must be OFF (gray cloud) for Clerk subdomains!
 
 ##### Record 4: Clerk API
+
 ```
 Type: CNAME
 Name: clerk
@@ -234,15 +248,18 @@ Status: ❌ TO DO
 #### Configuration Steps:
 
 **Step 1**: Create Production Instance
+
 1. Go to Clerk Dashboard
 2. Create new application or configure existing
 
 **Step 2**: Set Application Domain
+
 ```
 Application Domain: auth.capliquify.com
 ```
 
 **Step 3**: Choose Application Type
+
 ```
 ✅ PRIMARY APPLICATION (as discussed earlier)
 
@@ -253,16 +270,19 @@ This gives you:
 ```
 
 **❌ DO NOT** choose "Secondary application" - it would give you:
-  - clerk.auth.capliquify.com (unnecessarily nested)
-  - Emails from: @auth.capliquify.com (looks less professional)
+
+- clerk.auth.capliquify.com (unnecessarily nested)
+- Emails from: @auth.capliquify.com (looks less professional)
 
 **Step 4**: Get API Keys
 After creating the instance:
+
 1. Go to: **API Keys** section
 2. Copy **Publishable Key** (starts with `pk_live_`)
 3. Copy **Secret Key** (starts with `sk_live_`)
 
 **Step 5**: Update `.env.local` (Lines 16-17)
+
 ```bash
 VITE_CLERK_PUBLISHABLE_KEY=pk_live_your_actual_key_here
 CLERK_SECRET_KEY=sk_live_your_actual_key_here
@@ -286,6 +306,7 @@ Add this as DNS Record #4 (see section 3 above).
 **Go to**: Cloudflare Dashboard → **SSL/TLS**
 
 ##### SSL/TLS Encryption Mode
+
 ```
 Current: Unknown
 Required: Full (strict)
@@ -296,6 +317,7 @@ Steps:
 ```
 
 ##### Minimum TLS Version
+
 ```
 Current: Unknown
 Required: TLS 1.2
@@ -307,6 +329,7 @@ Steps:
 ```
 
 ##### HSTS (HTTP Strict Transport Security)
+
 ```
 Current: Unknown
 Required: Enabled (12 months)
@@ -360,26 +383,26 @@ TTL: Auto
 
 #### Missing Values Checklist:
 
-| Variable | Line | Status | Priority | Source |
-|----------|------|--------|----------|--------|
-| `VITE_CLERK_PUBLISHABLE_KEY` | 16 | ❌ Placeholder | P1 - CRITICAL | Clerk Dashboard |
-| `CLERK_SECRET_KEY` | 17 | ❌ Placeholder | P1 - CRITICAL | Clerk Dashboard |
-| `CLOUDFLARE_API_TOKEN` | 47 | ❌ Placeholder | P1 - CRITICAL | Cloudflare (create new) |
-| `CLOUDFLARE_ZONE_ID` | 50 | ❌ Placeholder | P1 - CRITICAL | Cloudflare Dashboard |
-| `CLOUDFLARE_ACCOUNT_ID` | 51 | ❌ Placeholder | P1 - CRITICAL | Cloudflare Dashboard |
-| `CLOUDFLARE_EMAIL` | 52 | ❌ Placeholder | P2 - HIGH | Your email |
-| `STRIPE_PUBLISHABLE_KEY` | 68 | ❌ Placeholder | P3 - MEDIUM | Stripe (when ready) |
-| `STRIPE_SECRET_KEY` | 69 | ❌ Placeholder | P3 - MEDIUM | Stripe (when ready) |
+| Variable                     | Line | Status         | Priority      | Source                  |
+| ---------------------------- | ---- | -------------- | ------------- | ----------------------- |
+| `VITE_CLERK_PUBLISHABLE_KEY` | 16   | ❌ Placeholder | P1 - CRITICAL | Clerk Dashboard         |
+| `CLERK_SECRET_KEY`           | 17   | ❌ Placeholder | P1 - CRITICAL | Clerk Dashboard         |
+| `CLOUDFLARE_API_TOKEN`       | 47   | ❌ Placeholder | P1 - CRITICAL | Cloudflare (create new) |
+| `CLOUDFLARE_ZONE_ID`         | 50   | ❌ Placeholder | P1 - CRITICAL | Cloudflare Dashboard    |
+| `CLOUDFLARE_ACCOUNT_ID`      | 51   | ❌ Placeholder | P1 - CRITICAL | Cloudflare Dashboard    |
+| `CLOUDFLARE_EMAIL`           | 52   | ❌ Placeholder | P2 - HIGH     | Your email              |
+| `STRIPE_PUBLISHABLE_KEY`     | 68   | ❌ Placeholder | P3 - MEDIUM   | Stripe (when ready)     |
+| `STRIPE_SECRET_KEY`          | 69   | ❌ Placeholder | P3 - MEDIUM   | Stripe (when ready)     |
 
 #### ✅ Already Configured:
 
-| Variable | Line | Status | Value |
-|----------|------|--------|-------|
-| `VITE_APP_DOMAIN` | 35 | ✅ Set | `capliquify.com` |
-| `VITE_AUTH_DOMAIN` | 36 | ✅ Set | `auth.capliquify.com` |
-| `CLERK_FRONTEND_API` | 37 | ✅ Set | `clerk.capliquify.com` |
-| `CLOUDFLARE_SSL_MODE` | 59 | ✅ Set | `full_strict` |
-| `CLOUDFLARE_MIN_TLS_VERSION` | 60 | ✅ Set | `1.2` |
+| Variable                     | Line | Status | Value                  |
+| ---------------------------- | ---- | ------ | ---------------------- |
+| `VITE_APP_DOMAIN`            | 35   | ✅ Set | `capliquify.com`       |
+| `VITE_AUTH_DOMAIN`           | 36   | ✅ Set | `auth.capliquify.com`  |
+| `CLERK_FRONTEND_API`         | 37   | ✅ Set | `clerk.capliquify.com` |
+| `CLOUDFLARE_SSL_MODE`        | 59   | ✅ Set | `full_strict`          |
+| `CLOUDFLARE_MIN_TLS_VERSION` | 60   | ✅ Set | `1.2`                  |
 
 ---
 
@@ -392,6 +415,7 @@ TTL: Auto
 You need to replace `capliquify-app.onrender.com` with your **actual Render service URL**.
 
 **How to Find**:
+
 1. Go to: https://dashboard.render.com
 2. Find your service for CapLiquify
 3. Copy the service URL (e.g., `your-actual-app-name.onrender.com`)
@@ -406,22 +430,26 @@ You need to replace `capliquify-app.onrender.com` with your **actual Render serv
 The following credentials were exposed in this chat session and **MUST BE REVOKED**:
 
 #### Cloudflare Keys (Exposed 2x in chat)
+
 ```
 ❌ Global API Key: 5d9f59c06348d3caffe8009c60a05193dfc39
 ❌ Origin CA Key: v1.0-58b7b2c418a2c7f4fbe7a9fe-015099a15b093cd3b5231d30...
 ```
 
 **Action**:
+
 1. Go to: https://dash.cloudflare.com/profile/api-tokens
 2. **"Roll"** (regenerate) both keys
 3. **DO NOT** use Global API Key - create API Token instead
 
 #### OpenAI API Key (Exposed in git history)
+
 ```
 ❌ sk-proj-wFWxY-r7gKdvIl-vQ2bAjQ8wd8jOqYHPNxKZ2KgRYJh5LXsMpS5V-H7LfV...
 ```
 
 **Action**:
+
 1. Go to: https://platform.openai.com/api-keys
 2. **Revoke** the exposed key
 3. Create new API key
@@ -429,11 +457,13 @@ The following credentials were exposed in this chat session and **MUST BE REVOKE
 5. Update Render environment variables
 
 #### Database Password (Exposed in git history)
+
 ```
 ❌ nZ4vtXienMAwxahr0GJByc2qXFIFSoYL
 ```
 
 **Action**:
+
 1. Go to: Render Dashboard → PostgreSQL
 2. Rotate database password
 3. Render will auto-update DATABASE_URL
@@ -442,10 +472,11 @@ The following credentials were exposed in this chat session and **MUST BE REVOKE
 ### 2. Git History Contains Credentials
 
 **Files Removed from Tracking**: ✅ (commit 7e26a72a)
+
 - config/environments/development.env
 - config/environments/production.env
 - config/environments/testing.env
-- CORRECTED-*.env files
+- CORRECTED-\*.env files
 
 **Status**: Files removed from future commits, but **still in git history**.
 
@@ -561,6 +592,7 @@ nslookup clerk.capliquify.com
 ### SSL Certificate Verification
 
 Visit these URLs in a browser (after DNS propagates):
+
 ```
 https://capliquify.com (should show valid SSL)
 https://www.capliquify.com (should show valid SSL)
@@ -600,6 +632,7 @@ Total:                ████░░░░░░░░░░░░░░░�
 
 **Target**: Get to 50% completion
 **Requires**:
+
 1. Create Cloudflare API token ✅
 2. Get Zone ID and Account ID ✅
 3. Create Clerk instance ✅
@@ -614,13 +647,13 @@ Total:                ████░░░░░░░░░░░░░░░�
 
 ### If You Get Stuck:
 
-| Issue | Resource |
-|-------|----------|
-| **Cloudflare DNS** | https://developers.cloudflare.com/dns/ |
+| Issue                     | Resource                                                                     |
+| ------------------------- | ---------------------------------------------------------------------------- |
+| **Cloudflare DNS**        | https://developers.cloudflare.com/dns/                                       |
 | **Cloudflare API Tokens** | https://developers.cloudflare.com/fundamentals/api/get-started/create-token/ |
-| **Clerk Setup** | https://clerk.com/docs |
-| **Render Deployment** | https://render.com/docs |
-| **SSL/TLS Issues** | https://www.ssllabs.com/ssltest/ |
+| **Clerk Setup**           | https://clerk.com/docs                                                       |
+| **Render Deployment**     | https://render.com/docs                                                      |
+| **SSL/TLS Issues**        | https://www.ssllabs.com/ssltest/                                             |
 
 ### Complete Guides:
 
@@ -635,11 +668,13 @@ Total:                ████░░░░░░░░░░░░░░░�
 Once you've completed the CRITICAL items above, you'll be ready to:
 
 1. **Test Local Development**:
+
    ```bash
    pnpm run dev
    ```
 
 2. **Deploy to Render**:
+
    ```bash
    git push origin main
    ```

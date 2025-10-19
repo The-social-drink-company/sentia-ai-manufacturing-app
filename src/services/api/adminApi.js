@@ -13,7 +13,7 @@
  * - Approval workflows
  */
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1'
 
 /**
  * ============================================================================
@@ -29,10 +29,10 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1';
 export async function getAdminDashboard() {
   const response = await fetch(`${API_BASE_URL}/admin/dashboard`, {
     credentials: 'include',
-  });
+  })
 
-  if (!response.ok) throw new Error('Failed to fetch admin dashboard');
-  return response.json();
+  if (!response.ok) throw new Error('Failed to fetch admin dashboard')
+  return response.json()
 }
 
 /**
@@ -48,13 +48,13 @@ export async function getAdminDashboard() {
  * @returns {Promise<Object>} Users list
  */
 export async function getUsers(params = {}) {
-  const queryParams = new URLSearchParams(params);
+  const queryParams = new URLSearchParams(params)
   const response = await fetch(`${API_BASE_URL}/admin/users?${queryParams}`, {
     credentials: 'include',
-  });
+  })
 
-  if (!response.ok) throw new Error('Failed to fetch users');
-  return response.json();
+  if (!response.ok) throw new Error('Failed to fetch users')
+  return response.json()
 }
 
 /**
@@ -66,10 +66,10 @@ export async function getUsers(params = {}) {
 export async function getUserById(userId) {
   const response = await fetch(`${API_BASE_URL}/admin/users/${userId}`, {
     credentials: 'include',
-  });
+  })
 
-  if (!response.ok) throw new Error('Failed to fetch user');
-  return response.json();
+  if (!response.ok) throw new Error('Failed to fetch user')
+  return response.json()
 }
 
 /**
@@ -88,10 +88,10 @@ export async function createUser(userData, mfaCode) {
     },
     credentials: 'include',
     body: JSON.stringify(userData),
-  });
+  })
 
-  if (!response.ok) throw new Error('Failed to create user');
-  return response.json();
+  if (!response.ok) throw new Error('Failed to create user')
+  return response.json()
 }
 
 /**
@@ -111,10 +111,10 @@ export async function updateUser(userId, updates, mfaCode) {
     },
     credentials: 'include',
     body: JSON.stringify(updates),
-  });
+  })
 
-  if (!response.ok) throw new Error('Failed to update user');
-  return response.json();
+  if (!response.ok) throw new Error('Failed to update user')
+  return response.json()
 }
 
 /**
@@ -131,10 +131,10 @@ export async function deleteUser(userId, mfaCode) {
       'X-MFA-Code': mfaCode,
     },
     credentials: 'include',
-  });
+  })
 
-  if (!response.ok) throw new Error('Failed to delete user');
-  return response.json();
+  if (!response.ok) throw new Error('Failed to delete user')
+  return response.json()
 }
 
 /**
@@ -151,10 +151,10 @@ export async function forceLogoutUser(userId, mfaCode) {
       'X-MFA-Code': mfaCode,
     },
     credentials: 'include',
-  });
+  })
 
-  if (!response.ok) throw new Error('Failed to force logout');
-  return response.json();
+  if (!response.ok) throw new Error('Failed to force logout')
+  return response.json()
 }
 
 /**
@@ -166,10 +166,10 @@ export async function forceLogoutUser(userId, mfaCode) {
 export async function getUserSessions(userId) {
   const response = await fetch(`${API_BASE_URL}/admin/users/${userId}/sessions`, {
     credentials: 'include',
-  });
+  })
 
-  if (!response.ok) throw new Error('Failed to fetch user sessions');
-  return response.json();
+  if (!response.ok) throw new Error('Failed to fetch user sessions')
+  return response.json()
 }
 
 /**
@@ -186,10 +186,10 @@ export async function getUserSessions(userId) {
 export async function getRoles() {
   const response = await fetch(`${API_BASE_URL}/admin/roles`, {
     credentials: 'include',
-  });
+  })
 
-  if (!response.ok) throw new Error('Failed to fetch roles');
-  return response.json();
+  if (!response.ok) throw new Error('Failed to fetch roles')
+  return response.json()
 }
 
 /**
@@ -201,10 +201,10 @@ export async function getRoles() {
 export async function getRolePermissions(roleId) {
   const response = await fetch(`${API_BASE_URL}/admin/roles/${roleId}/permissions`, {
     credentials: 'include',
-  });
+  })
 
-  if (!response.ok) throw new Error('Failed to fetch role permissions');
-  return response.json();
+  if (!response.ok) throw new Error('Failed to fetch role permissions')
+  return response.json()
 }
 
 /**
@@ -224,10 +224,10 @@ export async function updateRolePermissions(roleId, permissions, mfaCode) {
     },
     credentials: 'include',
     body: JSON.stringify(permissions),
-  });
+  })
 
-  if (!response.ok) throw new Error('Failed to update role permissions');
-  return response.json();
+  if (!response.ok) throw new Error('Failed to update role permissions')
+  return response.json()
 }
 
 /**
@@ -237,13 +237,13 @@ export async function updateRolePermissions(roleId, permissions, mfaCode) {
  * @returns {Promise<Object[]>} Role assignment history
  */
 export async function getRoleAssignmentHistory(params = {}) {
-  const queryParams = new URLSearchParams(params);
+  const queryParams = new URLSearchParams(params)
   const response = await fetch(`${API_BASE_URL}/admin/roles/history?${queryParams}`, {
     credentials: 'include',
-  });
+  })
 
-  if (!response.ok) throw new Error('Failed to fetch role assignment history');
-  return response.json();
+  if (!response.ok) throw new Error('Failed to fetch role assignment history')
+  return response.json()
 }
 
 /**
@@ -259,13 +259,13 @@ export async function getRoleAssignmentHistory(params = {}) {
  * @returns {Promise<Object[]>} Feature flags
  */
 export async function getFeatureFlags(params = {}) {
-  const queryParams = new URLSearchParams(params);
+  const queryParams = new URLSearchParams(params)
   const response = await fetch(`${API_BASE_URL}/admin/feature-flags?${queryParams}`, {
     credentials: 'include',
-  });
+  })
 
-  if (!response.ok) throw new Error('Failed to fetch feature flags');
-  return response.json();
+  if (!response.ok) throw new Error('Failed to fetch feature flags')
+  return response.json()
 }
 
 /**
@@ -286,10 +286,10 @@ export async function toggleFeatureFlag(flagId, enabled, environment, mfaCode) {
     },
     credentials: 'include',
     body: JSON.stringify({ enabled, environment }),
-  });
+  })
 
-  if (!response.ok) throw new Error('Failed to toggle feature flag');
-  return response.json();
+  if (!response.ok) throw new Error('Failed to toggle feature flag')
+  return response.json()
 }
 
 /**
@@ -301,10 +301,10 @@ export async function toggleFeatureFlag(flagId, enabled, environment, mfaCode) {
 export async function getFeatureFlagHistory(flagId) {
   const response = await fetch(`${API_BASE_URL}/admin/feature-flags/${flagId}/history`, {
     credentials: 'include',
-  });
+  })
 
-  if (!response.ok) throw new Error('Failed to fetch feature flag history');
-  return response.json();
+  if (!response.ok) throw new Error('Failed to fetch feature flag history')
+  return response.json()
 }
 
 /**
@@ -321,10 +321,10 @@ export async function getFeatureFlagHistory(flagId) {
 export async function getIntegrations() {
   const response = await fetch(`${API_BASE_URL}/admin/integrations`, {
     credentials: 'include',
-  });
+  })
 
-  if (!response.ok) throw new Error('Failed to fetch integrations');
-  return response.json();
+  if (!response.ok) throw new Error('Failed to fetch integrations')
+  return response.json()
 }
 
 /**
@@ -336,10 +336,10 @@ export async function getIntegrations() {
 export async function getIntegrationDetails(integrationId) {
   const response = await fetch(`${API_BASE_URL}/admin/integrations/${integrationId}`, {
     credentials: 'include',
-  });
+  })
 
-  if (!response.ok) throw new Error('Failed to fetch integration details');
-  return response.json();
+  if (!response.ok) throw new Error('Failed to fetch integration details')
+  return response.json()
 }
 
 /**
@@ -356,10 +356,10 @@ export async function triggerManualSync(integrationId, mfaCode) {
       'X-MFA-Code': mfaCode,
     },
     credentials: 'include',
-  });
+  })
 
-  if (!response.ok) throw new Error('Failed to trigger sync');
-  return response.json();
+  if (!response.ok) throw new Error('Failed to trigger sync')
+  return response.json()
 }
 
 /**
@@ -379,10 +379,10 @@ export async function updateIntegrationConfig(integrationId, config, mfaCode) {
     },
     credentials: 'include',
     body: JSON.stringify(config),
-  });
+  })
 
-  if (!response.ok) throw new Error('Failed to update integration config');
-  return response.json();
+  if (!response.ok) throw new Error('Failed to update integration config')
+  return response.json()
 }
 
 /**
@@ -399,10 +399,10 @@ export async function rotateAPIKey(integrationId, mfaCode) {
       'X-MFA-Code': mfaCode,
     },
     credentials: 'include',
-  });
+  })
 
-  if (!response.ok) throw new Error('Failed to rotate API key');
-  return response.json();
+  if (!response.ok) throw new Error('Failed to rotate API key')
+  return response.json()
 }
 
 /**
@@ -413,13 +413,16 @@ export async function rotateAPIKey(integrationId, mfaCode) {
  * @returns {Promise<Object[]>} Sync job history
  */
 export async function getSyncJobHistory(integrationId, params = {}) {
-  const queryParams = new URLSearchParams(params);
-  const response = await fetch(`${API_BASE_URL}/admin/integrations/${integrationId}/sync-history?${queryParams}`, {
-    credentials: 'include',
-  });
+  const queryParams = new URLSearchParams(params)
+  const response = await fetch(
+    `${API_BASE_URL}/admin/integrations/${integrationId}/sync-history?${queryParams}`,
+    {
+      credentials: 'include',
+    }
+  )
 
-  if (!response.ok) throw new Error('Failed to fetch sync job history');
-  return response.json();
+  if (!response.ok) throw new Error('Failed to fetch sync job history')
+  return response.json()
 }
 
 /**
@@ -436,10 +439,10 @@ export async function getSyncJobHistory(integrationId, params = {}) {
 export async function getQueues() {
   const response = await fetch(`${API_BASE_URL}/admin/queues`, {
     credentials: 'include',
-  });
+  })
 
-  if (!response.ok) throw new Error('Failed to fetch queues');
-  return response.json();
+  if (!response.ok) throw new Error('Failed to fetch queues')
+  return response.json()
 }
 
 /**
@@ -451,10 +454,10 @@ export async function getQueues() {
 export async function getQueueDetails(queueName) {
   const response = await fetch(`${API_BASE_URL}/admin/queues/${queueName}`, {
     credentials: 'include',
-  });
+  })
 
-  if (!response.ok) throw new Error('Failed to fetch queue details');
-  return response.json();
+  if (!response.ok) throw new Error('Failed to fetch queue details')
+  return response.json()
 }
 
 /**
@@ -466,13 +469,13 @@ export async function getQueueDetails(queueName) {
  * @returns {Promise<Object[]>} Queue jobs
  */
 export async function getQueueJobs(queueName, status, params = {}) {
-  const queryParams = new URLSearchParams({ status, ...params });
+  const queryParams = new URLSearchParams({ status, ...params })
   const response = await fetch(`${API_BASE_URL}/admin/queues/${queueName}/jobs?${queryParams}`, {
     credentials: 'include',
-  });
+  })
 
-  if (!response.ok) throw new Error('Failed to fetch queue jobs');
-  return response.json();
+  if (!response.ok) throw new Error('Failed to fetch queue jobs')
+  return response.json()
 }
 
 /**
@@ -490,10 +493,10 @@ export async function retryFailedJob(queueName, jobId, mfaCode) {
       'X-MFA-Code': mfaCode,
     },
     credentials: 'include',
-  });
+  })
 
-  if (!response.ok) throw new Error('Failed to retry job');
-  return response.json();
+  if (!response.ok) throw new Error('Failed to retry job')
+  return response.json()
 }
 
 /**
@@ -510,10 +513,10 @@ export async function pauseQueue(queueName, mfaCode) {
       'X-MFA-Code': mfaCode,
     },
     credentials: 'include',
-  });
+  })
 
-  if (!response.ok) throw new Error('Failed to pause queue');
-  return response.json();
+  if (!response.ok) throw new Error('Failed to pause queue')
+  return response.json()
 }
 
 /**
@@ -530,10 +533,10 @@ export async function resumeQueue(queueName, mfaCode) {
       'X-MFA-Code': mfaCode,
     },
     credentials: 'include',
-  });
+  })
 
-  if (!response.ok) throw new Error('Failed to resume queue');
-  return response.json();
+  if (!response.ok) throw new Error('Failed to resume queue')
+  return response.json()
 }
 
 /**
@@ -549,13 +552,13 @@ export async function resumeQueue(queueName, mfaCode) {
  * @returns {Promise<Object>} Audit logs
  */
 export async function getAuditLogs(params = {}) {
-  const queryParams = new URLSearchParams(params);
+  const queryParams = new URLSearchParams(params)
   const response = await fetch(`${API_BASE_URL}/admin/audit-logs?${queryParams}`, {
     credentials: 'include',
-  });
+  })
 
-  if (!response.ok) throw new Error('Failed to fetch audit logs');
-  return response.json();
+  if (!response.ok) throw new Error('Failed to fetch audit logs')
+  return response.json()
 }
 
 /**
@@ -567,10 +570,10 @@ export async function getAuditLogs(params = {}) {
 export async function getAuditLogDetails(logId) {
   const response = await fetch(`${API_BASE_URL}/admin/audit-logs/${logId}`, {
     credentials: 'include',
-  });
+  })
 
-  if (!response.ok) throw new Error('Failed to fetch audit log details');
-  return response.json();
+  if (!response.ok) throw new Error('Failed to fetch audit log details')
+  return response.json()
 }
 
 /**
@@ -581,13 +584,13 @@ export async function getAuditLogDetails(logId) {
  * @returns {Promise<Blob>} File blob
  */
 export async function exportAuditLogs(params = {}, format = 'csv') {
-  const queryParams = new URLSearchParams({ ...params, format });
+  const queryParams = new URLSearchParams({ ...params, format })
   const response = await fetch(`${API_BASE_URL}/admin/audit-logs/export?${queryParams}`, {
     credentials: 'include',
-  });
+  })
 
-  if (!response.ok) throw new Error('Failed to export audit logs');
-  return response.blob();
+  if (!response.ok) throw new Error('Failed to export audit logs')
+  return response.blob()
 }
 
 /**
@@ -604,10 +607,10 @@ export async function exportAuditLogs(params = {}, format = 'csv') {
 export async function getSystemHealth() {
   const response = await fetch(`${API_BASE_URL}/admin/system-health`, {
     credentials: 'include',
-  });
+  })
 
-  if (!response.ok) throw new Error('Failed to fetch system health');
-  return response.json();
+  if (!response.ok) throw new Error('Failed to fetch system health')
+  return response.json()
 }
 
 /**
@@ -617,13 +620,13 @@ export async function getSystemHealth() {
  * @returns {Promise<Object[]>} Metrics history
  */
 export async function getSystemMetricsHistory(params = {}) {
-  const queryParams = new URLSearchParams(params);
+  const queryParams = new URLSearchParams(params)
   const response = await fetch(`${API_BASE_URL}/admin/system-health/metrics?${queryParams}`, {
     credentials: 'include',
-  });
+  })
 
-  if (!response.ok) throw new Error('Failed to fetch system metrics');
-  return response.json();
+  if (!response.ok) throw new Error('Failed to fetch system metrics')
+  return response.json()
 }
 
 /**
@@ -642,10 +645,10 @@ export async function configureSystemAlerts(alertConfig, mfaCode) {
     },
     credentials: 'include',
     body: JSON.stringify(alertConfig),
-  });
+  })
 
-  if (!response.ok) throw new Error('Failed to configure system alerts');
-  return response.json();
+  if (!response.ok) throw new Error('Failed to configure system alerts')
+  return response.json()
 }
 
 /**
@@ -663,10 +666,10 @@ export async function configureSystemAlerts(alertConfig, mfaCode) {
 export async function getEnvironmentConfig(environment) {
   const response = await fetch(`${API_BASE_URL}/admin/environment/${environment}/config`, {
     credentials: 'include',
-  });
+  })
 
-  if (!response.ok) throw new Error('Failed to fetch environment config');
-  return response.json();
+  if (!response.ok) throw new Error('Failed to fetch environment config')
+  return response.json()
 }
 
 /**
@@ -687,10 +690,10 @@ export async function proposeConfigChange(environment, changes, justification, m
     },
     credentials: 'include',
     body: JSON.stringify({ changes, justification }),
-  });
+  })
 
-  if (!response.ok) throw new Error('Failed to propose config change');
-  return response.json();
+  if (!response.ok) throw new Error('Failed to propose config change')
+  return response.json()
 }
 
 /**
@@ -701,13 +704,16 @@ export async function proposeConfigChange(environment, changes, justification, m
  * @returns {Promise<Object[]>} Deployment history
  */
 export async function getDeploymentHistory(environment, params = {}) {
-  const queryParams = new URLSearchParams(params);
-  const response = await fetch(`${API_BASE_URL}/admin/environment/${environment}/deployments?${queryParams}`, {
-    credentials: 'include',
-  });
+  const queryParams = new URLSearchParams(params)
+  const response = await fetch(
+    `${API_BASE_URL}/admin/environment/${environment}/deployments?${queryParams}`,
+    {
+      credentials: 'include',
+    }
+  )
 
-  if (!response.ok) throw new Error('Failed to fetch deployment history');
-  return response.json();
+  if (!response.ok) throw new Error('Failed to fetch deployment history')
+  return response.json()
 }
 
 /**
@@ -727,10 +733,10 @@ export async function rollbackConfig(environment, deploymentId, mfaCode) {
     },
     credentials: 'include',
     body: JSON.stringify({ deploymentId }),
-  });
+  })
 
-  if (!response.ok) throw new Error('Failed to rollback config');
-  return response.json();
+  if (!response.ok) throw new Error('Failed to rollback config')
+  return response.json()
 }
 
 /**
@@ -746,13 +752,13 @@ export async function rollbackConfig(environment, deploymentId, mfaCode) {
  * @returns {Promise<Object[]>} Approval requests
  */
 export async function getApprovalRequests(params = {}) {
-  const queryParams = new URLSearchParams(params);
+  const queryParams = new URLSearchParams(params)
   const response = await fetch(`${API_BASE_URL}/admin/approvals?${queryParams}`, {
     credentials: 'include',
-  });
+  })
 
-  if (!response.ok) throw new Error('Failed to fetch approval requests');
-  return response.json();
+  if (!response.ok) throw new Error('Failed to fetch approval requests')
+  return response.json()
 }
 
 /**
@@ -769,10 +775,10 @@ export async function createApprovalRequest(requestData) {
     },
     credentials: 'include',
     body: JSON.stringify(requestData),
-  });
+  })
 
-  if (!response.ok) throw new Error('Failed to create approval request');
-  return response.json();
+  if (!response.ok) throw new Error('Failed to create approval request')
+  return response.json()
 }
 
 /**
@@ -792,10 +798,10 @@ export async function approveRequest(requestId, comments, mfaCode) {
     },
     credentials: 'include',
     body: JSON.stringify({ comments }),
-  });
+  })
 
-  if (!response.ok) throw new Error('Failed to approve request');
-  return response.json();
+  if (!response.ok) throw new Error('Failed to approve request')
+  return response.json()
 }
 
 /**
@@ -815,10 +821,10 @@ export async function rejectRequest(requestId, reason, mfaCode) {
     },
     credentials: 'include',
     body: JSON.stringify({ reason }),
-  });
+  })
 
-  if (!response.ok) throw new Error('Failed to reject request');
-  return response.json();
+  if (!response.ok) throw new Error('Failed to reject request')
+  return response.json()
 }
 
 /**
@@ -828,13 +834,13 @@ export async function rejectRequest(requestId, reason, mfaCode) {
  * @returns {Promise<Object[]>} Approval history
  */
 export async function getApprovalHistory(params = {}) {
-  const queryParams = new URLSearchParams(params);
+  const queryParams = new URLSearchParams(params)
   const response = await fetch(`${API_BASE_URL}/admin/approvals/history?${queryParams}`, {
     credentials: 'include',
-  });
+  })
 
-  if (!response.ok) throw new Error('Failed to fetch approval history');
-  return response.json();
+  if (!response.ok) throw new Error('Failed to fetch approval history')
+  return response.json()
 }
 
 /**
@@ -857,10 +863,10 @@ export async function requestMFACode(action) {
     },
     credentials: 'include',
     body: JSON.stringify({ action }),
-  });
+  })
 
-  if (!response.ok) throw new Error('Failed to request MFA code');
-  return response.json();
+  if (!response.ok) throw new Error('Failed to request MFA code')
+  return response.json()
 }
 
 /**
@@ -877,10 +883,10 @@ export async function verifyMFACode(code) {
     },
     credentials: 'include',
     body: JSON.stringify({ code }),
-  });
+  })
 
-  if (!response.ok) throw new Error('Failed to verify MFA code');
-  return response.json();
+  if (!response.ok) throw new Error('Failed to verify MFA code')
+  return response.json()
 }
 
 /**
@@ -955,4 +961,4 @@ export default {
   // MFA & Security
   requestMFACode,
   verifyMFACode,
-};
+}

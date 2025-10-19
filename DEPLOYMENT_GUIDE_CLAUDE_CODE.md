@@ -1,4 +1,5 @@
 # Sentia Dashboard - Comprehensive Deployment Guide
+
 ## Using Claude Code in VSCode
 
 **Complete step-by-step guide for deploying and managing the Sentia Manufacturing Dashboard**
@@ -75,11 +76,11 @@ This guide provides complete instructions for deploying the Sentia Manufacturing
 
 ### Deployment Environments
 
-| Environment | URL | Branch | Purpose | Auto-Deploy |
-|-------------|-----|--------|---------|-------------|
-| Development | [sentia-...621h.onrender.com](https://sentia-frontend-prod.onrender.com) | `development` | Daily development work | ✅ Yes |
-| Test | [sentia-...-test.onrender.com](https://sentia-manufacturing-dashboard-test.onrender.com) | `test` | User acceptance testing | ✅ Yes |
-| Production | [sentia-...-production.onrender.com](https://sentia-manufacturing-dashboard-production.onrender.com) | `production` | Live production | ✅ Yes |
+| Environment | URL                                                                                                  | Branch        | Purpose                 | Auto-Deploy |
+| ----------- | ---------------------------------------------------------------------------------------------------- | ------------- | ----------------------- | ----------- |
+| Development | [sentia-...621h.onrender.com](https://sentia-frontend-prod.onrender.com)                             | `development` | Daily development work  | ✅ Yes      |
+| Test        | [sentia-...-test.onrender.com](https://sentia-manufacturing-dashboard-test.onrender.com)             | `test`        | User acceptance testing | ✅ Yes      |
+| Production  | [sentia-...-production.onrender.com](https://sentia-manufacturing-dashboard-production.onrender.com) | `production`  | Live production         | ✅ Yes      |
 
 ---
 
@@ -88,21 +89,26 @@ This guide provides complete instructions for deploying the Sentia Manufacturing
 ### Required Software
 
 1. **Node.js 18+**
+
    ```bash
    node --version  # Should show v18.x.x or higher
    ```
+
    Download: https://nodejs.org/
 
 2. **pnpm Package Manager**
+
    ```bash
    npm install -g pnpm
    pnpm --version
    ```
 
 3. **Git**
+
    ```bash
    git --version
    ```
+
    Download: https://git-scm.com/
 
 4. **VSCode**
@@ -177,6 +183,7 @@ Open Claude Code in VSCode and run:
 ```
 
 This will check:
+
 - ✅ Node.js version
 - ✅ Dependencies installed
 - ✅ Build process works
@@ -184,6 +191,7 @@ This will check:
 - ✅ Git configuration
 
 Expected output:
+
 ```
 ✅ PASS: Environment setup complete
 ✅ PASS: Dependencies installed
@@ -246,11 +254,13 @@ npm run dev
 #### 4. Fix Any Lint Errors
 
 In Claude Code:
+
 ```
 /fix-lint
 ```
 
 This will:
+
 - Analyze all lint errors
 - Fix critical issues
 - Provide report of remaining issues
@@ -258,11 +268,13 @@ This will:
 #### 5. Deploy to Development
 
 In Claude Code:
+
 ```
 /deploy-dev
 ```
 
 What happens:
+
 1. Claude checks your branch and git status
 2. Commits any uncommitted changes (with your approval)
 3. Pushes to origin/development
@@ -281,6 +293,7 @@ Wait 3-5 minutes for deployment, then:
 #### 7. Fix Issues and Repeat
 
 If you find issues:
+
 - Make fixes locally
 - Run `/deploy-dev` again
 - Test again
@@ -338,6 +351,7 @@ If you find issues:
 ```
 
 UAT Checklist (provided by `/deploy-test`):
+
 - [ ] Application loads successfully
 - [ ] Authentication works (Clerk or bypass)
 - [ ] Dashboard displays data correctly
@@ -385,6 +399,7 @@ UAT Checklist (provided by `/deploy-test`):
 ```
 
 Post-Deployment Verification:
+
 1. ✅ Application loads at production URL
 2. ✅ /health endpoint returns 200
 3. ✅ Authentication functional
@@ -420,6 +435,7 @@ Post-Deployment Verification:
 ```
 
 Follow the prompts:
+
 1. Describe the issue
 2. Confirm severity level
 3. Choose rollback method:
@@ -457,11 +473,13 @@ Follow the prompts:
 ### Daily Checks
 
 Run once per day:
+
 ```
 /health-check
 ```
 
 This verifies:
+
 - All environments responsive
 - Health endpoints working
 - API endpoints functional
@@ -471,16 +489,20 @@ This verifies:
 ### Weekly Maintenance
 
 1. **Code Quality**
+
    ```
    /fix-lint
    ```
+
    Address code quality issues
 
 2. **Dependency Updates**
+
    ```bash
    pnpm outdated
    pnpm update
    ```
+
    Keep dependencies current
 
 3. **Security Audit**
@@ -508,6 +530,7 @@ This verifies:
 **Symptoms**: Render shows build failure
 
 **Solutions**:
+
 1. Check Render build logs
 2. Run `/verify-deployment` locally
 3. Verify environment variables set
@@ -519,6 +542,7 @@ This verifies:
 **Symptoms**: Blank screen or 502/503 errors
 
 **Solutions**:
+
 1. Run `/health-check` to diagnose
 2. Check Render service status
 3. Verify environment variables
@@ -530,11 +554,13 @@ This verifies:
 **Symptoms**: Too many lint errors
 
 **Solutions**:
+
 ```
 /fix-lint
 ```
 
 Focus on:
+
 1. Critical errors first (undefined variables)
 2. High priority (unused imports)
 3. Medium priority (code quality)
@@ -545,6 +571,7 @@ Focus on:
 **Symptoms**: Git push rejected
 
 **Solutions**:
+
 ```bash
 # Pull latest changes
 git pull origin development
@@ -559,6 +586,7 @@ git push origin development
 **Symptoms**: Feature not working, variable undefined
 
 **Solutions**:
+
 1. Verify variable name starts with `VITE_` (frontend)
 2. Check Render dashboard - variable set correctly?
 3. Force redeploy in Render
@@ -567,6 +595,7 @@ git push origin development
 #### Issue: Build Succeeds Locally But Fails on Render
 
 **Solutions**:
+
 1. Check Node.js version matches (18+)
 2. Verify all dependencies in package.json
 3. Check for environment-specific code
@@ -628,27 +657,30 @@ git push origin development
 
 ### Essential Commands
 
-| Command | Use Case |
-|---------|----------|
-| `/verify-deployment` | Before any deployment |
-| `/deploy-dev` | Deploy to development |
-| `/deploy-test` | Deploy for UAT |
-| `/deploy-prod` | Deploy to production |
-| `/fix-lint` | Clean up code quality |
-| `/health-check` | Check environment status |
-| `/rollback-production` | Emergency only |
+| Command                | Use Case                 |
+| ---------------------- | ------------------------ |
+| `/verify-deployment`   | Before any deployment    |
+| `/deploy-dev`          | Deploy to development    |
+| `/deploy-test`         | Deploy for UAT           |
+| `/deploy-prod`         | Deploy to production     |
+| `/fix-lint`            | Clean up code quality    |
+| `/health-check`        | Check environment status |
+| `/rollback-production` | Emergency only           |
 
 ### Important URLs
 
 **Deployment Dashboard**
+
 - Render: https://dashboard.render.com
 
 **Live Environments**
+
 - Dev: https://sentia-frontend-prod.onrender.com
 - Test: https://sentia-manufacturing-dashboard-test.onrender.com
 - Prod: https://sentia-manufacturing-dashboard-production.onrender.com
 
 **Repository**
+
 - GitHub: https://github.com/The-social-drink-company/sentia-ai-manufacturing-app
 
 ### Key Files
@@ -668,6 +700,7 @@ git push origin development
 **Version**: 1.0.0
 
 For updates to this guide or commands, check:
+
 - `.claude/commands/README.md`
 - CHANGELOG.md
 - Git commit history

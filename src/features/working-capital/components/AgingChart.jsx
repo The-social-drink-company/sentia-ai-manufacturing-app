@@ -9,13 +9,15 @@ const formatCurrency = value => {
     style: 'currency',
     currency: 'USD',
     minimumFractionDigits: 0,
-    maximumFractionDigits: 0
+    maximumFractionDigits: 0,
   }).format(value)
 }
 
 const hasValues = buckets =>
   buckets &&
-  Object.values(buckets).some(value => typeof value === 'number' && !Number.isNaN(value) && value !== 0)
+  Object.values(buckets).some(
+    value => typeof value === 'number' && !Number.isNaN(value) && value !== 0
+  )
 
 export default function AgingChart({ receivables, payables, title }) {
   const agingBuckets = ['0-30', '31-60', '61-90', '90+']
@@ -36,11 +38,12 @@ export default function AgingChart({ receivables, payables, title }) {
       receivableBuckets,
       payableBuckets,
       receivableTotal,
-      payableTotal
+      payableTotal,
     }
   }, [receivables, payables])
 
-  const shouldRenderChart = hasValues(chartData.receivableBuckets) || hasValues(chartData.payableBuckets)
+  const shouldRenderChart =
+    hasValues(chartData.receivableBuckets) || hasValues(chartData.payableBuckets)
 
   if (!shouldRenderChart) {
     return (
@@ -49,7 +52,8 @@ export default function AgingChart({ receivables, payables, title }) {
           {title || 'AR/AP Aging Analysis'}
         </h3>
         <p className="text-sm text-gray-600 dark:text-gray-400">
-          No aging breakdown is available yet. Connect your ERP/finance system to populate this view.
+          No aging breakdown is available yet. Connect your ERP/finance system to populate this
+          view.
         </p>
       </div>
     )
@@ -61,14 +65,14 @@ export default function AgingChart({ receivables, payables, title }) {
         '0-30': 'bg-green-500',
         '31-60': 'bg-yellow-500',
         '61-90': 'bg-orange-500',
-        '90+': 'bg-red-500'
+        '90+': 'bg-red-500',
       },
       payables: {
         '0-30': 'bg-blue-500',
         '31-60': 'bg-indigo-500',
         '61-90': 'bg-purple-500',
-        '90+': 'bg-pink-500'
-      }
+        '90+': 'bg-pink-500',
+      },
     }
 
     return colours[type]?.[bucket] ?? 'bg-gray-500'
@@ -101,8 +105,10 @@ export default function AgingChart({ receivables, payables, title }) {
         {agingBuckets.map(bucket => {
           const arValue = chartData.receivableBuckets?.[bucket] ?? 0
           const apValue = chartData.payableBuckets?.[bucket] ?? 0
-          const arPercentage = chartData.receivableTotal > 0 ? (arValue / chartData.receivableTotal) * 100 : 0
-          const apPercentage = chartData.payableTotal > 0 ? (apValue / chartData.payableTotal) * 100 : 0
+          const arPercentage =
+            chartData.receivableTotal > 0 ? (arValue / chartData.receivableTotal) * 100 : 0
+          const apPercentage =
+            chartData.payableTotal > 0 ? (apValue / chartData.payableTotal) * 100 : 0
 
           if (!arValue && !apValue) {
             return null
@@ -117,12 +123,7 @@ export default function AgingChart({ receivables, payables, title }) {
                 <div className="text-right">
                   <div className="text-sm text-gray-600 dark:text-gray-400">
                     AR: {formatCurrency(arValue)}
-                    {chartData.payableBuckets && (
-                      <>
-                        {' '}
-                        | AP: {formatCurrency(apValue)}
-                      </>
-                    )}
+                    {chartData.payableBuckets && <> | AP: {formatCurrency(apValue)}</>}
                   </div>
                 </div>
               </div>

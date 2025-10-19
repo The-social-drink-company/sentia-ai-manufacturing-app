@@ -13,7 +13,7 @@
     "build:dev": "prisma generate && vite build --mode development",
     "build:test": "prisma generate && vite build --mode testing",
     "start": "node server/index.js",
-    "start:render": "prisma generate && node server/index.js",
+    "start:render": "prisma migrate resolve --rolled-back 20251017171256_init || true && prisma generate && node server/index.js",
     "start:full": "node server.js",
     "preview": "vite preview",
     "test": "vitest",

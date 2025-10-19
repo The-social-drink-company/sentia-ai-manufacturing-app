@@ -42,7 +42,7 @@ const DashboardEnterprise = () => {
   // TODO: Re-enable if Xero connection banner is needed
   const [, setRequiresXeroConnection] = useState(false)
 
-    const resolveMetricLabel = (metric = '') =>
+  const resolveMetricLabel = (metric = '') =>
     (metric || '')
       .toString()
       .replace(/[\s_-]+/g, ' ')
@@ -76,37 +76,40 @@ const DashboardEnterprise = () => {
     })
   }, [])
 
-  const handleDashboardMessage = useCallback((event) => {
-    if (!event || !event.type) {
-      return
-    }
-
-    if (event.type === 'kpi:update') {
-      updatePerformanceKpis(event.metric, event.value, event.helper, event.label)
-      return
-    }
-
-    if (event.type === 'kpi:batch' && Array.isArray(event.metrics)) {
-      event.metrics.forEach(item =>
-        updatePerformanceKpis(item.metric, item.value, item.helper, item.label)
-      )
-      return
-    }
-
-    if (event.type === 'working_capital:update') {
-      const metrics = Array.isArray(event.metrics) ? event.metrics : []
-      if (metrics.length) {
-        setCapitalKpis(() =>
-          metrics.map(item => ({
-            metric: item.metric || item.label || '',
-            label: item.label || resolveMetricLabel(item.metric || ''),
-            value: item.value ?? 'N/A',
-            helper: item.helper ?? '',
-          }))
-        )
+  const handleDashboardMessage = useCallback(
+    event => {
+      if (!event || !event.type) {
+        return
       }
-    }
-  }, [updatePerformanceKpis])
+
+      if (event.type === 'kpi:update') {
+        updatePerformanceKpis(event.metric, event.value, event.helper, event.label)
+        return
+      }
+
+      if (event.type === 'kpi:batch' && Array.isArray(event.metrics)) {
+        event.metrics.forEach(item =>
+          updatePerformanceKpis(item.metric, item.value, item.helper, item.label)
+        )
+        return
+      }
+
+      if (event.type === 'working_capital:update') {
+        const metrics = Array.isArray(event.metrics) ? event.metrics : []
+        if (metrics.length) {
+          setCapitalKpis(() =>
+            metrics.map(item => ({
+              metric: item.metric || item.label || '',
+              label: item.label || resolveMetricLabel(item.metric || ''),
+              value: item.value ?? 'N/A',
+              helper: item.helper ?? '',
+            }))
+          )
+        }
+      }
+    },
+    [updatePerformanceKpis]
+  )
 
   const { connected: dashboardConnected, latency: dashboardLatency } = useSSE('dashboard', {
     onMessage: handleDashboardMessage,
@@ -495,10 +498,7 @@ const DashboardEnterprise = () => {
         {capitalLoading ? (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             {Array.from({ length: 4 }).map((_, index) => (
-              <div
-                key={index}
-                className="h-40 rounded-xl bg-muted/30 animate-pulse"
-              ></div>
+              <div key={index} className="h-40 rounded-xl bg-muted/30 animate-pulse"></div>
             ))}
           </div>
         ) : capitalError ? (
@@ -561,10 +561,7 @@ const DashboardEnterprise = () => {
         {kpiLoading ? (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: 3 }).map((_, index) => (
-              <div
-                key={index}
-                className="h-40 rounded-xl bg-muted/30 animate-pulse"
-              ></div>
+              <div key={index} className="h-40 rounded-xl bg-muted/30 animate-pulse"></div>
             ))}
           </div>
         ) : kpiError ? (
@@ -588,7 +585,9 @@ const DashboardEnterprise = () => {
                   </div>
                   {kpiError.includes('Xero') && (
                     <div className="mt-2 p-2 bg-yellow-50 border-l-2 border-yellow-400 rounded">
-                      <p className="text-xs font-medium text-yellow-800">Xero Integration Issues:</p>
+                      <p className="text-xs font-medium text-yellow-800">
+                        Xero Integration Issues:
+                      </p>
                       <p className="text-xs text-yellow-700">
                         Check Xero API credentials and connection status in server logs
                       </p>
@@ -784,7 +783,7 @@ const DashboardEnterprise = () => {
           currentWC: 869000,
           daysCCC: 43.6,
           optimizationPotential: 150000,
-          percentOfRevenue: 8.1
+          percentOfRevenue: 8.1,
         }}
       />
 

@@ -82,9 +82,8 @@ export default class ApprovalEngine {
     }
 
     const approverChain = this.getApproverChain(request, riskCategory)
-    const slaHours = riskCategory === 'high'
-      ? this.config.criticalSlaHours
-      : this.config.defaultSlaHours
+    const slaHours =
+      riskCategory === 'high' ? this.config.criticalSlaHours : this.config.defaultSlaHours
 
     return {
       decision: 'requires_approval',
@@ -115,7 +114,7 @@ export default class ApprovalEngine {
 
     parts.push(`Scenario: ${scenario}`)
     parts.push(`Risk category: ${riskCategory}`)
-    parts.push(`Requested amount: £${Number(request.amount || 0).toLocaleString()}`)
+    parts.push(`Requested amount: ï¿½${Number(request.amount || 0).toLocaleString()}`)
 
     if (request.description) {
       parts.push(`Purpose: ${request.description}`)

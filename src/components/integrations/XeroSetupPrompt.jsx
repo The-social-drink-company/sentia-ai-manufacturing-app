@@ -1,5 +1,5 @@
-import { ExclamationCircleIcon, ArrowRightIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
-import { cn } from '@/lib/utils';
+import { ExclamationCircleIcon, ArrowRightIcon, CheckCircleIcon } from '@heroicons/react/24/outline'
+import { cn } from '@/lib/utils'
 
 /**
  * Xero Setup Prompt Component
@@ -14,35 +14,33 @@ import { cn } from '@/lib/utils';
  * @param {Object} xeroStatus.details - Additional details (missing env vars, etc.)
  */
 export default function XeroSetupPrompt({ xeroStatus }) {
-  const isDevelopmentEnv = import.meta.env.MODE === 'development' || import.meta.env.VITE_DEVELOPMENT_MODE === 'true'
+  const isDevelopmentEnv =
+    import.meta.env.MODE === 'development' || import.meta.env.VITE_DEVELOPMENT_MODE === 'true'
   // Don't show if Xero is connected
   if (!xeroStatus || xeroStatus.status === 'connected') {
-    return null;
+    return null
   }
 
   const getStatusIcon = () => {
     if (xeroStatus.status === 'configuration_error') {
-      return <ExclamationCircleIcon className="mx-auto h-12 w-12 text-amber-500" />;
+      return <ExclamationCircleIcon className="mx-auto h-12 w-12 text-amber-500" />
     }
-    return <ExclamationCircleIcon className="mx-auto h-12 w-12 text-slate-400" />;
-  };
+    return <ExclamationCircleIcon className="mx-auto h-12 w-12 text-slate-400" />
+  }
 
   const getStatusColor = () => {
     switch (xeroStatus.status) {
       case 'configuration_error':
-        return 'border-amber-300 bg-amber-50';
+        return 'border-amber-300 bg-amber-50'
       case 'api_error':
-        return 'border-red-300 bg-red-50';
+        return 'border-red-300 bg-red-50'
       default:
-        return 'border-slate-300 bg-slate-50';
+        return 'border-slate-300 bg-slate-50'
     }
-  };
+  }
 
   return (
-    <div className={cn(
-      'rounded-lg border-2 border-dashed p-8',
-      getStatusColor()
-    )}>
+    <div className={cn('rounded-lg border-2 border-dashed p-8', getStatusColor())}>
       <div className="mx-auto max-w-2xl text-center">
         {getStatusIcon()}
 
@@ -57,16 +55,12 @@ export default function XeroSetupPrompt({ xeroStatus }) {
         {/* Configuration Error - Show Missing Variables */}
         {xeroStatus.status === 'configuration_error' && xeroStatus.details && (
           <div className="mt-6 rounded-md bg-amber-100 p-4 text-left">
-            <p className="text-sm font-medium text-amber-800 mb-3">
-              Missing Configuration:
-            </p>
+            <p className="text-sm font-medium text-amber-800 mb-3">Missing Configuration:</p>
             <ul className="space-y-2 text-sm text-amber-700">
-              {xeroStatus.details.missing?.map((envVar) => (
+              {xeroStatus.details.missing?.map(envVar => (
                 <li key={envVar} className="flex items-center gap-2">
                   <ExclamationCircleIcon className="h-4 w-4 flex-shrink-0" />
-                  <code className="font-mono text-xs bg-amber-200 px-2 py-1 rounded">
-                    {envVar}
-                  </code>
+                  <code className="font-mono text-xs bg-amber-200 px-2 py-1 rounded">{envVar}</code>
                 </li>
               ))}
             </ul>
@@ -75,9 +69,7 @@ export default function XeroSetupPrompt({ xeroStatus }) {
 
         {/* Setup Steps */}
         <div className="mt-6 rounded-md bg-white p-6 text-left shadow-sm">
-          <h4 className="text-sm font-semibold text-slate-900 mb-4">
-            Quick Setup Steps:
-          </h4>
+          <h4 className="text-sm font-semibold text-slate-900 mb-4">Quick Setup Steps:</h4>
           <ol className="space-y-3 text-sm text-slate-700">
             <li className="flex gap-3">
               <span className="flex-shrink-0 flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 text-xs font-semibold text-blue-700">
@@ -118,8 +110,10 @@ export default function XeroSetupPrompt({ xeroStatus }) {
               <div>
                 <span className="font-medium">Configure Environment Variables</span>
                 <p className="mt-1 text-xs text-slate-500">
-                  Add <code className="font-mono text-xs bg-slate-100 px-1">XERO_CLIENT_ID</code> and{' '}
-                  <code className="font-mono text-xs bg-slate-100 px-1">XERO_CLIENT_SECRET</code> to your environment
+                  Add <code className="font-mono text-xs bg-slate-100 px-1">XERO_CLIENT_ID</code>{' '}
+                  and{' '}
+                  <code className="font-mono text-xs bg-slate-100 px-1">XERO_CLIENT_SECRET</code> to
+                  your environment
                 </p>
               </div>
             </li>
@@ -172,6 +166,5 @@ export default function XeroSetupPrompt({ xeroStatus }) {
         )}
       </div>
     </div>
-  );
+  )
 }
-

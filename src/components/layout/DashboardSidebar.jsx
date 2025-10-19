@@ -193,9 +193,7 @@ const DashboardSidebar = ({ isOpen = false, onClose = () => {} }) => {
         {/* Footer Section (Optional) */}
         <div className="border-t border-slate-700 p-4">
           <div className="rounded-lg bg-slate-900 p-3">
-            <p className="text-xs text-slate-400">
-              © {new Date().getFullYear()} Sentia Spirits
-            </p>
+            <p className="text-xs text-slate-400">© {new Date().getFullYear()} Sentia Spirits</p>
           </div>
         </div>
       </aside>

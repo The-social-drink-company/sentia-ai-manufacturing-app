@@ -360,7 +360,7 @@ router.get('/', async (req, res) => {
           // Get inventory data from database
           const [inventorySummary, cashFlowData] = await Promise.all([
             fetchInventoryData(),
-            xeroService.getCashFlow(3)
+            xeroService.getCashFlow(3),
           ])
 
           // Build response from REAL Xero data
@@ -408,7 +408,7 @@ router.get('/', async (req, res) => {
             quickRatio: workingCapitalData.quickRatio,
             cashConversionCycle: workingCapitalData.cashConversionCycle,
             dataSource: 'xero_api',
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
           })
           console.log('📡 SSE broadcast sent: working_capital:update')
 
@@ -459,9 +459,7 @@ router.get('/', async (req, res) => {
       const cashBalance = toNumber(latestRecord.cash ?? runwayHistory[0]?.cashBalance)
 
       const workingCapitalData = {
-        workingCapital: toNumber(
-          latestRecord.currentAssets - latestRecord.currentLiabilities
-        ),
+        workingCapital: toNumber(latestRecord.currentAssets - latestRecord.currentLiabilities),
         currentRatio: toNumber(latestRecord.workingCapitalRatio),
         quickRatio: toNumber(latestRecord.quickRatio),
         cash: cashBalance,
@@ -500,7 +498,8 @@ router.get('/', async (req, res) => {
     return res.status(503).json({
       success: false,
       error: 'No working capital data available',
-      message: 'Please connect to Xero or load data into the database to view working capital metrics',
+      message:
+        'Please connect to Xero or load data into the database to view working capital metrics',
       dataSource: 'none',
       xeroStatus: xeroHealth,
       setupInstructions: {
@@ -510,21 +509,20 @@ router.get('/', async (req, res) => {
             'Set XERO_CLIENT_ID environment variable',
             'Set XERO_CLIENT_SECRET environment variable',
             'Ensure Xero Custom Connection is created with accounting.transactions.read permission',
-            'See docs/xero-setup.md for detailed instructions'
-          ]
+            'See docs/xero-setup.md for detailed instructions',
+          ],
         },
         option2: {
           title: 'Load Database Records',
           steps: [
             'Import working capital data into working_capital table',
             'Ensure records have required fields: currentAssets, currentLiabilities, cash, accountsReceivable, accountsPayable',
-            'See database/seed-data for examples'
-          ]
-        }
+            'See database/seed-data for examples',
+          ],
+        },
       },
       timestamp: new Date().toISOString(),
     })
-
   } catch (error) {
     console.error('💥 Working capital endpoint error:', error)
     return res.status(500).json({

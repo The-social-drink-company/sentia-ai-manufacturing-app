@@ -212,6 +212,3 @@ function BulletproofAuthProvider({ children }) {
 
 // Export everything needed
 export default BulletproofAuthProvider
-
-
-

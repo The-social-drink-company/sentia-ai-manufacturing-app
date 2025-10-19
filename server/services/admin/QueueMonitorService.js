@@ -191,8 +191,8 @@ class QueueMonitorService {
         const recentJobs = await bullQueue.getJobs(['completed'], 0, 10)
         if (recentJobs.length > 0) {
           const durations = recentJobs
-            .filter((job) => job.finishedOn && job.processedOn)
-            .map((job) => job.finishedOn - job.processedOn)
+            .filter(job => job.finishedOn && job.processedOn)
+            .map(job => job.finishedOn - job.processedOn)
 
           if (durations.length > 0) {
             avgProcessingTime = Math.round(
@@ -383,7 +383,7 @@ class QueueMonitorService {
       }
 
       // Retry each failed job
-      const retryPromises = failedJobs.map((job) => job.retry())
+      const retryPromises = failedJobs.map(job => job.retry())
       await Promise.all(retryPromises)
 
       logger.info(`[QueueMonitorService] Retried ${failedJobs.length} failed jobs in ${queueName}`)
@@ -424,7 +424,9 @@ class QueueMonitorService {
 
       const cleaned = await bullQueue.clean(grace, limit, status)
 
-      logger.info(`[QueueMonitorService] Cleaned ${cleaned.length} ${status} jobs from ${queueName}`)
+      logger.info(
+        `[QueueMonitorService] Cleaned ${cleaned.length} ${status} jobs from ${queueName}`
+      )
 
       // Update metrics
       await this.updateQueueMetrics(queueName)
@@ -463,7 +465,7 @@ class QueueMonitorService {
 
       const jobs = await bullQueue.getJobs([status], start, end)
 
-      const formattedJobs = jobs.map((job) => ({
+      const formattedJobs = jobs.map(job => ({
         id: job.id,
         name: job.name,
         data: job.data,

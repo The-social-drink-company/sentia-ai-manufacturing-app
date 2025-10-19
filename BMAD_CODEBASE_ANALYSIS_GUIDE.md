@@ -1,4 +1,5 @@
 # BMAD Codebase Analysis & Alignment Guide
+
 ## Complete Step-by-Step Process for Sentia Manufacturing Dashboard
 
 **Purpose**: Fully analyze, assess, and align the codebase and context files with the initial project brief, then review, revise, and enhance the original intent.
@@ -80,6 +81,7 @@ This guide will help you:
 ### Required Software
 
 - [ ] **BMAD Method CLI** installed
+
   ```bash
   npm install -g bmad-method
   # Or check installation:
@@ -101,6 +103,7 @@ This guide will help you:
 ### Context Files to Have Ready
 
 Located in `context/business-requirements/`:
+
 - [ ] `sentia_business_model.md` - Original business model
 - [ ] `acceptance_criteria.md` - Success criteria
 - [ ] `user_workflows.md` - User stories and workflows
@@ -135,6 +138,7 @@ bmad --help
 ```
 
 Expected output:
+
 ```
 BMAD Method v6a - Agentic Agile Driven Development
 Available commands:
@@ -152,12 +156,14 @@ bmad pm workflow-status
 ```
 
 **What this does**:
+
 - Analyzes project type (Brownfield/Greenfield)
 - Determines scale level (0-4)
 - Identifies current phase
 - Creates tracking directory structure
 
 **Expected output**:
+
 ```
 🔍 Analyzing project...
 
@@ -193,6 +199,7 @@ code context/business-requirements/acceptance_criteria.md
 ```
 
 **Key findings from CLAUDE.md** (lines 89-106):
+
 - ✅ 75% implementation (UI, auth, deployment, some business logic)
 - ❌ 25% mock data (Business Intelligence, What-If Analysis, some integrations)
 - 🔄 Recent improvements (Working Capital, Demand Forecasting, Shopify/Xero integrations)
@@ -324,27 +331,33 @@ code bmad/planning/MY_ANALYSIS_NOTES.md
 ## Key Findings
 
 ### What Surprised Me:
+
 - [e.g., Working Capital is actually 95% complete, not mock]
 - [e.g., Demand Forecasting is real, using actual algorithms]
 
 ### Critical Gaps Identified:
+
 1. [Feature X] - [Why critical]
 2. [Feature Y] - [Impact on users]
 
 ### Original Intent Review:
+
 - Should we stick with original vision? YES/NO
 - What should we change? [notes]
 - What should we add? [notes]
 
 ### Priority Changes:
+
 - Original: [old priority list]
 - Recommended: [new priority list]
 
 ## Questions for Stakeholders:
+
 1. [Question about business priority]
 2. [Question about user needs]
 
 ## Next Steps:
+
 - [ ] Review with team
 - [ ] Get stakeholder input
 - [ ] Proceed to technical analysis
@@ -453,6 +466,7 @@ code bmad/solutioning/mock-data-report.md
 
 3. **integration-status.md**
    - Integration-by-integration analysis:
+
      ```
      Xero API:
      - Status: ✅ OPERATIONAL
@@ -501,27 +515,33 @@ code bmad/solutioning/MY_TECHNICAL_NOTES.md
 ## Architecture Assessment
 
 ### Strengths:
+
 - [e.g., Clean React component structure]
 - [e.g., Good separation of concerns]
 
 ### Concerns:
+
 - [e.g., Too much business logic in components]
 - [e.g., Database queries not optimized]
 
 ## Critical Technical Debt:
+
 1. [Item] - Estimated effort: [X days]
 2. [Item] - Estimated effort: [X days]
 
 ## Integration Priorities:
+
 1. [Complete Amazon SP-API] - Business impact: [HIGH]
 2. [Finish Unleashed sync] - Business impact: [MEDIUM]
 
 ## Mock Data Elimination Plan:
+
 - Phase 1 (Critical): [List items]
 - Phase 2 (High): [List items]
 - Phase 3 (Medium): [List items]
 
 ## Questions for Tech Lead:
+
 1. [Technical question]
 2. [Architecture decision needed]
 ```
@@ -533,6 +553,7 @@ code bmad/solutioning/MY_TECHNICAL_NOTES.md
 ### Step 4.1: Synthesize Findings
 
 Now you have two comprehensive reports:
+
 - **PM Agent**: Business/strategic alignment
 - **Architect Agent**: Technical implementation assessment
 
@@ -557,6 +578,7 @@ code bmad/SYNTHESIS_REPORT.md
 ## Overall Alignment Score: [X]%
 
 ### Breakdown:
+
 - Strategic Alignment: [X]% (PM Agent finding)
 - Technical Implementation: [X]% (Architect finding)
 - Integration Completeness: [X]%
@@ -565,30 +587,37 @@ code bmad/SYNTHESIS_REPORT.md
 ## Critical Findings
 
 ### What's Working Well ✅
+
 1. [e.g., Working Capital Engine - 95% complete, real algorithms]
 2. [e.g., Deployment infrastructure - enterprise-grade]
 3. [e.g., Xero/Shopify integrations - operational]
 
 ### What's Mock Data ⚠️
+
 1. [Feature] - Location: [file paths] - Impact: [HIGH/MEDIUM/LOW]
 2. [Feature] - Location: [file paths] - Impact: [HIGH/MEDIUM/LOW]
 
 ### What's Missing ❌
+
 1. [Feature] - From original brief: [Yes/No] - Priority: [HIGH/MEDIUM/LOW]
 2. [Feature] - From original brief: [Yes/No] - Priority: [HIGH/MEDIUM/LOW]
 
 ## Alignment with Original Intent
 
 ### Original Vision:
+
 [Summary from business-requirements]
 
 ### Current Reality:
+
 [Summary from codebase analysis]
 
 ### Gap Analysis:
+
 [Where they differ and why]
 
 ### Recommendation:
+
 - [ ] Continue with original vision
 - [ ] Revise original vision because: [reasons]
 - [ ] Enhance original vision with: [new ideas]
@@ -596,35 +625,42 @@ code bmad/SYNTHESIS_REPORT.md
 ## Technical Debt Impact
 
 ### Critical (Must Fix Before Launch):
+
 - [Item] - Effort: [X days] - Impact: [description]
 
 ### High Priority (Should Fix Soon):
+
 - [Item] - Effort: [X days] - Impact: [description]
 
 ### Medium Priority (Can Defer):
+
 - [Item] - Effort: [X days] - Impact: [description]
 
 ## Integration Status Summary
 
-| Integration | Status | Coverage | Issues |
-|------------|--------|----------|--------|
-| Xero | ✅ Operational | 85% | Rate limiting |
-| Shopify | ✅ Operational | 90% | Sync delays |
-| Amazon | ⚠️ Ready | 0% | No credentials |
-| Unleashed | 🔄 In Progress | 40% | Manufacturing sync |
+| Integration | Status         | Coverage | Issues             |
+| ----------- | -------------- | -------- | ------------------ |
+| Xero        | ✅ Operational | 85%      | Rate limiting      |
+| Shopify     | ✅ Operational | 90%      | Sync delays        |
+| Amazon      | ⚠️ Ready       | 0%       | No credentials     |
+| Unleashed   | 🔄 In Progress | 40%      | Manufacturing sync |
 
 ## Revised Project Vision
 
 ### Original Intent:
+
 [What we started with]
 
 ### Learned Insights:
+
 [What we discovered during development]
 
 ### Enhanced Vision:
+
 [Combining original + learnings + market feedback]
 
 ### Scope Changes Recommended:
+
 - Add: [New features based on learning]
 - Remove: [Features that don't make sense anymore]
 - Defer: [Features to push to v2.0]
@@ -669,47 +705,59 @@ code bmad/STAKEHOLDER_FEEDBACK.md
 ## Business Stakeholder Feedback
 
 ### Attendees:
+
 - [Name, Role]
 
 ### Key Feedback:
+
 - [Feedback item]
 - [Feedback item]
 
 ### Decisions Made:
+
 - [Decision]
 - [Decision]
 
 ### Questions/Concerns:
+
 - [Item]
 
 ## Technical Team Feedback
 
 ### Attendees:
+
 - [Name, Role]
 
 ### Key Feedback:
+
 - [Feedback item]
 
 ### Technical Decisions:
+
 - [Decision]
 
 ### Resource Needs:
+
 - [Item]
 
 ## Product Owner Feedback
 
 ### Attendees:
+
 - [Name, Role]
 
 ### Priority Changes:
+
 - [Change]
 
 ### Scope Decisions:
+
 - Add: [Feature]
 - Remove: [Feature]
 - Defer: [Feature]
 
 ### Approval Status:
+
 - [ ] Roadmap approved
 - [ ] Budget approved
 - [ ] Timeline approved
@@ -757,6 +805,7 @@ bmad/stories/
 ### Step 5.2: Prioritize Stories
 
 Create priority order based on:
+
 1. Business value (from PM analysis)
 2. Technical dependencies (from Architect analysis)
 3. Risk/complexity
@@ -773,26 +822,30 @@ code bmad/PRIORITIZED_BACKLOG.md
 # Prioritized Story Backlog
 
 ## Sprint 1 (Critical Items)
+
 **Goal**: Eliminate critical mock data, establish confidence
 
-| Priority | Story ID | Title | Epic | Effort | Value | Risk |
-|----------|----------|-------|------|--------|-------|------|
-| P0 | E01-S01 | Replace What-If mock calculations | 01 | 5 days | HIGH | LOW |
-| P0 | E01-S02 | Connect real Xero financial data | 01 | 3 days | HIGH | MED |
-| P0 | E04-S01 | Fix critical lint errors | 04 | 2 days | MED | LOW |
+| Priority | Story ID | Title                             | Epic | Effort | Value | Risk |
+| -------- | -------- | --------------------------------- | ---- | ------ | ----- | ---- |
+| P0       | E01-S01  | Replace What-If mock calculations | 01   | 5 days | HIGH  | LOW  |
+| P0       | E01-S02  | Connect real Xero financial data  | 01   | 3 days | HIGH  | MED  |
+| P0       | E04-S01  | Fix critical lint errors          | 04   | 2 days | MED   | LOW  |
 
 ## Sprint 2 (High Value)
+
 **Goal**: Complete major integrations
 
-| Priority | Story ID | Title | Epic | Effort | Value | Risk |
-|----------|----------|-------|------|--------|-------|------|
-| P1 | E02-S01 | Configure Amazon SP-API | 02 | 3 days | HIGH | MED |
-| P1 | E02-S02 | Implement Amazon order sync | 02 | 5 days | HIGH | HIGH |
+| Priority | Story ID | Title                       | Epic | Effort | Value | Risk |
+| -------- | -------- | --------------------------- | ---- | ------ | ----- | ---- |
+| P1       | E02-S01  | Configure Amazon SP-API     | 02   | 3 days | HIGH  | MED  |
+| P1       | E02-S02  | Implement Amazon order sync | 02   | 5 days | HIGH  | HIGH |
 
 ## Sprint 3 (Enhancement)
+
 ...
 
 ## Backlog (Future)
+
 ...
 ```
 
@@ -812,8 +865,8 @@ code bmad/IMPLEMENTATION_ROADMAP.md
 [Revised vision from Phase 4]
 
 ## Timeline Overview
-
 ```
+
 Month 1: Foundation
 ├─ Sprint 1: Critical mock data elimination
 └─ Sprint 2: Core integrations
@@ -825,6 +878,7 @@ Month 2: Enhancements
 Month 3: Polish
 ├─ Sprint 5: Performance optimization
 └─ Sprint 6: Final testing & launch
+
 ```
 
 ## Detailed Sprint Plan
@@ -921,6 +975,7 @@ code bmad/RESOURCE_ALLOCATION.md
 ## Team Structure
 
 ### Core Team
+
 - **Product Owner**: [Name] - Decision making, stakeholder liaison
 - **Tech Lead**: [Name] - Architecture, technical decisions
 - **Senior Developer**: [Name] - Complex features, mentoring
@@ -928,12 +983,14 @@ code bmad/RESOURCE_ALLOCATION.md
 - **QA Engineer**: [Name] - Testing, quality assurance
 
 ### Support Team
+
 - **DevOps**: [Name] - 20% allocation for deployments
 - **Designer**: [Name] - As needed for UI/UX
 
 ## Sprint Assignments
 
 ### Sprint 1 (Weeks 1-2)
+
 - **Senior Dev**: E01-S01 (What-If calculations), E01-S02 (Xero)
 - **Developer**: E01-S03 (Error states), E04-S01 (Lint fixes)
 - **QA**: Test plan creation, sprint 1 testing
@@ -954,6 +1011,7 @@ bmad pm track-progress
 ```
 
 This creates:
+
 ```
 bmad/tracking/
 ├── sprint-1-burndown.md
@@ -981,18 +1039,21 @@ bmad dev story E01-S01
 ### Step 6.3: Regular Review Cycles
 
 **Daily Standup** (5-10 minutes):
+
 ```bash
 # Update daily progress
 code bmad/tracking/daily-standups.md
 ```
 
 **Weekly Sprint Review** (1 hour):
+
 ```bash
 # Review completed stories
 bmad pm sprint-review
 ```
 
 **End of Sprint Retrospective** (1 hour):
+
 ```bash
 # Learn and improve
 bmad pm retrospective
@@ -1091,6 +1152,7 @@ bmad/
 **Symptoms**: `bmad: command not found`
 
 **Solution**:
+
 ```bash
 npm install -g bmad-method
 
@@ -1108,6 +1170,7 @@ bmad --version
 **Symptoms**: Agent runs but no files created
 
 **Solution**:
+
 ```bash
 # Check bmad directory exists
 mkdir -p bmad/planning bmad/solutioning
@@ -1126,6 +1189,7 @@ bmad pm plan-project --verbose
 **Symptoms**: Agent running for >30 minutes
 
 **Solution**:
+
 ```bash
 # Check if stuck on large files
 # Exclude node_modules and build directories
@@ -1150,6 +1214,7 @@ bmad pm plan-project
 **Symptoms**: Agent says "No context found"
 
 **Solution**:
+
 ```bash
 # Verify context files exist
 ls -la context/business-requirements/
@@ -1172,11 +1237,13 @@ bmad pm plan-project
 
 **Solution**:
 This might be accurate! Check:
+
 1. Are original requirements documented?
 2. Does codebase have the features?
 3. Review mock data locations in CLAUDE.md
 
 The alignment might genuinely be low if:
+
 - Features are claimed but not implemented
 - Mock data is used instead of real
 - Original requirements were never met
@@ -1188,6 +1255,7 @@ The alignment might genuinely be low if:
 **Symptoms**: `bmad pm create-stories` fails
 
 **Solution**:
+
 ```bash
 # Ensure planning phase completed
 ls bmad/planning/prd.md
@@ -1236,12 +1304,14 @@ bmad pm check-alignment
 Use this checklist to track your progress:
 
 ### Phase 1: Initialize ✓
+
 - [ ] Navigate to project directory
 - [ ] Verify BMAD installed
 - [ ] Run `bmad pm workflow-status`
 - [ ] Review project context files
 
 ### Phase 2: Strategic Analysis ✓
+
 - [ ] Run `bmad pm plan-project`
 - [ ] Review PRD
 - [ ] Review alignment report
@@ -1249,6 +1319,7 @@ Use this checklist to track your progress:
 - [ ] Document findings
 
 ### Phase 3: Technical Analysis ✓
+
 - [ ] Run `bmad architect 3-solutioning`
 - [ ] Review solution architecture
 - [ ] Review technical debt
@@ -1256,6 +1327,7 @@ Use this checklist to track your progress:
 - [ ] Document technical findings
 
 ### Phase 4: Review Results ✓
+
 - [ ] Create synthesis report
 - [ ] Review with business stakeholders
 - [ ] Review with technical team
@@ -1263,6 +1335,7 @@ Use this checklist to track your progress:
 - [ ] Document feedback
 
 ### Phase 5: Create Action Plan ✓
+
 - [ ] Generate story backlog
 - [ ] Prioritize stories
 - [ ] Create implementation roadmap
@@ -1270,6 +1343,7 @@ Use this checklist to track your progress:
 - [ ] Get approval
 
 ### Phase 6: Implementation ✓
+
 - [ ] Set up tracking
 - [ ] Implement stories
 - [ ] Regular reviews

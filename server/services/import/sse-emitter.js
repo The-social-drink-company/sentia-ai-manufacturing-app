@@ -6,27 +6,27 @@
  * @module services/import/sse-emitter
  */
 
-let sseService;
+let sseService
 
 // Lazy load SSE service to avoid circular dependencies
 function getSSEService() {
   if (!sseService) {
     try {
-      sseService = require('../sse/index.cjs');
+      sseService = require('../sse/index.cjs')
     } catch (error) {
-      console.warn('SSE service not available:', error.message);
-      return null;
+      console.warn('SSE service not available:', error.message)
+      return null
     }
   }
-  return sseService;
+  return sseService
 }
 
 /**
  * Emit import progress update
  */
 function emitImportProgress(importJobId, progress) {
-  const sse = getSSEService();
-  if (!sse || !sse.emit) return;
+  const sse = getSSEService()
+  if (!sse || !sse.emit) return
 
   try {
     // Emit to job-specific channel
@@ -38,16 +38,16 @@ function emitImportProgress(importJobId, progress) {
       failedRows: progress.failedRows,
       status: 'IMPORTING',
       timestamp: new Date().toISOString(),
-    });
+    })
 
     // Emit to general import channel
     sse.emit('import', 'import:progress', {
       jobId: importJobId,
       progress: progress.progress,
       timestamp: new Date().toISOString(),
-    });
+    })
   } catch (error) {
-    console.error('Failed to emit import progress:', error.message);
+    console.error('Failed to emit import progress:', error.message)
   }
 }
 
@@ -55,8 +55,8 @@ function emitImportProgress(importJobId, progress) {
  * Emit import started event
  */
 function emitImportStarted(importJobId, metadata) {
-  const sse = getSSEService();
-  if (!sse || !sse.emit) return;
+  const sse = getSSEService()
+  if (!sse || !sse.emit) return
 
   try {
     sse.emit(`import:${importJobId}`, 'import:started', {
@@ -64,14 +64,14 @@ function emitImportStarted(importJobId, metadata) {
       status: 'IMPORTING',
       ...metadata,
       timestamp: new Date().toISOString(),
-    });
+    })
 
     sse.emit('import', 'import:started', {
       jobId: importJobId,
       timestamp: new Date().toISOString(),
-    });
+    })
   } catch (error) {
-    console.error('Failed to emit import started:', error.message);
+    console.error('Failed to emit import started:', error.message)
   }
 }
 
@@ -79,8 +79,8 @@ function emitImportStarted(importJobId, metadata) {
  * Emit import completed event
  */
 function emitImportCompleted(importJobId, result) {
-  const sse = getSSEService();
-  if (!sse || !sse.emit) return;
+  const sse = getSSEService()
+  if (!sse || !sse.emit) return
 
   try {
     sse.emit(`import:${importJobId}`, 'import:completed', {
@@ -91,14 +91,14 @@ function emitImportCompleted(importJobId, result) {
       failedRows: result.failedRows,
       duration: result.duration,
       timestamp: new Date().toISOString(),
-    });
+    })
 
     sse.emit('import', 'import:completed', {
       jobId: importJobId,
       timestamp: new Date().toISOString(),
-    });
+    })
   } catch (error) {
-    console.error('Failed to emit import completed:', error.message);
+    console.error('Failed to emit import completed:', error.message)
   }
 }
 
@@ -106,8 +106,8 @@ function emitImportCompleted(importJobId, result) {
  * Emit import failed event
  */
 function emitImportFailed(importJobId, error) {
-  const sse = getSSEService();
-  if (!sse || !sse.emit) return;
+  const sse = getSSEService()
+  if (!sse || !sse.emit) return
 
   try {
     sse.emit(`import:${importJobId}`, 'import:failed', {
@@ -115,14 +115,14 @@ function emitImportFailed(importJobId, error) {
       status: 'FAILED',
       error: error.message,
       timestamp: new Date().toISOString(),
-    });
+    })
 
     sse.emit('import', 'import:failed', {
       jobId: importJobId,
       timestamp: new Date().toISOString(),
-    });
+    })
   } catch (error) {
-    console.error('Failed to emit import failed:', error.message);
+    console.error('Failed to emit import failed:', error.message)
   }
 }
 
@@ -130,8 +130,8 @@ function emitImportFailed(importJobId, error) {
  * Emit export progress update
  */
 function emitExportProgress(exportJobId, progress) {
-  const sse = getSSEService();
-  if (!sse || !sse.emit) return;
+  const sse = getSSEService()
+  if (!sse || !sse.emit) return
 
   try {
     sse.emit(`export:${exportJobId}`, 'export:progress', {
@@ -139,15 +139,15 @@ function emitExportProgress(exportJobId, progress) {
       progress,
       status: 'EXPORTING',
       timestamp: new Date().toISOString(),
-    });
+    })
 
     sse.emit('export', 'export:progress', {
       jobId: exportJobId,
       progress,
       timestamp: new Date().toISOString(),
-    });
+    })
   } catch (error) {
-    console.error('Failed to emit export progress:', error.message);
+    console.error('Failed to emit export progress:', error.message)
   }
 }
 
@@ -155,8 +155,8 @@ function emitExportProgress(exportJobId, progress) {
  * Emit export started event
  */
 function emitExportStarted(exportJobId, metadata) {
-  const sse = getSSEService();
-  if (!sse || !sse.emit) return;
+  const sse = getSSEService()
+  if (!sse || !sse.emit) return
 
   try {
     sse.emit(`export:${exportJobId}`, 'export:started', {
@@ -164,14 +164,14 @@ function emitExportStarted(exportJobId, metadata) {
       status: 'EXPORTING',
       ...metadata,
       timestamp: new Date().toISOString(),
-    });
+    })
 
     sse.emit('export', 'export:started', {
       jobId: exportJobId,
       timestamp: new Date().toISOString(),
-    });
+    })
   } catch (error) {
-    console.error('Failed to emit export started:', error.message);
+    console.error('Failed to emit export started:', error.message)
   }
 }
 
@@ -179,8 +179,8 @@ function emitExportStarted(exportJobId, metadata) {
  * Emit export completed event
  */
 function emitExportCompleted(exportJobId, result) {
-  const sse = getSSEService();
-  if (!sse || !sse.emit) return;
+  const sse = getSSEService()
+  if (!sse || !sse.emit) return
 
   try {
     sse.emit(`export:${exportJobId}`, 'export:completed', {
@@ -191,14 +191,14 @@ function emitExportCompleted(exportJobId, result) {
       filename: result.filename,
       duration: result.duration,
       timestamp: new Date().toISOString(),
-    });
+    })
 
     sse.emit('export', 'export:completed', {
       jobId: exportJobId,
       timestamp: new Date().toISOString(),
-    });
+    })
   } catch (error) {
-    console.error('Failed to emit export completed:', error.message);
+    console.error('Failed to emit export completed:', error.message)
   }
 }
 
@@ -206,8 +206,8 @@ function emitExportCompleted(exportJobId, result) {
  * Emit export failed event
  */
 function emitExportFailed(exportJobId, error) {
-  const sse = getSSEService();
-  if (!sse || !sse.emit) return;
+  const sse = getSSEService()
+  if (!sse || !sse.emit) return
 
   try {
     sse.emit(`export:${exportJobId}`, 'export:failed', {
@@ -215,14 +215,14 @@ function emitExportFailed(exportJobId, error) {
       status: 'FAILED',
       error: error.message,
       timestamp: new Date().toISOString(),
-    });
+    })
 
     sse.emit('export', 'export:failed', {
       jobId: exportJobId,
       timestamp: new Date().toISOString(),
-    });
+    })
   } catch (error) {
-    console.error('Failed to emit export failed:', error.message);
+    console.error('Failed to emit export failed:', error.message)
   }
 }
 
@@ -238,4 +238,4 @@ module.exports = {
   emitExportStarted,
   emitExportCompleted,
   emitExportFailed,
-};
+}

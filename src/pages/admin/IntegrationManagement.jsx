@@ -43,11 +43,15 @@ const StatusPill = ({ status }) => {
     status === 'online'
       ? 'bg-green-100 text-green-700'
       : status === 'degraded'
-      ? 'bg-amber-100 text-amber-700'
-      : status === 'offline'
-      ? 'bg-red-100 text-red-700'
-      : 'bg-gray-100 text-gray-600'
-  return <span className={`rounded-full px-2 py-0.5 text-xs font-semibold uppercase ${palette}`}>{status || 'unknown'}</span>
+        ? 'bg-amber-100 text-amber-700'
+        : status === 'offline'
+          ? 'bg-red-100 text-red-700'
+          : 'bg-gray-100 text-gray-600'
+  return (
+    <span className={`rounded-full px-2 py-0.5 text-xs font-semibold uppercase ${palette}`}>
+      {status || 'unknown'}
+    </span>
+  )
 }
 
 const IntegrationCard = ({ integration, active, onSelect }) => {
@@ -67,7 +71,9 @@ const IntegrationCard = ({ integration, active, onSelect }) => {
           <Icon className="h-4 w-4 text-blue-500" />
           {integration.name || integration.id}
         </div>
-        <p className="text-xs text-gray-500">{integration.vendor || integration.description || 'Unknown vendor'}</p>
+        <p className="text-xs text-gray-500">
+          {integration.vendor || integration.description || 'Unknown vendor'}
+        </p>
       </div>
       <StatusPill status={integration.status} />
     </button>
@@ -95,7 +101,8 @@ const SyncJobList = ({ jobs }) => {
             <span>{job.startedAt ? new Date(job.startedAt).toLocaleString() : 'unknown time'}</span>
           </div>
           <p>
-            Records: {job.recordsProcessed ?? 'n/a'} · Duration: {job.durationMs ? `${Math.round(job.durationMs / 1000)}s` : 'n/a'}
+            Records: {job.recordsProcessed ?? 'n/a'} · Duration:{' '}
+            {job.durationMs ? `${Math.round(job.durationMs / 1000)}s` : 'n/a'}
           </p>
         </li>
       ))}
@@ -114,8 +121,12 @@ export default function IntegrationManagement() {
     staleTime: 60 * 1000,
   })
 
-  const integrations = useMemo(() => normalizeIntegrations(integrationsQuery.data), [integrationsQuery.data])
-  const selectedIntegration = integrations.find(item => (item.id || item.key) === selectedIntegrationId) || integrations[0]
+  const integrations = useMemo(
+    () => normalizeIntegrations(integrationsQuery.data),
+    [integrationsQuery.data]
+  )
+  const selectedIntegration =
+    integrations.find(item => (item.id || item.key) === selectedIntegrationId) || integrations[0]
 
   useEffect(() => {
     if (!selectedIntegrationId && selectedIntegration) {
@@ -131,7 +142,8 @@ export default function IntegrationManagement() {
 
   const historyQuery = useQuery({
     queryKey: ['admin', 'integration-history', selectedIntegration?.id || selectedIntegration?.key],
-    queryFn: () => getSyncJobHistory(selectedIntegration.id || selectedIntegration.key, { limit: 5 }),
+    queryFn: () =>
+      getSyncJobHistory(selectedIntegration.id || selectedIntegration.key, { limit: 5 }),
     enabled: Boolean(selectedIntegration),
   })
 
@@ -150,7 +162,9 @@ export default function IntegrationManagement() {
 
   const rotateKey = useMutation({
     mutationFn: async () => {
-      const confirmRotate = window.confirm('Rotate integration API key? Existing credentials will stop working.')
+      const confirmRotate = window.confirm(
+        'Rotate integration API key? Existing credentials will stop working.'
+      )
       if (!confirmRotate) return null
       const mfa = window.prompt(MFA_MESSAGE)
       if (!mfa) throw new Error('MFA code is required')
@@ -189,7 +203,8 @@ export default function IntegrationManagement() {
         <div>
           <h1 className="text-2xl font-semibold text-gray-900">Integration Management</h1>
           <p className="text-sm text-gray-500">
-            Monitor external services, run manual syncs, and rotate credentials with MFA enforcement.
+            Monitor external services, run manual syncs, and rotate credentials with MFA
+            enforcement.
           </p>
         </div>
         <div className="flex items-center gap-3 text-xs text-gray-500">
@@ -214,9 +229,13 @@ export default function IntegrationManagement() {
 
       <section className="grid gap-6 lg:grid-cols-[280px,1fr]">
         <aside className="rounded-xl border border-gray-200 bg-white shadow-sm">
-          <div className="border-b border-gray-200 px-4 py-3 text-sm font-semibold text-gray-700">Integrations</div>
+          <div className="border-b border-gray-200 px-4 py-3 text-sm font-semibold text-gray-700">
+            Integrations
+          </div>
           <div className="divide-y divide-gray-100">
-            {integrationsQuery.isLoading && <p className="px-4 py-3 text-sm text-gray-500">Loading integrations...</p>}
+            {integrationsQuery.isLoading && (
+              <p className="px-4 py-3 text-sm text-gray-500">Loading integrations...</p>
+            )}
             {!integrationsQuery.isLoading && integrations.length === 0 && (
               <p className="px-4 py-3 text-sm text-gray-500">No integrations configured.</p>
             )}
@@ -224,8 +243,12 @@ export default function IntegrationManagement() {
               <IntegrationCard
                 key={item.id || item.key}
                 integration={item}
-                active={(item.id || item.key) === (selectedIntegration?.id || selectedIntegration?.key)}
-                onSelect={integration => setSelectedIntegrationId(integration.id || integration.key)}
+                active={
+                  (item.id || item.key) === (selectedIntegration?.id || selectedIntegration?.key)
+                }
+                onSelect={integration =>
+                  setSelectedIntegrationId(integration.id || integration.key)
+                }
               />
             ))}
           </div>
@@ -239,7 +262,9 @@ export default function IntegrationManagement() {
                   {selectedIntegration?.name || selectedIntegration?.id || 'Select an integration'}
                 </h2>
                 <p className="text-sm text-gray-500">
-                  {selectedIntegration?.description || selectedIntegration?.vendor || 'No description provided.'}
+                  {selectedIntegration?.description ||
+                    selectedIntegration?.vendor ||
+                    'No description provided.'}
                 </p>
               </div>
               <div className="flex items-center gap-2">
@@ -263,10 +288,28 @@ export default function IntegrationManagement() {
 
             <div className="grid gap-6 px-6 py-6 lg:grid-cols-2">
               <div className="space-y-4 text-sm text-gray-600">
-                <DetailRow label="Status" value={<StatusPill status={detailsQuery.data?.status || selectedIntegration?.status} />} />
-                <DetailRow label="Endpoint" value={detailsQuery.data?.endpoint || selectedIntegration?.endpoint || 'n/a'} />
-                <DetailRow label="Last sync" value={detailsQuery.data?.lastSync ? new Date(detailsQuery.data.lastSync).toLocaleString() : 'unknown'} />
-                <DetailRow label="Masked key" value={detailsQuery.data?.maskedKey || selectedIntegration?.maskedKey || 'hidden'} />
+                <DetailRow
+                  label="Status"
+                  value={
+                    <StatusPill status={detailsQuery.data?.status || selectedIntegration?.status} />
+                  }
+                />
+                <DetailRow
+                  label="Endpoint"
+                  value={detailsQuery.data?.endpoint || selectedIntegration?.endpoint || 'n/a'}
+                />
+                <DetailRow
+                  label="Last sync"
+                  value={
+                    detailsQuery.data?.lastSync
+                      ? new Date(detailsQuery.data.lastSync).toLocaleString()
+                      : 'unknown'
+                  }
+                />
+                <DetailRow
+                  label="Masked key"
+                  value={detailsQuery.data?.maskedKey || selectedIntegration?.maskedKey || 'hidden'}
+                />
 
                 <div className="flex items-center gap-2">
                   <button
@@ -300,9 +343,9 @@ export default function IntegrationManagement() {
           <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm text-sm text-gray-600">
             <p className="font-semibold text-gray-700">Operational guidance</p>
             <p className="mt-2">
-              Coordinate rotations with the owning business unit. Manual syncs should be used after confirming
-              status with the external provider. All production changes require MFA and are captured in the audit
-              log.
+              Coordinate rotations with the owning business unit. Manual syncs should be used after
+              confirming status with the external provider. All production changes require MFA and
+              are captured in the audit log.
             </p>
           </div>
         </div>

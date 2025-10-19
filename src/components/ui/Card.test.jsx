@@ -1,14 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
 
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-  CardFooter
-} from './Card'
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from './Card'
 
 describe('Card Components', () => {
   describe('Card', () => {
@@ -26,7 +19,11 @@ describe('Card Components', () => {
     })
 
     it('merges custom className', () => {
-      render(<Card className="custom-class" data-testid="card">Content</Card>)
+      render(
+        <Card className="custom-class" data-testid="card">
+          Content
+        </Card>
+      )
       const card = screen.getByTestId('card')
       expect(card.className).toContain('custom-class')
       expect(card.className).toContain('rounded-xl') // Still has defaults

@@ -124,4 +124,3 @@ class BaseApi {
 
 export const api = new BaseApi()
 export { ApiError }
-

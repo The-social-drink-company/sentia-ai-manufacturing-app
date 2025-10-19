@@ -82,7 +82,10 @@ try {
   try {
     validateEnvironmentOnStartup()
   } catch (validationError) {
-    console.warn('Environment validation failed, continuing with warnings:', validationError.message)
+    console.warn(
+      'Environment validation failed, continuing with warnings:',
+      validationError.message
+    )
     logger.warn('Environment validation failed', { error: validationError.message })
   }
 } catch (importError) {

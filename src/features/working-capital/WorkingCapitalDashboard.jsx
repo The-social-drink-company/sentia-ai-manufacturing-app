@@ -6,7 +6,7 @@ import {
   ArrowTrendingUpIcon,
   ArrowTrendingDownIcon,
   ExclamationTriangleIcon,
-  ArrowDownTrayIcon
+  ArrowDownTrayIcon,
 } from '@heroicons/react/24/solid'
 import { useAuth } from '../../hooks/useAuth'
 import { useWorkingCapitalMetrics } from './hooks/useWorkingCapitalMetrics'
@@ -35,7 +35,7 @@ export default function WorkingCapitalDashboard() {
     error,
     refetch,
     exportData,
-    isUsingRealData
+    isUsingRealData,
   } = useWorkingCapitalMetrics(selectedPeriod)
 
   const audit = useDashboardAudit()
@@ -137,10 +137,13 @@ export default function WorkingCapitalDashboard() {
     if (isViewer) {
       return undefined
     }
-    const interval = setInterval(() => {
-      audit.logMetricRefresh('auto_refresh', 'periodic')
-      refetch()
-    }, 15 * 60 * 1000)
+    const interval = setInterval(
+      () => {
+        audit.logMetricRefresh('auto_refresh', 'periodic')
+        refetch()
+      },
+      15 * 60 * 1000
+    )
     return () => clearInterval(interval)
   }, [refetch, audit, isViewer])
 
@@ -153,7 +156,9 @@ export default function WorkingCapitalDashboard() {
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto" />
-          <p className="mt-4 text-gray-600 dark:text-gray-400">Loading working capital metrics...</p>
+          <p className="mt-4 text-gray-600 dark:text-gray-400">
+            Loading working capital metrics...
+          </p>
         </div>
       </div>
     )
@@ -167,7 +172,9 @@ export default function WorkingCapitalDashboard() {
             <div className="flex items-center">
               <ExclamationTriangleIcon className="h-6 w-6 text-red-600 dark:text-red-400 mr-3" />
               <div>
-                <h3 className="text-lg font-semibold text-red-800 dark:text-red-200">Unable to load data</h3>
+                <h3 className="text-lg font-semibold text-red-800 dark:text-red-200">
+                  Unable to load data
+                </h3>
                 <p className="text-red-600 dark:text-red-400 mt-1">{error.message}</p>
                 <button
                   type="button"
@@ -191,12 +198,24 @@ export default function WorkingCapitalDashboard() {
     return null
   }
 
-  const { summary, receivables, payables, inventory, cashFlow, recommendations, alerts, cccHistory } = metrics
+  const {
+    summary,
+    receivables,
+    payables,
+    inventory,
+    cashFlow,
+    recommendations,
+    alerts,
+    cccHistory,
+  } = metrics
 
   const plannerBaseline = customScenario?.baseline || optimizationBaseline
   const baseScenarioList = Array.isArray(optimizationScenarios) ? optimizationScenarios : []
   const plannerScenarios = customScenario?.scenario
-    ? [...baseScenarioList.filter(item => item.key !== 'custom'), { ...customScenario.scenario, key: customScenario.scenario.key || 'custom' }]
+    ? [
+        ...baseScenarioList.filter(item => item.key !== 'custom'),
+        { ...customScenario.scenario, key: customScenario.scenario.key || 'custom' },
+      ]
     : baseScenarioList
 
   const mitigationPlan = customScenario?.plan || optimizationPlan
@@ -214,14 +233,14 @@ export default function WorkingCapitalDashboard() {
       audit.trackAction('export_success', {
         format,
         duration: Math.round(performance.now() - start),
-        period: selectedPeriod
+        period: selectedPeriod,
       })
     } catch (err) {
       audit.logError(err, {
         action: 'data_export',
         format,
         period: selectedPeriod,
-        duration: performance.now() - start
+        duration: performance.now() - start,
       })
       logError('Export failed', err)
     }
@@ -326,21 +345,23 @@ export default function WorkingCapitalDashboard() {
 
         {alerts?.length > 0 && (
           <div className="mb-8">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Active Alerts</h2>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+              Active Alerts
+            </h2>
             <div className="space-y-3">
               {alerts.map(alert => (
-                <div
-                  key={alert.id}
-                  className="p-4 rounded-lg border flex items-start"
-                >
-                  <ExclamationTriangleIcon
-                    className="h-5 w-5 mt-0.5 mr-3 flex-shrink-0"
-                  />
+                <div key={alert.id} className="p-4 rounded-lg border flex items-start">
+                  <ExclamationTriangleIcon className="h-5 w-5 mt-0.5 mr-3 flex-shrink-0" />
                   <div className="flex-1">
                     <h4 className="font-medium text-gray-900 dark:text-white">{alert.title}</h4>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{alert.description}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                      {alert.description}
+                    </p>
                     {alert.action && (
-                      <button type="button" className="text-sm font-medium text-blue-600 dark:text-blue-400 mt-2 hover:underline">
+                      <button
+                        type="button"
+                        className="text-sm font-medium text-blue-600 dark:text-blue-400 mt-2 hover:underline"
+                      >
                         {alert.action}
                       </button>
                     )}
@@ -391,11 +412,15 @@ export default function WorkingCapitalDashboard() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Accounts Receivable</h3>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+              Accounts Receivable
+            </h3>
             {receivables ? (
               <div className="space-y-4">
                 <div className="flex justify-between">
-                  <span className="text-sm text-gray-600 dark:text-gray-400">Total Outstanding</span>
+                  <span className="text-sm text-gray-600 dark:text-gray-400">
+                    Total Outstanding
+                  </span>
                   <span className="font-semibold text-gray-900 dark:text-white">
                     {formatCurrency(receivablesTotal)}
                   </span>
@@ -408,16 +433,22 @@ export default function WorkingCapitalDashboard() {
                 </div>
               </div>
             ) : (
-              <p className="text-sm text-gray-600 dark:text-gray-400">Receivables metrics are not available for this period.</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Receivables metrics are not available for this period.
+              </p>
             )}
           </div>
 
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Accounts Payable</h3>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+              Accounts Payable
+            </h3>
             {payables ? (
               <div className="space-y-4">
                 <div className="flex justify-between">
-                  <span className="text-sm text-gray-600 dark:text-gray-400">Total Outstanding</span>
+                  <span className="text-sm text-gray-600 dark:text-gray-400">
+                    Total Outstanding
+                  </span>
                   <span className="font-semibold text-gray-900 dark:text-white">
                     {formatCurrency(payablesTotal)}
                   </span>
@@ -430,7 +461,9 @@ export default function WorkingCapitalDashboard() {
                 </div>
               </div>
             ) : (
-              <p className="text-sm text-gray-600 dark:text-gray-400">Payables metrics are not available for this period.</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Payables metrics are not available for this period.
+              </p>
             )}
           </div>
 
@@ -458,7 +491,9 @@ export default function WorkingCapitalDashboard() {
                 </div>
               </div>
             ) : (
-              <p className="text-sm text-gray-600 dark:text-gray-400">Inventory metrics are not available for this period.</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Inventory metrics are not available for this period.
+              </p>
             )}
           </div>
         </div>
@@ -501,10 +536,12 @@ export default function WorkingCapitalDashboard() {
                   isRunning={isScenarioRunning}
                 />
                 <ApprovalInsights
-                  onEvaluate={payload => handleApprovalEvaluation({
-                    ...payload,
-                    scenarioKey: customScenario?.scenario?.key,
-                  })}
+                  onEvaluate={payload =>
+                    handleApprovalEvaluation({
+                      ...payload,
+                      scenarioKey: customScenario?.scenario?.key,
+                    })
+                  }
                   evaluation={approvalEvaluation}
                   isLoading={approvalMutation.isPending}
                 />

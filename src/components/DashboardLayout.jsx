@@ -4,6 +4,7 @@ import DashboardSidebar from '@/components/layout/DashboardSidebar'
 import DashboardHeader from '@/components/layout/DashboardHeader'
 import EnterpriseAIChatbot from '@/components/EnterpriseAIChatbot'
 import CommandPalette from '@/components/dashboard/CommandPalette'
+import SkipLink from '@/components/accessibility/SkipLink'
 
 /**
  * DashboardLayout Component
@@ -44,6 +45,9 @@ const DashboardLayout = ({ children }) => {
 
   return (
     <div className="flex min-h-screen bg-slate-50">
+      {/* Skip Link for Accessibility (WCAG 2.4.1) */}
+      <SkipLink />
+
       {/* Dark Sidebar Navigation */}
       <DashboardSidebar isOpen={mobileMenuOpen} onClose={closeMobileMenu} />
 
@@ -53,7 +57,7 @@ const DashboardLayout = ({ children }) => {
         <DashboardHeader mobileMenuOpen={mobileMenuOpen} onMenuClick={toggleMobileMenu} />
 
         {/* Main Content */}
-        <main className="flex-1 bg-slate-50 px-4 py-6 sm:px-6 lg:px-8">
+        <main id="main-content" className="flex-1 bg-slate-50 px-4 py-6 sm:px-6 lg:px-8" role="main">
           <div className="mx-auto max-w-7xl space-y-6">
             {children ?? <Outlet />}
           </div>

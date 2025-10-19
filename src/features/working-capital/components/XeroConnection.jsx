@@ -66,8 +66,8 @@ export default function XeroConnection({ onConnectionChange }) {
     const now = new Date()
     const diffHours = Math.round((date - now) / (1000 * 60 * 60))
     if (diffHours <= 0) return 'Expired'
-    if (diffHours < 24) return Expires in  hours
-    return Expires in  days
+    if (diffHours < 24) return `Expires in ${diffHours} hours`
+    return `Expires in ${Math.round(diffHours / 24)} days`
   }
 
   if (isLoading || isAuthenticating) {
@@ -99,7 +99,7 @@ export default function XeroConnection({ onConnectionChange }) {
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Xero Integration</h3>
               <p className="text-sm text-gray-600 dark:text-gray-400">
                 {isConnected
-                  ? Connected to 
+                  ? `Connected to ${connectionStatus?.tenantName || 'Xero'}`
                   : 'Connect to Xero to sync invoices, payments, and cash flow'}
               </p>
             </div>

@@ -103,17 +103,17 @@ export default function CashFlowForecast({ data, period = 'current' }) {
           <p className="text-sm text-red-600 dark:text-red-400">Total Outflow</p>
           <p className="text-lg font-bold text-red-900 dark:text-red-100">-{formatCurrency(totals.outflow)}</p>
         </div>
-        <div className={${totals.net >= 0 ? 'bg-green-50 dark:bg-green-900/20' : 'bg-red-50 dark:bg-red-900/20'} rounded-lg p-4}>
-          <p className={${totals.net >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'} text-sm}>
+        <div className={`${totals.net >= 0 ? 'bg-green-50 dark:bg-green-900/20' : 'bg-red-50 dark:bg-red-900/20'} rounded-lg p-4`}>
+          <p className={`${totals.net >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'} text-sm`}>
             Net Cash Flow
           </p>
-          <p className={${totals.net >= 0 ? 'text-green-900 dark:text-green-100' : 'text-red-900 dark:text-red-100'} text-lg font-bold}>
+          <p className={`${totals.net >= 0 ? 'text-green-900 dark:text-green-100' : 'text-red-900 dark:text-red-100'} text-lg font-bold`}>
             {totals.net >= 0 ? '+' : ''}{formatCurrency(totals.net)}
           </p>
         </div>
-        <div className={${getBalanceBackground(totals.minBalance)} rounded-lg p-4}>
-          <p className={${getBalanceColour(totals.minBalance)} text-sm}>Lowest Balance</p>
-          <p className={${getBalanceColour(totals.minBalance)} text-lg font-bold}>
+        <div className={`${getBalanceBackground(totals.minBalance)} rounded-lg p-4`}>
+          <p className={`${getBalanceColour(totals.minBalance)} text-sm`}>Lowest Balance</p>
+          <p className={`${getBalanceColour(totals.minBalance)} text-lg font-bold`}>
             {formatCurrency(totals.minBalance)}
           </p>
         </div>
@@ -145,10 +145,10 @@ export default function CashFlowForecast({ data, period = 'current' }) {
                 <td className="py-2 pr-4 whitespace-nowrap">{new Date(row.date).toLocaleDateString()}</td>
                 <td className="py-2 pr-4">{formatCurrency(row.inflow)}</td>
                 <td className="py-2 pr-4">-{formatCurrency(row.outflow)}</td>
-                <td className={py-2 pr-4 }>
+                <td className={`py-2 pr-4 ${row.netFlow >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                   {row.netFlow >= 0 ? '+' : ''}{formatCurrency(row.netFlow)}
                 </td>
-                <td className={py-2 pr-4 }>
+                <td className={`py-2 pr-4 ${getBalanceColour(row.runningBalance)}`}>
                   {formatCurrency(row.runningBalance)}
                 </td>
               </tr>

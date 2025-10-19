@@ -4,19 +4,19 @@ import { describe, it, expect, vi } from 'vitest'
 
 import { Button } from './Button'
 
-describe('Button _Component', () {
-  it('renders with _children', () {
+describe('Button Component', () => {
+  it('renders with children', () => {
     render(<Button>Click me</Button>)
     expect(screen.getByText('Click me')).toBeInTheDocument()
   })
 
-  it('applies primary variant by _default', () {
+  it('applies primary variant by default', () => {
     render(<Button>Primary Button</Button>)
     const button = screen.getByRole('button')
     expect(button.className).toContain('from-blue-600')
   })
 
-  it('applies different variants _correctly', () {
+  it('applies different variants correctly', () => {
     const { rerender } = render(<Button variant="danger">Danger</Button>)
     expect(screen.getByRole('button').className).toContain('from-red-600')
 
@@ -27,7 +27,7 @@ describe('Button _Component', () {
     expect(screen.getByRole('button').className).toContain('hover:bg-gray-100')
   })
 
-  it('applies different sizes _correctly', () {
+  it('applies different sizes correctly', () => {
     const { rerender } = render(<Button size="sm">Small</Button>)
     expect(screen.getByRole('button').className).toContain('px-3 py-1.5')
 
@@ -35,7 +35,7 @@ describe('Button _Component', () {
     expect(screen.getByRole('button').className).toContain('px-6 py-3')
   })
 
-  it('handles click _events', () {
+  it('handles click events', () => {
     const handleClick = vi.fn()
     render(<Button onClick={handleClick}>Click me</Button>)
 
@@ -62,7 +62,7 @@ describe('Button _Component', () {
     expect(button.querySelector('svg')).toHaveClass('animate-spin')
   })
 
-  it('renders icon on the left by _default', () {
+  it('renders icon on the left by default', () => {
     render(<Button icon={HomeIcon}>Home</Button>)
 
     const button = screen.getByRole('button')
@@ -72,7 +72,7 @@ describe('Button _Component', () {
     expect(icon).toHaveClass('mr-2')
   })
 
-  it('renders icon on the right when iconPosition is _right', () {
+  it('renders icon on the right when iconPosition is right', () => {
     render(<Button icon={HomeIcon} iconPosition="right">Home</Button>)
 
     const button = screen.getByRole('button')
@@ -82,7 +82,7 @@ describe('Button _Component', () {
     expect(icon).toHaveClass('ml-2')
   })
 
-  it('does not render icon when _loading', () {
+  it('does not render icon when loading', () => {
     render(<Button icon={HomeIcon} loading>Loading</Button>)
 
     const button = screen.getByRole('button')
@@ -93,7 +93,7 @@ describe('Button _Component', () {
     expect(icons[0]).toHaveClass('animate-spin')
   })
 
-  it('forwards ref _correctly', () {
+  it('forwards ref correctly', () => {
     const ref = vi.fn()
     render(<Button ref={ref}>Button with ref</Button>)
 
@@ -101,7 +101,7 @@ describe('Button _Component', () {
     expect(ref.mock.calls[0][0]).toBeInstanceOf(HTMLButtonElement)
   })
 
-  it('passes through additional _props', () {
+  it('passes through additional props', () => {
     render(<Button data-testid="custom-button" aria-label="Custom">Custom</Button>)
 
     const button = screen.getByTestId('custom-button')

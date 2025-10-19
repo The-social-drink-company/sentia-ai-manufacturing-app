@@ -82,7 +82,7 @@ export default function OptimizationRecommendations({ recommendations, onActionC
         {items.map(item => (
           <div
             key={item.id}
-            className={order rounded-lg p-4 transition hover:shadow-md }
+            className={`border rounded-lg p-4 transition hover:shadow-md ${priorityColour(item.priority)}`}
           >
             <div className="flex items-start justify-between">
               <div className="flex items-center space-x-3">

@@ -62,25 +62,25 @@ export default function CashConversionCycle({ dso, dio, dpo, historical = [] }) 
 
       <div className="mb-6">
         <div className="flex items-center justify-center space-x-4 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
-          <div className={	ext-center p-3 rounded-lg }>
+          <div className={`text-center p-3 rounded-lg ${colourClasses(getRangeStatus(dso, 'dso'))}`}>
             <div className="text-sm font-medium">DSO</div>
             <div className="text-lg font-bold">{dso ?? '--'}</div>
             <div className="text-xs">days</div>
           </div>
           <div className="text-gray-600 dark:text-gray-400 text-lg font-bold">+</div>
-          <div className={	ext-center p-3 rounded-lg }>
+          <div className={`text-center p-3 rounded-lg ${colourClasses(getRangeStatus(dio, 'dio'))}`}>
             <div className="text-sm font-medium">DIO</div>
             <div className="text-lg font-bold">{dio ?? '--'}</div>
             <div className="text-xs">days</div>
           </div>
           <div className="text-gray-600 dark:text-gray-400 text-lg font-bold">-</div>
-          <div className={	ext-center p-3 rounded-lg }>
+          <div className={`text-center p-3 rounded-lg ${colourClasses(getRangeStatus(dpo, 'dpo'))}`}>
             <div className="text-sm font-medium">DPO</div>
             <div className="text-lg font-bold">{dpo ?? '--'}</div>
             <div className="text-xs">days</div>
           </div>
           <div className="text-gray-600 dark:text-gray-400 text-lg font-bold">=</div>
-          <div className={	ext-center p-4 rounded-lg border-2 border-dashed }>
+          <div className={`text-center p-4 rounded-lg border-2 border-dashed ${colourClasses(cccStatus)}`}>
             <div className="text-sm font-medium text-gray-600 dark:text-gray-400">CCC</div>
             <div className="text-2xl font-bold text-gray-900 dark:text-white">{Number.isFinite(currentCCC) ? Math.round(currentCCC) : '--'}</div>
             <div className="text-xs text-gray-600 dark:text-gray-400">days</div>
@@ -92,7 +92,7 @@ export default function CashConversionCycle({ dso, dio, dpo, historical = [] }) 
         <div className="mb-6">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm text-gray-600 dark:text-gray-400">Trend vs previous period</span>
-            <div className={lex items-center text-sm font-medium }>
+            <div className={`flex items-center text-sm font-medium ${isImproving ? 'text-green-600' : 'text-red-600'}`}>
               <span>{isImproving ? '▲' : '▼'} {Math.abs(trend).toFixed(1)}%</span>
               <span className="ml-1">{isImproving ? 'Improving' : 'Worsening'}</span>
             </div>
@@ -112,8 +112,8 @@ export default function CashConversionCycle({ dso, dio, dpo, historical = [] }) 
                 return (
                   <div key={period.month || period.date} className="flex flex-col items-center">
                     <div
-                      className={w-6 rounded-t transition-all duration-300 }
-                      style={{ height: ${Math.max(height, 5)}% }}
+                      className="w-6 bg-blue-500 rounded-t transition-all duration-300"
+                      style={{ height: `${Math.max(height, 5)}%` }}
                     />
                     <span className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                       {period.month || new Date(period.date).toLocaleDateString('en', { month: 'short' })}

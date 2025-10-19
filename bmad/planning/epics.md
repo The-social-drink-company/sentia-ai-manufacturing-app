@@ -10,11 +10,11 @@
 
 ## Epic Overview
 
-This document defines the 6 major epics required to transform the Sentia Manufacturing AI Dashboard from a high-fidelity prototype (75% functional) into a production-ready enterprise platform (100% complete).
+This document defines the 7 major epics required to transform the Sentia Manufacturing AI Dashboard from a high-fidelity prototype (75% functional) into a production-ready enterprise platform (100% complete).
 
-**Total Stories**: 68 stories across 6 epics
-**Total Estimated Time**: 18-20 weeks
-**Current Progress**: 32% complete (22/68 stories - EPIC-001: 4/4, EPIC-002: 10/10, EPIC-003: 8/8)
+**Total Stories**: 78 stories across 7 epics
+**Total Estimated Time**: 20-22 weeks
+**Current Progress**: 28% complete (22/78 stories - EPIC-001: 4/4, EPIC-002: 10/10, EPIC-003: 8/8, EPIC-006: 0/10)
 
 ---
 
@@ -976,6 +976,115 @@ Professional UX builds user trust and adoption. Poor error handling and empty st
 
 ---
 
+## EPIC-006: Clerk Authentication Enhancement ⏳ **PENDING**
+
+**Status**: ⏳ PENDING (Planning Complete)
+**Priority**: HIGH
+**Duration**: 1.5-2 days estimated, ~4-6 hours projected (with 4.1x-7.3x velocity)
+**Stories**: 0/10 complete
+**Depends On**: EPIC-003 (Frontend Polish - 100% complete) ✅
+**Planning Complete**: 2025-10-19
+
+### Epic Goal
+
+Enhance Clerk authentication integration to production-ready standards with protected routes, public-only routes, comprehensive error handling, loading states, sign-in/sign-up pages, user profile components, authentication hooks, and complete testing coverage.
+
+### Business Value
+
+**Current State**: Basic Clerk integration exists but lacks production-grade route protection, error handling, and UX polish. Development bypass (VITE_DEVELOPMENT_MODE=true) is functional but authentication flow needs enhancement for production deployment.
+
+**Target State**: Enterprise-grade authentication system with full route protection, branded auth pages, error recovery, and comprehensive testing.
+
+**ROI**:
+- Prevents unauthorized access (security compliance)
+- Reduces support tickets with self-service auth UX (60-80% reduction)
+- Enables confident production deployment (removes development-mode dependency)
+- Improves user onboarding time (branded auth flow + clear error messages)
+
+### Epic Acceptance Criteria
+
+- [ ] All routes properly protected (ProtectedRoute and PublicOnlyRoute components)
+- [ ] Branded sign-in/sign-up pages with Sentia design system
+- [ ] User profile component with Clerk UserButton integration
+- [ ] Authentication hooks (useAuthRedirect, useRequireAuth) functional
+- [ ] Full-page loading screens with Sentia branding
+- [ ] Error handling components (AuthError) with recovery actions
+- [ ] Complete environment configuration documented
+- [ ] Route security audit passes (all protected routes verified)
+- [ ] Authentication testing checklist 100% complete (9 categories)
+- [ ] Zero authentication regressions (existing development bypass still works)
+
+### Stories Breakdown (10 stories across 2 phases)
+
+**Phase 1: Core Components** (Stories 1-4):
+1. **BMAD-AUTH-001: Environment Configuration & Documentation** - 30 min
+2. **BMAD-AUTH-002: Protected Route Components** - 45 min
+3. **BMAD-AUTH-003: Sign In/Up Pages with Sentia Branding** - 1 hour
+4. **BMAD-AUTH-004: User Profile Component** - 30 min
+
+**Phase 2: Hooks & Testing** (Stories 5-10):
+5. **BMAD-AUTH-005: Authentication Hooks** - 30 min
+6. **BMAD-AUTH-006: Error Handling Components** - 30 min
+7. **BMAD-AUTH-007: Loading Screen Enhancements** - 15 min
+8. **BMAD-AUTH-008: Route Security Audit** - 45 min
+9. **BMAD-AUTH-009: Authentication Testing** - 1 hour
+10. **BMAD-AUTH-010: Documentation & Deployment** - 30 min
+
+### Epic Metrics
+
+- **Total Stories**: 10
+- **Completed**: 0 (0%)
+- **In Progress**: 0
+- **Pending**: 10 (100%)
+- **Estimated Duration (Baseline)**: 25 hours (3 days)
+- **Projected Duration (4.1x Velocity)**: 6 hours (0.75 days)
+- **Projected Duration (7.3x Velocity)**: 3.5 hours (0.5 days)
+- **Target Completion**: 2025-10-20 (1 day after start)
+
+### Epic Success Criteria
+
+- [ ] At least 1 story complete (BMAD-AUTH-001)
+- [ ] All 10 stories complete (100% - 10/10)
+- [ ] All routes properly protected or public-only
+- [ ] Sign-in/sign-up pages branded and functional
+- [ ] User profile component integrated in header
+- [ ] Authentication hooks available for developers
+- [ ] Error handling components display actionable messages
+- [ ] Route security audit passes (0 unprotected routes with sensitive data)
+- [ ] Testing checklist 100% complete (9 categories, all tests passing)
+- [ ] Documentation complete and reviewed
+- [ ] Production deployment successful with zero authentication issues
+
+### Key Technical Details
+
+**Authentication Architecture**:
+- Clerk as authentication provider
+- React Router v6 for routing
+- ClerkProvider wraps entire App.jsx
+- ProtectedRoute HOC for route protection
+- PublicOnlyRoute HOC for auth-only pages
+
+**Component Patterns**:
+- ProtectedRoute: Check auth → redirect or render
+- PublicOnlyRoute: Check auth → redirect to dashboard or render
+- UserProfile: Display user info + Clerk UserButton
+- AuthError: Display error + retry action
+- LoadingScreen: Full-page branded loading
+
+**Route Protection Matrix**:
+- Public: `/`, `/sign-in`, `/sign-up`
+- Protected: `/dashboard`, `/working-capital`, `/inventory`, `/production`, `/financial-reports`, `/admin`
+- Public-Only: `/sign-in`, `/sign-up` (redirect if authenticated)
+
+### Dependencies
+
+**Upstream**: EPIC-003 (Frontend Polish) ✅ COMPLETE - LoadingScreen, ErrorBoundary patterns established
+**Downstream**: EPIC-004 (Test Coverage) will include BMAD-AUTH-009 tests
+
+**Epic Documentation**: `bmad/epics/2025-10-authentication-enhancement-epic.md`
+
+---
+
 ## EPIC-004: Test Coverage & Quality Assurance ⏳ **PENDING**
 
 **Status**: ⏳ PENDING
@@ -1067,29 +1176,31 @@ Production deployment without proper preparation risks downtime, data loss, and 
 |------|----------|--------|---------|----------|--------------|
 | EPIC-001: Infrastructure | CRITICAL | ✅ COMPLETE | 4/4 | 4 weeks | None |
 | EPIC-002: Eliminate Mock Data | CRITICAL | ✅ COMPLETE | 10/10 | 3.5 weeks | None |
+| EPIC-003: Frontend Polish | HIGH | ✅ COMPLETE | 8/8 | 2 weeks | EPIC-002 |
+| EPIC-006: Authentication Enhancement | HIGH | ⏳ PENDING | 0/10 | 0.5-0.75 days | EPIC-003 |
 | EPIC-UI-001: UI/UX Transformation | HIGH | ⏳ PENDING | 0/21 | 6 weeks | EPIC-002 |
-| EPIC-003: Frontend Polish | HIGH | ⏳ PENDING | 0/8 | 2 weeks | EPIC-UI-001 |
 | EPIC-004: Test Coverage | HIGH | ⏳ PENDING | 0/10 | 2 weeks | EPIC-002 |
 | EPIC-005: Production Deployment | CRITICAL | ⏳ PENDING | 0/9 | 1.5 weeks | ALL PREVIOUS |
 
 ### Overall Metrics
 
-- **Total Stories**: 62 stories
-- **Completed**: 14 stories (23%)
+- **Total Stories**: 78 stories
+- **Completed**: 22 stories (28%)
 - **In Progress**: 0 stories
-- **Remaining**: 48 stories (77%)
-- **Total Duration**: 19 weeks estimated
-- **Spent**: 4.2 weeks
-- **Remaining**: 14.8 weeks
+- **Remaining**: 56 stories (72%)
+- **Total Duration**: 20-22 weeks estimated
+- **Spent**: 7.5 weeks
+- **Remaining**: 12.5-14.5 weeks
 
 ### Sprint Schedule
 
 **Sprint 1 (Weeks 1-2)**: ✅ COMPLETE - EPIC-002 Stories 1-4 (Financial & sales data)
 **Sprint 2 (Weeks 3-4)**: ✅ COMPLETE - EPIC-002 Stories 5-10 (Orders, inventory, real-time, fallbacks)
-**Sprint 3 (Weeks 5-10)**: ⏳ PENDING - EPIC-UI-001 (UI/UX Transformation - 21 stories, 6 weeks)
-**Sprint 4 (Weeks 11-12)**: ⏳ PENDING - EPIC-003 (Frontend polish & UX - 8 stories)
-**Sprint 5 (Weeks 13-14)**: ⏳ PENDING - EPIC-004 (Test coverage & quality - 10 stories)
-**Sprint 6 (Week 15-16)**: ⏳ PENDING - EPIC-005 (Production deployment - 9 stories)
+**Sprint 3 (Week 5)**: ✅ COMPLETE - EPIC-003 (Frontend Polish - 8 stories, 7.3x velocity)
+**Sprint 4 (Week 5)**: ⏳ PENDING - EPIC-006 (Authentication Enhancement - 10 stories, 0.5 days projected)
+**Sprint 5 (Weeks 6-11)**: ⏳ PENDING - EPIC-UI-001 (UI/UX Transformation - 21 stories, 6 weeks)
+**Sprint 6 (Weeks 12-13)**: ⏳ PENDING - EPIC-004 (Test coverage & quality - 10 stories, 2 weeks)
+**Sprint 7 (Weeks 14-15)**: ⏳ PENDING - EPIC-005 (Production deployment - 9 stories, 1.5 weeks)
 
 ### Success Criteria
 

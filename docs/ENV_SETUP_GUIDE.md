@@ -22,7 +22,9 @@ DATABASE_URL=postgresql://sentia_user:abc123xyz789...(long password)...@dpg-d3p7
 
 ⚠️ **Important**: Add `?ssl=true` at the end for external connections!
 
-### Step 3: Get Clerk Keys
+### Step 3: Get Clerk Keys & Configure Authentication
+
+#### 3.1: Get API Keys
 
 1. Go to [Clerk Dashboard](https://dashboard.clerk.com)
 2. Select your application
@@ -39,10 +41,30 @@ VITE_CLERK_PUBLISHABLE_KEY=pk_test_...copy from Clerk...
 CLERK_SECRET_KEY=sk_test_...copy from Clerk...
 ```
 
-5. If you've set up webhooks, also copy:
+5. (Optional) If you've set up webhooks, also copy:
 ```
 CLERK_WEBHOOK_SECRET=whsec_...copy from Clerk Webhooks...
 ```
+
+#### 3.2: Configure Redirect URLs
+
+Add these redirect URL configurations to your `.env.local`:
+
+```bash
+# Clerk Redirect URLs (already configured in template)
+VITE_CLERK_SIGN_IN_URL=/sign-in
+VITE_CLERK_SIGN_UP_URL=/sign-up
+VITE_CLERK_AFTER_SIGN_IN_URL=/dashboard
+VITE_CLERK_AFTER_SIGN_UP_URL=/dashboard
+```
+
+**What these do:**
+- `SIGN_IN_URL`: Where users go to sign in (our branded sign-in page)
+- `SIGN_UP_URL`: Where users go to sign up (our branded sign-up page)
+- `AFTER_SIGN_IN_URL`: Where to redirect after successful sign-in (dashboard)
+- `AFTER_SIGN_UP_URL`: Where to redirect after successful sign-up (dashboard)
+
+⚠️ **Note**: These are already set to recommended defaults in `.env.template`. Only change if you need custom routes.
 
 ### Step 4: Set Development Mode
 
@@ -64,6 +86,12 @@ DATABASE_URL=postgresql://sentia_user:ACTUAL_PASSWORD@dpg-d3p75uqli9vc73crtj0g-a
 # Clerk (REQUIRED for auth)
 VITE_CLERK_PUBLISHABLE_KEY=pk_test_ACTUAL_KEY
 CLERK_SECRET_KEY=sk_test_ACTUAL_KEY
+
+# Clerk Redirect URLs (configured with defaults)
+VITE_CLERK_SIGN_IN_URL=/sign-in
+VITE_CLERK_SIGN_UP_URL=/sign-up
+VITE_CLERK_AFTER_SIGN_IN_URL=/dashboard
+VITE_CLERK_AFTER_SIGN_UP_URL=/dashboard
 
 # Development (REQUIRED)
 VITE_DEVELOPMENT_MODE=true
@@ -157,6 +185,22 @@ psql "postgresql://sentia_user:YOUR_PASSWORD@dpg-d3p75uqli9vc73crtj0g-a.oregon-p
 ```bash
 VITE_DEVELOPMENT_MODE=true
 ```
+
+**Redirect URL issues:**
+
+If you see redirect loops or authentication errors:
+1. Verify all 4 redirect URLs are set in `.env.local`:
+   - `VITE_CLERK_SIGN_IN_URL=/sign-in`
+   - `VITE_CLERK_SIGN_UP_URL=/sign-up`
+   - `VITE_CLERK_AFTER_SIGN_IN_URL=/dashboard`
+   - `VITE_CLERK_AFTER_SIGN_UP_URL=/dashboard`
+
+2. Ensure routes exist in your application:
+   - `/sign-in` → SignInPage component
+   - `/sign-up` → SignUpPage component
+   - `/dashboard` → Dashboard component
+
+3. Check Clerk Dashboard → Paths configuration matches your URLs
 
 ### Prisma Issues
 

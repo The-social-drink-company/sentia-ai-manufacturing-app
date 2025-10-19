@@ -278,7 +278,9 @@ router.get('/setup-status', async (req, res) => {
             shopifyStatus.connected
               ? `Shopify connected successfully! ${shopifyStatus.activeStores} stores active ✅`
               : 'Optional: Connect Shopify for sales data (BMAD-MOCK-002)',
-            'Optional: Connect Amazon SP-API for order data (BMAD-MOCK-003)',
+            amazonConnected
+              ? 'Amazon SP-API connected successfully! ✅'
+              : 'Optional: Connect Amazon SP-API for order data (BMAD-MOCK-003)',
             'Optional: Connect Unleashed ERP for inventory sync (BMAD-MOCK-004)'
           ]
         : [
@@ -289,7 +291,7 @@ router.get('/setup-status', async (req, res) => {
           ]
     };
 
-    logInfo(`[Dashboard] Setup status checked: Xero ${xeroHealth.status}, Shopify ${shopifyStatus.connected ? `${shopifyStatus.activeStores} stores` : 'not connected'}`);
+    logInfo(`[Dashboard] Setup status checked: Xero ${xeroHealth.status}, Shopify ${shopifyStatus.connected ? `${shopifyStatus.activeStores} stores` : 'not connected'}, Amazon ${amazonConnected ? 'connected' : 'not connected'}`);
 
     res.json({
       success: true,
@@ -512,6 +514,105 @@ router.get('/shopify-sales', async (req, res) => {
 
   } catch (error) {
     logError('[Dashboard] Error fetching Shopify sales data:', error.message);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      data: null
+    });
+  }
+});
+
+/**
+ * GET /api/v1/dashboard/amazon-orders
+ *
+ * Returns Amazon SP-API order data and metrics
+ */
+router.get('/amazon-orders', async (req, res) => {
+  try {
+    logDebug('[Dashboard] Fetching Amazon order data...');
+
+    if (!amazonSPAPIService.isConnected) {
+      return res.json({
+        success: false,
+        error: 'amazon_not_connected',
+        data: null,
+        message: 'Amazon SP-API not configured. Add AMAZON_REFRESH_TOKEN, AMAZON_LWA_APP_ID, AMAZON_LWA_CLIENT_SECRET, AMAZON_SP_ROLE_ARN environment variables.',
+        setupRequired: true
+      });
+    }
+
+    const orderMetrics = await amazonSPAPIService.getOrderMetrics();
+
+    logInfo(`[Dashboard] Amazon order metrics fetched: ${orderMetrics.totalOrders} orders`);
+
+    res.json({
+      success: true,
+      data: {
+        orders: {
+          totalOrders: orderMetrics.totalOrders || 0,
+          totalRevenue: orderMetrics.totalRevenue || 0,
+          averageOrderValue: orderMetrics.averageOrderValue || 0,
+          unshippedOrders: orderMetrics.unshippedOrders || 0
+        },
+        metadata: {
+          timestamp: new Date().toISOString(),
+          dataSource: 'amazon_sp_api',
+          timeRange: 'Last 24 hours'
+        }
+      }
+    });
+
+  } catch (error) {
+    logError('[Dashboard] Error fetching Amazon order data:', error.message);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      data: null
+    });
+  }
+});
+
+/**
+ * GET /api/v1/dashboard/amazon-inventory
+ *
+ * Returns Amazon FBA inventory summary
+ */
+router.get('/amazon-inventory', async (req, res) => {
+  try {
+    logDebug('[Dashboard] Fetching Amazon inventory data...');
+
+    if (!amazonSPAPIService.isConnected) {
+      return res.json({
+        success: false,
+        error: 'amazon_not_connected',
+        data: null,
+        message: 'Amazon SP-API not configured. Add AMAZON_REFRESH_TOKEN, AMAZON_LWA_APP_ID, AMAZON_LWA_CLIENT_SECRET, AMAZON_SP_ROLE_ARN environment variables.',
+        setupRequired: true
+      });
+    }
+
+    const inventorySummary = await amazonSPAPIService.getInventorySummary();
+
+    logInfo(`[Dashboard] Amazon inventory summary fetched: ${inventorySummary.totalSKUs} SKUs`);
+
+    res.json({
+      success: true,
+      data: {
+        inventory: {
+          totalSKUs: inventorySummary.totalSKUs || 0,
+          totalQuantity: inventorySummary.totalQuantity || 0,
+          lowStockItems: inventorySummary.lowStockItems || 0
+        },
+        metadata: {
+          timestamp: new Date().toISOString(),
+          dataSource: 'amazon_sp_api',
+          lastSync: inventorySummary.lastSync
+        }
+      }
+    });
+
+  } catch (error) {
+    logError('[Dashboard] Error fetching Amazon inventory data:', error.message);
     res.status(500).json({
       success: false,
       error: error.message,

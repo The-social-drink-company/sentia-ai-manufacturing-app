@@ -1,31 +1,25 @@
-import { describe, it, expect, beforeAll, beforeEach, afterEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { renderHook } from '@testing-library/react'
 
 const trackSpy = vi.fn()
 
 vi.mock('@/services/analyticsClient', () => ({
-  trackAnalyticsEvent: (...args) => trackSpy(...args),
+  trackAnalyticsEvent: trackSpy,
 }))
 
 class MockIntersectionObserver {
   constructor(callback) {
     this.callback = callback
+    this.observe = vi.fn(node => {
+      this.callback([{ target: node, isIntersecting: true }])
+    })
+    this.disconnect = vi.fn()
   }
-
-  observe(node) {
-    this.callback([{ target: node, isIntersecting: true }])
-  }
-
-  disconnect() {}
 }
 
 describe('useLandingAnalytics', () => {
-  let useLandingAnalytics
+  const { default: useLandingAnalytics } = require('@/hooks/useLandingAnalytics')
   const originalObserver = global.IntersectionObserver
-
-  beforeAll(async () => {
-    useLandingAnalytics = (await import('@/hooks/useLandingAnalytics')).default
-  })
 
   beforeEach(() => {
     trackSpy.mockClear()

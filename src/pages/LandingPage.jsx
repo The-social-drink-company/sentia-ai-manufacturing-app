@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import { motion as Motion } from 'framer-motion'
 import useLandingAnalytics from '@/hooks/useLandingAnalytics'
 import { SignInButton } from '@clerk/clerk-react'
 import { ArrowRight, BarChart2, TrendingUp, DollarSign, Settings, Package, Brain, CheckCircle2 } from 'lucide-react'
@@ -13,7 +13,7 @@ const LandingPage = () => {\r\n  const { heroRef, trackPrimaryCTA, trackSecondar
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <motion.header ref={heroRef}
+      <Motion.header ref={heroRef}
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
@@ -30,7 +30,7 @@ const LandingPage = () => {\r\n  const { heroRef, trackPrimaryCTA, trackSecondar
         <div className="relative mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-32 lg:px-8 lg:py-40">
           <div className="text-center">
             {/* Main Heading */}
-            <motion.h1
+            <Motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.8 }}
@@ -38,20 +38,20 @@ const LandingPage = () => {\r\n  const { heroRef, trackPrimaryCTA, trackSecondar
             >
               Sentia Manufacturing
               <span className="block text-blue-200">Enterprise Dashboard</span>
-            </motion.h1>
+            </Motion.h1>
 
             {/* Subheading */}
-            <motion.p
+            <Motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, duration: 0.8 }}
               className="mx-auto mt-6 max-w-3xl text-lg leading-8 text-blue-100 sm:text-xl"
             >
               Real-time manufacturing intelligence with AI-driven forecasting and working capital optimization
-            </motion.p>
+            </Motion.p>
 
             {/* CTA Buttons */}
-            <motion.div
+            <Motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6, duration: 0.8 }}
@@ -77,10 +77,10 @@ const LandingPage = () => {\r\n  const { heroRef, trackPrimaryCTA, trackSecondar
                 Learn More
                 <BarChart2 className="h-5 w-5" />
               </button>
-            </motion.div>
+            </Motion.div>
           </div>
         </div>
-      </motion.header>
+      </Motion.header>
 
       {/* Main Content */}
       <main>
@@ -131,7 +131,7 @@ const LandingPage = () => {\r\n  const { heroRef, trackPrimaryCTA, trackSecondar
         {/* Final CTA Section */}
         <section className="bg-gradient-to-br from-purple-600 via-purple-700 to-blue-700 py-16 sm:py-24">
           <div className="mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
-            <motion.div
+            <Motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
@@ -156,7 +156,7 @@ const LandingPage = () => {\r\n  const { heroRef, trackPrimaryCTA, trackSecondar
                   </button>
                 </SignInButton>
               </div>
-            </motion.div>
+            </Motion.div>
           </div>
         </section>
       </main>
@@ -209,7 +209,7 @@ const FeatureCard = ({ feature, index }) => {
   const Icon = feature.icon
 
   return (
-    <motion.div
+    <Motion.div
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.1, duration: 0.6 }}
@@ -230,7 +230,7 @@ const FeatureCard = ({ feature, index }) => {
 
       {/* Hover Accent */}
       <div className="absolute inset-0 rounded-2xl border-2 border-transparent transition-colors group-hover:border-purple-500" />
-    </motion.div>
+    </Motion.div>
   )
 }
 
@@ -240,7 +240,7 @@ const FeatureCard = ({ feature, index }) => {
  */
 const MetricCard = ({ metric, index }) => {
   return (
-    <motion.div
+    <Motion.div
       initial={{ opacity: 0, scale: 0.9 }}
       whileInView={{ opacity: 1, scale: 1 }}
       transition={{ delay: index * 0.1, duration: 0.5 }}
@@ -257,7 +257,7 @@ const MetricCard = ({ metric, index }) => {
 
       {/* Label */}
       <div className="mt-2 text-sm font-medium text-slate-600">{metric.label}</div>
-    </motion.div>
+    </Motion.div>
   )
 }
 

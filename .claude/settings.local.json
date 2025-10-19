@@ -78,7 +78,9 @@
       "Bash(npx prisma validate:*)",
       "Bash(pwsh -Command:*)",
       "Bash(npx bmad:*)",
-      "Bash(git remote:*)"
+      "Bash(git remote:*)",
+      "Bash(if not exist docs mkdir docs)",
+      "Bash(npx bmad-method:*)"
     ],
     "deny": [],
     "ask": []

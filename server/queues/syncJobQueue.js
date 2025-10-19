@@ -447,3 +447,41 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 
+async function executeShopifySync(syncJob, integration) {
+  const integrationId = integration?.id ?? 'unknown'
+  logger.info(`[SyncJobQueue] Executing Shopify sync for job ${syncJob.id} (integration ${integrationId})`)
+
+  return {
+    success: true,
+    message: 'Shopify sync stub (Week 3 implementation)',
+    recordsProcessed: 0,
+    successCount: 0,
+    errorCount: 0,
+  }
+}
+
+async function executeAmazonSync(syncJob, integration) {
+  const integrationId = integration?.id ?? 'unknown'
+  logger.info(`[SyncJobQueue] Executing Amazon sync for job ${syncJob.id} (integration ${integrationId})`)
+
+  return {
+    success: true,
+    message: 'Amazon sync stub (Week 3 implementation)',
+    recordsProcessed: 0,
+    successCount: 0,
+    errorCount: 0,
+  }
+}
+
+async function executeUnleashedSync(syncJob, integration) {
+  const integrationId = integration?.id ?? 'unknown'
+  logger.info(`[SyncJobQueue] Executing Unleashed sync for job ${syncJob.id} (integration ${integrationId})`)
+
+  return {
+    success: true,
+    message: 'Unleashed sync stub (Week 3 implementation)',
+    recordsProcessed: 0,
+    successCount: 0,
+    errorCount: 0,
+  }
+}

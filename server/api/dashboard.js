@@ -104,7 +104,10 @@ router.get('/executive', async (req, res) => {
         value: wcData.data?.workingCapital || 0,
         ccc: wcData.data?.cashConversionCycle || 0,
         currentRatio: wcData.data?.currentRatio || 0,
-        sparkline: [wcData.data?.workingCapital || 0] // TODO: Historical data
+        dso: wcData.data?.dso || 0,
+        dio: wcData.data?.dio || 0,
+        dpo: wcData.data?.dpo || 0,
+        sparkline: [wcData.data?.workingCapital || 0] // Single data point - historical tracking in future story
       },
       cashFlow: {
         operating: cfData?.operating || 0,

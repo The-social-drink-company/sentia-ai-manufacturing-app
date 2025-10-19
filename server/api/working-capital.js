@@ -5,6 +5,10 @@ import { authenticateToken } from '../middleware/auth.js'
 import ScenarioModeler from '../services/finance/ScenarioModeler.js'
 import ApprovalEngine from '../services/finance/ApprovalEngine.js'
 import MitigationPlanner from '../services/finance/MitigationPlanner.js'
+import xeroService from '../../services/xeroService.js'
+import sseService from '../services/sse/index.cjs'
+
+const { emitWorkingCapitalUpdate } = sseService
 
 const router = express.Router()
 const prisma = new PrismaClient()
@@ -325,12 +329,110 @@ const calculateDaysInventory = summary => {
   return turnover ? Number((365 / turnover).toFixed(0)) : 0
 }
 
-// Main working capital endpoint for frontend integration
+/**
+ * Main working capital endpoint for frontend integration
+ *
+ * BMAD-MOCK-001: Replaced ALL hardcoded fallback data with live Xero integration
+ * Status: ✅ LIVE DATA ONLY - No fallbacks, no mock data
+ *
+ * Data sources (in priority order):
+ * 1. REAL Xero API data (primary source)
+ * 2. Database records from working_capital table (if Xero unavailable)
+ * 3. Error response asking user to connect data source (no fake data)
+ */
 router.get('/', async (req, res) => {
   try {
-    console.log('📊 Working capital data requested')
+    console.log('📊 Working capital data requested - attempting Xero integration first')
 
-    // Get working capital data from database
+    // PRIORITY 1: Try Xero API first (REAL DATA)
+    const xeroHealth = await xeroService.healthCheck()
+
+    if (xeroHealth.status === 'connected') {
+      console.log('✅ Xero connected - fetching REAL working capital data')
+
+      try {
+        // Get REAL working capital from Xero
+        const xeroWcResult = await xeroService.calculateWorkingCapital()
+
+        if (xeroWcResult.success && xeroWcResult.data) {
+          const wcData = xeroWcResult.data
+
+          // Get inventory data from database
+          const [inventorySummary, cashFlowData] = await Promise.all([
+            fetchInventoryData(),
+            xeroService.getCashFlow(3)
+          ])
+
+          // Build response from REAL Xero data
+          const workingCapitalData = {
+            workingCapital: toNumber(wcData.workingCapital),
+            currentRatio: toNumber(wcData.currentRatio),
+            quickRatio: toNumber(wcData.quickRatio),
+            cash: toNumber(wcData.cash),
+            receivables: toNumber(wcData.accountsReceivable),
+            payables: toNumber(wcData.accountsPayable),
+            cashRunwayMonths: wcData.cashRunwayMonths || 0,
+            cashConversionCycle: wcData.cashConversionCycle || 0,
+            dso: wcData.dso || 0,
+            dio: wcData.dio || 0,
+            dpo: wcData.dpo || 0,
+            liquiditySnapshot: {
+              bankAccounts: wcData.bankAccounts || [],
+              currentAssets: {
+                cash: toNumber(wcData.cash),
+                accountsReceivable: toNumber(wcData.accountsReceivable),
+                inventory: toNumber(wcData.inventory),
+                otherCurrentAssets: toNumber(wcData.otherCurrentAssets),
+                total: toNumber(wcData.currentAssets),
+              },
+              currentLiabilities: {
+                accountsPayable: toNumber(wcData.accountsPayable),
+                shortTermDebt: toNumber(wcData.shortTermDebt),
+                accruedExpenses: toNumber(wcData.accruedExpenses),
+                otherCurrentLiabilities: toNumber(wcData.otherCurrentLiabilities),
+                total: toNumber(wcData.currentLiabilities),
+              },
+              inventory: parseInventory(inventorySummary),
+            },
+            forecast: [], // Could integrate AI forecast in future
+            lastCalculated: wcData.timestamp || new Date().toISOString(),
+          }
+
+          console.log('✅ Working capital data retrieved from REAL Xero API')
+
+          // Broadcast real-time update via SSE to all connected dashboard clients
+          emitWorkingCapitalUpdate({
+            workingCapital: workingCapitalData.workingCapital,
+            currentRatio: workingCapitalData.currentRatio,
+            quickRatio: workingCapitalData.quickRatio,
+            cashConversionCycle: workingCapitalData.cashConversionCycle,
+            dataSource: 'xero_api',
+            timestamp: new Date().toISOString()
+          })
+          console.log('📡 SSE broadcast sent: working_capital:update')
+
+          return res.json({
+            success: true,
+            data: workingCapitalData,
+            metadata: {
+              source: 'xero_api',
+              dataSource: 'xero_api',
+              timestamp: new Date().toISOString(),
+              organizationId: xeroHealth.organizationId,
+              inventoryRefreshedAt: inventorySummary?.updatedAt ?? null,
+              forecastPeriods: 0,
+            },
+          })
+        }
+      } catch (xeroError) {
+        console.error('❌ Xero API error, falling back to database:', xeroError.message)
+        // Fall through to database attempt
+      }
+    }
+
+    // PRIORITY 2: Try database if Xero unavailable
+    console.log('⚠️ Xero not available - attempting database fallback')
+
     const [history, runwayHistory] = await Promise.all([
       prisma.workingCapital.findMany({
         orderBy: { date: 'desc' },
@@ -342,17 +444,19 @@ router.get('/', async (req, res) => {
       }),
     ])
 
-    let workingCapitalData = {}
-
     const latestRecord = history[0] ?? null
-    const [inventorySummary, forecast] = await Promise.all([
-      fetchInventoryData(),
-      fetchAICashFlowForecast(latestRecord?.id ?? null, 90),
-    ])
 
     if (latestRecord) {
+      console.log('✅ Working capital data found in database')
+
+      const [inventorySummary, forecast] = await Promise.all([
+        fetchInventoryData(),
+        fetchAICashFlowForecast(latestRecord?.id ?? null, 90),
+      ])
+
       const cashBalance = toNumber(latestRecord.cash ?? runwayHistory[0]?.cashBalance)
-      workingCapitalData = {
+
+      const workingCapitalData = {
         workingCapital: toNumber(
           latestRecord.currentAssets - latestRecord.currentLiabilities
         ),
@@ -374,58 +478,58 @@ router.get('/', async (req, res) => {
             ? latestRecord.date.toISOString()
             : latestRecord.date || new Date().toISOString(),
       }
-    } else {
-      // Fallback data if no database records
-      workingCapitalData = {
-        workingCapital: 1470000,
-        currentRatio: 2.1,
-        quickRatio: 1.8,
-        cash: 580000,
-        receivables: 1850000,
-        payables: 980000,
-        cashRunwayMonths: 6,
-        liquiditySnapshot: {
-          bankAccounts: parseBankAccounts(null, 580000),
-          currentAssets: {
-            cash: 580000,
-            accountsReceivable: 1850000,
-            inventory: 960000,
-            otherCurrentAssets: 230000,
-            total: 3620000,
-          },
-          currentLiabilities: {
-            accountsPayable: 980000,
-            shortTermDebt: 210000,
-            accruedExpenses: 175000,
-            otherCurrentLiabilities: 160000,
-            total: 1525000,
-          },
-          inventory: parseInventory(inventorySummary),
+
+      return res.json({
+        success: true,
+        data: workingCapitalData,
+        metadata: {
+          source: 'database',
+          dataSource: 'database',
+          timestamp: new Date().toISOString(),
+          inventoryRefreshedAt: inventorySummary?.updatedAt ?? null,
+          forecastPeriods: forecast.length,
         },
-        forecast,
-        lastCalculated: new Date().toISOString(),
-      }
+      })
     }
 
-    console.log('✅ Working capital data retrieved successfully')
-    return res.json({
-      success: true,
-      data: workingCapitalData,
-      metadata: {
-        source: 'database',
-        timestamp: new Date().toISOString(),
-        dataSource: 'database',
-        inventoryRefreshedAt: inventorySummary?.updatedAt ?? null,
-        forecastPeriods: forecast.length,
+    // PRIORITY 3: No data available anywhere - return setup instructions
+    console.log('❌ No working capital data available from any source')
+
+    return res.status(503).json({
+      success: false,
+      error: 'No working capital data available',
+      message: 'Please connect to Xero or load data into the database to view working capital metrics',
+      dataSource: 'none',
+      xeroStatus: xeroHealth,
+      setupInstructions: {
+        option1: {
+          title: 'Connect Xero (Recommended)',
+          steps: [
+            'Set XERO_CLIENT_ID environment variable',
+            'Set XERO_CLIENT_SECRET environment variable',
+            'Ensure Xero Custom Connection is created with accounting.transactions.read permission',
+            'See docs/xero-setup.md for detailed instructions'
+          ]
+        },
+        option2: {
+          title: 'Load Database Records',
+          steps: [
+            'Import working capital data into working_capital table',
+            'Ensure records have required fields: currentAssets, currentLiabilities, cash, accountsReceivable, accountsPayable',
+            'See database/seed-data for examples'
+          ]
+        }
       },
+      timestamp: new Date().toISOString(),
     })
+
   } catch (error) {
     console.error('💥 Working capital endpoint error:', error)
     return res.status(500).json({
       success: false,
       error: 'Internal server error',
       message: 'Failed to retrieve working capital data',
-      userAction: 'Please try again in a few moments',
+      userAction: 'Please check server logs and ensure data sources are configured',
       timestamp: new Date().toISOString(),
       debug: {
         errorType: error.name,

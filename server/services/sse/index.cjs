@@ -282,6 +282,36 @@ const emitShopifySyncError = (payload) => {
   emitChannelEvent('dashboard', 'shopify:sync_error', payload)
 }
 
+const emitAmazonSyncStarted = (payload) => {
+  emitChannelEvent('orders', 'amazon:sync_started', payload)
+  emitChannelEvent('dashboard', 'amazon:sync_started', payload)
+}
+
+const emitAmazonInventorySynced = (payload) => {
+  emitChannelEvent('orders', 'amazon:inventory_synced', payload)
+  emitChannelEvent('dashboard', 'amazon:inventory_synced', payload)
+}
+
+const emitAmazonOrdersSynced = (payload) => {
+  emitChannelEvent('orders', 'amazon:orders_synced', payload)
+  emitChannelEvent('dashboard', 'amazon:orders_synced', payload)
+}
+
+const emitAmazonFBASynced = (payload) => {
+  emitChannelEvent('orders', 'amazon:fba_synced', payload)
+  emitChannelEvent('dashboard', 'amazon:fba_synced', payload)
+}
+
+const emitAmazonSyncCompleted = (payload) => {
+  emitChannelEvent('orders', 'amazon:sync_completed', payload)
+  emitChannelEvent('dashboard', 'amazon:sync_completed', payload)
+}
+
+const emitAmazonSyncError = (payload) => {
+  emitChannelEvent('orders', 'amazon:sync_error', payload)
+  emitChannelEvent('dashboard', 'amazon:sync_error', payload)
+}
+
 const emitAdminBroadcast = (channel, event, payload, meta = {}) => {
   const target = channel === '*' ? null : channel
   const enriched = {
@@ -328,6 +358,12 @@ module.exports = {
   emitShopifyStoreSynced,
   emitShopifySyncCompleted,
   emitShopifySyncError,
+  emitAmazonSyncStarted,
+  emitAmazonInventorySynced,
+  emitAmazonOrdersSynced,
+  emitAmazonFBASynced,
+  emitAmazonSyncCompleted,
+  emitAmazonSyncError,
   emitAdminBroadcast,
   getStatusSummary,
 }

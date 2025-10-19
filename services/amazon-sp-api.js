@@ -162,9 +162,17 @@ class AmazonSPAPIService {
       };
       
       await redisCache.cacheWidget('amazon_inventory_summary', aggregatedData, 300);
-      
+
+      // Emit inventory synced event
+      sseService.emitAmazonInventorySynced({
+        totalSKUs: aggregatedData.totalSKUs,
+        totalQuantity: aggregatedData.totalQuantity,
+        lowStockItems: aggregatedData.lowStockItems,
+        timestamp: new Date().toISOString()
+      });
+
       return processedItems;
-      
+
     } catch (error) {
       logError('❌ Failed to sync inventory:', error);
       throw error;
@@ -211,8 +219,15 @@ class AmazonSPAPIService {
       }
 
       logDebug(`✅ Processed ${orders.length} orders`);
+
+      // Emit orders synced event
+      sseService.emitAmazonOrdersSynced({
+        totalOrders: orders.length,
+        timestamp: new Date().toISOString()
+      });
+
       return orders;
-      
+
     } catch (error) {
       logError('❌ Failed to sync orders:', error);
       throw error;
@@ -253,8 +268,15 @@ class AmazonSPAPIService {
       }
 
       logDebug(`✅ Processed ${shipments.length} FBA shipments`);
+
+      // Emit FBA synced event
+      sseService.emitAmazonFBASynced({
+        totalShipments: shipments.length,
+        timestamp: new Date().toISOString()
+      });
+
       return shipments;
-      
+
     } catch (error) {
       logError('❌ Failed to sync FBA data:', error);
       throw error;
@@ -310,19 +332,61 @@ class AmazonSPAPIService {
   }
 
   async performFullSync() {
+    const syncStartTime = Date.now();
+
     try {
       logDebug('🚀 Starting full Amazon data sync...');
-      
-      await Promise.all([
+
+      // Emit sync started event
+      sseService.emitAmazonSyncStarted({
+        timestamp: new Date().toISOString(),
+        syncType: 'full'
+      });
+
+      // Perform individual syncs
+      const [inventoryResult, ordersResult, fbaResult] = await Promise.allSettled([
         this.syncInventoryData(),
         this.syncOrderData(),
         this.syncFBAData()
       ]);
-      
-      logDebug('✅ Full Amazon sync completed successfully');
-      
+
+      const syncDuration = Date.now() - syncStartTime;
+
+      // Get metrics for completed sync
+      const inventorySummary = await this.getInventorySummary();
+      const orderMetrics = await this.getOrderMetrics();
+
+      logDebug(`✅ Full Amazon sync completed in ${syncDuration}ms`);
+
+      // Emit sync completed event
+      sseService.emitAmazonSyncCompleted({
+        syncDuration,
+        inventory: {
+          totalSKUs: inventorySummary.totalSKUs,
+          totalQuantity: inventorySummary.totalQuantity,
+          lowStockItems: inventorySummary.lowStockItems
+        },
+        orders: {
+          totalOrders: orderMetrics.totalOrders,
+          totalRevenue: orderMetrics.totalRevenue,
+          unshippedOrders: orderMetrics.unshippedOrders
+        },
+        results: {
+          inventory: inventoryResult.status,
+          orders: ordersResult.status,
+          fba: fbaResult.status
+        },
+        timestamp: new Date().toISOString()
+      });
+
     } catch (error) {
       logError('❌ Full sync failed:', error);
+
+      // Emit sync error event
+      sseService.emitAmazonSyncError({
+        error: error.message,
+        timestamp: new Date().toISOString()
+      });
     }
   }
 

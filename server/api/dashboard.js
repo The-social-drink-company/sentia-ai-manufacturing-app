@@ -621,4 +621,102 @@ router.get('/amazon-inventory', async (req, res) => {
   }
 });
 
+/**
+ * GET /api/v1/dashboard/channel-performance
+ *
+ * Returns consolidated channel performance comparison (Shopify vs Amazon)
+ * Enables marketplace strategy decisions and commission tracking
+ */
+router.get('/channel-performance', async (req, res) => {
+  try {
+    logDebug('[Dashboard] Fetching channel performance comparison...');
+
+    const shopifyStatus = shopifyMultiStoreService.getConnectionStatus();
+    const amazonConnected = amazonSPAPIService.isConnected;
+
+    // Fetch data from both channels in parallel
+    const [shopifyData, amazonOrders, amazonInventory] = await Promise.all([
+      shopifyStatus.connected
+        ? shopifyMultiStoreService.getConsolidatedSalesData()
+        : Promise.resolve({ success: false }),
+      amazonConnected
+        ? amazonSPAPIService.getOrderMetrics()
+        : Promise.resolve(null),
+      amazonConnected
+        ? amazonSPAPIService.getInventorySummary()
+        : Promise.resolve(null)
+    ]);
+
+    const channels = [];
+
+    // Shopify channel
+    if (shopifyData.success) {
+      channels.push({
+        channel: 'Shopify (UK/EU + USA)',
+        revenue: shopifyData.totalRevenue || 0,
+        netRevenue: shopifyData.netRevenue || 0,
+        orders: shopifyData.totalOrders || 0,
+        customers: shopifyData.totalCustomers || 0,
+        avgOrderValue: shopifyData.avgOrderValue || 0,
+        commission: {
+          fees: shopifyData.transactionFees || 0,
+          rate: 0.029,
+          description: '2.9% Shopify transaction fees'
+        },
+        status: 'connected',
+        storeCount: shopifyData.stores?.length || 0
+      });
+    }
+
+    // Amazon channel
+    if (amazonConnected && amazonOrders) {
+      channels.push({
+        channel: 'Amazon FBA',
+        revenue: amazonOrders.totalRevenue || 0,
+        orders: amazonOrders.totalOrders || 0,
+        avgOrderValue: amazonOrders.averageOrderValue || 0,
+        unshippedOrders: amazonOrders.unshippedOrders || 0,
+        inventoryStatus: amazonInventory ? {
+          totalSKUs: amazonInventory.totalSKUs || 0,
+          totalQuantity: amazonInventory.totalQuantity || 0,
+          lowStockItems: amazonInventory.lowStockItems || 0
+        } : null,
+        status: 'connected'
+      });
+    }
+
+    // Calculate totals
+    const totalRevenue = channels.reduce((sum, ch) => sum + (ch.revenue || 0), 0);
+    const totalOrders = channels.reduce((sum, ch) => sum + (ch.orders || 0), 0);
+
+    logInfo(`[Dashboard] Channel performance fetched: ${channels.length} channels, $${totalRevenue.toFixed(2)} total revenue`);
+
+    res.json({
+      success: true,
+      data: {
+        channels,
+        summary: {
+          totalRevenue,
+          totalOrders,
+          avgOrderValue: totalOrders > 0 ? totalRevenue / totalOrders : 0,
+          channelCount: channels.length
+        },
+        integrationStatus: {
+          shopify: shopifyStatus.connected ? 'connected' : 'pending',
+          amazon: amazonConnected ? 'connected' : 'pending'
+        },
+        lastUpdated: new Date().toISOString()
+      }
+    });
+
+  } catch (error) {
+    logError('[Dashboard] Error fetching channel performance:', error.message);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      data: { channels: [], summary: {} }
+    });
+  }
+});
+
 export default router;

@@ -489,8 +489,10 @@ BMAD-METHOD v6a provides the structured, agentic framework needed to transform t
 
 | Story ID | Status | Estimated | Actual | Completion |
 |----------|--------|-----------|--------|------------|
-| BMAD-MOCK-003 | ⏳ PENDING | 3 days | TBD | - |
-| BMAD-MOCK-004 | ⏳ PENDING | 3 days | TBD | - |
+| BMAD-MOCK-003-AMAZON | ⏳ IN PROGRESS | 3 days | TBD | - |
+| BMAD-MOCK-004-UNLEASHED | ⏳ PENDING | 3 days | TBD | - |
+
+**Note**: Original BMAD-MOCK-003 (Math.random removal) and BMAD-MOCK-004 (P&L hardcoded data) were completed in Sprint 1. These Sprint 2 stories are Amazon SP-API and Unleashed ERP integrations.
 
 ### Sprint 3: Real-time & UI Polish
 
@@ -498,37 +500,55 @@ BMAD-METHOD v6a provides the structured, agentic framework needed to transform t
 |----------|--------|-----------|--------|------------|
 | BMAD-MOCK-005 | ⏳ PENDING | 2 days | TBD | - |
 | BMAD-MOCK-006 | ⏳ PENDING | 1.5 days | TBD | - |
-| BMAD-MOCK-007 | ⏳ PENDING | 2 days | TBD | - |
+| BMAD-MOCK-007 | ✅ COMPLETE | 2 days | 0 days (pre-existing) | 2025-10-19 |
+
+**Note**: BMAD-MOCK-007 (Working capital fallbacks) was completed during BMAD-MOCK-001.
 
 ### Epic Summary
 
-- **Total Stories**: 7
-- **Completed**: 2 (28.6%) ✅ Sprint 1 Complete
-- **In Progress**: 0
-- **Remaining**: 5 (71.4%)
+- **Total Stories**: 7 (Original Plan)
+- **Completed**: 5 (71.4%) ✅ Sprint 1 Expanded
+  - BMAD-MOCK-001 (Xero): 3 days
+  - BMAD-MOCK-002 (Shopify): 6 hours
+  - BMAD-MOCK-003 (Math.random): Pre-existing (0 days)
+  - BMAD-MOCK-004 (P&L hardcoded): Pre-existing (0 days)
+  - BMAD-MOCK-007 (Working capital): Pre-existing (0 days)
+- **In Progress**: 1 (Amazon SP-API)
+- **Remaining**: 1 (BMAD-MOCK-004-UNLEASHED or other)
 - **Total Estimated**: 17 days (~3.5 weeks)
-- **Actual Spent**: 3.25 days (Sprint 1: BMAD-MOCK-001 + BMAD-MOCK-002)
-- **Projected Remaining**: ~7 days (based on 169% velocity from Sprint 1)
-- **Projected Total**: ~10.25 days (vs 17 days estimated = 40% faster)
+- **Actual Spent**: 3.25 days
+- **Projected Remaining**: ~3-4 days (based on 169% velocity)
+- **Projected Total**: ~6-7 days (vs 17 days estimated = 65% faster)
 
-### Key Learnings from Sprint 1 (BMAD-MOCK-001 + BMAD-MOCK-002)
+### Key Learnings from Sprint 1 (All Stories)
 
-1. **Audit-First Approach Critical**: Both stories discovered 90%+ pre-existing infrastructure
+1. **Pre-Implementation Discovery Pattern** ⭐ NEW
+   - **Discovery**: 3 stories (BMAD-MOCK-003, 004, 007) already complete before story creation
+   - **Method**: Run comprehensive code audit BEFORE estimating work
+   - **Impact**: Saved 7 days of estimated work by discovering completed features
+   - **Lesson**: Previous development during BMAD-MOCK-001 covered multiple story requirements
+   - **Action**: Always grep/audit codebase before accepting story estimates
+
+2. **Audit-First Approach Critical**: Both new stories discovered 90%+ pre-existing infrastructure
    - BMAD-MOCK-001: Xero service existed (1,225 lines)
    - BMAD-MOCK-002: Shopify service existed (878 lines)
    - Combined savings: ~4 days of development work
-2. **Integration Pattern Highly Reusable**: Established template for all API integrations
+
+3. **Integration Pattern Highly Reusable**: Established template for all API integrations
    - Health check → Fetch data → Transform → Return with metadata
    - Setup prompt component (copy XeroSetupPrompt → adapt)
    - Documentation structure (prerequisites → setup → troubleshooting)
-3. **Template-Driven Development 4x Faster**: Component creation from templates
+
+4. **Template-Driven Development 4x Faster**: Component creation from templates
    - BMAD-MOCK-002: 30 minutes vs 2 hours from scratch
    - ShopifySetupPrompt copied from XeroSetupPrompt with find-replace
-4. **Velocity Acceleration Pattern**: Story 1 → Story 2 = 5.6x faster
+
+5. **Velocity Acceleration Pattern**: Story 1 → Story 2 = 5.6x faster
    - BMAD-MOCK-001: 3 days (100% of estimate)
    - BMAD-MOCK-002: 6 hours (24% of estimate)
-   - Pattern established for Sprint 2 stories (BMAD-MOCK-003 onwards)
-5. **Commission Tracking High Value**: Stakeholder visibility into marketplace fees
+   - Pattern established for Sprint 2 stories (Amazon SP-API onwards)
+
+6. **Commission Tracking High Value**: Stakeholder visibility into marketplace fees
    - Shopify: 2.9% transaction fees tracked
    - Next: Amazon referral fees, FBA costs
 

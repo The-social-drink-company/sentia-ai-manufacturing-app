@@ -196,6 +196,19 @@ const AuthProvider = ({ children }) => {
   // Both development and production modes use ClerkProvider
   // (Clerk components like SignIn require ClerkProvider even in dev mode)
   const publishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
+
+  // BMAD-DEPLOY-006-FIX: Log Clerk configuration for debugging
+  console.log('[AuthProvider] Clerk Configuration:', {
+    publishableKeyPresent: !!publishableKey,
+    publishableKeyLength: publishableKey?.length || 0,
+    publishableKeyPrefix: publishableKey?.substring(0, 15) || 'NOT_SET',
+  })
+
+  // BMAD-DEPLOY-006-FIX: Warn if publishable key is missing
+  if (!publishableKey) {
+    console.error('[AuthProvider] VITE_CLERK_PUBLISHABLE_KEY is not set - authentication will not work!')
+  }
+
   const clerkAppearance = {
     baseTheme: undefined,
     variables: {

@@ -84,8 +84,7 @@ services:
       pnpm exec prisma generate
     startCommand: |
       corepack enable &&
-      chmod +x scripts/prisma-safe-migrate.sh &&
-      bash scripts/prisma-safe-migrate.sh &&
+      pnpm exec prisma migrate resolve --applied 20251017171256_init &&
       pnpm run start:render
     healthCheckPath: /api/health
     envVars:

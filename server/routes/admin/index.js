@@ -2,7 +2,20 @@ import express from 'express'
 import { requireAdmin } from '../../middleware/adminAuth.js'
 import { requireMfa } from '../../middleware/adminMfa.js'
 import { audit } from '../../middleware/adminAudit.js'
-import { getDashboard, listUsers, createUser, listApprovals, submitApproval } from '../../controllers/admin/index.js'
+import {
+  getDashboard,
+  listUsers,
+  createUser,
+  listApprovals,
+  submitApproval,
+  getApprovalRequests,
+  createApprovalRequest,
+  approveRequest,
+  rejectRequest,
+  getApprovalHistory,
+  requestMFACode,
+  verifyMFACode,
+} from '../../controllers/admin/index.js'
 
 const router = express.Router()
 
@@ -44,10 +57,28 @@ router.use('/environment', requireMfa, audit, (req, res) => {
   res.status(501).json({ message: 'Admin environment endpoints not implemented yet.' })
 })
 
+// MFA endpoints (no MFA required to request/verify MFA codes)
+router.route('/mfa/request').all(audit).post(requestMFACode)
+
+router.route('/mfa/verify').all(audit).post(verifyMFACode)
+
+// Approval endpoints
 router
   .route('/approvals')
   .all(requireMfa, audit)
-  .get(listApprovals)
-  .post(submitApproval)
+  .get(getApprovalRequests)
+  .post(createApprovalRequest)
+
+router
+  .route('/approvals/:id/approve')
+  .all(requireMfa, audit)
+  .post(approveRequest)
+
+router
+  .route('/approvals/:id/reject')
+  .all(requireMfa, audit)
+  .post(rejectRequest)
+
+router.route('/approvals/:id/history').all(audit).get(getApprovalHistory)
 
 export default router

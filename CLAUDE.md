@@ -290,13 +290,24 @@ if (xeroData?.success) {
 
 All environments deployed on Render with proper CI/CD:
 
-### Live Environments (All Functional)
+### Live Environments
 
-- **Development**: https://sentia-manufacturing-dashboard-621h.onrender.com
-- **Testing**: https://sentia-manufacturing-dashboard-test.onrender.com
-- **Production**: https://sentia-manufacturing-dashboard-production.onrender.com
+**Current Production Services** (All deploy from `development` branch):
 
-**Note**: All environments deploy successfully and show the demo interface
+| Service | URL | Status | Purpose |
+|---------|-----|--------|---------|
+| **Frontend** | https://sentia-frontend-prod.onrender.com | ✅ Active | React application UI |
+| **Backend API** | https://sentia-backend-prod.onrender.com | 🔄 Active | Express REST API + Prisma |
+| **MCP Server** | https://sentia-mcp-prod.onrender.com | 🔄 Active | External API integrations |
+| **Database** | Internal PostgreSQL 17 | ✅ Active | Main data store |
+
+**Health Check Endpoints**:
+- MCP: https://sentia-mcp-prod.onrender.com/health
+- Backend: https://sentia-backend-prod.onrender.com/api/health
+
+**⚠️ Critical Configuration**: All services MUST specify `branch: development` in render.yaml (see [docs/render-deployment-guide.md](docs/render-deployment-guide.md))
+
+**Database Expiration**: Free tier expires **November 16, 2025** (upgrade required)
 
 ### Deployment Commands
 

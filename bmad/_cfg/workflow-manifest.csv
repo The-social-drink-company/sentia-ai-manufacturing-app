@@ -9,3 +9,4 @@ name,description,module,path
 "edit-workflow","Edit existing BMAD workflows while following all best practices and conventions","bmb","bmad/bmb/workflows/edit-workflow/workflow.yaml"
 "module-brief","Create a comprehensive Module Brief that serves as the blueprint for building new BMAD modules using strategic analysis and creative vision","bmb","bmad/bmb/workflows/module-brief/workflow.yaml"
 "redoc","Autonomous documentation system that maintains module, workflow, and agent documentation using a reverse-tree approach (leaf folders first, then parents). Understands BMAD conventions and produces technical writer quality output.","bmb","bmad/bmb/workflows/redoc/workflow.yaml"
+"testarch-automate","Automated testing and architecture validation workflow for ensuring code quality, test coverage, and architectural compliance in the Sentia Manufacturing AI Dashboard project","bmm","bmad/bmm/workflows/testarch/automate/workflow.yaml"

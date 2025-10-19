@@ -1,0 +1,58 @@
+# TestArch Automate Workflow Configuration
+name: testarch-automate
+description: "Automated testing and architecture validation workflow for ensuring code quality, test coverage, and architectural compliance in the Sentia Manufacturing AI Dashboard project"
+author: "BMad Method Module"
+
+# Critical variables from config
+config_source: "{project-root}/bmad/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+test_output_folder: "{config_source}:test_output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+date: system-generated
+
+# Project-specific paths
+project_root: "{project-root}"
+test_directory: "{project-root}/tests"
+src_directory: "{project-root}/src"
+server_directory: "{project-root}/server"
+services_directory: "{project-root}/services"
+
+# Test configuration
+test_frameworks:
+  unit_tests: "vitest"
+  integration_tests: "vitest"
+  e2e_tests: "playwright"
+
+# Architecture validation
+architecture_rules:
+  - "No mock data in production code"
+  - "All API services must have error handling"
+  - "All components must use TypeScript/JSDoc"
+  - "External integrations must have fallback handling"
+
+# Module path and component files
+installed_path: "{project-root}/bmad/bmm/workflows/testarch/automate"
+template: false # This is an action workflow - no template needed
+instructions: "{installed_path}/instructions.md"
+validation: "{installed_path}/checklist.md"
+
+# Output configuration
+test_report_file: "{test_output_folder}/test-report-{date}.md"
+architecture_report_file: "{test_output_folder}/architecture-validation-{date}.md"
+coverage_report_file: "{test_output_folder}/coverage-report-{date}.md"
+
+# Recommended inputs - existing project context
+recommended_inputs:
+  - project_standards: "{project-root}/context/development-standards.md"
+  - security_guidelines: "{project-root}/context/security-guidelines.md"
+  - performance_testing: "{project-root}/context/performance-testing.md"
+  - bmad_implementation: "{project-root}/BMAD-METHOD-V6A-IMPLEMENTATION.md"
+  - claude_instructions: "{project-root}/CLAUDE.md"
+
+# Test automation modes
+automation_modes:
+  quick: "Run fast unit tests only"
+  standard: "Run unit and integration tests"
+  full: "Run all tests including E2E and architecture validation"
+  ci_cd: "Full test suite with coverage reports for CI/CD pipelines"

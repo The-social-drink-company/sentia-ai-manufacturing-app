@@ -87,7 +87,7 @@ services:
     startCommand: |
       corepack enable &&
       pnpm exec prisma migrate deploy &&
-      pnpm run start
+      pnpm run start:render
     healthCheckPath: /api/health
     envVars:
       - key: NODE_ENV

@@ -3,8 +3,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { useXero } from '@/contexts/useXero'
 import { useSSE } from '@/hooks/useSSE'
+import { useIntegrationStatus } from '@/hooks/useIntegrationStatus'
 import KPIGrid from '@/components/dashboard/KPIGrid'
 import WorkingCapitalCard from '@/components/dashboard/WorkingCapitalCard'
+import ShopifySetupPrompt from '@/components/integrations/ShopifySetupPrompt'
 
 const RegionalContributionChart = lazy(
   () => import('@/components/dashboard/RegionalContributionChart')
@@ -23,6 +25,7 @@ import { ApiError } from '@/services/api/baseApi'
 
 const DashboardEnterprise = () => {
   const { isConnected: xeroConnected } = useXero()
+  const { shopify: shopifyStatus, loading: integrationLoading } = useIntegrationStatus()
 
   const [plData, setPLData] = useState([])
   const [plLoading, setPLLoading] = useState(true)
@@ -456,6 +459,23 @@ const DashboardEnterprise = () => {
 
     fetchCapitalKpis()
   }, [xeroConnected])
+
+  // Show Shopify setup prompt if not connected and not loading
+  if (!integrationLoading && shopifyStatus && shopifyStatus.status !== 'connected' && !shopifyStatus.connected) {
+    return (
+      <section className="space-y-6">
+        <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h1 className="text-3xl font-semibold tracking-tight">Enterprise dashboard</h1>
+            <p className="text-sm text-muted-foreground">
+              Consolidated liquidity and performance outlook across all regions.
+            </p>
+          </div>
+        </header>
+        <ShopifySetupPrompt shopifyStatus={shopifyStatus} />
+      </section>
+    )
+  }
 
   return (
     <section className="space-y-6">

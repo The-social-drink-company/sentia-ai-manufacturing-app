@@ -16,6 +16,7 @@ router.use(authMiddleware)
 
 router.get('/dashboard', (req, res) => streamChannel('dashboard', req, res))
 router.get('/production', (req, res) => streamChannel('production', req, res))
+router.get('/manufacturing', (req, res) => streamChannel('manufacturing', req, res))
 router.get('/inventory', (req, res) => streamChannel('inventory', req, res))
 router.get('/alerts', (req, res) => streamChannel('alerts', req, res))
 router.get('/forecast', (req, res) => streamChannel('forecast', req, res))

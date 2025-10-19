@@ -20,6 +20,7 @@ import express from 'express';
 import xeroService from '../../services/xeroService.js';
 import shopifyMultiStoreService from '../../services/shopify-multistore.js';
 import amazonSPAPIService from '../../services/amazon-sp-api.js';
+import unleashedERPService from '../../services/unleashed-erp.js';
 import { logInfo, logError, logDebug, logWarn } from '../../src/utils/logger.js';
 
 const router = express.Router();
@@ -257,6 +258,7 @@ router.get('/setup-status', async (req, res) => {
     const xeroHealth = await xeroService.healthCheck();
     const shopifyStatus = shopifyMultiStoreService.getConnectionStatus();
     const amazonConnected = amazonSPAPIService.isConnected;
+    const unleashedStatus = unleashedERPService.getConnectionStatus();
 
     const setupStatus = {
       integrations: {
@@ -290,8 +292,13 @@ router.get('/setup-status', async (req, res) => {
           story: 'BMAD-MOCK-003'
         },
         unleashedErp: {
-          connected: false,
-          status: 'pending',
+          connected: unleashedStatus.connected,
+          status: unleashedStatus.connected ? 'connected' : 'pending',
+          message: unleashedStatus.connected
+            ? `Unleashed ERP connected successfully. Sync interval: ${unleashedStatus.syncInterval}`
+            : 'Not configured. Add UNLEASHED_API_ID, UNLEASHED_API_KEY, UNLEASHED_API_URL environment variables.',
+          apiEndpoint: unleashedStatus.apiEndpoint,
+          syncInterval: unleashedStatus.syncInterval,
           required: false,
           story: 'BMAD-MOCK-004'
         },
@@ -306,7 +313,9 @@ router.get('/setup-status', async (req, res) => {
             amazonConnected
               ? 'Amazon SP-API connected successfully! ✅'
               : 'Optional: Connect Amazon SP-API for order data (BMAD-MOCK-003)',
-            'Optional: Connect Unleashed ERP for inventory sync (BMAD-MOCK-004)'
+            unleashedStatus.connected
+              ? 'Unleashed ERP connected successfully! ✅'
+              : 'Optional: Connect Unleashed ERP for manufacturing/inventory data (BMAD-MOCK-004)'
           ]
         : [
             'Set XERO_CLIENT_ID environment variable',
@@ -316,7 +325,7 @@ router.get('/setup-status', async (req, res) => {
           ]
     };
 
-    logInfo(`[Dashboard] Setup status checked: Xero ${xeroHealth.status}, Shopify ${shopifyStatus.connected ? `${shopifyStatus.activeStores} stores` : 'not connected'}, Amazon ${amazonConnected ? 'connected' : 'not connected'}`);
+    logInfo(`[Dashboard] Setup status checked: Xero ${xeroHealth.status}, Shopify ${shopifyStatus.connected ? `${shopifyStatus.activeStores} stores` : 'not connected'}, Amazon ${amazonConnected ? 'connected' : 'not connected'}, Unleashed ${unleashedStatus.connected ? 'connected' : 'not connected'}`);
 
     res.json({
       success: true,
@@ -638,6 +647,78 @@ router.get('/amazon-inventory', async (req, res) => {
 
   } catch (error) {
     logError('[Dashboard] Error fetching Amazon inventory data:', error.message);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      data: null
+    });
+  }
+});
+
+/**
+ * GET /api/v1/dashboard/unleashed-manufacturing
+ *
+ * Returns Unleashed ERP manufacturing and production data
+ */
+router.get('/unleashed-manufacturing', async (req, res) => {
+  try {
+    logDebug('[Dashboard] Fetching Unleashed manufacturing data...');
+
+    const unleashedStatus = unleashedERPService.getConnectionStatus();
+
+    if (!unleashedStatus.connected) {
+      return res.json({
+        success: false,
+        error: 'unleashed_not_connected',
+        data: null,
+        message: 'Unleashed ERP not configured. Add UNLEASHED_API_ID, UNLEASHED_API_KEY, UNLEASHED_API_URL environment variables.',
+        setupRequired: true,
+        unleashedStatus: unleashedStatus
+      });
+    }
+
+    const manufacturingData = await unleashedERPService.getConsolidatedData();
+
+    if (manufacturingData.error) {
+      logWarn('[Dashboard] Unleashed manufacturing data fetch failed:', manufacturingData.error);
+      return res.json({
+        success: false,
+        error: manufacturingData.error,
+        data: null,
+        setupRequired: false
+      });
+    }
+
+    logInfo(`[Dashboard] Unleashed manufacturing data fetched: ${manufacturingData.production?.activeBatches || 0} active batches`);
+
+    res.json({
+      success: true,
+      data: {
+        production: {
+          activeBatches: manufacturingData.production?.activeBatches || 0,
+          completedToday: manufacturingData.production?.completedToday || 0,
+          qualityScore: manufacturingData.production?.qualityScore || 0,
+          utilizationRate: manufacturingData.production?.utilizationRate || 0
+        },
+        resources: {
+          utilizationRate: manufacturingData.resources?.utilizationRate || 0,
+          status: manufacturingData.resources?.status || []
+        },
+        productionSchedule: manufacturingData.productionSchedule || [],
+        alerts: {
+          qualityAlerts: manufacturingData.qualityAlerts || [],
+          inventoryAlerts: manufacturingData.inventoryAlerts || []
+        },
+        metadata: {
+          timestamp: new Date().toISOString(),
+          dataSource: 'unleashed_erp',
+          lastUpdated: manufacturingData.lastUpdated
+        }
+      }
+    });
+
+  } catch (error) {
+    logError('[Dashboard] Error fetching Unleashed manufacturing data:', error.message);
     res.status(500).json({
       success: false,
       error: error.message,

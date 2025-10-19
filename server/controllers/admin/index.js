@@ -17,4 +17,22 @@ export {
   pauseIntegration,
   resumeIntegration,
 } from './integrationsController.js'
-// TODO: add exports for roles, queues, audit, system health, environment
+export {
+  getQueues,
+  getQueueById,
+  pauseQueue,
+  resumeQueue,
+  retryFailedJobs,
+  cleanQueue,
+} from './queuesController.js'
+export {
+  getAuditLogs,
+  getAuditLogById,
+  exportAuditLogs,
+} from './auditLogsController.js'
+export {
+  getSystemHealth,
+  getProcessMetrics,
+  getHealthAlerts,
+} from './systemHealthController.js'
+// TODO: add exports for roles, environment

@@ -22,6 +22,18 @@ import {
   syncIntegration,
   pauseIntegration,
   resumeIntegration,
+  getQueues,
+  getQueueById,
+  pauseQueue,
+  resumeQueue,
+  retryFailedJobs,
+  cleanQueue,
+  getAuditLogs,
+  getAuditLogById,
+  exportAuditLogs,
+  getSystemHealth,
+  getProcessMetrics,
+  getHealthAlerts,
 } from '../../controllers/admin/index.js'
 
 const router = express.Router()
@@ -83,17 +95,68 @@ router
   .all(requireMfa, audit)
   .post(resumeIntegration)
 
-router.use('/queues', requireMfa, audit, (req, res) => {
-  res.status(501).json({ message: 'Admin queues endpoints not implemented yet.' })
-})
+// Queues endpoints
+router
+  .route('/queues')
+  .all(requireMfa, audit)
+  .get(getQueues)
 
-router.use('/audit', audit, (req, res) => {
-  res.status(501).json({ message: 'Admin audit endpoints not implemented yet.' })
-})
+router
+  .route('/queues/:id')
+  .all(requireMfa, audit)
+  .get(getQueueById)
 
-router.use('/system-health', requireMfa, audit, (req, res) => {
-  res.status(501).json({ message: 'Admin system health endpoints not implemented yet.' })
-})
+router
+  .route('/queues/:id/pause')
+  .all(requireMfa, audit)
+  .post(pauseQueue)
+
+router
+  .route('/queues/:id/resume')
+  .all(requireMfa, audit)
+  .post(resumeQueue)
+
+router
+  .route('/queues/:id/retry')
+  .all(requireMfa, audit)
+  .post(retryFailedJobs)
+
+router
+  .route('/queues/:id/clean')
+  .all(requireMfa, audit)
+  .post(cleanQueue)
+
+// Audit Logs endpoints
+router
+  .route('/audit-logs')
+  .all(audit)
+  .get(getAuditLogs)
+
+router
+  .route('/audit-logs/:id')
+  .all(audit)
+  .get(getAuditLogById)
+
+router
+  .route('/audit-logs/export')
+  .all(requireMfa, audit)
+  .post(exportAuditLogs)
+
+// System Health endpoints
+router
+  .route('/system-health')
+  .all(audit)
+  .get(getSystemHealth)
+
+router
+  .route('/system-health/process')
+  .all(audit)
+  .get(getProcessMetrics)
+
+router
+  .route('/system-health/alerts')
+  .all(audit)
+  .get(getHealthAlerts)
 
 router.use('/environment', requireMfa, audit, (req, res) => {
   res.status(501).json({ message: 'Admin environment endpoints not implemented yet.' })

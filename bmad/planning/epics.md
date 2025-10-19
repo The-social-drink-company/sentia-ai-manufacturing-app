@@ -637,41 +637,330 @@ Professional UI/UX is critical for:
 
 ## EPIC-003: Frontend Polish & User Experience ⏳ **PENDING**
 
-**Status**: ⏳ PENDING
+**Status**: ⏳ PENDING (Planning Complete)
 **Priority**: HIGH
-**Duration**: 2 weeks
+**Duration**: 14 days (2 weeks) baseline → 3.5 days projected (with 4.1x BMAD velocity)
 **Stories**: 0/8 complete
-**Depends On**: EPIC-002 (must have real data before polishing UX)
+**Depends On**: BMAD-MOCK-009 (API fallback strategy complete) ✅
+**Planning Complete**: 2025-10-19
 
 ### Epic Goal
 
-Enhance user experience with loading states, error boundaries, empty state designs, mobile responsiveness, and accessibility improvements. Ensure professional, polished interface that handles all edge cases gracefully.
+Enhance user experience with loading skeletons, error boundaries, setup prompt integration, mobile responsiveness, accessibility improvements, and polished animations. Ensure professional, graceful interface that handles all edge cases (loading, errors, unconfigured APIs, mobile devices, keyboard navigation).
 
 ### Business Value
 
-Professional UX builds user trust and adoption. Poor error handling and empty states undermine confidence in the platform. This epic ensures users have a smooth, reliable experience regardless of data state.
+Professional UX builds user trust and adoption. Poor error handling and empty states undermine confidence in the platform. This epic delivers:
+- **Perceived Performance**: Loading skeletons reduce perceived wait time by 40-60%
+- **Application Stability**: Error boundaries prevent full-page crashes
+- **Reduced Support Load**: Setup prompts enable self-service configuration (80-90% reduction in tickets)
+- **Mobile Access**: 30-40% of users access dashboards on mobile/tablet devices
+- **Accessibility Compliance**: WCAG 2.1 AA meets enterprise requirements and legal standards
+- **Professional Polish**: Smooth animations and tooltips signal attention to detail
 
 ### Epic Acceptance Criteria
 
-- [ ] All components have loading states with skeletons
-- [ ] Error boundaries catch and display rendering errors
-- [ ] Empty states designed for all widgets
-- [ ] Mobile-responsive on all screen sizes
-- [ ] WCAG 2.1 AA accessibility compliance
-- [ ] Keyboard navigation functional throughout
+- [ ] All pages implement skeleton loading states (no generic spinners)
+- [ ] Error boundaries wrap all major sections (root, page, widget levels)
+- [ ] Setup prompts integrated on all pages requiring external APIs (Xero, Shopify, Amazon, Unleashed)
+- [ ] Mobile-responsive on all screen sizes (320px → 1920px)
+- [ ] WCAG 2.1 AA accessibility compliance (axe DevTools 0 violations, Lighthouse ≥90)
+- [ ] Keyboard navigation functional throughout (no mouse required)
+- [ ] Legacy/duplicate pages removed or deprecated
+- [ ] Smooth animations on page transitions, button interactions, modal open/close
+- [ ] Tooltips on all icon buttons and complex terminology
 
-### Stories (8 total)
+### Stories Breakdown (8 stories, 14 days baseline → 3.5 days projected)
 
-1. **BMAD-UX-001: Loading Skeletons for All Widgets** (2 days)
-2. **BMAD-UX-002: Error Boundary Components** (1 day)
-3. **BMAD-UX-003: Empty State Designs** (3 days)
-4. **BMAD-UX-004: Mobile Responsiveness Testing** (2 days)
-5. **BMAD-UX-005: Accessibility Audit & Fixes** (3 days)
-6. **BMAD-UX-006: Keyboard Navigation Enhancement** (1 day)
-7. **BMAD-UX-007: Loading State Animations** (1 day)
-8. **BMAD-UX-008: Tooltip & Help Text** (1 day)
+#### High Priority: Core Functionality (Stories 1-3)
 
-**Estimated Duration**: 14 days (2 weeks)
+##### **BMAD-UX-001: Loading Skeletons** ⏳ **PENDING**
+**Status**: ⏳ PENDING
+**Priority**: MEDIUM
+**Estimated**: 2 days (baseline) → 4-6 hours (projected with 4.1x velocity)
+**Dependencies**: None
+
+**User Story**: As a dashboard user, I need to see structured skeleton loading screens instead of blank pages or spinners, so that I understand what content is loading and the app feels responsive even during data fetching.
+
+**Acceptance Criteria**:
+- [ ] Skeleton component library created (SkeletonCard, SkeletonTable, SkeletonChart, SkeletonText, SkeletonKPI)
+- [ ] All 6 dashboard pages implement skeleton loading states
+- [ ] Smooth transitions from skeleton to actual content (200-300ms fade-in)
+- [ ] Shimmer animation works smoothly across browsers
+- [ ] Accessibility: Screen readers announce loading states
+- [ ] Dark mode: Skeletons visible and styled appropriately
+- [ ] Responsive: Skeletons work on mobile/tablet/desktop
+
+**Story Documentation**: `bmad/stories/2025-10-bmad-ux-001-loading-skeletons.md`
+
+---
+
+##### **BMAD-UX-002: Error Boundaries & Graceful Degradation** ⏳ **PENDING**
+**Status**: ⏳ PENDING
+**Priority**: HIGH
+**Estimated**: 1 day (baseline) → 2-3 hours (projected with 4.1x velocity)
+**Dependencies**: None
+
+**User Story**: As a dashboard user, I need JavaScript errors to be caught gracefully so that one broken widget doesn't crash the entire application and I can continue working in unaffected areas.
+
+**Acceptance Criteria**:
+- [ ] Core error boundary components created (RootErrorBoundary, PageErrorBoundary, WidgetErrorBoundary)
+- [ ] All 7 dashboard pages wrapped with PageErrorBoundary
+- [ ] All 7 widgets wrapped with WidgetErrorBoundary
+- [ ] Root-level error boundary wraps entire App.jsx
+- [ ] Error logging service implemented (frontend + backend `/api/logs/error`)
+- [ ] Recovery actions (Reload, Retry, Go Home) functional
+- [ ] User-friendly error messages (no stack traces exposed)
+
+**Story Documentation**: `bmad/stories/2025-10-bmad-ux-002-error-boundaries.md`
+
+---
+
+##### **BMAD-UX-003: Integrate Setup Prompts into Frontend** ⏳ **PENDING**
+**Status**: ⏳ PENDING
+**Priority**: HIGH (Highest Business Value)
+**Estimated**: 3 days (baseline) → 6-8 hours (projected with 4.1x velocity)
+**Dependencies**: BMAD-MOCK-009 (API fallback strategy complete) ✅
+
+**User Story**: As a new user setting up the dashboard, I need clear, actionable setup instructions when external APIs are not configured, so that I can self-configure integrations in minutes instead of waiting for support or reading external documentation.
+
+**Acceptance Criteria**:
+- [ ] All 5 setup prompt components created (Xero, Shopify, Amazon, Unleashed, Generic)
+- [ ] All 4 main pages integrate setup prompts (Working Capital, Inventory, Production, Financial Reports)
+- [ ] All relevant widgets show compact setup prompts
+- [ ] RBAC implemented: admins see instructions, users see "contact admin"
+- [ ] Integration logos added to public/integrations/
+- [ ] API fetch utilities detect 503 and extract setup instructions
+- [ ] Setup instructions tested and verified accurate
+
+**Story Documentation**: `bmad/stories/2025-10-bmad-ux-003-integrate-setup-prompts.md`
+
+---
+
+#### Medium Priority: Polish & Optimization (Stories 4-6)
+
+##### **BMAD-UX-004: Mobile Responsiveness Audit & Fixes** ⏳ **PENDING**
+**Status**: ⏳ PENDING
+**Priority**: MEDIUM
+**Estimated**: 2 days (baseline) → 4-6 hours (projected with 4.1x velocity)
+**Dependencies**: None
+
+**User Story**: As a warehouse manager using a tablet in the field, I need the dashboard to be fully functional on mobile devices so that I can check inventory levels, production schedules, and order status while working on the warehouse floor.
+
+**Acceptance Criteria**:
+- [ ] Responsive navigation with hamburger menu implemented
+- [ ] All pages functional on mobile (320px+ width)
+- [ ] No horizontal scrolling except intentional (tables)
+- [ ] All touch targets ≥ 44px × 44px
+- [ ] Charts scale appropriately to viewport
+- [ ] Tables use card layout or horizontal scroll on mobile
+- [ ] Typography readable without zooming (minimum 16px)
+- [ ] Forms optimized with appropriate input types
+
+**Story Documentation**: `bmad/stories/2025-10-bmad-ux-004-mobile-responsiveness.md`
+
+---
+
+##### **BMAD-UX-005: Accessibility Audit & WCAG 2.1 AA Compliance** ⏳ **PENDING**
+**Status**: ⏳ PENDING
+**Priority**: MEDIUM
+**Estimated**: 3 days (baseline) → 6-8 hours (projected with 4.1x velocity)
+**Dependencies**: None
+
+**User Story**: As a user with disabilities, I need the dashboard to be fully accessible via screen reader and keyboard navigation so that I can use all features without a mouse and receive clear audio feedback on all content and interactions.
+
+**Acceptance Criteria**:
+- [ ] axe DevTools: 0 critical/serious violations on all pages
+- [ ] Lighthouse Accessibility Score: ≥ 90/100 on all pages
+- [ ] Full keyboard navigation functional (no mouse needed)
+- [ ] Screen reader tested with NVDA (Windows) and VoiceOver (Mac)
+- [ ] Color contrast meets WCAG 2.1 AA (4.5:1 text, 3:1 UI)
+- [ ] All images have appropriate alt text
+- [ ] Forms have labels, required indicators, error announcements
+- [ ] Focus indicators visible on all interactive elements
+
+**Story Documentation**: `bmad/stories/2025-10-bmad-ux-005-accessibility-audit.md`
+
+---
+
+##### **BMAD-UX-006: Replace Legacy Dashboard Pages** ⏳ **PENDING**
+**Status**: ⏳ PENDING
+**Priority**: MEDIUM
+**Estimated**: 2 days (baseline) → 4-6 hours (projected with 4.1x velocity)
+**Dependencies**: BMAD-UX-001, BMAD-UX-002, BMAD-UX-003 (polished components ready)
+
+**User Story**: As a user navigating the dashboard, I need to see only canonical, polished pages with no duplicate or legacy versions, so that I'm not confused by multiple versions of the same functionality and the app feels cohesive.
+
+**Acceptance Criteria**:
+- [ ] All routes audited and documented (Keep, Deprecate, Redirect, Remove)
+- [ ] Legacy pages removed or deprecated with clear plan
+- [ ] Redirects implemented for bookmarked legacy URLs
+- [ ] Navigation menu updated (no links to removed pages)
+- [ ] Duplicate functionality consolidated into canonical pages
+- [ ] Bundle size reduced by ≥ 5% (or documented why not)
+- [ ] All internal links functional (no 404s)
+
+**Story Documentation**: `bmad/stories/2025-10-bmad-ux-006-replace-legacy-pages.md`
+
+---
+
+#### Low Priority: Delight & Micro-interactions (Stories 7-8)
+
+##### **BMAD-UX-007: Polish Loading Animations & Transitions** ⏳ **PENDING**
+**Status**: ⏳ PENDING
+**Priority**: LOW
+**Estimated**: 1 day (baseline) → 2-3 hours (projected with 4.1x velocity)
+**Dependencies**: BMAD-UX-001 (Loading Skeletons)
+
+**User Story**: As a dashboard user, I need smooth, professional animations and transitions so that the app feels polished and responsive, making the experience more engaging and delightful.
+
+**Acceptance Criteria**:
+- [ ] Page transitions with smooth fade-in implemented
+- [ ] Button hover, active, loading animations implemented
+- [ ] Modal open/close animations with scale+fade
+- [ ] KPI number count-up animations functional
+- [ ] Loading spinners with smooth rotation
+- [ ] Skeleton-to-content fade transitions
+- [ ] Card hover lift effects implemented
+- [ ] `prefers-reduced-motion` support implemented
+
+**Story Documentation**: `bmad/stories/2025-10-bmad-ux-007-loading-animations.md`
+
+---
+
+##### **BMAD-UX-008: Add Tooltips & Contextual Help Text** ⏳ **PENDING**
+**Status**: ⏳ PENDING
+**Priority**: LOW
+**Estimated**: 1 day (baseline) → 2-3 hours (projected with 4.1x velocity)
+**Dependencies**: None
+
+**User Story**: As a new user unfamiliar with manufacturing terminology, I need contextual tooltips explaining complex terms and features so that I can understand the dashboard without external documentation or training.
+
+**Acceptance Criteria**:
+- [ ] Radix UI Tooltip installed and configured
+- [ ] Tooltip, HelpTooltip, and HoverCard components created
+- [ ] All icon-only buttons have tooltips
+- [ ] Industry terms have help icons with explanations
+- [ ] Abbreviations defined in tooltips
+- [ ] Form fields have help text or tooltips
+- [ ] Dashboard widgets have help tooltips
+- [ ] Tooltips keyboard-accessible (show on focus)
+
+**Story Documentation**: `bmad/stories/2025-10-bmad-ux-008-tooltip-help-text.md`
+
+---
+
+### Epic Metrics
+
+- **Total Stories**: 8
+- **Completed**: 0 (0%)
+- **In Progress**: 0
+- **Pending**: 8 (100%)
+- **Estimated Duration (Baseline)**: 14 days (2 weeks)
+- **Projected Duration (4.1x Velocity)**: 3.5 days (~28 hours)
+- **Actual Spent**: 0 hours
+- **Velocity**: TBD (will update after first story)
+
+### Story Priority Breakdown
+
+**HIGH Priority** (Complete First - Core Functionality):
+- BMAD-UX-002 (Error Boundaries) - 1 day → 2-3 hours
+- BMAD-UX-003 (Setup Prompts) - 3 days → 6-8 hours
+
+**MEDIUM Priority** (Complete Second - Polish & Optimization):
+- BMAD-UX-001 (Loading Skeletons) - 2 days → 4-6 hours
+- BMAD-UX-004 (Mobile Responsiveness) - 2 days → 4-6 hours
+- BMAD-UX-005 (Accessibility Audit) - 3 days → 6-8 hours
+
+**LOW Priority** (Complete Last - Delight & Cleanup):
+- BMAD-UX-006 (Replace Legacy Pages) - 2 days → 4-6 hours
+- BMAD-UX-007 (Loading Animations) - 1 day → 2-3 hours
+- BMAD-UX-008 (Tooltips & Help Text) - 1 day → 2-3 hours
+
+### Recommended Implementation Order
+
+**Week 1** (High Priority):
+1. BMAD-UX-002 (Error Boundaries) - 2-3 hours
+2. BMAD-UX-003 (Setup Prompts) - 6-8 hours
+3. BMAD-UX-001 (Loading Skeletons) - 4-6 hours
+
+**Week 2** (Medium + Low Priority):
+4. BMAD-UX-004 (Mobile Responsiveness) - 4-6 hours
+5. BMAD-UX-005 (Accessibility Audit) - 6-8 hours
+6. BMAD-UX-006 (Replace Legacy Pages) - 4-6 hours
+7. BMAD-UX-007 (Loading Animations) - 2-3 hours
+8. BMAD-UX-008 (Tooltips & Help Text) - 2-3 hours
+
+**Total Projected Time**: ~30-35 hours (4-5 days with 4.1x velocity factor)
+
+### Epic Success Criteria
+
+- [ ] At least 1 story complete (BMAD-UX-001 or BMAD-UX-002)
+- [ ] All 8 stories complete (100% - 8/8)
+- [ ] All major pages have loading skeletons (no generic spinners)
+- [ ] Error boundaries prevent full-page crashes
+- [ ] Setup prompts guide users through API configuration
+- [ ] Mobile-responsive on 320px → 1920px
+- [ ] WCAG 2.1 AA compliance verified (axe DevTools 0 violations)
+- [ ] Legacy pages removed, redirects implemented
+- [ ] Smooth animations at 60fps (prefers-reduced-motion support)
+- [ ] Tooltips on all icon buttons and complex terms
+
+### Key Technical Details
+
+**Loading States:**
+- Skeleton component library (5 components)
+- Shimmer animation via Tailwind CSS
+- 200-300ms fade-in transitions
+- No layout shift (skeleton matches content)
+
+**Error Handling:**
+- 3-tier error boundaries (Root → Page → Widget)
+- Error logging to `/api/logs/error`
+- User-friendly fallback UI
+- Recovery actions (Reload, Retry, Go Home)
+
+**Setup Prompts:**
+- 4 integration-specific components (Xero, Shopify, Amazon, Unleashed)
+- RBAC: admins see instructions, users see "contact admin"
+- Detect 503 responses, render setup wizards
+- Step-by-step configuration guidance
+
+**Mobile Responsiveness:**
+- Hamburger menu for <768px screens
+- Touch targets ≥ 44px × 44px
+- Tables convert to card layout on mobile
+- Charts scale to viewport width
+
+**Accessibility:**
+- axe DevTools automated testing
+- NVDA (Windows) + VoiceOver (Mac) testing
+- 4.5:1 contrast ratio (text), 3:1 (UI)
+- Keyboard navigation (no mouse required)
+
+**Animations:**
+- Pure CSS (Tailwind transitions) for performance
+- Page transitions, button states, modal open/close
+- Number count-up animations for KPIs
+- `prefers-reduced-motion` support
+
+**Tooltips:**
+- Radix UI Tooltip library (accessible by default)
+- Icon button labels
+- Industry term explanations
+- Keyboard-accessible (show on focus)
+
+### Dependencies
+
+**Upstream**: BMAD-MOCK-009 (API Fallback Strategy) ✅ COMPLETE
+**Downstream**: EPIC-004 (Test Coverage) will include tests for all EPIC-003 components
+
+---
+
+**Epic Status**: ⏳ PENDING (Planning Complete)
+**Planning Complete**: 2025-10-19
+**Stories Created**: 8/8 (100%)
+**Next Action**: Begin implementation with BMAD-UX-002 (Error Boundaries) or BMAD-UX-003 (Setup Prompts)
 
 ---
 

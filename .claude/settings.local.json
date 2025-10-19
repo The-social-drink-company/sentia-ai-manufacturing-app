@@ -80,7 +80,9 @@
       "Bash(npx bmad:*)",
       "Bash(git remote:*)",
       "Bash(if not exist docs mkdir docs)",
-      "Bash(npx bmad-method:*)"
+      "Bash(npx bmad-method:*)",
+      "Bash(git log:*)",
+      "Bash(gh pr edit:*)"
     ],
     "deny": [],
     "ask": []

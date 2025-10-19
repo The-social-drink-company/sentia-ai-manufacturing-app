@@ -446,8 +446,8 @@ bmad qa review-story --latest
 ## 2025-10-19 Quality Improvements Log
 
 - Completed BMAD Phase 4 implementation task: extracted UI/auth/error-boundary helpers into dedicated modules, clearing Fast Refresh lint warnings across shared primitives and context providers.
-- Updated `docs/lint-backlog.md` to capture the current backlog (2 admin stub errors, 1 auth dependency warning) after the cleanup.
-- Next BMAD action: finish the admin approvals endpoints and tighten the Bulletproof auth callback dependency list to reach a zero-warning lint run.
+- Removed legacy admin approval stubs and cleaned sync job queue handlers so lint now reports only the pending auth dependency warning.
+- Updated `docs/lint-backlog.md` to capture the current backlog (now just the auth dependency warning) after the cleanup.
 
 ---
 

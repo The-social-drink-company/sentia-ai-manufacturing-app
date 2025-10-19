@@ -490,12 +490,14 @@ BMAD-METHOD v6a provides the structured, agentic framework needed to transform t
 
 **Pre-Implementation Discovery Pattern**: Stories BMAD-MOCK-003, BMAD-MOCK-004, BMAD-MOCK-007 were discovered to be already complete during BMAD-MOCK-001 implementation. Added verification retrospectives documenting completion.
 
-### Sprint 2: Order & Inventory Data
+### Sprint 2: Order & Inventory Data ✅ COMPLETE
 
 | Story ID | Status | Estimated | Actual | Completion |
 |----------|--------|-----------|--------|------------|
 | BMAD-MOCK-003-AMAZON | ✅ COMPLETE | 3 days | 2 hours | 2025-10-19 |
-| BMAD-MOCK-004-UNLEASHED | ⏳ PENDING | 3 days | TBD | - |
+| BMAD-MOCK-004-UNLEASHED | ✅ COMPLETE | 3 days | 2.5 hours | 2025-10-19 |
+
+**Sprint 2 Velocity**: 6 days estimated → 4.5 hours actual = **1,333% velocity** (13.3x faster than estimated)
 
 **Note**: Original BMAD-MOCK-003 (Math.random removal) and BMAD-MOCK-004 (P&L hardcoded data) were completed in Sprint 1. These Sprint 2 stories are Amazon SP-API and Unleashed ERP integrations.
 
@@ -512,19 +514,20 @@ BMAD-METHOD v6a provides the structured, agentic framework needed to transform t
 ### Epic Summary
 
 - **Total Stories**: 7 (Original Plan)
-- **Completed**: 6 (85.7%) ✅ Sprint 1 + Sprint 2 (Story 1)
+- **Completed**: 7 (100%) ✅ **EPIC COMPLETE**
   - BMAD-MOCK-001 (Xero): 3 days
   - BMAD-MOCK-002 (Shopify): 6 hours
   - BMAD-MOCK-003 (Math.random): Pre-existing (0 days)
   - BMAD-MOCK-004 (P&L hardcoded): Pre-existing (0 days)
   - BMAD-MOCK-003-AMAZON (Amazon SP-API): 2 hours
+  - BMAD-MOCK-004-UNLEASHED (Unleashed ERP): 2.5 hours
   - BMAD-MOCK-007 (Working capital): Pre-existing (0 days)
 - **In Progress**: 0
-- **Remaining**: 1 (BMAD-MOCK-004-UNLEASHED)
+- **Remaining**: 0
 - **Total Estimated**: 17 days (~3.5 weeks)
-- **Actual Spent**: 3.33 days (3.25 + 0.08)
-- **Projected Remaining**: ~2-3 hours (Unleashed following Amazon pattern)
-- **Projected Total**: ~3.5 days (vs 17 days estimated = 79% faster)
+- **Actual Spent**: 3.45 days (3.25 + 0.08 + 0.10 + 0.02)
+- **Time Savings**: 13.55 days (80% faster than estimated)
+- **Epic Velocity**: 493% (4.9x faster than estimated)
 
 ### Key Learnings from Sprint 1 (All Stories)
 

@@ -2,7 +2,11 @@ import axios from 'axios';
 import crypto from 'crypto';
 import redisCacheService from './redis-cache.js';
 import { logDebug, logInfo, logWarn, logError } from '../src/utils/logger';
-import sseService from '../server/services/sse/index.cjs';
+import {
+  emitUnleashedSyncStarted,
+  emitUnleashedSyncCompleted,
+  emitUnleashedSyncError
+} from '../server/services/sse/index.cjs';
 
 
 class UnleashedERPService {
@@ -128,7 +132,7 @@ class UnleashedERPService {
     const syncResults = {};
 
     // Send SSE event: sync started
-    sseService.broadcast('unleashed-sync-started', {
+    emitUnleashedSyncStarted({
       timestamp: new Date().toISOString()
     });
 

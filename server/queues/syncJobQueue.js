@@ -102,7 +102,7 @@ export async function initializeSyncJobWorker() {
     })
 
     // Worker event handlers
-    syncJobWorker.on('completed', (job, result) => {
+    syncJobWorker.on('completed', (job) => {
       logger.info(`[SyncJobQueue] Job ${job.id} completed for sync job ${job.data.syncJobId}`)
     })
 
@@ -142,7 +142,7 @@ export async function initializeSyncJobQueueEvents() {
       logger.info(`[SyncJobQueue] Job ${jobId} is active`)
     })
 
-    syncJobQueueEvents.on('completed', ({ jobId, returnvalue }) => {
+    syncJobQueueEvents.on('completed', ({ jobId }) => {
       logger.info(`[SyncJobQueue] Job ${jobId} completed`)
     })
 
@@ -352,7 +352,7 @@ async function processSyncJob(job) {
  * @returns {Promise<Object>} Sync result
  */
 async function executeXeroSync(syncJob, integration) {
-  logger.info(`[SyncJobQueue] Executing Xero sync for job ${syncJob.id}`)
+  logger.info(`[SyncJobQueue] Executing Xero sync for job  (integration )`)
 
   // TODO: Week 3 - Implement actual Xero API sync
   // Will fetch: accounts receivable, accounts payable, bank accounts
@@ -375,7 +375,7 @@ async function executeXeroSync(syncJob, integration) {
  * @returns {Promise<Object>} Sync result
  */
 async function executeShopifySync(syncJob, integration) {
-  logger.info(`[SyncJobQueue] Executing Shopify sync for job ${syncJob.id}`)
+  logger.info(`[SyncJobQueue] Executing Shopify sync for job  (integration )`)
 
   // TODO: Week 3 - Implement actual Shopify API sync
   // Will fetch: orders, products, inventory levels
@@ -398,7 +398,7 @@ async function executeShopifySync(syncJob, integration) {
  * @returns {Promise<Object>} Sync result
  */
 async function executeAmazonSync(syncJob, integration) {
-  logger.info(`[SyncJobQueue] Executing Amazon sync for job ${syncJob.id}`)
+  logger.info(`[SyncJobQueue] Executing Amazon sync for job  (integration )`)
 
   // TODO: Week 3 - Implement actual Amazon SP-API sync
   // Will fetch: orders, fulfillment data
@@ -421,7 +421,7 @@ async function executeAmazonSync(syncJob, integration) {
  * @returns {Promise<Object>} Sync result
  */
 async function executeUnleashedSync(syncJob, integration) {
-  logger.info(`[SyncJobQueue] Executing Unleashed sync for job ${syncJob.id}`)
+  logger.info(`[SyncJobQueue] Executing Unleashed sync for job  (integration )`)
 
   // TODO: Week 3 - Implement actual Unleashed API sync
   // Will fetch: inventory items, production jobs

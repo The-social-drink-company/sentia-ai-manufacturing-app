@@ -12,8 +12,8 @@ const REQUIRED_ENV_VARS = {
     'NODE_ENV',
     'DATABASE_URL',
     'VITE_CLERK_PUBLISHABLE_KEY',
-    'CLERK_SECRET_KEY',
-    'CLERK_WEBHOOK_SECRET'
+    'CLERK_SECRET_KEY'
+    // CLERK_WEBHOOK_SECRET is recommended but not required
   ],
   testing: [
     'NODE_ENV',

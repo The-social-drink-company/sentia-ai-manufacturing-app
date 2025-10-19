@@ -77,7 +77,8 @@
       "Bash(rg:*)",
       "Bash(npx prisma validate:*)",
       "Bash(pwsh -Command:*)",
-      "Bash(npx bmad:*)"
+      "Bash(npx bmad:*)",
+      "Bash(git remote:*)"
     ],
     "deny": [],
     "ask": []

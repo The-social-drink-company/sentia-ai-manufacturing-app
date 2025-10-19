@@ -262,6 +262,26 @@ const emitWorkingCapitalUpdate = (payload) => {
   emitChannelEvent('dashboard', 'working_capital:update', payload)
 }
 
+const emitShopifySyncStarted = (payload) => {
+  emitChannelEvent('sales', 'shopify:sync_started', payload)
+  emitChannelEvent('dashboard', 'shopify:sync_started', payload)
+}
+
+const emitShopifyStoreSynced = (payload) => {
+  emitChannelEvent('sales', 'shopify:store_synced', payload)
+  emitChannelEvent('dashboard', 'shopify:store_synced', payload)
+}
+
+const emitShopifySyncCompleted = (payload) => {
+  emitChannelEvent('sales', 'shopify:sync_completed', payload)
+  emitChannelEvent('dashboard', 'shopify:sync_completed', payload)
+}
+
+const emitShopifySyncError = (payload) => {
+  emitChannelEvent('sales', 'shopify:sync_error', payload)
+  emitChannelEvent('dashboard', 'shopify:sync_error', payload)
+}
+
 const emitAdminBroadcast = (channel, event, payload, meta = {}) => {
   const target = channel === '*' ? null : channel
   const enriched = {
@@ -304,6 +324,10 @@ module.exports = {
   emitForecastError,
   emitInventoryUpdate,
   emitWorkingCapitalUpdate,
+  emitShopifySyncStarted,
+  emitShopifyStoreSynced,
+  emitShopifySyncCompleted,
+  emitShopifySyncError,
   emitAdminBroadcast,
   getStatusSummary,
 }

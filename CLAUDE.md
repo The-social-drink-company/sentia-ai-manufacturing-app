@@ -528,7 +528,8 @@ scripts/               # Utility scripts
 
 ### Branch Structure
 
-- `development` - Primary development branch (default)
+- `main` - Primary development branch (default)
+- `development` - Development work branch
 - `test` - User acceptance testing environment
 - `production` - Live production environment
 

@@ -14,6 +14,7 @@ import ProductPerformanceTable from '@/components/financial/ProductPerformanceTa
 import { useFinancialReportsData } from '@/hooks/useFinancialData'
 import { useIntegrationStatus } from '@/hooks/useIntegrationStatus'
 import XeroSetupPrompt from '@/components/integrations/XeroSetupPrompt'
+import { KPIStripSkeleton, ChartSkeleton, TableSkeleton } from '@/components/skeletons'
 import { cn } from '@/utils/cn'
 
 const TimeRangeSelector = ({ value, onChange, className }) => {
@@ -112,32 +113,26 @@ const ErrorBoundary = ({ error, onRetry }) => (
   </Card>
 )
 
+/**
+ * Financial Reports Loading State (BMAD-UI-002)
+ * Enhanced with specialized skeleton components
+ */
 const LoadingState = () => (
   <div className="space-y-6">
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-      {Array.from({ length: 4 }).map((_, i) => (
-        <Card key={i}>
-          <CardContent className="p-4">
-            <div className="space-y-2">
-              <div className="h-3 bg-gray-200 rounded animate-pulse" />
-              <div className="h-6 bg-gray-200 rounded animate-pulse" />
-              <div className="h-3 bg-gray-200 rounded animate-pulse w-2/3" />
-            </div>
-          </CardContent>
-        </Card>
-      ))}
+    {/* KPI Strip Skeleton */}
+    <KPIStripSkeleton count={4} />
+
+    {/* Financial Charts Skeletons */}
+    <div className="space-y-6">
+      <ChartSkeleton variant="line" showLegend={true} />
+      <ChartSkeleton variant="bar" showLegend={true} />
     </div>
 
-    {Array.from({ length: 3 }).map((_, i) => (
-      <Card key={i}>
-        <CardHeader>
-          <div className="h-6 bg-gray-200 rounded animate-pulse w-1/3" />
-        </CardHeader>
-        <CardContent>
-          <div className="h-64 bg-gray-200 rounded animate-pulse" />
-        </CardContent>
-      </Card>
-    ))}
+    {/* Insights and Product Performance Skeletons */}
+    <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+      <ChartSkeleton variant="pie" showLegend={false} />
+      <TableSkeleton rows={5} columns={4} showHeader={true} />
+    </div>
   </div>
 )
 

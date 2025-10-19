@@ -4,6 +4,7 @@ import { CubeIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline'
 import { useIntegrationStatus } from '@/hooks/useIntegrationStatus'
 import AmazonSetupPrompt from '@/components/integrations/AmazonSetupPrompt'
 import UnleashedSetupPrompt from '@/components/integrations/UnleashedSetupPrompt'
+import { KPIStripSkeleton, TableSkeleton } from '@/components/skeletons'
 
 const currencyFormatter = new Intl.NumberFormat('en-GB', {
   style: 'currency',
@@ -70,14 +71,12 @@ const InventoryManagement = () => {
 
   if (loading) {
     return (
-      <div className="space-y-4">
-        <Card className="animate-pulse">
-          <CardContent className="p-6 space-y-3">
-            <div className="h-4 bg-gray-200 rounded w-32" />
-            <div className="h-8 bg-gray-200 rounded w-48" />
-            <div className="h-3 bg-gray-200 rounded w-full" />
-          </CardContent>
-        </Card>
+      <div className="space-y-6">
+        {/* Summary KPIs Skeleton (BMAD-UI-002) */}
+        <KPIStripSkeleton count={4} />
+
+        {/* Low Stock Alerts Table Skeleton (BMAD-UI-002) */}
+        <TableSkeleton rows={5} columns={3} showHeader={true} />
       </div>
     )
   }

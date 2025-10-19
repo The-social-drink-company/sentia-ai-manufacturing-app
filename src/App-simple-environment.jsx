@@ -20,6 +20,7 @@ const Analytics = lazy(() => import('@/pages/Analytics'))
 const Inventory = lazy(() => import('@/components/inventory/InventoryDashboard'))
 const DataImport = lazy(() => import('@/components/data/DataImportWidget'))
 const AdminPanel = lazy(() => import('@/pages/AdminPanelEnhanced'))
+const Onboarding = lazy(() => import('@/pages/Onboarding'))
 // const ImportWizard = lazy(() => import('@/pages/admin/ImportWizard')) // TODO: Create ImportWizard component
 // const ExportBuilder = lazy(() => import('@/pages/admin/ExportBuilder')) // TODO: Create ExportBuilder component
 const WhatIf = lazy(() => import('@/components/analytics/WhatIfAnalysis'))
@@ -267,6 +268,18 @@ const App = () => {
               {/* Legacy routes for backward compatibility */}
               <Route path="/app/sign-in" element={<Navigate to="/sign-in" replace />} />
               <Route path="/app/sign-up" element={<Navigate to="/sign-up" replace />} />
+
+              {/* Onboarding Route */}
+              <Route
+                path="/onboarding"
+                element={
+                  <ErrorBoundary fallbackMessage="Onboarding failed to load.">
+                    <Suspense fallback={<Loader />}>
+                      <Onboarding />
+                    </Suspense>
+                  </ErrorBoundary>
+                }
+              />
 
               {/* Protected Dashboard Routes */}
               <Route

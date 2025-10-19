@@ -466,6 +466,7 @@ const addProductSalesTable = (pdf, data, margin, startY, contentWidth) => {
         units = parsedItem.units || 0
         growthRate = parsedItem.growthRate || 0
       } catch (error) {
+        console.warn('[pdfService] Failed to parse product sales item', error)
         // Error intentionally ignored - fallback to default values
         product = 'Invalid Data'
         revenue = 0

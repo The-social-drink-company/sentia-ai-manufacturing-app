@@ -73,7 +73,8 @@
       "Bash(git mv:*)",
       "Bash(pnpm eslint:*)",
       "Bash(pnpm update:*)",
-      "Bash(pnpm vitest run:*)"
+      "Bash(pnpm vitest run:*)",
+      "Bash(rg:*)"
     ],
     "deny": [],
     "ask": []

@@ -447,7 +447,7 @@ export default function StockAlerts() {
   });
 
   // SSE for real-time alerts
-  const { connected, lastMessage } = useSSE('inventory', {
+  const { connected } = useSSE('inventory', {
     enabled: true,
     onMessage: (message) => {
       if (message.type === 'inventory:alert') {

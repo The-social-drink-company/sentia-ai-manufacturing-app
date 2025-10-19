@@ -127,7 +127,6 @@ function SafetyStockCard({ sku, safetyStockData }) {
     serviceLevel,
     zScore,
     leadTime,
-    leadTimeVariability, // TODO: Display lead time variability in advanced metrics
     demandVariability,
   } = safetyStockData;
 
@@ -414,8 +413,8 @@ export default function InventoryOptimization() {
   const navigate = useNavigate();
 
   // Check if forecast data was passed from Forecasting Dashboard
-  const [forecastData, setForecastData] = useState(location.state?.forecastModel || null); // TODO: Use forecast data in optimization
-  const [selectedSKUs, setSelectedSKUs] = useState([]); // TODO: Add SKU selector UI
+  const forecastData = location.state?.forecastModel || null; // TODO: Use forecast data in optimization
+  const selectedSKUs = location.state?.selectedSkus || []; // TODO: Add SKU selector UI
   const [optimizationConfig, setOptimizationConfig] = useState({
     serviceLevel: 95,
     orderingCost: 50,
@@ -423,7 +422,7 @@ export default function InventoryOptimization() {
   });
 
   // Fetch optimization data
-  const { data, isLoading } = useQuery({ // TODO: Show loading state
+  const { data } = useQuery({
     queryKey: ['inventory', 'optimization', selectedSKUs],
     queryFn: async () => {
       const params = new URLSearchParams({ skus: selectedSKUs.join(',') });

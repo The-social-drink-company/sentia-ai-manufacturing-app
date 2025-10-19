@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import useLandingAnalytics from '@/hooks/useLandingAnalytics'
 import { SignInButton } from '@clerk/clerk-react'
 import { ArrowRight, BarChart2, TrendingUp, DollarSign, Settings, Package, Brain, CheckCircle2 } from 'lucide-react'
 
@@ -7,18 +8,12 @@ import { ArrowRight, BarChart2, TrendingUp, DollarSign, Settings, Package, Brain
  * Professional public-facing entry point before authentication
  * Features: Hero, Features Grid, Trust Metrics, CTA, Footer
  */
-const LandingPage = () => {
-  const scrollToFeatures = () => {
-    const featuresSection = document.getElementById('features')
-    if (featuresSection) {
-      featuresSection.scrollIntoView({ behavior: 'smooth' })
-    }
-  }
+const LandingPage = () => {\r\n  const { heroRef, trackPrimaryCTA, trackSecondaryCTA, trackSignInModal } = useLandingAnalytics()\r\n\r\n  const handleLearnMore = () => {\r\n    trackSecondaryCTA('features')\r\n    const featuresSection = document.getElementById('features')\r\n    if (featuresSection) {\r\n      featuresSection.scrollIntoView({ behavior: 'smooth' })\r\n    }\r\n  }
 
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <motion.header
+      <motion.header ref={heroRef}
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
@@ -325,3 +320,5 @@ const metrics = [
 ]
 
 export default LandingPage
+
+

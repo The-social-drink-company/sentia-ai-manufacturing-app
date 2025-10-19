@@ -9,16 +9,17 @@
  *
  * Target: <3 second response time for full dashboard load
  *
- * STATUS: Xero integration complete (BMAD-MOCK-001)
- * - ✅ Xero financial data integration
- * - ⏳ Shopify sales data integration (BMAD-MOCK-002)
+ * STATUS: Sprint 1 Complete
+ * - ✅ Xero financial data integration (BMAD-MOCK-001)
+ * - ✅ Shopify sales data integration (BMAD-MOCK-002)
  * - ⏳ Amazon SP-API integration (BMAD-MOCK-003)
  * - ⏳ Unleashed ERP inventory integration (BMAD-MOCK-004)
  */
 
 import express from 'express';
 import xeroService from '../../services/xeroService.js';
-import { logInfo, logError, logDebug } from '../../src/utils/logger.js';
+import shopifyMultiStoreService from '../../services/shopify-multistore.js';
+import { logInfo, logError, logDebug, logWarn } from '../../src/utils/logger.js';
 
 const router = express.Router();
 

@@ -588,3 +588,4 @@ BMAD-METHOD v6a provides the structured, agentic framework needed to transform t
 
 
 
+

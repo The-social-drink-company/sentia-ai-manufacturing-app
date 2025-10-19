@@ -3,8 +3,8 @@
 
 import express from 'express'
 import { PrismaClient } from '@prisma/client'
-import xeroNode from 'xero-node'
-import Shopify from '@shopify/shopify-api'
+import { XeroClient } from 'xero-node'
+import { shopifyApi } from '@shopify/shopify-api'
 
 const router = express.Router()
 const prisma = new PrismaClient()
@@ -14,7 +14,7 @@ const initializeAPIs = () => {
   // Xero API Client
   const xeroClient =
     process.env.XERO_CLIENT_ID && process.env.XERO_CLIENT_SECRET
-      ? new xeroNode.XeroClient({
+      ? new XeroClient({
           clientId: process.env.XERO_CLIENT_ID,
           clientSecret: process.env.XERO_CLIENT_SECRET,
           redirectUris: [`${process.env.BASE_URL}/api/xero/callback`],
@@ -22,11 +22,24 @@ const initializeAPIs = () => {
         })
       : null
 
-  // Shopify API
-  const shopifyClient =
-    process.env.SHOPIFY_API_KEY && process.env.SHOPIFY_API_SECRET
-      ? new Shopify.Clients.Rest(process.env.SHOPIFY_STORE_URL, process.env.SHOPIFY_ACCESS_TOKEN)
-      : null
+  // Shopify API - Initialize shopifyApi instance
+  let shopifyClient = null
+  if (process.env.SHOPIFY_API_KEY && process.env.SHOPIFY_API_SECRET) {
+    const shopify = shopifyApi({
+      apiKey: process.env.SHOPIFY_API_KEY,
+      apiSecretKey: process.env.SHOPIFY_API_SECRET,
+      scopes: ['read_products', 'read_inventory', 'read_orders'],
+      hostName: process.env.SHOPIFY_STORE_URL?.replace('https://', '') || 'shop.myshopify.com',
+      apiVersion: '2024-01',
+      isEmbeddedApp: false,
+    })
+    shopifyClient = new shopify.clients.Rest({
+      session: {
+        shop: process.env.SHOPIFY_STORE_URL?.replace('https://', '') || '',
+        accessToken: process.env.SHOPIFY_ACCESS_TOKEN || '',
+      }
+    })
+  }
 
   return { xeroClient, shopifyClient }
 }

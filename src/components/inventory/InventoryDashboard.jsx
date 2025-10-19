@@ -1,6 +1,7 @@
 ﻿import { useIntegrationStatus } from '@/hooks/useIntegrationStatus'
 import ShopifySetupPrompt from '@/components/integrations/ShopifySetupPrompt'
 import UnleashedSetupPrompt from '@/components/integrations/UnleashedSetupPrompt'
+import { DashboardSkeleton } from '@/components/ui/skeletons/DashboardSkeleton'
 
 const InventoryDashboard = () => {
   const integrations = useIntegrationStatus()
@@ -10,6 +11,11 @@ const InventoryDashboard = () => {
     integrations.shopify &&
     (!integrations.shopify.connected || integrations.shopify.activeStores < integrations.shopify.totalStores)
   const showUnleashedSetup = integrations.unleashed && integrations.unleashed.status !== 'connected'
+
+  // Show loading skeleton while integration status is loading
+  if (integrations.loading) {
+    return <DashboardSkeleton title="Inventory Management" subtitle="Loading inventory data..." />
+  }
 
   return (
     <div className="space-y-6">

@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge'
 import { useIntegrationStatus } from '@/hooks/useIntegrationStatus'
 import AmazonSetupPrompt from '@/components/integrations/AmazonSetupPrompt'
 import ShopifySetupPrompt from '@/components/integrations/ShopifySetupPrompt'
+import { DashboardSkeleton } from '@/components/ui/skeletons/DashboardSkeleton'
 import {
   ResponsiveContainer,
   LineChart,
@@ -108,6 +109,11 @@ const Analytics = () => {
   const showShopifySetup =
     integrations.shopify &&
     (!integrations.shopify.connected || integrations.shopify.activeStores < integrations.shopify.totalStores)
+
+  // Show loading skeleton while integration status is loading
+  if (integrations.loading) {
+    return <DashboardSkeleton title="Analytics overview" subtitle="Loading analytics data..." />
+  }
 
   return (
     <section className="space-y-6">

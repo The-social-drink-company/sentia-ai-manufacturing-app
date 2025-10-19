@@ -343,11 +343,12 @@ function ProductionDashboard() {
 /**
  * OEECard Component
  */
-function OEECard({ label, value, target, icon: IconComponent, trend, onClick }) {
+function OEECard({ label, value, target, icon, trend, onClick }) {
   const percentage = value;
   const status = getOEEStatus(percentage, target);
   const trendValue = trend?.value || 0;
   const trendDirection = trendValue > 0 ? 'up' : trendValue < 0 ? 'down' : 'neutral';
+  const IconMarkup = icon ? React.createElement(icon, { className: 'w-6 h-6 text-gray-700' }) : null;
 
   const statusColors = {
     excellent: 'border-green-500 bg-green-50',
@@ -362,7 +363,7 @@ function OEECard({ label, value, target, icon: IconComponent, trend, onClick }) 
       className={`p-6 rounded-lg border-2 text-left transition-all hover:shadow-lg ${statusColors[status]}`}
     >
       <div className="flex items-center justify-between mb-3">
-        {IconComponent ? <IconComponent className="w-6 h-6 text-gray-700" /> : null}
+        {IconMarkup}
         <span className="text-xs font-semibold text-gray-600">Target: {target}%</span>
       </div>
       <p className="text-sm font-medium text-gray-700 mb-1">{label}</p>

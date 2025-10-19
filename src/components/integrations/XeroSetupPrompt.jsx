@@ -14,6 +14,7 @@ import { cn } from '@/lib/utils';
  * @param {Object} xeroStatus.details - Additional details (missing env vars, etc.)
  */
 export default function XeroSetupPrompt({ xeroStatus }) {
+  const isDevelopmentEnv = import.meta.env.MODE === 'development' || import.meta.env.VITE_DEVELOPMENT_MODE === 'true'
   // Don't show if Xero is connected
   if (!xeroStatus || xeroStatus.status === 'connected') {
     return null;
@@ -159,7 +160,7 @@ export default function XeroSetupPrompt({ xeroStatus }) {
         </div>
 
         {/* Technical Details (for developers) */}
-        {process.env.NODE_ENV === 'development' && xeroStatus.details && (
+        {isDevelopmentEnv && xeroStatus.details && (
           <details className="mt-6 text-left">
             <summary className="cursor-pointer text-xs text-slate-500 hover:text-slate-700">
               Technical Details (Development Only)
@@ -173,3 +174,4 @@ export default function XeroSetupPrompt({ xeroStatus }) {
     </div>
   );
 }
+

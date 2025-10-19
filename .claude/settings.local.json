@@ -74,7 +74,10 @@
       "Bash(pnpm eslint:*)",
       "Bash(pnpm update:*)",
       "Bash(pnpm vitest run:*)",
-      "Bash(rg:*)"
+      "Bash(rg:*)",
+      "Bash(npx prisma validate:*)",
+      "Bash(pwsh -Command:*)",
+      "Bash(npx bmad:*)"
     ],
     "deny": [],
     "ask": []

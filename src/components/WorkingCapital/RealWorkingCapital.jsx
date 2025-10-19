@@ -1,10 +1,13 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useWorkingCapitalLiveData } from '@/hooks/useWorkingCapitalLiveData'
+import { useIntegrationStatus } from '@/hooks/useIntegrationStatus'
 import { useState, useEffect } from 'react'
 import WorkingCapitalEngine from '@/services/WorkingCapitalEngine'
+import XeroSetupPrompt from '@/components/integrations/XeroSetupPrompt'
 
 const RealWorkingCapital = () => {
   const { data, loading, error, metadata, retryConnection } = useWorkingCapitalLiveData()
+  const integrations = useIntegrationStatus()
   const [enhancedData, setEnhancedData] = useState(null)
   const [analysisLoading, setAnalysisLoading] = useState(false)
   const [engine] = useState(() => new WorkingCapitalEngine())
@@ -60,7 +63,10 @@ const RealWorkingCapital = () => {
           <p className="text-sm text-muted-foreground">Unable to load financial data</p>
         </header>
 
-        {/* Xero connection banners removed - custom connections don't require user interaction */}
+        {/* Xero Setup Prompt - Shows when Xero is not configured */}
+        {integrations.xero && integrations.xero.status !== 'connected' && (
+          <XeroSetupPrompt xeroStatus={integrations.xero} />
+        )}
 
         <Card className="border-red-200 bg-red-50">
           <CardHeader>

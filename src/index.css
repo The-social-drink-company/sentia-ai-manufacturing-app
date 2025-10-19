@@ -6,7 +6,9 @@
 @layer base {
   /* Enhanced focus styles for better keyboard navigation visibility */
   *:focus-visible {
-    @apply outline-2 outline-blue-600 outline-offset-2 rounded-md;
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
+    border-radius: 0.375rem;
   }
 
   /* Exception for inputs that already have border focus styles */
@@ -14,7 +16,7 @@
   textarea:focus-visible,
   select:focus-visible {
     outline: none;
-    @apply shadow-[0_0_0_3px_rgb(37_99_235_/_0.3)];
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.3);
   }
 
   /* Skip link styles - visible only when focused */

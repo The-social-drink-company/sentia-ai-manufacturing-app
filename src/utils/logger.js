@@ -1,12 +1,27 @@
 import winston from 'winston'
 import { v4 as uuidv4 } from 'uuid'
 
+const importMetaEnv = typeof import.meta !== 'undefined' ? import.meta.env : undefined
+const processEnv = typeof globalThis !== 'undefined' && globalThis.process ? globalThis.process.env : undefined
+
+const getEnvVar = (key, fallback) => {
+  if (importMetaEnv && importMetaEnv[key] !== undefined) {
+    return importMetaEnv[key]
+  }
+  if (processEnv && processEnv[key] !== undefined) {
+    return processEnv[key]
+  }
+  return fallback
+}
+
 const namespace = 'sentia'
-const allowed = () => import.meta.env?.MODE !== 'production'
+const envMode = getEnvVar('MODE', processEnv?.NODE_ENV) || 'production'
+const isDevelopment = envMode === 'development'
+const allowed = () => envMode !== 'production'
 
 // Enhanced Winston Logger for MCP Server
 export const mcpLogger = winston.createLogger({
-  level: import.meta.env.VITE_LOG_LEVEL || 'info',
+  level: getEnvVar('VITE_LOG_LEVEL', 'info'),
   format: winston.format.combine(
     winston.format.timestamp(),
     winston.format.errors({ stack: true }),
@@ -62,7 +77,7 @@ export const logInfo = (...args) => {
 }
 
 export const logDebug = (...args) => {
-  if (allowed() && import.meta.env?.MODE === 'development') {
+  if (allowed() && isDevelopment) {
     console.debug(`[${namespace}]`, ...args)
   }
 }

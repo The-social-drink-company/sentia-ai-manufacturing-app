@@ -326,20 +326,20 @@ All environments deployed on Render with proper CI/CD:
 - MCP: https://sentia-mcp-prod.onrender.com/health
 - Backend: https://sentia-backend-prod.onrender.com/api/health
 
-**⚠️ Critical Configuration**: All services MUST specify `branch: development` in render.yaml (see [docs/render-deployment-guide.md](docs/render-deployment-guide.md))
+**⚠️ Critical Configuration**: All services MUST specify `branch: main` in render.yaml (see [docs/render-deployment-guide.md](docs/render-deployment-guide.md))
 
 **Database Expiration**: Free tier expires **November 16, 2025** (upgrade required)
 
 ### Deployment Commands
 
 ```bash
-# Push to development (auto-deploys)
-git push origin development
+# Push to main (auto-deploys to production services)
+git push origin main
 
-# Push to test (auto-deploys)
+# Push to test (auto-deploys to test environment - future)
 git push origin test
 
-# Push to production (auto-deploys)
+# Push to production (dedicated production environment - future)
 git push origin production
 ```
 
@@ -528,10 +528,11 @@ scripts/               # Utility scripts
 
 ### Branch Structure
 
-- `main` - Primary development branch (default)
-- `development` - Development work branch
+- `main` - **Primary development branch (default)** - All development work happens here
 - `test` - User acceptance testing environment
 - `production` - Live production environment
+
+**NOTE**: The `development` branch has been consolidated into `main` as of October 19, 2025.
 
 ### Render Deployment Configuration
 
@@ -539,7 +540,7 @@ scripts/               # Utility scripts
 
 **IMPORTANT**: The application now uses a **3-service architecture** (Frontend, Backend API, MCP Server) instead of the previous monolithic deployment.
 
-**Current Production Services** (All deploy from `development` branch):
+**Current Production Services** (All deploy from `main` branch):
 
 | Service | URL | Status | Purpose |
 |---------|-----|--------|---------|
@@ -591,11 +592,11 @@ scripts/               # Utility scripts
 
 ### Development Workflow (Implemented)
 
-**Enterprise Git Workflow**: All development work happens in the `development` branch, which deploys to the production Render services:
+**Enterprise Git Workflow**: All development work happens in the `main` branch, which deploys to the production Render services:
 
-1. **Development Branch**: All coding, fixing, and development work happens in `development` branch
+1. **Main Branch**: All coding, fixing, and development work happens in `main` branch
    - Auto-deploys to: `sentia-frontend-prod`, `sentia-backend-prod`, `sentia-mcp-prod`
-2. **Testing Branch**: Push to `test` branch for user acceptance testing (future separate environment)
+2. **Test Branch**: Push to `test` branch for user acceptance testing (future separate environment)
 3. **Production Branch**: Production-ready releases (future dedicated environment)
 
 **Quality Gates**: Formal UAT process with client approval required before production deployment.
@@ -621,7 +622,7 @@ An intelligent autonomous system that automatically manages git commit, push, an
 **Automatic Operations:**
 - ✅ **Smart Commits**: Auto-generated commit messages from task content and file analysis
 - ✅ **Conventional Format**: Follows `type: subject` format (feat, fix, docs, refactor, etc.)
-- ✅ **Auto-Push**: Pushes to development branch every 5 commits OR 1 hour (whichever first)
+- ✅ **Auto-Push**: Pushes to main branch every 5 commits OR 1 hour (whichever first)
 - ✅ **PR Suggestions**: Asks user when feature/epic milestones are reached
 
 **Key Benefits:**
@@ -635,12 +636,12 @@ An intelligent autonomous system that automatically manages git commit, push, an
 - ❌ NEVER auto-commits to `test` or `production` branches
 - ❌ NEVER creates PRs without asking first
 - ❌ NEVER pushes if merge conflicts exist
-- ✅ ONLY operates on `development` branch (unless explicitly told otherwise)
+- ✅ ONLY operates on `main` branch (unless explicitly told otherwise)
 
 **Session Example:**
 ```
 User works on feature → Claude completes tasks → Auto-commits after each task
-After 5 commits → Auto-pushes to development
+After 5 commits → Auto-pushes to main
 After epic complete → Asks: "Create PR with 12 commits?"
 ```
 
@@ -648,13 +649,13 @@ After epic complete → Asks: "Create PR with 12 commits?"
 
 **NEVER AUTOMATICALLY COMMIT, PUSH, OR CREATE PULL REQUESTS TO TESTING/PRODUCTION BRANCHES**
 
-Claude must ONLY work in the `development` branch. Any commits, pushes, or PRs to `test` or `production` branches require explicit manual instruction from the user.
+Claude must ONLY work in the `main` branch. Any commits, pushes, or PRs to `test` or `production` branches require explicit manual instruction from the user.
 
-**Allowed in Development Branch**:
+**Allowed in Main Branch**:
 
-- ✅ Make commits to `development` branch
-- ✅ Push to `development` branch
-- ✅ Create PRs within `development` branch
+- ✅ Make commits to `main` branch
+- ✅ Push to `main` branch
+- ✅ Create PRs within `main` branch
 
 **FORBIDDEN Without Explicit Instruction**:
 
@@ -701,7 +702,7 @@ Claude must ONLY work in the `development` branch. Any commits, pushes, or PRs t
 
 ### 🚨 **CRITICAL GIT DEPLOYMENT RULE**
 
-**MANDATORY**: Claude must NEVER automatically commit, push, or create pull requests to `test` or `production` branches without explicit user instruction. Only work in `development` branch unless specifically told otherwise.
+**MANDATORY**: Claude must NEVER automatically commit, push, or create pull requests to `test` or `production` branches without explicit user instruction. Only work in `main` branch unless specifically told otherwise.
 
 ### Render Platform Configuration Notes
 

@@ -32,6 +32,7 @@ async function importSellingPartnerApi() {
 import { PrismaClient } from '@prisma/client';
 import redisCache from '../src/lib/redis.js';
 import { logDebug, logInfo, logWarn, logError } from '../src/utils/logger';
+import sseService from '../server/services/sse/index.cjs';
 
 
 const prisma = new PrismaClient();

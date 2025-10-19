@@ -53,7 +53,7 @@ export const SERVER_CONFIG = {
     name: process.env.MCP_SERVER_NAME || 'sentia-manufacturing-mcp',
     version: '3.0.0',
     environment: process.env.NODE_ENV || 'development',
-    port: parseInt(process.env.MCP_SERVER_PORT) || 3001,
+    port: parseInt(process.env.PORT || process.env.MCP_SERVER_PORT) || 3001,
     host: process.env.MCP_SERVER_HOST || '0.0.0.0'
   },
 

@@ -117,7 +117,8 @@
       "Bash(xargs -I {} bash -c \"echo -n ''''{}: '''' && find {} -type f | wc -l\")",
       "Bash(test:*)",
       "Bash(npm install)",
-      "Bash(xargs:*)"
+      "Bash(xargs:*)",
+      "Bash(gh pr merge:*)"
     ],
     "deny": [],
     "ask": []

@@ -36,6 +36,7 @@ const AssistantPanel = lazy(() => import('@/features/ai-assistant/AssistantPanel
 const SettingsBilling = lazy(() => import('@/pages/SettingsBilling'))
 const UpgradePlan = lazy(() => import('@/pages/settings/UpgradePlan'))
 const DowngradePlan = lazy(() => import('@/pages/settings/DowngradePlan'))
+const PricingPage = lazy(() => import('@/pages/marketing/PricingPage'))
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -272,6 +273,13 @@ const App = () => {
               <Route path="/" element={<LandingPage />} />
               <Route path="/landing" element={<LandingPage />} />
               <Route path="/features" element={<FeaturesPage />} />
+              <Route path="/pricing" element={
+                <ErrorBoundary fallbackMessage="Pricing page failed to load.">
+                  <Suspense fallback={<Loader />}>
+                    <PricingPage />
+                  </Suspense>
+                </ErrorBoundary>
+              } />
               <Route path="/blog" element={<BlogListPage />} />
               <Route path="/blog/:slug" element={<BlogPostPage />} />
 

@@ -196,7 +196,7 @@ used_memory_peak_human:3.00M
 
     it('should calculate CPU percentage correctly over time', async () => {
       // First call - may establish baseline or return value
-      const result1 = await SystemHealthService.getProcessMetrics()
+      const result1 = await systemHealthService.getProcessMetrics()
       // CPU percentage can be null or a number on first call
       if (result1.cpu.percentage !== null) {
         expect(result1.cpu.percentage).toBeGreaterThanOrEqual(0)
@@ -207,7 +207,7 @@ used_memory_peak_human:3.00M
       await new Promise((resolve) => setTimeout(resolve, 100))
 
       // Second call - should have CPU percentage
-      const result2 = await SystemHealthService.getProcessMetrics()
+      const result2 = await systemHealthService.getProcessMetrics()
 
       if (result2.cpu.percentage !== null) {
         expect(result2.cpu.percentage).toBeGreaterThanOrEqual(0)
@@ -238,9 +238,9 @@ used_memory_peak_human:3.00M
 
     it('should mark process as unhealthy when CPU > 80%', async () => {
       // Mock high CPU usage
-      const service = SystemHealthService
-      service.lastCpuUsage = { user: 1000000, system: 500000 }
-      service.lastCpuCheck = Date.now() - 1000
+      systemHealthService
+      systemHealthService.lastCpuUsage = { user: 1000000, system: 500000 }
+      systemHealthService.lastCpuCheck = Date.now() - 1000
 
       vi.spyOn(process, 'cpuUsage').mockReturnValue({
         user: 900000000, // Very high CPU usage
@@ -256,8 +256,8 @@ used_memory_peak_human:3.00M
 
     it('should mark process as unhealthy when memory > 85%', async () => {
       // Mock high memory usage
-      os.totalmem.mockReturnValue(16 * 1024 * 1024 * 1024)
-      os.freemem.mockReturnValue(1 * 1024 * 1024 * 1024)
+      mockOs.totalmem.mockReturnValueOnce(16 * 1024 * 1024 * 1024)
+      mockOs.freemem.mockReturnValueOnce(1 * 1024 * 1024 * 1024)
 
       const result = await systemHealthService.getProcessMetrics()
 
@@ -426,9 +426,9 @@ used_memory_peak_human:3.00M
   describe('getHealthAlerts', () => {
     it('should generate HIGH_CPU_USAGE alert when CPU > 80%', async () => {
       // Mock high CPU
-      const service = SystemHealthService
-      service.lastCpuUsage = { user: 1000000, system: 500000 }
-      service.lastCpuCheck = Date.now() - 1000
+      systemHealthService
+      systemHealthService.lastCpuUsage = { user: 1000000, system: 500000 }
+      systemHealthService.lastCpuCheck = Date.now() - 1000
 
       vi.spyOn(process, 'cpuUsage').mockReturnValue({
         user: 900000000,
@@ -438,7 +438,7 @@ used_memory_peak_human:3.00M
       prisma.$queryRaw.mockResolvedValue([{ health_check: 1 }])
       prisma.adminIntegration.findMany.mockResolvedValue([])
 
-      const result = await SystemHealthService.getHealthAlerts()
+      const result = await systemHealthService.getHealthAlerts()
 
       const cpuAlert = result.find((alert) => alert.type === 'HIGH_CPU_USAGE')
       if (cpuAlert) {
@@ -449,13 +449,13 @@ used_memory_peak_human:3.00M
 
     it('should generate HIGH_MEMORY_USAGE alert when memory > 85%', async () => {
       // Mock high memory usage
-      os.totalmem.mockReturnValue(16 * 1024 * 1024 * 1024)
-      os.freemem.mockReturnValue(1 * 1024 * 1024 * 1024)
+      mockOs.totalmem.mockReturnValueOnce(16 * 1024 * 1024 * 1024)
+      mockOs.freemem.mockReturnValueOnce(1 * 1024 * 1024 * 1024)
 
       prisma.$queryRaw.mockResolvedValue([{ health_check: 1 }])
       prisma.adminIntegration.findMany.mockResolvedValue([])
 
-      const result = await SystemHealthService.getHealthAlerts()
+      const result = await systemHealthService.getHealthAlerts()
 
       const memoryAlert = result.find((alert) => alert.type === 'HIGH_MEMORY_USAGE')
       expect(memoryAlert).toBeDefined()
@@ -467,7 +467,7 @@ used_memory_peak_human:3.00M
       prisma.$queryRaw.mockRejectedValue(new Error('Connection refused'))
       prisma.adminIntegration.findMany.mockResolvedValue([])
 
-      const result = await SystemHealthService.getHealthAlerts()
+      const result = await systemHealthService.getHealthAlerts()
 
       const dbAlert = result.find((alert) => alert.type === 'DATABASE_DISCONNECTED')
       expect(dbAlert).toBeDefined()
@@ -482,7 +482,7 @@ used_memory_peak_human:3.00M
       })
       prisma.adminIntegration.findMany.mockResolvedValue([])
 
-      const result = await SystemHealthService.getHealthAlerts()
+      const result = await systemHealthService.getHealthAlerts()
 
       const slowDbAlert = result.find((alert) => alert.type === 'SLOW_DATABASE_RESPONSE')
       if (slowDbAlert) {
@@ -497,7 +497,7 @@ used_memory_peak_human:3.00M
       prisma.$queryRaw.mockResolvedValue([{ health_check: 1 }])
       prisma.adminIntegration.findMany.mockResolvedValue([])
 
-      const result = await SystemHealthService.getHealthAlerts()
+      const result = await systemHealthService.getHealthAlerts()
 
       const redisAlert = result.find((alert) => alert.type === 'REDIS_DISCONNECTED')
       expect(redisAlert).toBeDefined()
@@ -506,8 +506,8 @@ used_memory_peak_human:3.00M
 
     it('should generate INTEGRATIONS_DOWN alert when integrations down', async () => {
       // Mock healthy memory (not triggering HIGH_MEMORY_USAGE alert)
-      os.totalmem.mockReturnValue(16 * 1024 * 1024 * 1024) // 16GB total
-      os.freemem.mockReturnValue(10 * 1024 * 1024 * 1024)   // 10GB free = 37.5% used (below 85% threshold)
+      mockOs.totalmem.mockReturnValueOnce(16 * 1024 * 1024 * 1024) // 16GB total
+      mockOs.freemem.mockReturnValueOnce(10 * 1024 * 1024 * 1024)   // 10GB free = 37.5% used (below 85% threshold)
 
       prisma.$queryRaw.mockResolvedValue([{ health_check: 1 }])
       prisma.adminIntegration.findMany.mockResolvedValue([
@@ -515,7 +515,7 @@ used_memory_peak_human:3.00M
         { id: 'int-2', name: 'Shopify', healthStatus: 'HEALTHY' },
       ])
 
-      const result = await SystemHealthService.getHealthAlerts()
+      const result = await systemHealthService.getHealthAlerts()
 
       const integrationsAlert = result.find((alert) => alert.type === 'INTEGRATIONS_DOWN')
       expect(integrationsAlert).toBeDefined()
@@ -530,7 +530,7 @@ used_memory_peak_human:3.00M
         { id: 'int-1', name: 'Xero', healthStatus: 'HEALTHY' },
       ])
 
-      const result = await SystemHealthService.getHealthAlerts()
+      const result = await systemHealthService.getHealthAlerts()
 
       expect(result).toEqual([])
     })
@@ -559,7 +559,7 @@ used_memory_peak_human:3.00M
         },
       }
 
-      const score = SystemHealthService._calculateHealthScore(components)
+      const score = systemHealthService._calculateHealthScore(components)
 
       expect(score).toBe(100)
     })
@@ -576,7 +576,7 @@ used_memory_peak_human:3.00M
         integrationHealth: { status: 'HEALTHY', down: 0, degraded: 0 },
       }
 
-      const score = SystemHealthService._calculateHealthScore(components)
+      const score = systemHealthService._calculateHealthScore(components)
 
       expect(score).toBeLessThan(100)
       expect(score).toBeGreaterThanOrEqual(70) // -30 for CPU
@@ -594,7 +594,7 @@ used_memory_peak_human:3.00M
         integrationHealth: { status: 'HEALTHY', down: 0, degraded: 0 },
       }
 
-      const score = SystemHealthService._calculateHealthScore(components)
+      const score = systemHealthService._calculateHealthScore(components)
 
       expect(score).toBeLessThanOrEqual(60) // -40 for database
     })
@@ -611,7 +611,7 @@ used_memory_peak_human:3.00M
         integrationHealth: { status: 'UNHEALTHY', down: 5, degraded: 2 },
       }
 
-      const score = SystemHealthService._calculateHealthScore(components)
+      const score = systemHealthService._calculateHealthScore(components)
 
       expect(score).toBeGreaterThanOrEqual(0)
       expect(score).toBeLessThan(30)

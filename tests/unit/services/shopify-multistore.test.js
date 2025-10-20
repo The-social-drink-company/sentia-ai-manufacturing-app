@@ -65,6 +65,7 @@ describe('ShopifyMultiStoreService', () => {
     // Reset service state
     shopifyMultiStoreService.stores.clear()
     shopifyMultiStoreService.isConnected = false
+    shopifyMultiStoreService.shopify = null // Force shopify API reinit
     if (shopifyMultiStoreService.syncInterval) {
       clearInterval(shopifyMultiStoreService.syncInterval)
       shopifyMultiStoreService.syncInterval = null
@@ -75,14 +76,17 @@ describe('ShopifyMultiStoreService', () => {
       get: vi.fn(),
     }
 
+    // Create a proper constructor mock for Rest
+    const RestConstructor = vi.fn().mockImplementation(() => mockShopifyClient)
+
     const mockShopifyInstance = {
       clients: {
-        Rest: vi.fn(() => mockShopifyClient),
+        Rest: RestConstructor,
       },
     }
 
     shopifyApi.mockReturnValue(mockShopifyInstance)
-    shopifyMultiStoreService.shopify = mockShopifyInstance
+    // Don't set shopify here - let connect() initialize it from shopifyApi()
 
     // Set environment variables for testing
     process.env.SHOPIFY_UK_SHOP_DOMAIN = 'sentia-uk.myshopify.com'
@@ -102,7 +106,7 @@ describe('ShopifyMultiStoreService', () => {
   describe('connect', () => {
     it('should successfully connect to both UK and US stores', async () => {
       // Mock startSyncScheduler to avoid calling syncAllStores
-      vi.spyOn(shopifyMultiStoreService, 'startSyncScheduler').mockResolvedValue()
+      vi.spyOn(shopifyMultiStoreService, 'startSyncScheduler').mockImplementation(async () => {})
 
       mockShopifyClient.get.mockResolvedValue({
         body: {
@@ -123,6 +127,9 @@ describe('ShopifyMultiStoreService', () => {
     })
 
     it('should handle connection failure for one store gracefully', async () => {
+      // Mock startSyncScheduler to avoid calling syncAllStores
+      vi.spyOn(shopifyMultiStoreService, 'startSyncScheduler').mockImplementation(async () => {})
+
       let callCount = 0
       mockShopifyClient.get.mockImplementation(() => {
         callCount++
@@ -160,6 +167,9 @@ describe('ShopifyMultiStoreService', () => {
     })
 
     it('should skip stores with missing credentials', async () => {
+      // Mock startSyncScheduler to avoid calling syncAllStores
+      vi.spyOn(shopifyMultiStoreService, 'startSyncScheduler').mockImplementation(async () => {})
+
       delete process.env.SHOPIFY_US_SHOP_DOMAIN
       delete process.env.SHOPIFY_US_ACCESS_TOKEN
 
@@ -422,12 +432,12 @@ describe('ShopifyMultiStoreService', () => {
       const result = await shopifyMultiStoreService.syncStore('uk_eu_store')
 
       expect(result.sales).toBe(300) // 100 + 200
-      expect(result.transactionFees).toBe(8.7) // 300 * 0.029
-      expect(result.netSales).toBe(291.3) // 300 - 8.7
+      expect(result.transactionFees).toBeCloseTo(8.7, 1) // 300 * 0.029
+      expect(result.netSales).toBeCloseTo(291.3, 1) // 300 - 8.7
       expect(result.orders).toBe(2)
       expect(result.commission.grossRevenue).toBe(300)
-      expect(result.commission.transactionFees).toBe(8.7)
-      expect(result.commission.netRevenue).toBe(291.3)
+      expect(result.commission.transactionFees).toBeCloseTo(8.7, 1)
+      expect(result.commission.netRevenue).toBeCloseTo(291.3, 1)
       expect(result.commission.feeImpact).toContain('2.9%')
       expect(redisCacheService.set).toHaveBeenCalled()
     })

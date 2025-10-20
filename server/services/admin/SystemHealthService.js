@@ -15,8 +15,10 @@
  * - Start: 100 points
  * - CPU > 80%: -30 points
  * - Memory > 85%: -30 points
- * - Database unhealthy: -40 points
- * - Redis unhealthy: -20 points
+ * - Database disconnected: -40 points
+ * - Database degraded (slow): -20 points
+ * - Redis disconnected: -20 points
+ * - Redis degraded (slow): -10 points
  * - Down integrations: -20 points
  * - Degraded integrations: -10 points
  *
@@ -522,14 +524,18 @@ class SystemHealthService {
       score -= 30
     }
 
-    // Database penalty (-40 points if disconnected)
+    // Database penalty (-40 points if disconnected, -20 points if degraded)
     if (!databaseHealth.connected) {
       score -= 40
+    } else if (databaseHealth.status === 'DEGRADED') {
+      score -= 20
     }
 
-    // Redis penalty (-20 points if disconnected)
+    // Redis penalty (-20 points if disconnected, -10 points if degraded)
     if (!redisHealth.connected) {
       score -= 20
+    } else if (redisHealth.status === 'DEGRADED') {
+      score -= 10
     }
 
     // Integration penalties

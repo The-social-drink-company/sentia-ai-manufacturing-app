@@ -165,7 +165,8 @@
       "Bash(DATABASE_URL=\"postgresql://capliquify_test_db_user:CSgcCKzGdnh5PKok489sgcqaMH3eNsEH@dpg-d3r4aa7diees73apt8ng-a.frankfurt-postgres.render.com/capliquify_test_db\" npx prisma migrate resolve:*)",
       "Bash(mkdir:*)",
       "Bash(md5sum \"/c/Projects/The-social-drink-companysentia-ai-manufacturing-app/sentia-ai-manufacturing-app/docs/ARCHITECTURE-OVERVIEW.md\" \"/c/Projects/The-social-drink-companysentia-ai-manufacturing-app/sentia-ai-manufacturing-app/docs/IMPLEMENTATION-STATUS.md\" \"/c/Projects/The-social-drink-companysentia-ai-manufacturing-app/sentia-ai-manufacturing-app/docs/CAPLIQUIFY-TRANSFORMATION.md\")",
-      "Bash(md5sum \"/c/Projects/financeflo-ai/capliquify-ai-dashboard-app/docs/ARCHITECTURE-OVERVIEW.md\" \"/c/Projects/financeflo-ai/capliquify-ai-dashboard-app/docs/IMPLEMENTATION-STATUS.md\" \"/c/Projects/financeflo-ai/capliquify-ai-dashboard-app/docs/CAPLIQUIFY-TRANSFORMATION.md\")"
+      "Bash(md5sum \"/c/Projects/financeflo-ai/capliquify-ai-dashboard-app/docs/ARCHITECTURE-OVERVIEW.md\" \"/c/Projects/financeflo-ai/capliquify-ai-dashboard-app/docs/IMPLEMENTATION-STATUS.md\" \"/c/Projects/financeflo-ai/capliquify-ai-dashboard-app/docs/CAPLIQUIFY-TRANSFORMATION.md\")",
+      "Bash(git rev-list --left-right --count origin/main...main)"
     ],
     "deny": [],
     "ask": []

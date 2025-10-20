@@ -4,6 +4,14 @@
 
 
 
+## Immediate Remediation Backlog (2025-10-24)
+
+1. **Data Layer Repair** – add/verify Prisma models for admin approvals, queue monitors, working capital metrics; update services accordingly.
+2. **Test Stabilisation** – fix failing Vitest suites (QueueMonitorService, admin services, forecasting) and restore coverage reporting.
+3. **Render Deployment Recovery** – rerun migrations, redeploy backend, confirm `/api/health` 200; configure Clerk publishable key and redeploy frontend.
+4. **Documentation Sync** – once remediation succeeds, refresh BMAD status, deployment reports, and readiness checklists.
+
+---
 ## Sentia Manufacturing AI Dashboard
 
 **Date**: 2025-10-20 (Updated from 2025-10-17)

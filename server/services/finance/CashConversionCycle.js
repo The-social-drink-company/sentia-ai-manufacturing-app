@@ -95,41 +95,31 @@ class CashConversionCycle {
 
   async fetchFinancialData() {
     try {
-      const [inventoryAgg, revenueOrders, cogsTransactions, receivablesAgg, payablesAgg] =
-        await Promise.all([
-          prisma.inventory.aggregate({
-            _sum: { totalValue: true },
-          }),
-          prisma.salesOrder.aggregate({
-            where: { status: 'COMPLETED' },
-            _sum: { totalAmount: true },
-          }),
-          prisma.inventoryTransaction.aggregate({
-            where: { transactionType: 'SALE' },
-            _sum: { value: true },
-          }),
-          prisma.invoice.aggregate({
-            where: { status: 'UNPAID' },
-            _sum: { totalAmount: true },
-          }),
-          prisma.purchaseOrder.aggregate({
-            where: { status: 'PENDING_PAYMENT' },
-            _sum: { totalCost: true },
-          }),
-        ])
+      const [latestWorkingCapital, inventorySummary] = await Promise.all([
+        prisma.workingCapital.findFirst({
+          orderBy: { periodEnd: 'desc' },
+        }),
+        prisma.inventoryItem.aggregate({
+          _sum: { totalValue: true },
+        }),
+      ])
 
-      const revenue = revenueOrders._sum.totalAmount || 0
-      const cogs = cogsTransactions._sum.value || revenue * 0.65
+      const revenue = latestWorkingCapital?.revenue ? Number(latestWorkingCapital.revenue) : 0
+      const cogs = latestWorkingCapital?.cogs ? Number(latestWorkingCapital.cogs) : revenue * 0.65
 
       return {
-        inventory: inventoryAgg._sum.totalValue || 0,
+        inventory: inventorySummary._sum.totalValue ? Number(inventorySummary._sum.totalValue) : 0,
         revenue,
         cogs,
-        accountsReceivable: receivablesAgg._sum.totalAmount || 0,
-        accountsPayable: payablesAgg._sum.totalCost || 0,
+        accountsReceivable: latestWorkingCapital?.accountsReceivable
+          ? Number(latestWorkingCapital.accountsReceivable)
+          : 0,
+        accountsPayable: latestWorkingCapital?.accountsPayable
+          ? Number(latestWorkingCapital.accountsPayable)
+          : 0,
       }
     } catch (error) {
-      logger.warn('[CCC] Failed to fetch aggregated financial data, falling back to zeros', error)
+      logger.warn('[CCC] Failed to fetch financial data, falling back to zeros', error)
       return {
         inventory: 0,
         revenue: 0,
@@ -142,14 +132,14 @@ class CashConversionCycle {
 
   async fetchHistoricalTrend(periods = 6) {
     try {
-      const records = await prisma.workingCapitalMetrics.findMany({
-        orderBy: { date: 'desc' },
+      const records = await prisma.workingCapital.findMany({
+        orderBy: { periodEnd: 'desc' },
         take: periods,
       })
 
       return records
         .map(record => ({
-          date: record.date,
+          date: record.periodEnd,
           ccc: record.ccc,
           dio: record.dio,
           dso: record.dso,
@@ -157,28 +147,16 @@ class CashConversionCycle {
         }))
         .reverse()
     } catch (error) {
-      logger.warn('[CCC] Failed to fetch historical metrics', error)
+      logger.warn('[CCC] Failed to fetch historical working capital metrics', error)
       return []
     }
   }
 
   async saveMetrics(metrics) {
-    try {
-      await prisma.workingCapitalMetrics.create({
-        data: {
-          date: metrics.calculatedAt,
-          ccc: metrics.ccc,
-          dio: metrics.dio,
-          dso: metrics.dso,
-          dpo: metrics.dpo,
-          status: metrics.status,
-          variance: metrics.variance,
-          variancePercent: metrics.variancePercent,
-        },
-      })
-    } catch (error) {
-      logger.warn('[CCC] Unable to persist metrics', error)
-    }
+    logger.warn('[CCC] Metrics persistence skipped - no storage table configured', {
+      status: metrics.status,
+      calculatedAt: metrics.calculatedAt,
+    })
   }
 }
 

@@ -21,6 +21,7 @@ import sseRouter from './server/routes/sse.js'
 import masterAdminRouter from './server/routes/master-admin.routes.js'
 import trialRouter from './server/routes/trial.routes.js'
 import trialUpgradeRouter from './server/routes/billing/trial-upgrade.js'
+import trialAnalyticsRouter from './server/routes/admin/trial-analytics.js'
 import cronRouter from './server/routes/cron.routes.js'
 import onboardingRouter from './server/routes/onboarding.js'
 import invitationsRouter from './server/routes/invitations.js'
@@ -368,6 +369,7 @@ app.locals.prisma = prisma
 app.use('/api/auth', authRouter)
 app.use('/api/v1/sse', sseRouter)
 app.use('/api/master-admin', masterAdminRouter)
+app.use('/api/admin', trialAnalyticsRouter)  // Trial analytics (BMAD-TRIAL-001 Story 6)
 app.use('/api/trial', trialRouter)
 app.use('/api/billing', trialUpgradeRouter)  // Trial upgrade billing routes (BMAD-TRIAL-001 Story 4)
 app.use('/api/cron', cronRouter)

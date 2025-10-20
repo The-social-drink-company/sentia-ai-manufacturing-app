@@ -197,9 +197,13 @@ const FeaturesPage = () => {
             <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
               Connect All Your Data Sources
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-4">
               One-click integrations with Xero, QuickBooks, Sage, Unleashed, Shopify, Amazon, and more.
               Your data syncs automatically in real-time.
+            </p>
+            <p className="text-base text-gray-500 max-w-2xl mx-auto">
+              Powered by <a href="https://financeflo.ai" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700 font-semibold">FinanceFlo.ai</a>'s proven ERP integration infrastructure,
+              trusted by 450+ businesses for secure, reliable data connectivity.
             </p>
           </div>
 

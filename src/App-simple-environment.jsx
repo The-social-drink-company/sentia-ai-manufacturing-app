@@ -6,6 +6,8 @@ import LandingPage from '@/pages/marketing/LandingPage'
 import FeaturesPage from '@/pages/marketing/FeaturesPage'
 import BlogListPage from '@/pages/marketing/BlogListPage'
 import BlogPostPage from '@/pages/marketing/BlogPostPage'
+import EcosystemPage from '@/pages/marketing/EcosystemPage'
+import AboutPage from '@/pages/marketing/AboutPage'
 import DashboardLayout from '@/components/DashboardLayout'
 import ProgressiveDashboardLoader from '@/components/dashboard/ProgressiveDashboardLoader'
 import SignInPage from '@/pages/SignInPage'
@@ -273,6 +275,8 @@ const App = () => {
               <Route path="/" element={<LandingPage />} />
               <Route path="/landing" element={<LandingPage />} />
               <Route path="/features" element={<FeaturesPage />} />
+              <Route path="/ecosystem" element={<EcosystemPage />} />
+              <Route path="/about" element={<AboutPage />} />
               <Route path="/pricing" element={
                 <ErrorBoundary fallbackMessage="Pricing page failed to load.">
                   <Suspense fallback={<Loader />}>

@@ -158,7 +158,8 @@
       "Bash(do echo \"Directory: ''''$dir''''\")",
       "Bash(ls:*)",
       "Bash(if not exist \"tests\\utils\" mkdir \"tests\\utils\")",
-      "Bash(bmad pm:*)"
+      "Bash(bmad pm:*)",
+      "Bash(DATABASE_URL=\"postgresql://capliquify_test_db_user:CSgcCKzGdnh5PKok489sgcqaMH3eNsEH@dpg-d3r4aa7diees73apt8ng-a.frankfurt-postgres.render.com/capliquify_test_db\" npx prisma migrate deploy:*)"
     ],
     "deny": [],
     "ask": []

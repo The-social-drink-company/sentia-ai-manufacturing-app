@@ -9,8 +9,9 @@ const SignUpPage = () => {
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-xl bg-white shadow-lg">
             <span className="text-3xl font-bold text-blue-600">C</span>
           </div>
-          <h1 className="text-3xl font-bold text-white">CapLiquify Manufacturing</h1>
-          <p className="mt-2 text-purple-100">Enterprise Dashboard</p>
+          <h1 className="text-3xl font-bold text-white">CapLiquify Platform</h1>
+          <p className="mt-2 text-purple-100">Multi-tenant manufacturing intelligence</p>
+          <p className="text-xs uppercase tracking-[0.3em] text-purple-200">Tenant: Sentia Spirits</p>
         </div>
 
         <div className="rounded-2xl bg-white p-8 shadow-2xl">

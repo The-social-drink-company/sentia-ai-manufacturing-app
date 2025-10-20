@@ -1,0 +1,674 @@
+// CapLiquify Multi-Tenant Database Schema
+// Pattern: Schema-Per-Tenant Isolation
+// Database: PostgreSQL 17+ on Render
+// ORM: Prisma 5.x with multiSchema support
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
+  binaryTargets   = ["native", "debian-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  schemas  = ["public", "tenant"]
+}
+
+// ============================================================================
+// PUBLIC SCHEMA - Shared Metadata Across All Tenants
+// ============================================================================
+
+// Tenants Table - One record per customer organization
+model Tenant {
+  id                   String   @id @default(uuid())
+  slug                 String   @unique // URL-friendly identifier (e.g., "acme-corp")
+  name                 String   // Display name (e.g., "Acme Corporation")
+  schemaName           String   @unique @map("schema_name") // PostgreSQL schema name (e.g., "tenant_550e8400-e29b-41d4-a716-446655440000")
+
+  // Clerk Integration
+  clerkOrganizationId  String   @unique @map("clerk_organization_id")
+
+  // Company Details
+  companyName          String   @map("company_name")
+  domain               String?  // Custom domain (optional, e.g., "dashboard.acmecorp.com")
+  logo                 String?  // URL to tenant logo
+  industry             String?  // Industry category
+
+  // Trial Management
+  isInTrial            Boolean  @default(false) @map("is_in_trial")
+  trialStartDate       DateTime? @map("trial_start_date")
+  trialEndDate         DateTime? @map("trial_end_date")
+  trialTier            String?  @map("trial_tier") // "starter", "professional", "enterprise"
+
+  // Subscription
+  subscriptionId       String?  @unique @map("subscription_id")
+  subscription         Subscription? @relation("ActiveSubscription", fields: [subscriptionId], references: [id])
+  subscriptionTier     SubscriptionTier @default(STARTER) @map("subscription_tier")
+  subscriptionStatus   SubscriptionStatus @default(TRIAL) @map("subscription_status")
+
+  // Limits (based on tier)
+  maxUsers             Int      @default(5) @map("max_users")
+  maxEntities          Int      @default(100) @map("max_entities") // Max products/SKUs
+  maxStorage           Int      @default(1000) @map("max_storage") // MB
+  features             Json     @default("{}") @db.Json // Feature flags: {"ai_forecasting": true, "what_if": true}
+
+  // Billing
+  billingEmail         String?  @map("billing_email")
+  billingAddress       String?  @map("billing_address")
+  paymentMethod        String?  @map("payment_method") // "stripe", "invoice"
+
+  // Configuration
+  settings             Json     @default("{}") @db.Json // Tenant-specific settings
+  metadata             Json     @default("{}") @db.Json // Custom metadata
+
+  // Timestamps
+  createdAt            DateTime @default(now()) @map("created_at")
+  updatedAt            DateTime @updatedAt @map("updated_at")
+  deletedAt            DateTime? @map("deleted_at") // Soft delete
+  createdBy            String?  @map("created_by") // User ID who created tenant
+  lastActivityAt       DateTime @default(now()) @map("last_activity_at")
+
+  // Status
+  isActive             Boolean  @default(true) @map("is_active")
+  isSuspended          Boolean  @default(false) @map("is_suspended")
+  suspensionReason     String?  @map("suspension_reason")
+
+  // Relationships
+  users                User[]
+  subscriptions        Subscription[] @relation("TenantSubscriptions")
+  auditLogs            AuditLog[]
+  usageMetrics         UsageMetric[]
+
+  @@index([clerkOrganizationId])
+  @@index([slug])
+  @@index([subscriptionStatus])
+  @@index([subscriptionTier])
+  @@index([isActive])
+  @@index([deletedAt])
+  @@schema("public")
+  @@map("tenants")
+}
+
+// Users Table - Maps Clerk users to tenants
+model User {
+  id                   String   @id @default(uuid())
+  clerkUserId          String   @unique @map("clerk_user_id")
+  email                String
+  fullName             String?  @map("full_name")
+  avatarUrl            String?  @map("avatar_url")
+
+  // Tenant Association
+  tenantId             String   @map("tenant_id")
+  tenant               Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  role                 UserRole // "owner", "admin", "member", "viewer"
+
+  // Permissions
+  permissions          Json     @default("{}") @db.Json // Granular permissions
+
+  // Authentication
+  lastLoginAt          DateTime? @map("last_login_at")
+  lastLoginIp          String?  @map("last_login_ip")
+  twoFactorEnabled     Boolean  @default(false) @map("two_factor_enabled")
+
+  // Status
+  isActive             Boolean  @default(true) @map("is_active")
+  isSuspended          Boolean  @default(false) @map("is_suspended")
+
+  // Timestamps
+  createdAt            DateTime @default(now()) @map("created_at")
+  updatedAt            DateTime @updatedAt @map("updated_at")
+  deletedAt            DateTime? @map("deleted_at")
+
+  // Relationships
+  auditLogs            AuditLog[]
+  usageMetrics         UsageMetric[]
+
+  @@index([clerkUserId])
+  @@index([tenantId])
+  @@index([email])
+  @@index([role])
+  @@schema("public")
+  @@map("users")
+}
+
+// Subscriptions Table - Stripe subscription management
+model Subscription {
+  id                   String   @id @default(uuid())
+  tenantId             String   @map("tenant_id")
+  tenant               Tenant   @relation("TenantSubscriptions", fields: [tenantId], references: [id], onDelete: Cascade)
+
+  // Stripe Integration
+  stripeCustomerId     String?  @unique @map("stripe_customer_id")
+  stripeSubscriptionId String?  @unique @map("stripe_subscription_id")
+  stripePriceId        String?  @map("stripe_price_id")
+
+  // Billing Cycle
+  billingCycle         BillingCycle @map("billing_cycle") // "monthly", "annual"
+  amountCents          Int      @map("amount_cents") // Price in cents
+  currency             String   @default("USD")
+
+  // Status
+  status               SubscriptionStatus
+  currentPeriodStart   DateTime? @map("current_period_start")
+  currentPeriodEnd     DateTime? @map("current_period_end")
+  cancelAtPeriodEnd    Boolean  @default(false) @map("cancel_at_period_end")
+  cancelledAt          DateTime? @map("cancelled_at")
+  cancelReason         String?  @map("cancel_reason")
+
+  // Timestamps
+  createdAt            DateTime @default(now()) @map("created_at")
+  updatedAt            DateTime @updatedAt @map("updated_at")
+
+  // Relationships
+  activeTenant         Tenant?  @relation("ActiveSubscription")
+
+  @@index([tenantId])
+  @@index([stripeCustomerId])
+  @@index([stripeSubscriptionId])
+  @@index([status])
+  @@schema("public")
+  @@map("subscriptions")
+}
+
+// Audit Logs Table - Security and compliance audit trail
+model AuditLog {
+  id                   String   @id @default(uuid())
+  tenantId             String   @map("tenant_id")
+  tenant               Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  userId               String?  @map("user_id")
+  user                 User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  // Event Details
+  action               String   // "user.created", "forecast.generated", "api.connected", etc.
+  resourceType         String?  @map("resource_type") // "user", "forecast", "api_credential"
+  resourceId           String?  @map("resource_id")
+
+  // Context
+  ipAddress            String?  @map("ip_address")
+  userAgent            String?  @db.Text @map("user_agent")
+  metadata             Json     @default("{}") @db.Json // Additional context
+  severity             AuditSeverity @default(INFO) // INFO, WARNING, ERROR, CRITICAL
+
+  // Timestamp
+  createdAt            DateTime @default(now()) @map("created_at")
+
+  @@index([tenantId])
+  @@index([userId])
+  @@index([action])
+  @@index([resourceType])
+  @@index([createdAt])
+  @@index([severity])
+  @@schema("public")
+  @@map("audit_logs")
+}
+
+// Usage Metrics Table - Track tenant usage for billing
+model UsageMetric {
+  id                   String   @id @default(uuid())
+  tenantId             String   @map("tenant_id")
+  tenant               Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  userId               String?  @map("user_id")
+  user                 User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  // Metric Details
+  metricType           String   @map("metric_type") // "api_call", "forecast_generated", "storage_used"
+  quantity             Float    // Quantity of metric
+  unit                 String   // "count", "bytes", "minutes"
+
+  // Billing Period
+  billingPeriodStart   DateTime @map("billing_period_start")
+  billingPeriodEnd     DateTime @map("billing_period_end")
+
+  // Metadata
+  metadata             Json     @default("{}") @db.Json
+
+  // Timestamp
+  createdAt            DateTime @default(now()) @map("created_at")
+
+  @@index([tenantId])
+  @@index([userId])
+  @@index([metricType])
+  @@index([billingPeriodStart, billingPeriodEnd])
+  @@schema("public")
+  @@map("usage_metrics")
+}
+
+// ============================================================================
+// TENANT SCHEMA - Per-Tenant Business Data (Template)
+// ============================================================================
+// Note: These models use @@schema("tenant") which is a template.
+// Actual tenant schemas will be: tenant_<uuid>
+// Prisma middleware will set the correct schema at runtime.
+
+// Companies Table - Tenant's company/business unit
+model Company {
+  id                   String   @id @default(uuid())
+  name                 String
+  legalName            String?  @map("legal_name")
+  taxId                String?  @map("tax_id")
+  currency             String   @default("USD")
+  fiscalYearEnd        String?  @map("fiscal_year_end") // "MM-DD" format
+
+  // Contact
+  email                String?
+  phone                String?
+  address              String?
+
+  // Settings
+  settings             Json     @default("{}") @db.Json
+
+  // Timestamps
+  createdAt            DateTime @default(now()) @map("created_at")
+  updatedAt            DateTime @updatedAt @map("updated_at")
+
+  // Relationships
+  products             Product[]
+  sales                Sale[]
+  inventory            Inventory[]
+  forecasts            Forecast[]
+  workingCapitalMetrics WorkingCapitalMetric[]
+  scenarios            Scenario[]
+  apiCredentials       ApiCredential[]
+
+  @@schema("tenant")
+  @@map("companies")
+}
+
+// Products Table - Product catalog
+model Product {
+  id                   String   @id @default(uuid())
+  companyId            String   @map("company_id")
+  company              Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  // Product Info
+  sku                  String   @unique
+  name                 String
+  description          String?  @db.Text
+  category             String?
+  tags                 String[] // Array of tags
+
+  // Pricing
+  unitCost             Decimal  @db.Decimal(15, 2) @map("unit_cost")
+  unitPrice            Decimal  @db.Decimal(15, 2) @map("unit_price")
+  currency             String   @default("USD")
+
+  // Inventory Management
+  reorderPoint         Int?     @map("reorder_point")
+  reorderQuantity      Int?     @map("reorder_quantity")
+  leadTimeDays         Int?     @map("lead_time_days")
+  safetyStockDays      Int?     @default(7) @map("safety_stock_days")
+
+  // Dimensions/Weight
+  weight               Decimal? @db.Decimal(10, 2) // kg
+  dimensions           Json?    @db.Json // {length, width, height} in cm
+
+  // Status
+  isActive             Boolean  @default(true) @map("is_active")
+  discontinuedAt       DateTime? @map("discontinued_at")
+
+  // Timestamps
+  createdAt            DateTime @default(now()) @map("created_at")
+  updatedAt            DateTime @updatedAt @map("updated_at")
+
+  // Relationships
+  sales                Sale[]
+  inventory            Inventory[]
+  forecasts            Forecast[]
+
+  @@index([companyId])
+  @@index([sku])
+  @@index([category])
+  @@index([isActive])
+  @@schema("tenant")
+  @@map("products")
+}
+
+// Sales Table - Historical sales data
+model Sale {
+  id                   String   @id @default(uuid())
+  companyId            String   @map("company_id")
+  company              Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  productId            String   @map("product_id")
+  product              Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  // Sale Details
+  saleDate             DateTime @map("sale_date") @db.Date
+  quantity             Int
+  unitPrice            Decimal  @db.Decimal(15, 2) @map("unit_price")
+  totalAmount          Decimal  @db.Decimal(15, 2) @map("total_amount")
+  currency             String   @default("USD")
+  discount             Decimal? @db.Decimal(15, 2) // Discount amount
+  tax                  Decimal? @db.Decimal(15, 2) // Tax amount
+
+  // Channel
+  channel              String?  // "shopify", "amazon", "direct", "wholesale"
+  externalId           String?  @map("external_id") // ID from external system
+  orderNumber          String?  @map("order_number")
+
+  // Customer
+  customerName         String?  @map("customer_name")
+  customerId           String?  @map("customer_id")
+  customerEmail        String?  @map("customer_email")
+
+  // Geo
+  country              String?
+  region               String?
+  city                 String?
+
+  // Timestamps
+  createdAt            DateTime @default(now()) @map("created_at")
+  updatedAt            DateTime @updatedAt @map("updated_at")
+
+  @@index([companyId])
+  @@index([productId])
+  @@index([saleDate])
+  @@index([channel])
+  @@schema("tenant")
+  @@map("sales")
+}
+
+// Inventory Table - Current inventory levels
+model Inventory {
+  id                   String   @id @default(uuid())
+  companyId            String   @map("company_id")
+  company              Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  productId            String   @map("product_id")
+  product              Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  // Location
+  warehouseLocation    String?  @map("warehouse_location")
+
+  // Quantities
+  quantityOnHand       Int      @map("quantity_on_hand")
+  quantityReserved     Int      @default(0) @map("quantity_reserved")
+  quantityAvailable    Int      @map("quantity_available") // Computed: on_hand - reserved
+  quantityInTransit    Int      @default(0) @map("quantity_in_transit")
+
+  // Valuation
+  unitCost             Decimal  @db.Decimal(15, 2) @map("unit_cost")
+  totalValue           Decimal  @db.Decimal(15, 2) @map("total_value") // Computed: on_hand * unit_cost
+
+  // Audit
+  lastCountedAt        DateTime? @map("last_counted_at")
+  lastCountedBy        String?  @map("last_counted_by") // User ID
+
+  // Timestamps
+  createdAt            DateTime @default(now()) @map("created_at")
+  updatedAt            DateTime @updatedAt @map("updated_at")
+
+  @@unique([companyId, productId, warehouseLocation])
+  @@index([companyId])
+  @@index([productId])
+  @@schema("tenant")
+  @@map("inventory")
+}
+
+// Forecasts Table - AI-generated demand/revenue forecasts
+model Forecast {
+  id                   String   @id @default(uuid())
+  companyId            String   @map("company_id")
+  company              Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  productId            String?  @map("product_id") // Null for company-wide forecasts
+  product              Product? @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  // Forecast Details
+  forecastDate         DateTime @map("forecast_date") @db.Date
+  forecastType         ForecastType @map("forecast_type") // "demand", "revenue", "cash_flow"
+  modelType            String?  @map("model_type") // "arima", "lstm", "prophet", "random_forest", "ensemble"
+
+  // Predictions
+  predictedValue       Decimal  @db.Decimal(15, 2) @map("predicted_value")
+  lowerBound           Decimal? @db.Decimal(15, 2) @map("lower_bound") // 95% confidence interval
+  upperBound           Decimal? @db.Decimal(15, 2) @map("upper_bound")
+  confidenceLevel      Decimal? @db.Decimal(5, 2) @map("confidence_level") // 0-100%
+
+  // Accuracy (if actual data available)
+  actualValue          Decimal? @db.Decimal(15, 2) @map("actual_value")
+  accuracyPercentage   Decimal? @db.Decimal(5, 2) @map("accuracy_percentage") // Error %
+  mape                 Decimal? @db.Decimal(5, 2) // Mean Absolute Percentage Error
+
+  // Metadata
+  modelParameters      Json     @default("{}") @db.Json @map("model_parameters")
+  features             Json     @default("{}") @db.Json // Input features used
+
+  // Timestamps
+  createdAt            DateTime @default(now()) @map("created_at")
+
+  @@index([companyId])
+  @@index([productId])
+  @@index([forecastDate])
+  @@index([forecastType])
+  @@schema("tenant")
+  @@map("forecasts")
+}
+
+// Working Capital Metrics Table - Financial KPIs
+model WorkingCapitalMetric {
+  id                   String   @id @default(uuid())
+  companyId            String   @map("company_id")
+  company              Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  // Period
+  periodDate           DateTime @map("period_date") @db.Date
+  periodType           PeriodType @map("period_type") // "daily", "weekly", "monthly"
+
+  // Current Assets
+  cash                 Decimal  @db.Decimal(15, 2)
+  accountsReceivable   Decimal  @db.Decimal(15, 2) @map("accounts_receivable")
+  inventory            Decimal  @db.Decimal(15, 2)
+  otherCurrentAssets   Decimal? @db.Decimal(15, 2) @map("other_current_assets")
+
+  // Current Liabilities
+  accountsPayable      Decimal  @db.Decimal(15, 2) @map("accounts_payable")
+  shortTermDebt        Decimal  @db.Decimal(15, 2) @map("short_term_debt")
+  otherCurrentLiabilities Decimal? @db.Decimal(15, 2) @map("other_current_liabilities")
+
+  // Calculated Metrics
+  workingCapital       Decimal  @db.Decimal(15, 2) @map("working_capital") // Current Assets - Current Liabilities
+  currentRatio         Decimal  @db.Decimal(10, 4) @map("current_ratio") // Current Assets / Current Liabilities
+  quickRatio           Decimal  @db.Decimal(10, 4) @map("quick_ratio") // (CA - Inventory) / CL
+
+  // Cash Conversion Cycle
+  daysSalesOutstanding Decimal  @db.Decimal(10, 2) @map("days_sales_outstanding") // DSO
+  daysInventoryOutstanding Decimal @db.Decimal(10, 2) @map("days_inventory_outstanding") // DIO
+  daysPayablesOutstanding Decimal @db.Decimal(10, 2) @map("days_payables_outstanding") // DPO
+  cashConversionCycle  Decimal  @db.Decimal(10, 2) @map("cash_conversion_cycle") // DSO + DIO - DPO
+
+  // Cash Flow
+  operatingCashFlow    Decimal? @db.Decimal(15, 2) @map("operating_cash_flow")
+  freeCashFlow         Decimal? @db.Decimal(15, 2) @map("free_cash_flow")
+  cashRunwayDays       Int?     @map("cash_runway_days") // Days until cash runs out
+
+  // Timestamps
+  createdAt            DateTime @default(now()) @map("created_at")
+
+  @@unique([companyId, periodDate, periodType])
+  @@index([companyId])
+  @@index([periodDate])
+  @@schema("tenant")
+  @@map("working_capital_metrics")
+}
+
+// Scenarios Table - What-if analysis scenarios
+model Scenario {
+  id                   String   @id @default(uuid())
+  companyId            String   @map("company_id")
+  company              Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  // Scenario Details
+  name                 String
+  description          String?  @db.Text
+  scenarioType         ScenarioType @map("scenario_type") // "pricing", "inventory", "growth", "custom"
+
+  // Parameters
+  parameters           Json     @db.Json // Scenario-specific parameters
+
+  // Results
+  results              Json?    @db.Json // Calculated results
+  comparedToBaseline   Json?    @db.Json @map("compared_to_baseline") // Difference from baseline scenario
+
+  // Status
+  isBaseline           Boolean  @default(false) @map("is_baseline") // Is this the baseline scenario?
+  createdByUserId      String?  @map("created_by_user_id") // Clerk user ID
+
+  // Timestamps
+  createdAt            DateTime @default(now()) @map("created_at")
+  updatedAt            DateTime @updatedAt @map("updated_at")
+
+  @@index([companyId])
+  @@index([scenarioType])
+  @@schema("tenant")
+  @@map("scenarios")
+}
+
+// API Credentials Table - External API credentials (encrypted)
+model ApiCredential {
+  id                   String   @id @default(uuid())
+  companyId            String   @map("company_id")
+  company              Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  // Service Details
+  service              String   // "xero", "quickbooks", "shopify", "amazon", "unleashed"
+  serviceDisplayName   String   @map("service_display_name")
+  serviceUrl           String?  @map("service_url")
+
+  // Credentials (encrypted with AES-256-GCM)
+  credentials          Json     @db.Json // Encrypted API keys, tokens, secrets
+  encryptionVersion    Int      @default(1) @map("encryption_version") // For key rotation
+
+  // OAuth (if applicable)
+  oauthAccessToken     String?  @db.Text @map("oauth_access_token")
+  oauthRefreshToken    String?  @db.Text @map("oauth_refresh_token")
+  oauthTokenExpiresAt  DateTime? @map("oauth_token_expires_at")
+  oauthScopes          String[] @map("oauth_scopes")
+
+  // Status
+  isActive             Boolean  @default(true) @map("is_active")
+  lastSyncAt           DateTime? @map("last_sync_at")
+  lastSyncStatus       String?  @map("last_sync_status") // "success", "failed", "partial"
+  lastSyncError        String?  @db.Text @map("last_sync_error")
+  lastSyncRecordCount  Int?     @map("last_sync_record_count")
+
+  // Sync Settings
+  syncFrequency        String?  @map("sync_frequency") // "hourly", "daily", "manual"
+  autoSyncEnabled      Boolean  @default(true) @map("auto_sync_enabled")
+  nextSyncAt           DateTime? @map("next_sync_at")
+
+  // Timestamps
+  createdAt            DateTime @default(now()) @map("created_at")
+  updatedAt            DateTime @updatedAt @map("updated_at")
+  createdByUserId      String?  @map("created_by_user_id") // Clerk user ID
+
+  @@unique([companyId, service])
+  @@index([companyId])
+  @@index([service])
+  @@index([isActive])
+  @@schema("tenant")
+  @@map("api_credentials")
+}
+
+// User Preferences Table - Tenant-specific user settings
+model UserPreference {
+  id                   String   @id @default(uuid())
+  userId               String   @unique @map("user_id") // Clerk user ID
+
+  // UI Preferences
+  theme                String?  @default("light") // "light", "dark", "auto"
+  language             String?  @default("en")
+  timezone             String?  @default("UTC")
+  dateFormat           String?  @default("MM/DD/YYYY") @map("date_format")
+  numberFormat         String?  @default("US") @map("number_format") // "US", "EU"
+  currency             String?  @default("USD")
+
+  // Dashboard Preferences
+  dashboardLayout      Json     @default("{}") @db.Json @map("dashboard_layout")
+  defaultFilters       Json     @default("{}") @db.Json @map("default_filters")
+
+  // Notification Preferences
+  emailNotifications   Boolean  @default(true) @map("email_notifications")
+  browserNotifications Boolean  @default(false) @map("browser_notifications")
+  notificationTypes    String[] @map("notification_types") // Types of notifications to receive
+
+  // Timestamps
+  createdAt            DateTime @default(now()) @map("created_at")
+  updatedAt            DateTime @updatedAt @map("updated_at")
+
+  @@schema("tenant")
+  @@map("user_preferences")
+}
+
+// ============================================================================
+// ENUMS
+// ============================================================================
+
+enum SubscriptionTier {
+  STARTER
+  PROFESSIONAL
+  ENTERPRISE
+
+  @@schema("public")
+}
+
+enum SubscriptionStatus {
+  TRIAL         // Trial period
+  ACTIVE        // Active subscription
+  PAST_DUE      // Payment failed, grace period
+  CANCELLED     // User cancelled
+  SUSPENDED     // Admin suspended
+  EXPIRED       // Trial/subscription expired
+
+  @@schema("public")
+}
+
+enum UserRole {
+  OWNER         // Tenant owner (full access)
+  ADMIN         // Tenant administrator
+  MEMBER        // Standard team member
+  VIEWER        // Read-only access
+
+  @@schema("public")
+}
+
+enum BillingCycle {
+  MONTHLY
+  ANNUAL
+
+  @@schema("public")
+}
+
+enum AuditSeverity {
+  INFO
+  WARNING
+  ERROR
+  CRITICAL
+
+  @@schema("public")
+}
+
+enum ForecastType {
+  DEMAND        // Product demand forecast
+  REVENUE       // Revenue forecast
+  CASH_FLOW     // Cash flow forecast
+
+  @@schema("tenant")
+}
+
+enum PeriodType {
+  DAILY
+  WEEKLY
+  MONTHLY
+  QUARTERLY
+  ANNUAL
+
+  @@schema("tenant")
+}
+
+enum ScenarioType {
+  PRICING       // Pricing change scenario
+  INVENTORY     // Inventory optimization
+  GROWTH        // Growth scenario
+  CUSTOM        // Custom scenario
+
+  @@schema("tenant")
+}

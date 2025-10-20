@@ -1,8 +1,8 @@
-# Sentia Manufacturing MCP Server - Overview & Architecture
+# CapLiquify MCP Server - Overview & Architecture
 
 ## 📋 **Overview**
 
-This document provides comprehensive information about the Sentia Manufacturing MCP (Model Context Protocol) Server implementation, current status, and enterprise architecture overview.
+This document provides comprehensive information about the CapLiquify Platform MCP (Model Context Protocol) Server implementation, current status, and enterprise architecture overview.
 
 **Version**: 4.0.0  
 **Last Updated**: October 2025  
@@ -198,4 +198,4 @@ The MCP server includes comprehensive enterprise infrastructure across multiple 
 
 ---
 
-*The Sentia Manufacturing MCP Server is enterprise-ready with complete deployment automation and production infrastructure, providing 36 MCP tools across 6 major business system integrations for comprehensive manufacturing intelligence.*
+*The CapLiquify MCP Server is enterprise-ready with complete deployment automation and production infrastructure, providing 36 MCP tools across 6 major business system integrations for comprehensive manufacturing intelligence.*

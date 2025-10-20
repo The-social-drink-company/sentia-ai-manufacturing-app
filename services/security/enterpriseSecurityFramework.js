@@ -1,6 +1,6 @@
 /**
  * Enterprise Security Framework
- * Sentia Manufacturing Dashboard - Enterprise Edition
+ * CapLiquify Manufacturing Platform - Enterprise Edition
  * 
  * Comprehensive security framework providing:
  * - Multi-factor authentication (MFA)

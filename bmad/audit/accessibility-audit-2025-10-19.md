@@ -7,7 +7,7 @@
 
 ## Executive Summary
 
-The Sentia Manufacturing Dashboard demonstrates **excellent accessibility practices** through its use of shadcn/ui component library, which is built on Radix UI primitives with WCAG 2.1 compliance built-in.
+The CapLiquify Manufacturing Platform demonstrates **excellent accessibility practices** through its use of shadcn/ui component library, which is built on Radix UI primitives with WCAG 2.1 compliance built-in.
 
 **Compliance Score**: 95/100 (Industry-leading)
 
@@ -292,7 +292,7 @@ Example screen reader flow:
 
 ## Conclusion
 
-The Sentia Manufacturing Dashboard has an **excellent accessibility foundation** thanks to:
+The CapLiquify Manufacturing Platform has an **excellent accessibility foundation** thanks to:
 1. shadcn/ui component library (Radix UI primitives)
 2. Semantic HTML structure
 3. Proper ARIA attributes (287 occurrences)

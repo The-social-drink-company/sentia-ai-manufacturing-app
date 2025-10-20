@@ -1,8 +1,8 @@
-# Sentia Manufacturing MCP Server - Documentation Index
+# CapLiquify MCP Server - Documentation Index
 
 ## 📋 **Overview**
 
-Welcome to the Sentia Manufacturing MCP Server documentation. This enterprise-grade Model Context Protocol server provides comprehensive business intelligence capabilities for manufacturing operations with 36 production-ready MCP tools across 6 major business system integrations.
+Welcome to the CapLiquify MCP Server documentation. This enterprise-grade Model Context Protocol server provides comprehensive business intelligence capabilities for manufacturing operations with 36 production-ready MCP tools across 6 major business system integrations.
 
 **Version**: 4.0.0  
 **Status**: Enterprise Production Ready  
@@ -256,6 +256,6 @@ git push origin production
 
 ---
 
-**The Sentia Manufacturing MCP Server is enterprise-ready with complete deployment automation and production infrastructure, providing 36 MCP tools across 6 major business system integrations for comprehensive manufacturing intelligence.**
+**The CapLiquify MCP Server is enterprise-ready with complete deployment automation and production infrastructure, providing 36 MCP tools across 6 major business system integrations for comprehensive manufacturing intelligence.**
 
 *For technical support, operational guidance, or development questions, please refer to the appropriate documentation section above.*

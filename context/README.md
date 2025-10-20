@@ -1,8 +1,8 @@
-# Context Documentation - Sentia Manufacturing Dashboard
+# Context Documentation - CapLiquify Manufacturing Platform
 
 ## Overview
 
-This directory houses reference material that supports the Sentia Manufacturing Dashboard. Each subdirectory groups documents by purpose so engineers, designers, and operators can quickly locate the guidance they need while rebuilding the lint-clean baseline established on 2025-09-25.
+This directory houses reference material that supports the CapLiquify Manufacturing Platform. Each subdirectory groups documents by purpose so engineers, designers, and operators can quickly locate the guidance they need while rebuilding the lint-clean baseline established on 2025-09-25.
 
 ## Directory Structure
 

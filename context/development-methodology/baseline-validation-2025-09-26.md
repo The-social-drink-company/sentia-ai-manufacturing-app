@@ -1,6 +1,6 @@
 # Phase 0 Baseline Validation Report
 **Date:** September 26, 2025
-**Project:** Sentia Manufacturing Dashboard v2.0.0
+**Project:** CapLiquify Manufacturing Platform v2.0.0
 **Branch:** development
 
 ## Executive Summary

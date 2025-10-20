@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Sentia Manufacturing Dashboard - Security Audit Script
+ * CapLiquify Manufacturing Platform - Security Audit Script
  * Comprehensive security validation for enterprise deployment
  */
 
@@ -351,7 +351,7 @@ class SecurityAuditor {
 
   // Run all security audits
   async runFullAudit() {
-    this.log('🔒 Starting Sentia Manufacturing Dashboard Security Audit');
+    this.log('🔒 Starting CapLiquify Manufacturing Platform Security Audit');
     this.log('================================================');
 
     try {

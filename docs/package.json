@@ -1,7 +1,7 @@
 {
   "name": "sentia-docs",
   "version": "1.0.0",
-  "description": "Sentia Manufacturing Dashboard Documentation Portal",
+  "description": "CapLiquify Manufacturing Platform Documentation Portal",
   "private": true,
   "scripts": {
     "dev": "next dev -p 3001",

@@ -1,4 +1,4 @@
-# Render Deployment Guide - Sentia Manufacturing Dashboard
+# Render Deployment Guide - CapLiquify Manufacturing Platform
 
 **Last Updated**: October 19, 2025
 **BMAD-METHOD v6a Compliant Documentation**

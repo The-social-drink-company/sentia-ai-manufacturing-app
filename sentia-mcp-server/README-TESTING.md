@@ -2,7 +2,7 @@
 
 ## Comprehensive Testing Infrastructure for Sentia MCP Server
 
-This document provides a complete guide to the testing infrastructure implemented for the Sentia Manufacturing MCP Server, including quality gates, coverage reporting, and performance benchmarking.
+This document provides a complete guide to the testing infrastructure implemented for the CapLiquify MCP Server, including quality gates, coverage reporting, and performance benchmarking.
 
 ## 🧪 Testing Overview
 

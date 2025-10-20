@@ -71,7 +71,7 @@ const ChatBot = () => {
             <CardHeader className="bg-blue-600 text-white rounded-t-lg">
               <CardTitle className="flex items-center space-x-2 text-sm">
                 <Bot className="h-4 w-4" />
-                <span>Sentia AI Assistant</span>
+                <span>CapLiquify AI Assistant</span>
               </CardTitle>
               <p className="text-xs text-blue-100">Working Capital Intelligence</p>
             </CardHeader>

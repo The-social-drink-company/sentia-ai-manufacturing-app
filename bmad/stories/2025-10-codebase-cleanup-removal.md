@@ -43,7 +43,7 @@ A comprehensive BMAD tree sweep has identified **15 legacy paths** that are no l
 
 ## User Story
 
-**As a** developer working on the Sentia Manufacturing AI Dashboard
+**As a** developer working on the CapLiquify Platform AI Dashboard
 **I want to** remove all legacy, unused code and artifacts
 **So that** the codebase is cleaner, easier to navigate, and maintenance is reduced
 
@@ -358,7 +358,7 @@ Instead of deleting, populate with references to BMAD documentation:
 
 **analysis/ROADMAP.md**:
 ```markdown
-# Sentia Manufacturing AI Dashboard - Roadmap
+# CapLiquify Platform AI Dashboard - Roadmap
 
 This project now uses **BMAD-METHOD v6a** for roadmap planning.
 
@@ -373,7 +373,7 @@ This project now uses **BMAD-METHOD v6a** for roadmap planning.
 
 **analysis/SYNTHESIS_REPORT.md**:
 ```markdown
-# Sentia Manufacturing AI Dashboard - Project Synthesis
+# CapLiquify Platform AI Dashboard - Project Synthesis
 
 This project now uses **BMAD-METHOD v6a** for retrospectives and synthesis.
 

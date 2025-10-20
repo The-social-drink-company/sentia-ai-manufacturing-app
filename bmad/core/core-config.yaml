@@ -1,7 +1,7 @@
 # BMAD-METHOD Core Configuration
 # Merged from v6-alpha core-config.yaml and custom config.yaml
 # Updated: 2025-10-19
-# Project: Sentia Manufacturing AI Dashboard
+# Project: CapLiquify Platform AI Dashboard
 
 # <!-- Powered by BMAD™ Core -->
 
@@ -83,7 +83,7 @@ output_folder: "{project-root}/docs"
 
 # Project-specific settings
 project:
-  name: Sentia Manufacturing AI Dashboard
+  name: CapLiquify Platform AI Dashboard
   type: brownfield-fullstack
   scale: level-4
   domain: manufacturing-intelligence

@@ -1,7 +1,7 @@
 # API Documentation
 
 ## Overview
-Comprehensive documentation for the Sentia Manufacturing Dashboard REST API, including authentication, endpoints, request/response formats, and integration examples.
+Comprehensive documentation for the CapLiquify Manufacturing Platform REST API, including authentication, endpoints, request/response formats, and integration examples.
 
 ## Table of Contents
 - [Authentication](#authentication)
@@ -940,7 +940,7 @@ curl -X GET "https://sentia-manufacturing.com/api/working-capital/overview" \
 ```yaml
 openapi: 3.0.0
 info:
-  title: Sentia Manufacturing Dashboard API
+  title: CapLiquify Manufacturing Platform API
   version: 1.0.0
   description: Comprehensive API for manufacturing dashboard operations
   contact:
@@ -1052,7 +1052,7 @@ paths:
 ```json
 {
   "info": {
-    "name": "Sentia Manufacturing Dashboard API",
+    "name": "CapLiquify Manufacturing Platform API",
     "description": "Complete API collection for dashboard operations",
     "version": "1.0.0"
   },
@@ -1098,4 +1098,4 @@ paths:
 }
 ```
 
-This comprehensive API documentation provides developers with everything they need to integrate with the Sentia Manufacturing Dashboard API, including detailed endpoint descriptions, request/response examples, error handling, and integration patterns.
+This comprehensive API documentation provides developers with everything they need to integrate with the CapLiquify Manufacturing Platform API, including detailed endpoint descriptions, request/response examples, error handling, and integration patterns.

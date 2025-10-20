@@ -1,7 +1,7 @@
 # Environment Variable Configuration Guide
 
 ## Overview
-This guide provides comprehensive documentation for all environment variables used in the Sentia Manufacturing Dashboard. Variables are categorized by functionality and deployment environment.
+This guide provides comprehensive documentation for all environment variables used in the CapLiquify Manufacturing Platform. Variables are categorized by functionality and deployment environment.
 
 ---
 
@@ -365,7 +365,7 @@ VITE_API_BASE_URL="https://yourdomain.com/api"
 # API base URL for frontend
 # Defaults to relative URLs if not set
 
-VITE_APP_TITLE="Sentia Manufacturing Dashboard"
+VITE_APP_TITLE="CapLiquify Manufacturing Platform"
 # Application title shown in browser tab
 
 VITE_APP_DESCRIPTION="Enterprise manufacturing dashboard with AI forecasting"

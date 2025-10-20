@@ -1,10 +1,10 @@
 # Security Policy
 
-## Security Guidelines for Sentia Manufacturing Dashboard
+## Security Guidelines for CapLiquify Manufacturing Platform
 
 ### Overview
 
-This document outlines the security policies, procedures, and best practices for the Sentia Manufacturing Dashboard application. All developers and operators must adhere to these guidelines to maintain the security and integrity of the system.
+This document outlines the security policies, procedures, and best practices for the CapLiquify Manufacturing Platform application. All developers and operators must adhere to these guidelines to maintain the security and integrity of the system.
 
 ## Security Architecture
 

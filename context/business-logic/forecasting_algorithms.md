@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document defines the forecasting algorithms, model selection methodology, backtesting protocols, and prediction interval calibration methods used in the Sentia Manufacturing Dashboard demand forecasting system.
+This document defines the forecasting algorithms, model selection methodology, backtesting protocols, and prediction interval calibration methods used in the CapLiquify Manufacturing Platform demand forecasting system.
 
 ## Current Implementation Status
 - **4-Model Ensemble**: ARIMA, LSTM, Prophet, Random Forest with weighted averaging ✅ IMPLEMENTED

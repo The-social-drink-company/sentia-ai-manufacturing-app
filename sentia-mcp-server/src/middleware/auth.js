@@ -2,7 +2,7 @@
  * Enhanced Authentication Middleware
  * 
  * Comprehensive authentication system with MANDATORY development bypass
- * for the Sentia Manufacturing MCP Server.
+ * for the CapLiquify MCP Server.
  * 
  * CRITICAL: Development environment authentication is completely bypassed
  * following the same pattern as the main dashboard application.

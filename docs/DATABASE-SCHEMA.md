@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Sentia Manufacturing Dashboard uses a comprehensive PostgreSQL database schema designed for global multi-entity manufacturing operations. The schema supports multi-currency transactions, working capital management, AI-powered forecasting, and comprehensive audit trails.
+The CapLiquify Manufacturing Platform uses a comprehensive PostgreSQL database schema designed for global multi-entity manufacturing operations. The schema supports multi-currency transactions, working capital management, AI-powered forecasting, and comprehensive audit trails.
 
 ## Core Architecture
 

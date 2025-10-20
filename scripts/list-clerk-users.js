@@ -13,7 +13,7 @@ const clerk = createClerkClient({
 async function listAllUsers() {
   try {
     console.log('=================================');
-    console.log('Sentia Manufacturing Dashboard');
+    console.log('CapLiquify Manufacturing Platform');
     console.log('Clerk User List');
     console.log('=================================\n');
 

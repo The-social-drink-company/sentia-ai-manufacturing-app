@@ -1,8 +1,8 @@
 # User Manual
 
-## Welcome to Sentia Manufacturing Dashboard
+## Welcome to CapLiquify Manufacturing Platform
 
-The Sentia Manufacturing Dashboard is a comprehensive business intelligence platform designed to streamline your manufacturing operations, financial management, and strategic decision-making.
+The CapLiquify Manufacturing Platform is a comprehensive business intelligence platform designed to streamline your manufacturing operations, financial management, and strategic decision-making.
 
 ## Table of Contents
 - [Getting Started](#getting-started)

@@ -1,8 +1,8 @@
-# Getting Started with Sentia Manufacturing Dashboard
+# Getting Started with CapLiquify Manufacturing Platform
 
-## Welcome to Sentia Manufacturing Dashboard
+## Welcome to CapLiquify Manufacturing Platform
 
-The Sentia Manufacturing Dashboard is your comprehensive solution for managing manufacturing operations, demand forecasting, inventory optimization, and production scheduling across multiple markets and sales channels.
+The CapLiquify Manufacturing Platform is your comprehensive solution for managing manufacturing operations, demand forecasting, inventory optimization, and production scheduling across multiple markets and sales channels.
 
 ## Quick Start Guide
 

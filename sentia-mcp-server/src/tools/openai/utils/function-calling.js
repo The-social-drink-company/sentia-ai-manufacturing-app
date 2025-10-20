@@ -5,7 +5,7 @@
  * Enables autonomous task execution and integration with other MCP tools.
  * 
  * @version 1.0.0
- * @author Sentia Manufacturing Team
+ * @author CapLiquify Platform Team
  */
 
 import { createLogger } from '../../../utils/logger.js';

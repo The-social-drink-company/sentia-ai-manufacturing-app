@@ -81,11 +81,11 @@ const USERSTO_CREATE = [
 ];
 
 const EMAILTEMPLATE = {
-  subject: 'Welcome to Sentia Manufacturing Dashboard - Test Access',
+  subject: 'Welcome to CapLiquify Manufacturing Platform - Test Access',
   body: `
 Dear {{firstName}},
 
-Welcome to the Sentia Manufacturing Dashboard! Your account has been successfully created.
+Welcome to the CapLiquify Manufacturing Platform! Your account has been successfully created.
 
 **IMPORTANT NOTICE - DEVELOPMENT IN PROGRESS**
 ⚠️ Please note that the system is currently under active development. At this stage, we only need you to:
@@ -108,7 +108,7 @@ Best regards,
 The Sentia Development Team
 
 ---
-This is an automated message from the Sentia Manufacturing Dashboard development team.
+This is an automated message from the CapLiquify Manufacturing Platform development team.
 `
 };
 
@@ -195,7 +195,7 @@ async function sendWelcomeEmail(user, userData) {
 
 async function setupAllUsers() {
   console.log('=================================');
-  console.log('Sentia Manufacturing Dashboard');
+  console.log('CapLiquify Manufacturing Platform');
   console.log('User Account Setup Script');
   console.log('=================================\n');
 

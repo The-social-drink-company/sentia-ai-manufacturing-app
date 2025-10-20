@@ -152,7 +152,7 @@ async function setupEnvironment(env) {
     envVars.PORT = '10000';
     envVars.CORSORIGINS = `https://${config.serviceName}.onrender.com`;
     envVars.VITEAPI_BASE_URL = `https://${config.serviceName}.onrender.com/api`;
-    envVars.VITEAPP_TITLE = 'Sentia Manufacturing Dashboard';
+    envVars.VITEAPP_TITLE = 'CapLiquify Manufacturing Platform';
     envVars.SESSIONSECRET = `sentia-session-secret-${env}-2025`;
     envVars.JWTSECRET = `sentia-jwt-secret-${env}-2025`;
   }

@@ -1,6 +1,6 @@
 /**
  * Enhanced Forecasting Engine
- * Sentia Manufacturing Dashboard - Enterprise Edition
+ * CapLiquify Manufacturing Platform - Enterprise Edition
  * 
  * Advanced forecasting engine with extended horizons (30-365 days),
  * dual AI model integration, and enhanced accuracy targeting 88%+.

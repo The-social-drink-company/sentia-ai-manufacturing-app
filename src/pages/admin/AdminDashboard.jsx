@@ -480,7 +480,7 @@ export default function AdminDashboard() {
           description: 'Primary REST API for CapLiquify tenant operations',
         },
         {
-          id: 'sentia-mcp',
+          id: 'capliquify-mcp',
           name: 'MCP Orchestration API',
           url: 'https://mcp.capliquify.com/tenants/sentia-spirits',
           status: 'connected',

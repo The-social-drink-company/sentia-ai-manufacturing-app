@@ -2,7 +2,7 @@
 
 ## Overview
 
-To resolve widespread ESLint and Prettier violations that accumulated in the prior codebase, we created a fresh clone of the Sentia Manufacturing Dashboard repository on 2025-09-25. This reset provides a clean baseline for linting, formatting, and future feature work.
+To resolve widespread ESLint and Prettier violations that accumulated in the prior codebase, we created a fresh clone of the CapLiquify Manufacturing Platform repository on 2025-09-25. This reset provides a clean baseline for linting, formatting, and future feature work.
 
 ## Previous State
 

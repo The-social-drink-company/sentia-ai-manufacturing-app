@@ -1,7 +1,7 @@
 # Production Runbooks
 
 ## Overview
-This document contains operational procedures and troubleshooting guides for the Sentia Manufacturing Dashboard production environment.
+This document contains operational procedures and troubleshooting guides for the CapLiquify Manufacturing Platform production environment.
 
 ## Table of Contents
 1. [Emergency Procedures](#emergency-procedures)

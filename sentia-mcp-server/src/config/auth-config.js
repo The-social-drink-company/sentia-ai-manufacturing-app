@@ -2,7 +2,7 @@
  * Authentication Configuration
  * 
  * Environment-aware authentication settings with mandatory development bypass
- * for the Sentia Manufacturing MCP Server.
+ * for the CapLiquify MCP Server.
  * 
  * CRITICAL: Development environment authentication is completely bypassed
  * to maintain fast development workflow.

@@ -3,7 +3,7 @@
  * 
  * Intelligent alerting system providing anomaly detection, predictive alerts,
  * smart thresholds, alert correlation, and advanced escalation policies for
- * the Sentia Manufacturing MCP Server analytics platform.
+ * the CapLiquify MCP Server analytics platform.
  * 
  * Features:
  * - Machine learning-based anomaly detection algorithms

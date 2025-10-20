@@ -2,7 +2,7 @@
  * Permission Checking Middleware
  * 
  * Advanced permission validation system with development bypass
- * for the Sentia Manufacturing MCP Server.
+ * for the CapLiquify MCP Server.
  * 
  * CRITICAL: Development environment bypasses all permission checks
  * while maintaining granular permission control in production.

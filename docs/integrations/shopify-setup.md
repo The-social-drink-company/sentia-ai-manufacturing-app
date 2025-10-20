@@ -7,7 +7,7 @@
 
 ## Overview
 
-This guide walks through connecting your Shopify UK/EU and USA stores to the Sentia Manufacturing Dashboard for real-time sales data integration with automatic 2.9% transaction fee tracking.
+This guide walks through connecting your Shopify UK/EU and USA stores to the CapLiquify Manufacturing Platform for real-time sales data integration with automatic 2.9% transaction fee tracking.
 
 ### What You'll Get
 
@@ -44,7 +44,7 @@ This guide walks through connecting your Shopify UK/EU and USA stores to the Sen
 
 ### 1.3 Configure App Details
 
-**App Name**: `Sentia Manufacturing Dashboard - UK/EU`
+**App Name**: `CapLiquify Manufacturing Platform - UK/EU`
 **App developer**: Your email address
 
 Click **Create app**
@@ -80,7 +80,7 @@ Click **Create app**
 Follow the exact same steps as Step 1, but for your USA Shopify store:
 
 1. Log in to USA store: `https://sentia-usa.myshopify.com/admin`
-2. Create app named: `Sentia Manufacturing Dashboard - USA`
+2. Create app named: `CapLiquify Manufacturing Platform - USA`
 3. Configure the same 3 API scopes: `read_orders`, `read_products`, `read_customers`
 4. Install app and copy access token (starts with `shpat_`)
 5. Note shop domain: `sentia-usa` (without .myshopify.com)

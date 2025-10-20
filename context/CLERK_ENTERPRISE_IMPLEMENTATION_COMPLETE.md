@@ -5,7 +5,7 @@
 
 ## 🎯 Context Summary
 
-The Sentia Manufacturing Dashboard has been upgraded to a complete Clerk enterprise implementation with zero JWT fallbacks. All authentication now flows through Clerk's enterprise-grade security system.
+The CapLiquify Manufacturing Platform has been upgraded to a complete Clerk enterprise implementation with zero JWT fallbacks. All authentication now flows through Clerk's enterprise-grade security system.
 
 ## ✅ Key Changes Made
 

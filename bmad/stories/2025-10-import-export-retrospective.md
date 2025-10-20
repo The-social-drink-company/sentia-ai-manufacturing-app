@@ -4,7 +4,7 @@
 - **Story ID**: BMAD-UI-001
 - **Retrospective Date**: 2025-10-18
 - **Framework**: BMAD-METHOD v6a
-- **Project**: Sentia Manufacturing AI Dashboard
+- **Project**: CapLiquify Platform AI Dashboard
 - **Phase**: Phase 2 → Phase 3 Transition
 
 ---

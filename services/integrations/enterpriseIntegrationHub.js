@@ -1,6 +1,6 @@
 /**
  * Enterprise Integration Hub
- * Sentia Manufacturing Dashboard - Enterprise Edition
+ * CapLiquify Manufacturing Platform - Enterprise Edition
  * 
  * Comprehensive integration hub managing all external service connections:
  * - Shopify (UK, USA, EU stores)
@@ -939,7 +939,7 @@ class EnterpriseIntegrationHub extends EventEmitter {
             title: `${severity.toUpperCase()}: Sentia Dashboard Alert`,
             text: message,
             timestamp: Math.floor(Date.now() / 1000),
-            footer: 'Sentia Manufacturing Dashboard',
+            footer: 'CapLiquify Manufacturing Platform',
             footer_icon: 'https://example.com/sentia-icon.png'
         };
         

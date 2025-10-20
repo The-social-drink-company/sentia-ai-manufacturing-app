@@ -9,7 +9,7 @@
 
 ## Overview
 
-This document defines the **three-tier fallback strategy** implemented across all external API integrations in the Sentia Manufacturing AI Dashboard. This strategy ensures graceful degradation when external services are unavailable while maintaining **zero mock data violations** in production.
+This document defines the **three-tier fallback strategy** implemented across all external API integrations in the CapLiquify Platform AI Dashboard. This strategy ensures graceful degradation when external services are unavailable while maintaining **zero mock data violations** in production.
 
 ### Core Principle
 

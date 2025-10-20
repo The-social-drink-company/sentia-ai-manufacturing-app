@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * 24/7 Self-Healing Test Agent for Sentia Manufacturing Dashboard
+ * 24/7 Self-Healing Test Agent for CapLiquify Manufacturing Platform
  * 
  * Enterprise-grade monitoring and self-healing capabilities for:
  * - All Railway deployments (development, test, production)
@@ -1000,7 +1000,7 @@ switch (command) {
     
   default:
     console.log(`
-24/7 Self-Healing Test Agent - Sentia Manufacturing Dashboard
+24/7 Self-Healing Test Agent - CapLiquify Manufacturing Platform
 
 Usage:
   node scripts/24-7-self-healing-agent.js <command>

@@ -2,7 +2,7 @@
  * Centralized Log Management System
  * 
  * Provides comprehensive log aggregation, retention, search, and analysis
- * capabilities for the Sentia Manufacturing MCP Server.
+ * capabilities for the CapLiquify MCP Server.
  * 
  * Features:
  * - Log aggregation from multiple sources

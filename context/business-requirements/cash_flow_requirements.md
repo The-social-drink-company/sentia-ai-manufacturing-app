@@ -2,11 +2,11 @@
 
 ## Overview
 
-This document defines the business requirements for cash flow management, working capital optimization, and financial planning within the Sentia Manufacturing Dashboard. These requirements support multi-market operations with complex payment terms, inventory management, and currency considerations.
+This document defines the business requirements for cash flow management, working capital optimization, and financial planning within the CapLiquify Manufacturing Platform. These requirements support multi-market operations with complex payment terms, inventory management, and currency considerations.
 
 ## Business Context
 
-### Sentia Manufacturing Financial Profile
+### CapLiquify Platform Financial Profile
 - **Revenue**: £2.5M annually across 9 SKUs and 5 sales channels
 - **Markets**: UK (40%), EU (35%), USA (25%)
 - **Seasonality**: 30% higher demand in Q4 (October-December)
@@ -246,4 +246,4 @@ This document defines the business requirements for cash flow management, workin
 
 ---
 
-*These requirements provide the foundation for a comprehensive working capital management system that supports Sentia Manufacturing's growth objectives while maintaining financial stability and regulatory compliance.*
+*These requirements provide the foundation for a comprehensive working capital management system that supports CapLiquify Platform's growth objectives while maintaining financial stability and regulatory compliance.*

@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document outlines comprehensive training curricula tailored for each user role within the Sentia Manufacturing Dashboard. Training is structured to provide role-specific skills while building understanding of the overall system.
+This document outlines comprehensive training curricula tailored for each user role within the CapLiquify Manufacturing Platform. Training is structured to provide role-specific skills while building understanding of the overall system.
 
 ## Administrator Training Curriculum
 
@@ -436,7 +436,7 @@ This document outlines comprehensive training curricula tailored for each user r
 ## Training Presentation Slides
 
 ### Slide Deck 1: System Overview (30 slides)
-1. Welcome to Sentia Manufacturing Dashboard
+1. Welcome to CapLiquify Manufacturing Platform
 2. What is Sentia?
 3. Business Benefits
 4. System Architecture Overview
@@ -547,4 +547,4 @@ This document outlines comprehensive training curricula tailored for each user r
 - New feature training
 - Best practices updates
 
-This comprehensive training program ensures all users can effectively utilize the Sentia Manufacturing Dashboard according to their specific roles and responsibilities.
+This comprehensive training program ensures all users can effectively utilize the CapLiquify Manufacturing Platform according to their specific roles and responsibilities.

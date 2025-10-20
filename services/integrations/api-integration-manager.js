@@ -1,5 +1,5 @@
 /**
- * API Integration Manager for Sentia Manufacturing Dashboard
+ * API Integration Manager for CapLiquify Manufacturing Platform
  * Manages all external API connections and ensures they're properly configured
  */
 

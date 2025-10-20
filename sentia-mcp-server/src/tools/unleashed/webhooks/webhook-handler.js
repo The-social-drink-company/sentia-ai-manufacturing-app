@@ -5,7 +5,7 @@
  * Provides event handling, data synchronization, and notification management.
  * 
  * @version 1.0.0
- * @author Sentia Manufacturing Team
+ * @author CapLiquify Platform Team
  */
 
 import crypto from 'crypto';

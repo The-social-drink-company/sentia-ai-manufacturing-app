@@ -10,7 +10,7 @@
 
 ## Executive Summary
 
-EPIC-002 has been successfully completed with **10/10 stories** delivered, achieving **zero mock data** across the entire Sentia Manufacturing AI Dashboard. The epic was completed in **34 hours actual** vs **140 hours estimated**, representing a **4.1x velocity** (76% time savings).
+EPIC-002 has been successfully completed with **10/10 stories** delivered, achieving **zero mock data** across the entire CapLiquify Platform AI Dashboard. The epic was completed in **34 hours actual** vs **140 hours estimated**, representing a **4.1x velocity** (76% time savings).
 
 ### Key Achievements
 

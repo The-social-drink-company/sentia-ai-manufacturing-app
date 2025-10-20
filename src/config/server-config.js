@@ -155,7 +155,7 @@ export const SERVER_CONFIG = {
     type: process.env.CACHE_TYPE || 'memory', // 'redis' or 'memory'
     redis: {
       url: process.env.REDIS_URL,
-      keyPrefix: process.env.REDIS_KEY_PREFIX || 'sentia-mcp:',
+      keyPrefix: process.env.REDIS_KEY_PREFIX || 'capliquify-mcp:',
       retryDelayOnFailover: parseInt(process.env.REDIS_RETRY_DELAY) || 100,
       maxRetriesPerRequest: parseInt(process.env.REDIS_MAX_RETRIES) || 3,
     },

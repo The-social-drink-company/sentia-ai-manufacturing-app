@@ -1,5 +1,5 @@
 /**
- * Xero Accounting Integration for Sentia Manufacturing MCP Server
+ * Xero Accounting Integration for CapLiquify MCP Server
  * 
  * Comprehensive Xero API integration providing financial data access,
  * business intelligence, and accounting automation capabilities.
@@ -14,7 +14,7 @@
  * - Comprehensive caching and error handling
  * 
  * @version 1.0.0
- * @author Sentia Manufacturing Team
+ * @author CapLiquify Platform Team
  */
 
 import pkg from 'xero-node';

@@ -1,7 +1,7 @@
 # BMAD-METHOD Agent Quick Reference
 
 **Updated**: 2025-10-19
-**Project**: Sentia Manufacturing AI Dashboard
+**Project**: CapLiquify Platform AI Dashboard
 **BMAD Version**: v6-alpha (Latest)
 
 ---

@@ -2,7 +2,7 @@
 
 /**
  * Enterprise-Level CI/CD Deployment Pipeline
- * Sentia Manufacturing Dashboard - World-Class Deployment Automation
+ * CapLiquify Manufacturing Platform - World-Class Deployment Automation
  * 
  * Features:
  * - 5-minute end-to-end deployment cycle
@@ -501,7 +501,7 @@ class EnterpriseDeploymentPipeline {
       
       default:
         console.log(`
-Enterprise Deployment Pipeline - Sentia Manufacturing Dashboard
+Enterprise Deployment Pipeline - CapLiquify Manufacturing Platform
 
 Usage:
   node scripts/enterprise-deployment-pipeline.js <command> [environment]

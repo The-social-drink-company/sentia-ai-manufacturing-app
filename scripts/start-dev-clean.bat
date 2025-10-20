@@ -1,5 +1,5 @@
 @echo off
-echo 🚀 Starting Sentia Manufacturing Dashboard - Clean Development Mode
+echo 🚀 Starting CapLiquify Manufacturing Platform - Clean Development Mode
 
 echo 🔄 Cleaning up processes...
 taskkill /f /im node.exe >nul 2>&1

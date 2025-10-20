@@ -129,7 +129,9 @@
       "Bash(else echo \"Coverage summary not found\")",
       "Bash(fi)",
       "Bash(for i in 1 2 3)",
-      "Bash(do echo \"Check $i/3:\")"
+      "Bash(do echo \"Check $i/3:\")",
+      "Bash(awk:*)",
+      "Bash(xargs -I {} sh -c 'echo \"\"\"\"=== {} ===\"\"\"\" && grep -E \"\"\"\"^(#|Status:|Epic:)\"\"\"\" {} | head -5')"
     ],
     "deny": [],
     "ask": []

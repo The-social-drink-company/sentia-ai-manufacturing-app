@@ -29,8 +29,8 @@ export default function RootLayout({
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="description" content="Sentia Manufacturing Dashboard Documentation" />
-        <title>Sentia Manufacturing Dashboard - Documentation</title>
+        <meta name="description" content="CapLiquify Manufacturing Platform Documentation" />
+        <title>CapLiquify Manufacturing Platform - Documentation</title>
         <link rel="icon" href="/favicon.ico" />
       </head>
       <body className="bg-white">

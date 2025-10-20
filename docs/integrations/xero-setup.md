@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Sentia Manufacturing Dashboard integrates with Xero accounting software to provide real-time financial data including:
+The CapLiquify Manufacturing Platform integrates with Xero accounting software to provide real-time financial data including:
 - Working capital analysis (AR/AP, cash conversion cycle)
 - Profit & Loss (P&L) reports with month-over-month trends
 - Cash flow categorization (operating, investing, financing)
@@ -39,7 +39,7 @@ This guide will walk you through setting up the Xero integration using a **Custo
    > **Why Custom Connection?** Custom Connections use Client Credentials OAuth flow, which is designed for server-to-server integrations without user interaction. Perfect for dashboard applications.
 
 3. Fill in the app details:
-   - **App name**: `Sentia Manufacturing Dashboard` (or your preferred name)
+   - **App name**: `CapLiquify Manufacturing Platform` (or your preferred name)
    - **Company or application URL**: Your company website or dashboard URL
    - **Purpose**: `Financial data integration for manufacturing intelligence dashboard`
 

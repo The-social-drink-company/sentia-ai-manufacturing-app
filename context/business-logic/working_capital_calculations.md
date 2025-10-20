@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document defines the mathematical formulas, business rules, and calculation methodologies for the Working Capital Modeling Engine. All calculations follow standard financial accounting practices with customizations for Sentia Manufacturing's multi-market operations.
+This document defines the mathematical formulas, business rules, and calculation methodologies for the Working Capital Modeling Engine. All calculations follow standard financial accounting practices with customizations for CapLiquify Platform's multi-market operations.
 
 ## Current Implementation Status
 - **Working Capital Engine**: DSO/DPO/DIO calculations with multi-currency support ✅ IMPLEMENTED
@@ -272,4 +272,4 @@ UK Post-Brexit Duties:
 
 ---
 
-*This document provides the mathematical foundation for all working capital calculations in the Sentia Manufacturing Dashboard. All formulas follow standard financial accounting practices adapted for the company's specific business model and operational requirements.*
+*This document provides the mathematical foundation for all working capital calculations in the CapLiquify Manufacturing Platform. All formulas follow standard financial accounting practices adapted for the company's specific business model and operational requirements.*

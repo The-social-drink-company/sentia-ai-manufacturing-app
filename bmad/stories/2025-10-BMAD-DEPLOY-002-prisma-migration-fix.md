@@ -228,7 +228,7 @@ bash scripts/prisma-safe-migrate.sh
 > sentia-ai-manufacturing-app@1.0.0 start:render
 > node server.js
 
-[Backend] Starting Sentia Manufacturing API Server...
+[Backend] Starting CapLiquify Platform API Server...
 [Backend] Environment: production
 [Backend] Port: 10000
 [Backend] Server running: http://0.0.0.0:10000

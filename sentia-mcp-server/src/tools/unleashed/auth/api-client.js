@@ -5,7 +5,7 @@
  * error handling, and response parsing optimized for manufacturing operations.
  * 
  * @version 1.0.0
- * @author Sentia Manufacturing Team
+ * @author CapLiquify Platform Team
  */
 
 import axios from 'axios';

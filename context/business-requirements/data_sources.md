@@ -1,7 +1,7 @@
 # Data Sources Requirements
 
 ## Overview
-This document defines the data sources and import requirements for the Sentia Manufacturing Dashboard. The system needs to handle data from multiple external sources and internal systems to provide comprehensive manufacturing and sales analytics.
+This document defines the data sources and import requirements for the CapLiquify Manufacturing Platform. The system needs to handle data from multiple external sources and internal systems to provide comprehensive manufacturing and sales analytics.
 
 ## Primary Data Sources
 

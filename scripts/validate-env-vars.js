@@ -286,7 +286,7 @@ function validateEnvironment(environment = 'development') {
 function generateEnvExample() {
   console.log(`${colors.blue}Generating .env.example file...${colors.reset}`);
 
-  let content = '# Sentia Manufacturing Dashboard - Environment Variables\n';
+  let content = '# CapLiquify Manufacturing Platform - Environment Variables\n';
   content += '# Copy this file to .env and fill in your values\n\n';
 
   for (const [category, vars] of Object.entries(ENV_VARIABLES)) {

@@ -1,7 +1,7 @@
 # System Architecture
 
 ## Overview
-The Sentia Manufacturing Dashboard is a comprehensive full-stack application built with modern web technologies, designed for scalability, security, and maintainability.
+The CapLiquify Manufacturing Platform is a comprehensive full-stack application built with modern web technologies, designed for scalability, security, and maintainability.
 
 ## Table of Contents
 - [High-Level Architecture](#high-level-architecture)

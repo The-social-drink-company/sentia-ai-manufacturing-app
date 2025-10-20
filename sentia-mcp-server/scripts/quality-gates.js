@@ -493,7 +493,7 @@ class QualityGatesValidator {
     <div class="container">
         <div class="header">
             <h1>🎯 Quality Gates Dashboard</h1>
-            <p><strong>Sentia Manufacturing MCP Server</strong></p>
+            <p><strong>CapLiquify MCP Server</strong></p>
             <p>Generated: ${new Date(report.timestamp).toLocaleString()}</p>
             <span class="status ${summary.passed ? 'passed' : 'failed'}">
                 ${summary.passed ? '✅ Passed' : '❌ Failed'}

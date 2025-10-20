@@ -1,7 +1,7 @@
 # Development Workflow
 
 ## Overview
-This document outlines the development workflow, coding standards, and best practices for the Sentia Manufacturing Dashboard project.
+This document outlines the development workflow, coding standards, and best practices for the CapLiquify Manufacturing Platform project.
 
 ## Table of Contents
 - [Git Workflow](#git-workflow)

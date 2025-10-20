@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-This document outlines the comprehensive disaster recovery (DR) plan for the Sentia Manufacturing MCP Server, ensuring business continuity, data protection, and rapid service restoration in the event of system failures, security incidents, or natural disasters.
+This document outlines the comprehensive disaster recovery (DR) plan for the CapLiquify MCP Server, ensuring business continuity, data protection, and rapid service restoration in the event of system failures, security incidents, or natural disasters.
 
 ### Recovery Objectives
 - **Recovery Time Objective (RTO)**: 4 hours maximum

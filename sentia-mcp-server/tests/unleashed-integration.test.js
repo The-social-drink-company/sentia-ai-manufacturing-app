@@ -5,7 +5,7 @@
  * utilities, and error handling scenarios.
  * 
  * @version 1.0.0
- * @author Sentia Manufacturing Team
+ * @author CapLiquify Platform Team
  */
 
 import { jest } from '@jest/globals';

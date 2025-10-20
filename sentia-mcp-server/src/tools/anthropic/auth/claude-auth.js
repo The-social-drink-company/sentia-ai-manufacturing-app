@@ -5,7 +5,7 @@
  * Provides enterprise-grade authentication features for Claude AI integration.
  * 
  * @version 1.0.0
- * @author Sentia Manufacturing Team
+ * @author CapLiquify Platform Team
  */
 
 import Anthropic from '@anthropic-ai/sdk';

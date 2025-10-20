@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('Starting Sentia Manufacturing database seed...');
+  console.log('Starting CapLiquify Platform database seed...');
 
   try {
     // Clear existing data (development only)
@@ -454,7 +454,7 @@ async function main() {
       });
     }
 
-    console.log('Sentia Manufacturing database seed completed successfully!');
+    console.log('CapLiquify Platform database seed completed successfully!');
     console.log(`Created:`);
     console.log(`- 3 currencies (GBP, EUR, USD)`);
     console.log(`- 1 admin user`);

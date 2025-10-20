@@ -521,7 +521,7 @@ class SecurityComplianceScanner {
 
       default:
         console.log(`
-Security & Compliance Scanner - Sentia Manufacturing Dashboard
+Security & Compliance Scanner - CapLiquify Manufacturing Platform
 
 Usage:
   node scripts/security-compliance-scanner.js <command>

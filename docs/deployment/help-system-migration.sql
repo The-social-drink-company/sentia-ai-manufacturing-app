@@ -136,7 +136,7 @@ CREATE INDEX idx_knowledge_base_searches_created_at ON knowledge_base_searches(c
 -- Insert Sample Help Articles
 INSERT INTO help_articles (title, slug, content, summary, category, subcategory, tags, created_by) VALUES
 ('Getting Started with Sentia Dashboard', 'getting-started-dashboard', 
- 'Welcome to the Sentia Manufacturing Dashboard! This guide will walk you through the basic features and help you get started with managing your manufacturing operations.
+ 'Welcome to the CapLiquify Manufacturing Platform! This guide will walk you through the basic features and help you get started with managing your manufacturing operations.
 
 ## Dashboard Overview
 The main dashboard provides a comprehensive view of your manufacturing operations including:
@@ -159,7 +159,7 @@ Use the top navigation bar to access different modules:
 - Use the search function to find specific topics
 
 Start by exploring the dashboard and familiarizing yourself with the navigation. The interactive tutorials will guide you through each feature step by step.',
- 'Learn the basics of navigating and using the Sentia Manufacturing Dashboard',
+ 'Learn the basics of navigating and using the CapLiquify Manufacturing Platform',
  'getting_started', 'navigation', '["dashboard", "navigation", "basics"]', 1),
 
 ('How to Generate Your First Forecast', 'generating-first-forecast',

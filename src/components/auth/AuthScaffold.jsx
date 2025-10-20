@@ -2,7 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 
 const AuthScaffold = ({
-  heading = 'Welcome to Sentia',
+  heading = 'Welcome to CapLiquify',
   subheading = 'Sign in to your account',
   cardClassName = '',
   maxWidth = 'max-w-md',

@@ -63,7 +63,7 @@ export const generatePDF = async reportData => {
 
     // Generate filename with timestamp
     const timestamp = format(new Date(), 'yyyy-MM-dd_HH-mm')
-    const filename = `Sentia_Manufacturing_Report_${timestamp}.pdf`
+    const filename = `CapLiquify_Report_SentiaSpirits_${timestamp}.pdf`
 
     // Save the PDF
     pdf.save(filename)

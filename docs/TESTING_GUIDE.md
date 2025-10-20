@@ -1,8 +1,8 @@
-# Sentia Manufacturing Dashboard - Testing Guide
+# CapLiquify Manufacturing Platform - Testing Guide
 
 ## Overview
 
-This document provides comprehensive guidance on testing the Sentia Manufacturing Dashboard. It covers testing strategies, procedures, tools, and best practices used to ensure the system meets all functional and non-functional requirements.
+This document provides comprehensive guidance on testing the CapLiquify Manufacturing Platform. It covers testing strategies, procedures, tools, and best practices used to ensure the system meets all functional and non-functional requirements.
 
 ## Table of Contents
 

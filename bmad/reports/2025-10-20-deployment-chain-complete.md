@@ -97,7 +97,7 @@
 
 **Build Output**:
 ```html
-<title>Sentia Manufacturing - Enterprise Dashboard | AI-Driven Manufacturing Intelligence</title>
+<title>CapLiquify Platform - Enterprise Dashboard | AI-Driven Manufacturing Intelligence</title>
 <script type="module" crossorigin src="/assets/index-BTOYWOvW.js"></script>
 <link rel="modulepreload" crossorigin href="/assets/clerk-CpB5TXkM.js">
 ```
@@ -477,7 +477,7 @@ The deployment chain resolution represents a **breakthrough in velocity and prob
 
 **Result**: **24x faster** than traditional debugging (1h 5min vs 24-48h estimated)
 
-The Sentia Manufacturing Dashboard is now **95% production-ready** with only optional Clerk configuration remaining before final production deployment.
+The CapLiquify Manufacturing Platform is now **95% production-ready** with only optional Clerk configuration remaining before final production deployment.
 
 **Recommended Next Step**: Begin EPIC-004 (Test Coverage Enhancement) to reach 90%+ test coverage, then proceed with EPIC-005 (Production Deployment Hardening) for final production release in 3-4 weeks.
 

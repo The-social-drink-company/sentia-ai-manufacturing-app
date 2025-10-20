@@ -1,7 +1,7 @@
 # Data Validation Rules
 
 ## Overview
-This document defines the comprehensive validation rules for all data imported into the Sentia Manufacturing Dashboard. These rules ensure data quality, business logic compliance, and system integrity.
+This document defines the comprehensive validation rules for all data imported into the CapLiquify Manufacturing Platform. These rules ensure data quality, business logic compliance, and system integrity.
 
 ## General Validation Principles
 

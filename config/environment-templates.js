@@ -40,7 +40,7 @@ export const ENVIRONMENT_TEMPLATES = {
 
     // Frontend Configuration
     VITE_API_BASE_URL: 'https://sentia-manufacturing-dashboard-production.onrender.com',
-    VITE_APP_TITLE: 'Sentia Manufacturing Dashboard',
+    VITE_APP_TITLE: 'CapLiquify Manufacturing Platform',
     VITE_APP_VERSION: '1.0.10',
 
     // MCP Server Configuration
@@ -138,7 +138,7 @@ export const ENVIRONMENT_TEMPLATES = {
 
     // Frontend Configuration
     VITE_API_BASE_URL: 'https://sentia-manufacturing-dashboard-test.onrender.com',
-    VITE_APP_TITLE: 'Sentia Manufacturing Dashboard (Testing)',
+    VITE_APP_TITLE: 'CapLiquify Manufacturing Platform (Testing)',
     VITE_APP_VERSION: '1.0.10-testing',
 
     // MCP Server Configuration
@@ -212,7 +212,7 @@ export const ENVIRONMENT_TEMPLATES = {
 
     // Frontend Configuration
     VITE_API_BASE_URL: 'https://capliquify-frontend-prod.onrender.com',
-    VITE_APP_TITLE: 'Sentia Manufacturing Dashboard (Development)',
+    VITE_APP_TITLE: 'CapLiquify Manufacturing Platform (Development)',
     VITE_APP_VERSION: '1.0.10-development',
 
     // MCP Server Configuration
@@ -275,7 +275,7 @@ export const ENVIRONMENT_TEMPLATES = {
 
     // Frontend Configuration
     VITE_API_BASE_URL: 'https://sentia-manufacturing-hotfix.onrender.com/api',
-    VITE_APP_TITLE: 'Sentia Manufacturing Dashboard (Hotfix)',
+    VITE_APP_TITLE: 'CapLiquify Manufacturing Platform (Hotfix)',
     VITE_APP_VERSION: '1.0.10-hotfix',
 
     // Feature Flags - Hotfix (minimal features)
@@ -407,7 +407,7 @@ export class EnvironmentManager {
     // Convert to .env format
     let envContent = `# ${env.toUpperCase()} ENVIRONMENT CONFIGURATION\n`;
     envContent += `# Generated: ${new Date().toISOString()}\n`;
-    envContent += `# Sentia Manufacturing Dashboard\n\n`;
+    envContent += `# CapLiquify Manufacturing Platform\n\n`;
 
     for (const [key, value] of Object.entries(variables)) {
       envContent += `${key}=${value}\n`;

@@ -16,7 +16,7 @@ if %errorlevel% neq 0 (
 )
 
 REM Navigate to project directory
-cd /d "C:\Projects\Sentia Manufacturing Dashboard\sentia-manufacturing-dashboard"
+cd /d "C:\Projects\CapLiquify Manufacturing Platform\sentia-manufacturing-dashboard"
 
 REM Check if PID file exists (agent already running)
 if exist "scripts\render-monitor.pid" (

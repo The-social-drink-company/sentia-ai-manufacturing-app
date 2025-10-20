@@ -1,6 +1,6 @@
 /**
  * COMPREHENSIVE HEALTH MONITORING SYSTEM
- * Fortune 500-Level Health Checks for Sentia Manufacturing Dashboard
+ * Fortune 500-Level Health Checks for CapLiquify Manufacturing Platform
  * Provides detailed health status for all system components
  */
 

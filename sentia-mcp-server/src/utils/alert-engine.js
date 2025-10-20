@@ -3,7 +3,7 @@
  * 
  * Comprehensive alerting system with configurable thresholds, multiple notification
  * channels, alert escalation policies, correlation, and deduplication for the
- * Sentia Manufacturing MCP Server.
+ * CapLiquify MCP Server.
  * 
  * Features:
  * - Real-time alert generation with configurable thresholds

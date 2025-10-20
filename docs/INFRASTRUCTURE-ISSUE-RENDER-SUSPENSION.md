@@ -10,7 +10,7 @@
 
 ## Problem Summary
 
-~~All Render deployment environments for the Sentia Manufacturing AI Dashboard are currently suspended~~
+~~All Render deployment environments for the CapLiquify Platform AI Dashboard are currently suspended~~
 
 **UPDATE**: Services are NOT suspended - they are deploying successfully but from the **wrong branch** (`main` instead of `development`). The Import/Export UI (BMAD-UI-001) was merged to the `development` branch but Render is configured to deploy from `main`, which lacks these changes.
 

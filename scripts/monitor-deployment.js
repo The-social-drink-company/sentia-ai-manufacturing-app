@@ -2,7 +2,7 @@
 
 /**
  * Deployment Health Check Monitor
- * Continuously monitors the health of Sentia Manufacturing Dashboard deployments
+ * Continuously monitors the health of CapLiquify Manufacturing Platform deployments
  * Usage: node scripts/monitor-deployment.js
  */
 
@@ -231,7 +231,7 @@ function displaySummary() {
  */
 async function runHealthChecks() {
   console.clear();
-  console.log(chalk.bold.blue('🏭 Sentia Manufacturing Dashboard - Deployment Monitor'));
+  console.log(chalk.bold.blue('🏭 CapLiquify Manufacturing Platform - Deployment Monitor'));
   console.log(chalk.gray('Monitoring production deployments...\n'));
   
   for (const [env, url] of Object.entries(ENVIRONMENTS)) {

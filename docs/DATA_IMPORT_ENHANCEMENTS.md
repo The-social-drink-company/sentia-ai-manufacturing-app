@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document details the comprehensive enhancements implemented for the Sentia Manufacturing Dashboard data import system, following "Improved Prompt 4 — Data Import & Validation Overlay (Node.js/React, BullMQ/Redis)".
+This document details the comprehensive enhancements implemented for the CapLiquify Manufacturing Platform data import system, following "Improved Prompt 4 — Data Import & Validation Overlay (Node.js/React, BullMQ/Redis)".
 
 The enhancements provide enterprise-grade import capabilities with advanced validation, multi-entity support, and financial impact analysis.
 
@@ -547,4 +547,4 @@ For technical support and maintenance:
 4. **Testing**: Unit tests and integration test suites
 5. **Deployment**: Railway Nixpacks deployment (no Docker)
 
-The enhanced import system is production-ready and provides the foundation for advanced data management capabilities in the Sentia Manufacturing Dashboard.
+The enhanced import system is production-ready and provides the foundation for advanced data management capabilities in the CapLiquify Manufacturing Platform.

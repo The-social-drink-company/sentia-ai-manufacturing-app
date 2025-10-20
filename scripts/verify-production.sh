@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Production Verification Script for Sentia Manufacturing Dashboard
+# Production Verification Script for CapLiquify Manufacturing Platform
 # This script verifies that production deployment is working correctly
 # Usage: ./scripts/verify-production.sh
 
@@ -24,7 +24,7 @@ PASSED_TESTS=0
 FAILED_TESTS=0
 
 echo -e "${BLUE}========================================${NC}"
-echo -e "${BLUE} Sentia Manufacturing Dashboard${NC}"
+echo -e "${BLUE} CapLiquify Manufacturing Platform${NC}"
 echo -e "${BLUE} Production Verification Script${NC}"
 echo -e "${BLUE}========================================${NC}\n"
 

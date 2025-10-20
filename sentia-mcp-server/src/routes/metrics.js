@@ -2,7 +2,7 @@
  * Enhanced Metrics API Endpoints
  * 
  * Comprehensive REST API for metrics collection, querying, and real-time streaming
- * for the Sentia Manufacturing MCP Server monitoring system.
+ * for the CapLiquify MCP Server monitoring system.
  * 
  * Features:
  * - RESTful endpoints for all metric types

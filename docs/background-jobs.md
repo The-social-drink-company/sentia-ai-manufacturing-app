@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Sentia Manufacturing Dashboard uses BullMQ with Redis for processing background jobs asynchronously. This system handles compute-intensive operations like AI forecasting, inventory optimization, data imports/exports, and API syncing.
+The CapLiquify Manufacturing Platform uses BullMQ with Redis for processing background jobs asynchronously. This system handles compute-intensive operations like AI forecasting, inventory optimization, data imports/exports, and API syncing.
 
 ## Architecture
 

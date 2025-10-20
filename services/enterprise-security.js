@@ -220,7 +220,7 @@ class EnterpriseSecurityService {
     const qrCodeData = {
       secret,
       userId,
-      issuer: 'Sentia Manufacturing',
+      issuer: 'CapLiquify Platform',
       algorithm: 'SHA1',
       digits: 6,
       period: 30

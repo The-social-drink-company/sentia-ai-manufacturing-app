@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Sentia Manufacturing Dashboard supports global operations across multiple markets with region-specific compliance, currencies, tax calculations, and business rules. This guide covers setup, configuration, and management of multi-market operations.
+The CapLiquify Manufacturing Platform supports global operations across multiple markets with region-specific compliance, currencies, tax calculations, and business rules. This guide covers setup, configuration, and management of multi-market operations.
 
 ## Supported Markets
 

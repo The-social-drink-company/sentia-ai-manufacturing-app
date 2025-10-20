@@ -5,7 +5,7 @@
  * Provides business intelligence capabilities for manufacturing operations.
  * 
  * @version 1.0.0
- * @author Sentia Manufacturing Team
+ * @author CapLiquify Platform Team
  */
 
 // Authentication and client
@@ -78,7 +78,7 @@ export const INTEGRATION_INFO = {
   name: 'Anthropic Claude AI',
   version: '1.0.0',
   description: 'Advanced business intelligence and analysis capabilities using Claude AI',
-  author: 'Sentia Manufacturing Team',
+  author: 'CapLiquify Platform Team',
   toolCount: ANTHROPIC_TOOLS.length,
   categories: ['financial', 'sales', 'reporting', 'operations', 'strategy'],
   requiredConfig: ['apiKey', 'model'],

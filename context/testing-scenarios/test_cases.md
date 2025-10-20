@@ -1,4 +1,4 @@
-# Test Cases for Sentia Manufacturing Dashboard
+# Test Cases for CapLiquify Manufacturing Platform
 
 ## Current Implementation Status
 - **Testing Framework**: Vitest (unit), Playwright (E2E), Supertest (API) ✅ IMPLEMENTED

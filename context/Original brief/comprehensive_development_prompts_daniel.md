@@ -1,8 +1,8 @@
 # Comprehensive Development Prompts for Daniel
-## Sentia Manufacturing Planning Dashboard - Sequential Build Guide
+## CapLiquify Platform Planning Dashboard - Sequential Build Guide
 
 ### Overview
-These prompts will guide you through building the complete Sentia Manufacturing Planning Dashboard using vibe coding methodology. Execute each prompt in sequence, maintaining strict context references to prevent AI drift.
+These prompts will guide you through building the complete CapLiquify Platform Planning Dashboard using vibe coding methodology. Execute each prompt in sequence, maintaining strict context references to prevent AI drift.
 
 ---
 
@@ -17,7 +17,7 @@ Set up the complete development environment and initialize the project structure
 
 ### Instructions for Claude:
 ```
-Using the technical specifications in /context/technical-specifications/tech_stack.md, help me set up the development environment for the Sentia Manufacturing Planning Dashboard.
+Using the technical specifications in /context/technical-specifications/tech_stack.md, help me set up the development environment for the CapLiquify Platform Planning Dashboard.
 
 I need you to:
 
@@ -91,7 +91,7 @@ Design and implement the database schema for the manufacturing planning system.
 
 ### Instructions for Claude:
 ```
-Using the business requirements in /context/business-requirements/sentia_business_model.md, help me design and implement the database schema for the Sentia Manufacturing Planning Dashboard.
+Using the business requirements in /context/business-requirements/sentia_business_model.md, help me design and implement the database schema for the CapLiquify Platform Planning Dashboard.
 
 I need you to:
 
@@ -154,7 +154,7 @@ Implement secure user authentication and role-based access control.
 
 ### Instructions for Claude:
 ```
-Using the user role requirements in /context/business-requirements/user_roles.md, help me implement a secure authentication system for the Sentia Manufacturing Planning Dashboard.
+Using the user role requirements in /context/business-requirements/user_roles.md, help me implement a secure authentication system for the CapLiquify Platform Planning Dashboard.
 
 I need you to:
 
@@ -774,7 +774,7 @@ Deploy the application to Railway with proper production configuration.
 
 ### Instructions for Claude:
 ```
-Using the deployment configuration in /context/deployment-configs/railway_configuration.md, help me deploy the Sentia Manufacturing Planning Dashboard to Railway.
+Using the deployment configuration in /context/deployment-configs/railway_configuration.md, help me deploy the CapLiquify Platform Planning Dashboard to Railway.
 
 I need you to:
 

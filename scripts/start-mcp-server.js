@@ -3,7 +3,7 @@
 /**
  * MCP Server Startup Script
  * 
- * Production-ready startup script for the Sentia Manufacturing MCP Server
+ * Production-ready startup script for the CapLiquify MCP Server
  * with comprehensive initialization, health checks, and monitoring.
  */
 
@@ -114,7 +114,7 @@ function displayStartupBanner() {
   const banner = `
 ╔════════════════════════════════════════════════════════════════╗
 ║                                                                ║
-║    🏭 Sentia Manufacturing MCP Server v${CONFIG.server.version.padEnd(8)}           ║
+║    🏭 CapLiquify MCP Server v${CONFIG.server.version.padEnd(8)}           ║
 ║                                                                ║
 ║    Environment: ${CONFIG.server.environment.padEnd(12)} Transport: ${(CONFIG.transport.type || 'dual').padEnd(8)}    ║
 ║    Port: ${CONFIG.server.port.toString().padEnd(8)} Host: ${CONFIG.server.host.padEnd(15)}           ║

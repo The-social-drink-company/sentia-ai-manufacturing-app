@@ -8,7 +8,7 @@ import { getApiBaseUrl } from '../api/baseApi.js'
 class AIInferenceService {
   constructor() {
     this.mcpServerUrl =
-      import.meta.env.VITE_MCP_SERVER_URL || 'https://sentia-mcp-production.onrender.com'
+      import.meta.env.VITE_MCP_SERVER_URL || 'https://mcp.capliquify.com'
     this.apiBaseUrl = getApiBaseUrl()
   }
 

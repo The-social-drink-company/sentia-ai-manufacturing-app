@@ -1,10 +1,10 @@
 /**
  * Seed script for Sentia Spirits tenant
  *
- * This creates a demo tenant within the Capliquify multi-tenant SaaS platform.
- * Sentia Spirits represents a customer/client using the Capliquify Manufacturing Dashboard.
+ * This creates a demo tenant within the CapLiquify multi-tenant SaaS platform.
+ * Sentia Spirits represents a customer/client using the CapLiquify Manufacturing Dashboard.
  *
- * Platform: Capliquify (SaaS)
+ * Platform: CapLiquify (SaaS)
  * Tenant: Sentia Spirits (Customer)
  *
  * Run with: npx prisma db seed --script seed-tenant-sentia-spirits.js
@@ -16,7 +16,7 @@ const prisma = new PrismaClient();
 
 async function main() {
   console.log('🚀 Starting Sentia Spirits tenant seed...');
-  console.log('Platform: Capliquify Multi-Tenant SaaS');
+  console.log('Platform: CapLiquify Multi-Tenant SaaS');
   console.log('Creating tenant: Sentia Spirits');
 
   try {
@@ -100,7 +100,7 @@ async function main() {
           salesChannels: ['Amazon UK', 'Amazon USA', 'Shopify UK', 'Shopify EU', 'Shopify USA'],
           erpSystem: 'Unleashed',
           accountingSystem: 'Xero',
-          notes: 'Demo tenant showcasing full Capliquify platform capabilities for functional beverage manufacturing',
+          notes: 'Demo tenant showcasing full CapLiquify platform capabilities for functional beverage manufacturing',
         },
 
         // Timestamps
@@ -206,7 +206,7 @@ async function main() {
     console.log('   3. Review data in dashboard to ensure proper tenant isolation');
     console.log('');
     console.log('🎉 Sentia Spirits tenant setup complete!');
-    console.log('   Platform: Capliquify (SaaS)');
+    console.log('   Platform: CapLiquify (SaaS)');
     console.log('   Tenant: Sentia Spirits (Customer)');
     console.log('   Access: https://app.capliquify.com/sentia-spirits');
 

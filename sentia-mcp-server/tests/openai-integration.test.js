@@ -5,7 +5,7 @@
  * Tests authentication, tools, utilities, and overall integration.
  * 
  * @version 1.0.0
- * @author Sentia Manufacturing Team
+ * @author CapLiquify Platform Team
  */
 
 import { strict as assert } from 'assert';

@@ -10,7 +10,7 @@
  * - Business intelligence insights
  * 
  * @version 1.0.0
- * @author Sentia Manufacturing Team
+ * @author CapLiquify Platform Team
  */
 
 import { createLogger } from '../../../utils/logger.js';

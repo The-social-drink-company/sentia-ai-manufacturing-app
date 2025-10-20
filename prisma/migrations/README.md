@@ -1,6 +1,6 @@
 # Database Migrations
 
-The Prisma migrations in this directory manage the Sentia Manufacturing Dashboard data model. The current baseline is the enterprise schema delivered in October 2025 and captured in `20251017171256_init/migration.sql`.
+The Prisma migrations in this directory manage the CapLiquify Manufacturing Platform data model. The current baseline is the enterprise schema delivered in October 2025 and captured in `20251017171256_init/migration.sql`.
 
 ## Prerequisites
 

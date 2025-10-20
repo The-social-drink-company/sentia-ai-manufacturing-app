@@ -1,5 +1,5 @@
 # Landing Page Implementation Guide
-## Sentia Manufacturing Dashboard - Professional Landing Page
+## CapLiquify Manufacturing Platform - Professional Landing Page
 
 **Created**: 2025-10-19
 **Status**: ✅ COMPLETE & PRODUCTION-READY
@@ -10,7 +10,7 @@
 
 ## Executive Summary
 
-The Sentia Manufacturing Dashboard features a **professional, conversion-optimized landing page** that serves as the public entry point before authentication. The implementation includes:
+The CapLiquify Manufacturing Platform features a **professional, conversion-optimized landing page** that serves as the public entry point before authentication. The implementation includes:
 
 - ✅ **Stunning Hero Section** with gradient background and dual CTAs
 - ✅ **6 Feature Cards** showcasing key capabilities
@@ -85,7 +85,7 @@ LandingPage (parent component)
 
 **Content**:
 - **Logo**: White rounded square with blue "S"
-- **Headline**: "Sentia Manufacturing" + "Enterprise Dashboard"
+- **Headline**: "CapLiquify Platform" + "Enterprise Dashboard"
 - **Subheadline**: Value proposition (real-time intelligence)
 - **Primary CTA**: "Sign In" button (white bg, blue text, shadow-xl)
 - **Secondary CTA**: "Learn More" button (transparent, white border)
@@ -386,7 +386,7 @@ const handleLearnMore = () => {
 
 **Primary Meta Tags**:
 ```html
-<title>Sentia Manufacturing - Enterprise Dashboard | AI-Driven Manufacturing Intelligence</title>
+<title>CapLiquify Platform - Enterprise Dashboard | AI-Driven Manufacturing Intelligence</title>
 <meta name="description" content="Real-time manufacturing intelligence with AI-driven forecasting and working capital optimization. Trusted by leading manufacturers to drive efficiency and profitability." />
 <meta name="keywords" content="manufacturing dashboard, AI forecasting, working capital optimization, inventory management, manufacturing intelligence, demand forecasting, enterprise manufacturing" />
 ```
@@ -394,7 +394,7 @@ const handleLearnMore = () => {
 **Open Graph (Facebook)**:
 ```html
 <meta property="og:type" content="website" />
-<meta property="og:title" content="Sentia Manufacturing - Enterprise Dashboard" />
+<meta property="og:title" content="CapLiquify Platform - Enterprise Dashboard" />
 <meta property="og:description" content="Real-time manufacturing intelligence with AI-driven forecasting and working capital optimization. Achieve >85% forecast accuracy and <55 day cash conversion cycles." />
 <meta property="og:image" content="https://sentia-manufacturing-dashboard-621h.onrender.com/og-image.png" />
 <meta property="og:image:width" content="1200" />
@@ -404,7 +404,7 @@ const handleLearnMore = () => {
 **Twitter Card**:
 ```html
 <meta property="twitter:card" content="summary_large_image" />
-<meta property="twitter:title" content="Sentia Manufacturing - Enterprise Dashboard" />
+<meta property="twitter:title" content="CapLiquify Platform - Enterprise Dashboard" />
 <meta property="twitter:description" content="Real-time manufacturing intelligence with AI-driven forecasting and working capital optimization." />
 <meta property="twitter:image" content="https://sentia-manufacturing-dashboard-621h.onrender.com/twitter-image.png" />
 ```
@@ -493,7 +493,7 @@ const handleLearnMore = () => {
 ```jsx
 // Line 55
 <Motion.h1>
-  Sentia Manufacturing
+  CapLiquify Platform
   <span className="block text-blue-200">Enterprise Dashboard</span>
 </Motion.h1>
 ```

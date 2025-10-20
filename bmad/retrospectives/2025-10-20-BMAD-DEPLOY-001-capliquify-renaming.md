@@ -134,7 +134,7 @@ envVars:
 // Before
 {
   "name": "sentia-manufacturing-dashboard",
-  "description": "Sentia Manufacturing Dashboard - Enterprise AI-powered manufacturing intelligence"
+  "description": "CapLiquify Manufacturing Platform - Enterprise AI-powered manufacturing intelligence"
 }
 
 // After

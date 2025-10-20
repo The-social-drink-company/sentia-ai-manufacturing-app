@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Sentia Manufacturing Dashboard - Production Deployment Script
+# CapLiquify Manufacturing Platform - Production Deployment Script
 # Enterprise-grade deployment with comprehensive validation and rollback capabilities
 
 set -euo pipefail
@@ -374,7 +374,7 @@ send_notification() {
 
 # Main deployment function
 main() {
-    log "🚀 Starting Sentia Manufacturing Dashboard production deployment..."
+    log "🚀 Starting CapLiquify Manufacturing Platform production deployment..."
     log "📅 Deployment started at: $(date)"
     log "🏷️  Environment: $ENVIRONMENT"
     log "📋 Project ID: $RAILWAY_PROJECT_ID"

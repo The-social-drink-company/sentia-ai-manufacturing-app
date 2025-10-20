@@ -1,9 +1,9 @@
 # Disaster Recovery Plan
 
-## Sentia Manufacturing Dashboard - Enterprise DR Procedures
+## CapLiquify Manufacturing Platform - Enterprise DR Procedures
 
 ### Executive Summary
-This document outlines the disaster recovery procedures for the Sentia Manufacturing Dashboard, ensuring business continuity and minimal downtime in case of system failures or disasters.
+This document outlines the disaster recovery procedures for the CapLiquify Manufacturing Platform, ensuring business continuity and minimal downtime in case of system failures or disasters.
 
 ---
 

@@ -2,7 +2,7 @@
  * API Key Management Utilities
  * 
  * Comprehensive API key management system with development bypass
- * for the Sentia Manufacturing MCP Server.
+ * for the CapLiquify MCP Server.
  * 
  * CRITICAL: Development environment uses mock API keys for easier testing
  * while maintaining full key management in production.

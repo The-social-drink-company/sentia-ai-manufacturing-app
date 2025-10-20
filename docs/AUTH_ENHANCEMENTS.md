@@ -1,6 +1,6 @@
 # Authentication & Authorization Enhancements
 
-This document describes the comprehensive authentication and authorization enhancements implemented for the Sentia Manufacturing Dashboard.
+This document describes the comprehensive authentication and authorization enhancements implemented for the CapLiquify Manufacturing Platform.
 
 ## Overview
 

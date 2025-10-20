@@ -1,4 +1,4 @@
-# Sentia Manufacturing Dashboard API Endpoints
+# CapLiquify Manufacturing Platform API Endpoints
 
 **CRITICAL: NO MOCK DATA POLICY**
 This API **NEVER** generates mock or fake data. All endpoints either:

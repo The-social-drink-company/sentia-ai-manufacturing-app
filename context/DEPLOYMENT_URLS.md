@@ -1,4 +1,4 @@
-# Sentia Manufacturing Dashboard - Deployment URLs & Health Endpoints
+# CapLiquify Manufacturing Platform - Deployment URLs & Health Endpoints
 
 ## Production Environment
 - **Main URL:** https://sentiaprod.financeflo.ai

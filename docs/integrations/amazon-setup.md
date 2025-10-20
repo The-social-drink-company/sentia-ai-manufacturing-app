@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Sentia Manufacturing Dashboard integrates with Amazon Selling Partner API (SP-API) to provide real-time FBA (Fulfillment by Amazon) data including:
+The CapLiquify Manufacturing Platform integrates with Amazon Selling Partner API (SP-API) to provide real-time FBA (Fulfillment by Amazon) data including:
 - FBA inventory levels and stock status
 - Order metrics (total orders, revenue, average order value)
 - Unshipped orders and fulfillment tracking
@@ -44,7 +44,7 @@ This guide will walk you through setting up the Amazon SP-API integration using 
 3. Click **"Add new app client"**
 
 4. Fill in the application details:
-   - **App Name**: `Sentia Manufacturing Dashboard` (or your preferred name)
+   - **App Name**: `CapLiquify Manufacturing Platform` (or your preferred name)
    - **OAuth Redirect URI**: `https://your-dashboard-url.com/api/auth/amazon/callback`
      - For Render: `https://capliquify-frontend-prod.onrender.com/api/auth/amazon/callback`
      - For local dev: `http://localhost:5000/api/auth/amazon/callback`

@@ -1,7 +1,7 @@
 # Development Setup Guide
 
 ## Overview
-Complete guide for setting up the Sentia Manufacturing Dashboard development environment.
+Complete guide for setting up the CapLiquify Manufacturing Platform development environment.
 
 ## Table of Contents
 - [Prerequisites](#prerequisites)
@@ -264,7 +264,7 @@ Create environment files for different stages:
 ```bash
 # Application Settings
 NODE_ENV=development
-APP_NAME="Sentia Manufacturing Dashboard (Dev)"
+APP_NAME="CapLiquify Manufacturing Platform (Dev)"
 APP_VERSION=1.0.0-dev
 APP_URL=http://localhost:3000
 API_URL=http://localhost:5000
@@ -724,4 +724,4 @@ This should output:
 🎉 Development environment ready!
 ```
 
-You're now ready to start developing on the Sentia Manufacturing Dashboard!
+You're now ready to start developing on the CapLiquify Manufacturing Platform!

@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
 /**
- * Sentia Manufacturing Dashboard - Deployment Verification Script
+ * CapLiquify Manufacturing Platform - Deployment Verification Script
  * 
- * This script verifies that all components of the Sentia Manufacturing Dashboard
+ * This script verifies that all components of the CapLiquify Manufacturing Platform
  * are properly deployed and functioning correctly.
  */
 
@@ -345,7 +345,7 @@ class DeploymentVerifier {
   }
 
   async runAllTests() {
-    this.log(`${COLORS.bright}${COLORS.magenta}Starting Sentia Manufacturing Dashboard Deployment Verification...${COLORS.reset}`);
+    this.log(`${COLORS.bright}${COLORS.magenta}Starting CapLiquify Manufacturing Platform Deployment Verification...${COLORS.reset}`);
     this.log(`Main App: ${this.config.mainApp}`);
     this.log(`MCP Server: ${this.config.mcpServer}`);
     

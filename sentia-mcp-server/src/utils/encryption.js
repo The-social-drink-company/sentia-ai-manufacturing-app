@@ -2,7 +2,7 @@
  * Data Encryption Utilities
  * 
  * Environment-aware encryption utilities with development bypass
- * for the Sentia Manufacturing MCP Server.
+ * for the CapLiquify MCP Server.
  * 
  * CRITICAL: Development environment can bypass encryption for faster debugging
  * while maintaining full encryption in production.

@@ -11,7 +11,7 @@ const prisma = new PrismaClient();
 async function listDatabaseUsers() {
   try {
     console.log('=================================');
-    console.log('Sentia Manufacturing Dashboard');
+    console.log('CapLiquify Manufacturing Platform');
     console.log('Database User List (Prisma)');
     console.log('=================================\n');
 

@@ -13,7 +13,7 @@ class FinancialAlgorithms {
       shopifyUK: import.meta.env.VITE_SHOPIFY_UK_API_URL || '/api/shopify-uk',
       shopifyUSA: import.meta.env.VITE_SHOPIFY_USA_API_URL || '/api/shopify-usa',
       unleashed: import.meta.env.VITE_UNLEASHED_API_URL || '/api/unleashed',
-      mcp: import.meta.env.VITE_MCP_SERVER_URL || 'https://sentia-mcp-production.onrender.com',
+      mcp: import.meta.env.VITE_MCP_SERVER_URL || 'https://mcp.capliquify.com',
       api: normalizedApiBase,
     }
 

@@ -131,7 +131,7 @@ router.post('/mfa/setup', authMiddleware, async (req, res) => {
 
     // Generate secret
     const secret = speakeasy.default.generateSecret({
-      name: `Sentia Manufacturing (${req.user.email})`,
+      name: `CapLiquify Platform (${req.user.email})`,
       length: 32,
     })
 

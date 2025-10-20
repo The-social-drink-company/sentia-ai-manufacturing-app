@@ -1,8 +1,8 @@
-# Deployment Lessons Learned - Sentia Manufacturing Dashboard
+# Deployment Lessons Learned - CapLiquify Manufacturing Platform
 
 ## 🎯 **Executive Summary**
 
-This document captures critical lessons learned during the deployment of the Sentia Manufacturing Dashboard, specifically addressing React 18 + Clerk authentication compatibility issues and the solution of migrating from Render to Vercel.
+This document captures critical lessons learned during the deployment of the CapLiquify Manufacturing Platform, specifically addressing React 18 + Clerk authentication compatibility issues and the solution of migrating from Render to Vercel.
 
 ## 🔍 **Root Cause Analysis**
 

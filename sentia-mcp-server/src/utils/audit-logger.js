@@ -2,7 +2,7 @@
  * Security Audit Logger
  * 
  * Comprehensive security audit logging system with development-aware behavior
- * for the Sentia Manufacturing MCP Server.
+ * for the CapLiquify MCP Server.
  * 
  * CRITICAL: Development environment uses console logging for easier debugging
  * while maintaining structured audit logs in production.

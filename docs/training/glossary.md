@@ -12,7 +12,7 @@ import { Note, Tip, ComplianceBadge } from '../src/components/MDXComponents';
 # Glossary of Terms
 
 <Note>
-  This glossary covers financial, manufacturing, and technical terms used throughout the Sentia Manufacturing Dashboard. Terms are organized alphabetically with UK/US variations noted where applicable.
+  This glossary covers financial, manufacturing, and technical terms used throughout the CapLiquify Manufacturing Platform. Terms are organized alphabetically with UK/US variations noted where applicable.
 </Note>
 
 ## A

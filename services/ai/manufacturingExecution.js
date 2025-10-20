@@ -7,7 +7,7 @@ import SentiaSupplyChainIntelligence from './supplyChainIntelligence.js';
 import SentiaComputerVisionQuality from './computerVisionQuality.js';
 
 /**
- * Sentia Manufacturing Execution Intelligence
+ * CapLiquify Platform Execution Intelligence
  * AI-powered orchestration of multi-facility production with Unleashed BOM integration
  * Optimizes botanical beverage production across outsourced facilities
  */
@@ -67,7 +67,7 @@ class SentiaManufacturingExecution extends EventEmitter {
     };
 
     this.initializeSystem();
-    logInfo('Sentia Manufacturing Execution Intelligence initialized');
+    logInfo('CapLiquify Platform Execution Intelligence initialized');
   }
 
   /**

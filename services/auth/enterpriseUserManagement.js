@@ -28,7 +28,7 @@ export class EnterpriseUserManagement extends EventEmitter {
       },
       mfa: {
         enabled: config.mfa?.enabled || true,
-        issuer: config.mfa?.issuer || 'Sentia Manufacturing',
+        issuer: config.mfa?.issuer || 'CapLiquify Platform',
         window: config.mfa?.window || 2,
         required: config.mfa?.required || ['admin', 'manager']
       },

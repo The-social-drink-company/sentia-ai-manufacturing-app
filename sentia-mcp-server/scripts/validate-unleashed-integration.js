@@ -7,7 +7,7 @@
  * and all tools are registered and functional in the MCP server.
  * 
  * @version 1.0.0
- * @author Sentia Manufacturing Team
+ * @author CapLiquify Platform Team
  */
 
 import { fileURLToPath } from 'url';

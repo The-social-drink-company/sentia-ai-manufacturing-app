@@ -759,7 +759,7 @@ describe('Xero Performance', () => {
 2. Click "My Apps" → "New App"
 3. Select "Custom Connection"
 4. Fill in:
-   - App Name: "Sentia Manufacturing Dashboard"
+   - App Name: "CapLiquify Manufacturing Platform"
    - Purpose: "Financial data integration for manufacturing intelligence"
 5. Click "Create App"
 

@@ -116,7 +116,7 @@ class EnvironmentSynchronizer {
       VITE_ENVIRONMENT: envName,
       
       // Application configuration
-      VITE_APP_TITLE: 'Sentia Manufacturing Dashboard',
+      VITE_APP_TITLE: 'CapLiquify Manufacturing Platform',
       VITE_APP_VERSION: '2.0.0',
       VITE_API_BASE_URL: `${baseUrl}/api`,
       
@@ -160,7 +160,7 @@ class EnvironmentSynchronizer {
     
     const configFile = path.join(configDir, `${envName}.env`);
     
-    let envContent = `# Sentia Manufacturing Dashboard - ${envName.toUpperCase()} Environment\n`;
+    let envContent = `# CapLiquify Manufacturing Platform - ${envName.toUpperCase()} Environment\n`;
     envContent += `# Generated: ${new Date().toISOString()}\n`;
     envContent += `# Auto-synchronized configuration\n\n`;
     

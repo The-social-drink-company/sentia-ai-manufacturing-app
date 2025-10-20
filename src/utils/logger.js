@@ -32,12 +32,12 @@ export const mcpLogger = winston.createLogger({
         level,
         message,
         correlationId,
-        service: service || 'sentia-mcp',
+        service: service || 'capliquify-mcp',
         ...meta,
       })
     })
   ),
-  defaultMeta: { service: 'sentia-mcp-server' },
+  defaultMeta: { service: 'capliquify-mcp-server' },
   transports: [
     new winston.transports.Console({
       format: winston.format.combine(winston.format.colorize(), winston.format.simple()),

@@ -2,7 +2,7 @@
 
 ## Overview
 
-Clerk provides complete user management and authentication for the Sentia Manufacturing Dashboard. This guide covers production deployment, environment configuration, and best practices.
+Clerk provides complete user management and authentication for the CapLiquify Manufacturing Platform. This guide covers production deployment, environment configuration, and best practices.
 
 ## Production Instance Configuration
 

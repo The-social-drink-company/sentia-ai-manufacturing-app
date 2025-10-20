@@ -2,7 +2,7 @@
 
 ## 📋 **Overview**
 
-The Sentia Manufacturing MCP Server features an enterprise-grade caching and performance optimization system designed to provide exceptional performance, scalability, and reliability for manufacturing intelligence operations.
+The CapLiquify MCP Server features an enterprise-grade caching and performance optimization system designed to provide exceptional performance, scalability, and reliability for manufacturing intelligence operations.
 
 **Version**: 5.0.0 - Phase 5 Implementation  
 **Last Updated**: October 2025  
@@ -405,4 +405,4 @@ const stats = performanceOptimizer.getStats();
 
 ---
 
-*The Advanced Caching & Performance Optimization system provides enterprise-grade performance improvements with 50-80% response time reduction, 90%+ cache hit rates, and comprehensive real-time analytics for the Sentia Manufacturing MCP Server.*
+*The Advanced Caching & Performance Optimization system provides enterprise-grade performance improvements with 50-80% response time reduction, 90%+ cache hit rates, and comprehensive real-time analytics for the CapLiquify MCP Server.*

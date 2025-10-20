@@ -2,7 +2,7 @@ Technical Specifications
 1. Introduction
 1.1 Executive Summary
 1.1.1 Project Overview
-The Sentia Manufacturing Dashboard represents a comprehensive manufacturing intelligence platform designed to address the complex operational challenges faced by Sentia Spirits across their multi-regional, multi-channel business operations. This full-stack solution combines AI-driven forecasting, working capital optimization, production scheduling, and real-time health monitoring through a role-aware React dashboard backed by an Express/Prisma API architecture.
+The CapLiquify Manufacturing Platform represents a comprehensive manufacturing intelligence platform designed to address the complex operational challenges faced by Sentia Spirits across their multi-regional, multi-channel business operations. This full-stack solution combines AI-driven forecasting, working capital optimization, production scheduling, and real-time health monitoring through a role-aware React dashboard backed by an Express/Prisma API architecture.
 
 1.1.2 Core Business Problem
 Sentia Spirits struggles to orchestrate production, inventory, cash flow, and sales across nine SKUs, three regions (UK, EU, US), and five sales channels (Amazon FBA + Shopify DTC). The manufacturing industry represents more than 10% of the US economy, and the only way to stay ahead in this fiercely competitive industry is through the implementation of manufacturing KPIs and metrics. The organization faces critical data fragmentation, latency issues, and decision-making gaps that impact operational efficiency and financial performance.
@@ -28,7 +28,7 @@ Cash Conversion Cycle	<55 days	Accelerated cash flow, reduced financing costs
 1.2 System Overview
 1.2.1 Project Context
 Business Context And Market Positioning
-The manufacturing industry represents more than 10% of the US economy, and more than 15% of the global GDP. In the dynamic world of lean manufacturing, where 88% of people are unfamiliar with lean principles, success hinges on the ability to make informed, data-driven decisions using a well-designed dashboard. The Sentia Manufacturing Dashboard positions the organization to compete effectively in this data-driven manufacturing landscape.
+The manufacturing industry represents more than 10% of the US economy, and more than 15% of the global GDP. In the dynamic world of lean manufacturing, where 88% of people are unfamiliar with lean principles, success hinges on the ability to make informed, data-driven decisions using a well-designed dashboard. The CapLiquify Manufacturing Platform positions the organization to compete effectively in this data-driven manufacturing landscape.
 
 Current System Limitations
 The existing operational framework suffers from:
@@ -663,7 +663,7 @@ Immutable audit log storage with cryptographic integrity
 Structured logging with searchable metadata
 Automated compliance reporting generation
 Long-term data retention and archival policies
-This comprehensive product requirements specification provides the foundation for developing the Sentia Manufacturing Dashboard with clear, testable features that align with the business objectives and technical architecture outlined in the project requirements.
+This comprehensive product requirements specification provides the foundation for developing the CapLiquify Manufacturing Platform with clear, testable features that align with the business objectives and technical architecture outlined in the project requirements.
 
 3. Technology Stack
 3.1 Programming Languages
@@ -869,7 +869,7 @@ Auto-scaling Render deployment
 Neon PostgreSQL with read replicas
 Redis clustering for high availability
 Comprehensive monitoring and alerting
-This technology stack provides a robust, scalable foundation for the Sentia Manufacturing Dashboard, leveraging modern tools and frameworks while maintaining compatibility with existing infrastructure requirements. The selection prioritizes type safety, performance, and reliability essential for manufacturing operations.
+This technology stack provides a robust, scalable foundation for the CapLiquify Manufacturing Platform, leveraging modern tools and frameworks while maintaining compatibility with existing infrastructure requirements. The selection prioritizes type safety, performance, and reliability essential for manufacturing operations.
 
 4. Process Flowchart
 4.1 System Workflows
@@ -1895,7 +1895,7 @@ This comprehensive process flowchart section provides detailed workflows for all
 5. System Architecture
 5.1 High-level Architecture
 5.1.1 System Overview
-The Sentia Manufacturing Dashboard employs a modern cloud-native microservices architecture designed specifically for manufacturing intelligence and real-time operational decision-making. This architecture includes how components are designed, how data flows between react components, and how they manage things like user interactions and changes in the application state. The system follows a layered service-oriented architecture with clear separation of concerns between presentation, business logic, data access, and integration layers.
+The CapLiquify Manufacturing Platform employs a modern cloud-native microservices architecture designed specifically for manufacturing intelligence and real-time operational decision-making. This architecture includes how components are designed, how data flows between react components, and how they manage things like user interactions and changes in the application state. The system follows a layered service-oriented architecture with clear separation of concerns between presentation, business logic, data access, and integration layers.
 
 Architectural Style and Rationale:
 The architecture adopts a hybrid microservices pattern optimized for manufacturing data processing, combining the benefits of microservices scalability with the performance requirements of real-time manufacturing operations. Many of the features in React 18 are built on top of our new concurrent renderer, a behind-the-scenes change that unlocks powerful new capabilities. It's a new behind-the-scenes mechanism that enables React to prepare multiple versions of your UI at the same time. This enables the system to handle concurrent manufacturing processes while maintaining data consistency across multiple production facilities and sales channels.
@@ -2402,12 +2402,12 @@ Cross-Region Replication: Automated replication for business continuity
 Failover Procedures:
 The system supports automated failover for critical manufacturing operations with health check monitoring and automatic traffic routing. Manual failover procedures are documented for complex scenarios requiring operational intervention.
 
-This comprehensive system architecture provides a robust foundation for the Sentia Manufacturing Dashboard, ensuring scalability, reliability, and performance while meeting the specific requirements of modern manufacturing intelligence operations. The architecture balances technical excellence with practical manufacturing needs, enabling real-time decision-making and operational efficiency across global manufacturing operations.
+This comprehensive system architecture provides a robust foundation for the CapLiquify Manufacturing Platform, ensuring scalability, reliability, and performance while meeting the specific requirements of modern manufacturing intelligence operations. The architecture balances technical excellence with practical manufacturing needs, enabling real-time decision-making and operational efficiency across global manufacturing operations.
 
 6. System Components Design
 6.1 Component Architecture Overview
 6.1.1 Manufacturing Dashboard Component Hierarchy
-The Sentia Manufacturing Dashboard employs a component-based architecture where data flows between react components, and how they manage things like user interactions and changes in the application state. Function components have become the de facto standard for React development, replacing class components for practically all use cases. This shift reflects React's move toward a more functional programming paradigm, emphasizing simplicity and composability.
+The CapLiquify Manufacturing Platform employs a component-based architecture where data flows between react components, and how they manage things like user interactions and changes in the application state. Function components have become the de facto standard for React development, replacing class components for practically all use cases. This shift reflects React's move toward a more functional programming paradigm, emphasizing simplicity and composability.
 
 Component Classification Strategy:
 
@@ -2957,12 +2957,12 @@ const usePerformanceMonitoring = (componentName: string) => {
     };
   }, [componentName]);
 };
-This comprehensive system components design provides a robust foundation for the Sentia Manufacturing Dashboard, ensuring scalability, maintainability, and optimal user experience across all manufacturing operations. The component architecture balances technical excellence with practical manufacturing requirements, enabling real-time decision-making and operational efficiency.
+This comprehensive system components design provides a robust foundation for the CapLiquify Manufacturing Platform, ensuring scalability, maintainability, and optimal user experience across all manufacturing operations. The component architecture balances technical excellence with practical manufacturing requirements, enabling real-time decision-making and operational efficiency.
 
 6.1 Core Services Architecture
 6.1.1 Service Components
 Service Boundaries And Responsibilities
-The Sentia Manufacturing Dashboard implements a hybrid microservices architecture optimized for manufacturing intelligence operations. BullMQ is a Node.js library that implements a fast and robust queue system built on top of Redis that helps in resolving many modern age micro-services architectures. BullMQ is a powerful message queue library that allows for job processing, communication between microservices, and task scheduling.
+The CapLiquify Manufacturing Platform implements a hybrid microservices architecture optimized for manufacturing intelligence operations. BullMQ is a Node.js library that implements a fast and robust queue system built on top of Redis that helps in resolving many modern age micro-services architectures. BullMQ is a powerful message queue library that allows for job processing, communication between microservices, and task scheduling.
 
 Service Component	Primary Responsibilities	Business Domain	Scaling Requirements
 API Gateway Service	Request routing, authentication, rate limiting, SSE endpoints	Cross-cutting concerns	High availability, 1000+ concurrent users
@@ -3449,12 +3449,12 @@ Production KPI Tracking	Data age >5 minutes	Display cached values with timestamp
 Working Capital Analysis	Calculation service down	Use last computed values	High
 Forecasting Models	AI service unavailable	Simple moving averages	Medium
 Real-time Alerts	SSE connection failure	Email/SMS notifications	Critical
-This comprehensive core services architecture provides a robust foundation for the Sentia Manufacturing Dashboard, ensuring scalability, reliability, and resilience while meeting the specific requirements of manufacturing operations. The architecture balances technical excellence with practical operational needs, enabling real-time decision-making and maintaining business continuity across global manufacturing facilities.
+This comprehensive core services architecture provides a robust foundation for the CapLiquify Manufacturing Platform, ensuring scalability, reliability, and resilience while meeting the specific requirements of manufacturing operations. The architecture balances technical excellence with practical operational needs, enabling real-time decision-making and maintaining business continuity across global manufacturing facilities.
 
 6.2 Database Design
 6.2.1 Schema Design
 6.2.1.1 Entity Relationships
-The Sentia Manufacturing Dashboard database schema is designed around manufacturing intelligence operations, supporting multi-regional, multi-channel business operations across nine SKUs, three regions (UK, EU, US), and five sales channels. The Prisma schema is the main method of configuration when using Prisma. It is typically called schema.prisma and contains your database connection and data model. It consists of the following parts: Data sources, Generators, and Data model definition that specifies your application models and their relations.
+The CapLiquify Manufacturing Platform database schema is designed around manufacturing intelligence operations, supporting multi-regional, multi-channel business operations across nine SKUs, three regions (UK, EU, US), and five sales channels. The Prisma schema is the main method of configuration when using Prisma. It is typically called schema.prisma and contains your database connection and data model. It consists of the following parts: Data sources, Generators, and Data model definition that specifies your application models and their relations.
 
 Core Entity Categories:
 
@@ -4313,12 +4313,12 @@ Inventory Sync	1000 records	5 workers	Off-peak hours	5% failure rate
 KPI Calculations	500 records	3 workers	Every 15 minutes	1% failure rate
 Report Generation	100 reports	2 workers	Scheduled	0% failure rate
 Data Archival	10000 records	1 worker	Weekly maintenance	0.1% failure rate
-This comprehensive database design provides a robust foundation for the Sentia Manufacturing Dashboard, ensuring scalability, performance, and compliance while meeting the specific requirements of modern manufacturing intelligence operations. The design balances technical excellence with practical manufacturing needs, enabling real-time decision-making and operational efficiency across global manufacturing facilities.
+This comprehensive database design provides a robust foundation for the CapLiquify Manufacturing Platform, ensuring scalability, performance, and compliance while meeting the specific requirements of modern manufacturing intelligence operations. The design balances technical excellence with practical manufacturing needs, enabling real-time decision-making and operational efficiency across global manufacturing facilities.
 
 6.3 Integration Architecture
 6.3.1 Api Design
 6.3.1.1 Protocol Specifications
-The Sentia Manufacturing Dashboard implements a comprehensive API architecture designed for manufacturing intelligence operations with multi-channel integration capabilities. The system employs modern REST and GraphQL protocols optimized for real-time manufacturing data processing and external system integration.
+The CapLiquify Manufacturing Platform implements a comprehensive API architecture designed for manufacturing intelligence operations with multi-channel integration capabilities. The system employs modern REST and GraphQL protocols optimized for real-time manufacturing data processing and external system integration.
 
 Core Protocol Stack:
 
@@ -4752,7 +4752,7 @@ The external systems integration implements robust connectivity patterns for man
 
 Integration Architecture Overview:
 
-Sentia Manufacturing Dashboard
+CapLiquify Manufacturing Platform
 
 Integration Gateway
 
@@ -5145,12 +5145,12 @@ API Gateway	Auto-scaling instances	>80% CPU utilization	10 instances
 BullMQ Workers	Dynamic worker pools	Queue depth >100 jobs	20 workers
 External API Connectors	Connection pooling	>1000 concurrent requests	50 connections
 Cache Layer	Redis clustering	>85% memory utilization	5 nodes
-This comprehensive integration architecture provides a robust foundation for the Sentia Manufacturing Dashboard, ensuring reliable, scalable, and secure connectivity with all external systems while maintaining the performance requirements critical for manufacturing operations. The architecture balances technical excellence with practical manufacturing needs, enabling real-time decision-making and operational efficiency across global manufacturing facilities.
+This comprehensive integration architecture provides a robust foundation for the CapLiquify Manufacturing Platform, ensuring reliable, scalable, and secure connectivity with all external systems while maintaining the performance requirements critical for manufacturing operations. The architecture balances technical excellence with practical manufacturing needs, enabling real-time decision-making and operational efficiency across global manufacturing facilities.
 
 6.4 Security Architecture
 6.4.1 Authentication Framework
 6.4.1.1 Identity Management
-The Sentia Manufacturing Dashboard implements a comprehensive identity management framework built on Clerk's enterprise-grade authentication platform. Clerk is SOC 2 type 2 compliant and CCPA compliant. We conduct regular third-party audits and penetration tests. This foundation provides manufacturing operations with the security controls necessary for protecting sensitive production data and financial information.
+The CapLiquify Manufacturing Platform implements a comprehensive identity management framework built on Clerk's enterprise-grade authentication platform. Clerk is SOC 2 type 2 compliant and CCPA compliant. We conduct regular third-party audits and penetration tests. This foundation provides manufacturing operations with the security controls necessary for protecting sensitive production data and financial information.
 
 Identity Provider Architecture:
 
@@ -5882,5 +5882,5 @@ Security Improvements
 
 Preventive Measures
 
-This comprehensive security architecture provides robust protection for the Sentia Manufacturing Dashboard, ensuring that sensitive production data, financial information, and system operations are protected through multiple layers of security controls. The architecture balances security requirements with operational efficiency, enabling secure manufacturing operations while maintaining compliance with GDPR, SOC 2, and industry-specific regulations.
+This comprehensive security architecture provides robust protection for the CapLiquify Manufacturing Platform, ensuring that sensitive production data, financial information, and system operations are protected through multiple layers of security controls. The architecture balances security requirements with operational efficiency, enabling secure manufacturing operations while maintaining compliance with GDPR, SOC 2, and industry-specific regulations.
 

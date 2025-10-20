@@ -60,7 +60,7 @@ As a new user visiting the dashboard, I need professionally branded sign-in and 
 **Sentia Branding**:
 - **Background**: `bg-gradient-to-br from-blue-600 via-purple-600 to-purple-700`
 - **Logo**: White rounded square (`bg-white rounded-xl shadow-lg`) with blue "S" (`text-blue-600`)
-- **Title**: `Sentia Manufacturing` (white, bold, 3xl)
+- **Title**: `CapLiquify Platform` (white, bold, 3xl)
 - **Subtitle**: `Enterprise Dashboard` (purple-100)
 - **Card**: White background with 2xl border radius and shadow
 

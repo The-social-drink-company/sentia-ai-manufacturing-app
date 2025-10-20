@@ -767,7 +767,7 @@ src/
 **Created**: 2025-10-18
 **Last Updated**: 2025-10-18 16:45 BST
 **Framework**: BMAD-METHOD v6a
-**Project**: Sentia Manufacturing AI Dashboard
+**Project**: CapLiquify Platform AI Dashboard
 **Phase**: Phase 2 Complete → Deployment BLOCKED
 
 ### ✅ Session 2 Updates (2025-10-18 PM)

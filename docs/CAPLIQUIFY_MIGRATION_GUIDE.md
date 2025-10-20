@@ -23,7 +23,7 @@
 
 ### What is CapLiquify?
 
-CapLiquify is the multi-tenant SaaS transformation of Sentia Manufacturing Dashboard. The migration transforms a single-tenant application into a scalable multi-tenant platform with:
+CapLiquify is the multi-tenant SaaS transformation of CapLiquify Manufacturing Platform. The migration transforms a single-tenant application into a scalable multi-tenant platform with:
 
 - **Schema-per-tenant isolation**: Each customer gets their own PostgreSQL schema
 - **Subscription billing**: Stripe integration with 3 tiers (Starter, Professional, Enterprise)

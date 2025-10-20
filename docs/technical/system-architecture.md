@@ -1,7 +1,7 @@
-# Sentia Manufacturing Dashboard – System Architecture
+# CapLiquify Manufacturing Platform – System Architecture
 
 ## Document Purpose
-This document captures the authoritative architecture blueprint for the Sentia Manufacturing Dashboard. It reflects the 2025 production target state that engineering, data, and operations teams are building toward, and supersedes all legacy Flask/Railway references. The system is centred on a React + Node.js platform, orchestrating real-time manufacturing, financial, and AI-driven insights across Sentia's enterprise footprint.
+This document captures the authoritative architecture blueprint for the CapLiquify Manufacturing Platform. It reflects the 2025 production target state that engineering, data, and operations teams are building toward, and supersedes all legacy Flask/Railway references. The system is centred on a React + Node.js platform, orchestrating real-time manufacturing, financial, and AI-driven insights across Sentia's enterprise footprint.
 
 ## Architecture Summary
 - **Experience layer**: React SPA (Vite) served via CDN, consuming an HTTPS API gateway and subscribing to Server-Sent Events (SSE) for live updates.
@@ -17,12 +17,12 @@ This document captures the authoritative architecture blueprint for the Sentia M
 ### Level 1 – Context
 ```mermaid
 C4Context
-title Sentia Manufacturing Dashboard - Context Diagram
+title CapLiquify Manufacturing Platform - Context Diagram
 Person(operator, "Shop Floor Operator", "Monitors real-time production KPIs and alerts")
 Person(manager, "Operations Manager", "Optimises inventory, cash, and supply chain performance")
 Person(executive, "Executive", "Reviews financial health and AI forecasts for strategic planning")
 Person(admin, "System Admin", "Configures integrations, security, and deployments")
-System_Boundary(sentia, "Sentia Manufacturing Dashboard") {
+System_Boundary(sentia, "CapLiquify Manufacturing Platform") {
   System(frontend, "Sentia React SPA", "Interactive dashboards and workflows")
   System(api, "API Gateway", "GraphQL/REST endpoints, WebSockets, SSE")
   System(worker, "Worker & AI Services", "Background processing, ML inference, forecasting")
@@ -50,7 +50,7 @@ Rel(worker, mcp, "AI prompts & vector search", "MCP / HTTPS")
 ### Level 2 – Container
 ```mermaid
 C4Container
-title Sentia Manufacturing Dashboard - Container Diagram
+title CapLiquify Manufacturing Platform - Container Diagram
 Person(user, "Users", "Operators, Managers, Executives, Admins")
 Container(web, "React SPA", "React 19, Vite, SWR/React Query", "Dashboards, workflow UI, SSE client")
 Container(api, "API Gateway", "Node.js 20, Express", "Auth, orchestration, domain routing, SSE")
@@ -291,4 +291,4 @@ Rel(workerPool, observability, "OTel exporters")
 - **Phase 3 (8 weeks)**: Production hardening (model serving, expanded tests, audit logging), DR rehearsals.
 - **Phase 4 (8 weeks)**: Advanced analytics (Prophet ensembles, feature store), enterprise E2E test coverage reaching 80%+.
 
-This document now represents the single source of truth for engineering, product, and operations teams when designing, building, and validating the Sentia Manufacturing Dashboard platform.
+This document now represents the single source of truth for engineering, product, and operations teams when designing, building, and validating the CapLiquify Manufacturing Platform platform.

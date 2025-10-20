@@ -1,4 +1,4 @@
-# New Product Prompt - Sentia Manufacturing Dashboard
+# New Product Prompt - CapLiquify Manufacturing Platform
 
 ## WHY - Vision & Purpose
 

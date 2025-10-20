@@ -99,9 +99,9 @@ function generateOpenAPISpec(endpoints) {
   const spec = {
     openapi: '3.0.0',
     info: {
-      title: 'Sentia Manufacturing Dashboard API',
+      title: 'CapLiquify Manufacturing Platform API',
       version: '1.0.0',
-      description: 'Complete API reference for the Sentia Manufacturing Dashboard',
+      description: 'Complete API reference for the CapLiquify Manufacturing Platform',
       contact: {
         name: 'API Support',
         email: 'api@sentia.com'
@@ -240,7 +240,7 @@ function generateMarkdown(endpoints) {
   
   let markdown = `---
 title: API Reference
-description: Complete API documentation for Sentia Manufacturing Dashboard
+description: Complete API documentation for CapLiquify Manufacturing Platform
 owner: engineering
 lastReviewed: ${new Date().toISOString().split('T')[0]}
 role: Developer

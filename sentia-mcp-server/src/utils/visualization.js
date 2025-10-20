@@ -2,7 +2,7 @@
  * Advanced Visualization Engine
  * 
  * Comprehensive visualization system providing chart generation, interactive
- * features, and data visualization capabilities for the Sentia Manufacturing
+ * features, and data visualization capabilities for the CapLiquify Platform
  * MCP Server analytics and reporting platform.
  * 
  * Features:

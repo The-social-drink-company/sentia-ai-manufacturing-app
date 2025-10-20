@@ -1,7 +1,7 @@
 # Admin Portal Business Requirements
 
 ## Overview
-The Admin Portal provides secure system administration, monitoring, and maintenance capabilities for the Sentia Manufacturing Dashboard. It enforces strict RBAC controls and maintains comprehensive audit trails for all administrative actions.
+The Admin Portal provides secure system administration, monitoring, and maintenance capabilities for the CapLiquify Manufacturing Platform. It enforces strict RBAC controls and maintains comprehensive audit trails for all administrative actions.
 
 ## Information Architecture
 

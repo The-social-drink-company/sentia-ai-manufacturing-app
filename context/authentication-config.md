@@ -1,6 +1,6 @@
 # Authentication System Configuration
 
-This document provides comprehensive authentication configuration for the Sentia Manufacturing Dashboard.
+This document provides comprehensive authentication configuration for the CapLiquify Manufacturing Platform.
 
 ## AUTHENTICATION SYSTEM (BRANCH-SPECIFIC)
 

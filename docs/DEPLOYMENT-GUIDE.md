@@ -1,7 +1,7 @@
-# Sentia Manufacturing Dashboard - Railway Deployment Guide
+# CapLiquify Manufacturing Platform - Railway Deployment Guide
 
 ## Overview
-This guide covers the complete deployment process for the Sentia Manufacturing Dashboard on Railway using Nixpacks. The application is a full-stack React + Node.js system with enterprise-grade security and monitoring.
+This guide covers the complete deployment process for the CapLiquify Manufacturing Platform on Railway using Nixpacks. The application is a full-stack React + Node.js system with enterprise-grade security and monitoring.
 
 ## Prerequisites
 - Railway account with CLI installed

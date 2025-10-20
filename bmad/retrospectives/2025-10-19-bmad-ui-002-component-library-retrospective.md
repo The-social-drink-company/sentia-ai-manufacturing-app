@@ -233,7 +233,7 @@ export { default as WidgetContainer } from './WidgetContainer';
 ```javascript
 /**
  * UI Component Library
- * Enterprise-grade reusable components for Sentia Manufacturing Dashboard
+ * Enterprise-grade reusable components for CapLiquify Manufacturing Platform
  *
  * BMAD-UI-002: Component Library Structure
  */

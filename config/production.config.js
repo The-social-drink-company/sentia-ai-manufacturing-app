@@ -4,7 +4,7 @@ import path from 'path';
 export default {
   // Application Settings
   app: {
-    name: process.env.APP_NAME || 'Sentia Manufacturing Dashboard',
+    name: process.env.APP_NAME || 'CapLiquify Manufacturing Platform',
     version: process.env.APP_VERSION || '1.0.0',
     environment: process.env.NODE_ENV || 'production',
     url: process.env.APP_URL || 'https://sentia-manufacturing.com',

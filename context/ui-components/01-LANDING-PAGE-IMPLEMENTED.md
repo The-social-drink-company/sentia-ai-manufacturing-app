@@ -59,7 +59,7 @@ The landing page has been successfully implemented with enterprise-grade feature
 #### Visual Elements
 - **Color Scheme**: Professional gradients (gray-900, blue, purple accents)
 - **Typography**: Professional sans-serif fonts matching Sentia branding
-- **Logo Integration**: Factory icon with "Sentia Manufacturing" branding
+- **Logo Integration**: Factory icon with "CapLiquify Platform" branding
 - **Glass Morphism**: Backdrop blur effects on navigation and cards
 - **Animations**: Floating elements, gradient shifts, smooth transitions
 

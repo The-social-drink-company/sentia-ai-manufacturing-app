@@ -5,7 +5,7 @@
  * throttling, queue management, and adaptive rate adjustment.
  * 
  * @version 1.0.0
- * @author Sentia Manufacturing Team
+ * @author CapLiquify Platform Team
  */
 
 import { createLogger } from '../../../utils/logger.js';

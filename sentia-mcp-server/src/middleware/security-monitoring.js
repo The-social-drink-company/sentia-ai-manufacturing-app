@@ -2,7 +2,7 @@
  * Security Monitoring Middleware
  * 
  * Real-time security monitoring and threat detection with development bypass
- * for the Sentia Manufacturing MCP Server.
+ * for the CapLiquify MCP Server.
  * 
  * CRITICAL: Development environment disables security monitoring for faster debugging
  * while maintaining comprehensive monitoring in production.

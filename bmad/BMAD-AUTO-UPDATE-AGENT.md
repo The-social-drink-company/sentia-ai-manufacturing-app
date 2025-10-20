@@ -1,6 +1,6 @@
 # BMAD Auto-Update Agent - Workflow Integration
 
-**Project**: Sentia Manufacturing AI Dashboard
+**Project**: CapLiquify Platform AI Dashboard
 **BMAD Version**: 6.0.0-alpha.0
 **Agent Version**: 1.0.0
 **Created**: 2025-10-21
@@ -171,7 +171,7 @@ The agent respects BMAD-METHOD workflow:
 From `scripts/bmad-update-config.json`:
 
 ```yaml
-Project: Sentia Manufacturing AI Dashboard
+Project: CapLiquify Platform AI Dashboard
 BMAD Version: 6.0.0-alpha.0
 Modules: Core + BMM
 IDE: claude-code

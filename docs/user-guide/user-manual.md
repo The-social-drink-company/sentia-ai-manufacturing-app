@@ -1,4 +1,4 @@
-# Sentia Manufacturing Dashboard - User Manual
+# CapLiquify Manufacturing Platform - User Manual
 
 ## Table of Contents
 1. [Dashboard Overview](#dashboard-overview)
@@ -767,4 +767,4 @@ Operating Parameters:
 - Administrator certification
 - Regular webinars
 
-This completes the comprehensive user manual for the Sentia Manufacturing Dashboard. Each section provides detailed instructions for effectively using all system features.
+This completes the comprehensive user manual for the CapLiquify Manufacturing Platform. Each section provides detailed instructions for effectively using all system features.

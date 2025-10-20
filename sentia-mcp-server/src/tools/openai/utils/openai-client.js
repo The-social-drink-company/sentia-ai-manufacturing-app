@@ -5,7 +5,7 @@
  * rate limiting, retry logic, streaming support, and cost optimization.
  * 
  * @version 1.0.0
- * @author Sentia Manufacturing Team
+ * @author CapLiquify Platform Team
  */
 
 import OpenAI from 'openai';

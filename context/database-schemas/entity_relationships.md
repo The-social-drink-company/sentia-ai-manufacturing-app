@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Sentia Manufacturing Dashboard database implements a comprehensive relational schema supporting manufacturing planning, e-commerce integration, financial management, and analytics with **full global readiness** for multi-entity, multi-currency operations. The enhanced schema uses PostgreSQL with UUID primary keys for scalability and distributed system compatibility.
+The CapLiquify Manufacturing Platform database implements a comprehensive relational schema supporting manufacturing planning, e-commerce integration, financial management, and analytics with **full global readiness** for multi-entity, multi-currency operations. The enhanced schema uses PostgreSQL with UUID primary keys for scalability and distributed system compatibility.
 
 ### Current Implementation Status
 - **Database**: Neon PostgreSQL with Prisma ORM ✅ IMPLEMENTED

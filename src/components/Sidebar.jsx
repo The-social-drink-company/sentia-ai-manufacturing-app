@@ -53,7 +53,7 @@ const Sidebar = ({ activeSection, setActiveSection }) => {
             <span className="text-sm font-bold text-white">S</span>
           </div>
           <div>
-            <p className="text-lg font-semibold">Sentia</p>
+            <p className="text-lg font-semibold">CapLiquify</p>
             <p className="text-sm font-semibold">Manufacturing</p>
             <p className="text-xs text-slate-400">Enterprise Dashboard</p>
           </div>

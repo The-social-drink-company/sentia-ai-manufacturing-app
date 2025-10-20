@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
 
 const SystemConfig = () => {
   const [config, setConfig] = useState({
-    mcpServer: 'https://sentia-mcp-production.onrender.com',
+    mcpServer: 'https://mcp.capliquify.com',
     apiTimeout: 30000,
     refreshInterval: 60000,
     enableAI: true,

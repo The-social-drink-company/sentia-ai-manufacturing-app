@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document outlines the comprehensive secrets management strategy for the Sentia Manufacturing MCP Server, ensuring secure storage, rotation, and access control for all sensitive credentials and configuration data.
+This document outlines the comprehensive secrets management strategy for the CapLiquify MCP Server, ensuring secure storage, rotation, and access control for all sensitive credentials and configuration data.
 
 ## Security Principles
 

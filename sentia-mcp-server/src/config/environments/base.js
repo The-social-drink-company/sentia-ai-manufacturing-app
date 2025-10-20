@@ -10,8 +10,8 @@ export default {
   server: {
     name: 'sentia-manufacturing-mcp',
     version: '3.0.0',
-    description: 'Sentia Manufacturing MCP Server - Enterprise Business Intelligence Platform',
-    maintainer: 'Sentia Manufacturing Team',
+    description: 'CapLiquify MCP Server - Enterprise Business Intelligence Platform',
+    maintainer: 'CapLiquify Platform Team',
     documentation: 'https://docs.sentia.com/mcp-server'
   },
 

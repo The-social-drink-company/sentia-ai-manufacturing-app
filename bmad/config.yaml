@@ -1,7 +1,7 @@
 # BMAD Installation Configuration
 # Version: 6.0.0-alpha.0
 # Date: 2025-10-20
-# Project: Sentia Manufacturing AI Dashboard
+# Project: CapLiquify Platform AI Dashboard
 
 # Installation metadata
 installation:
@@ -25,7 +25,7 @@ ides:
 
 # Project settings (inherited by modules)
 project:
-  name: "Sentia Manufacturing AI Dashboard"
+  name: "CapLiquify Platform AI Dashboard"
   type: "brownfield-fullstack"
   scale: "level-4"
   domain: "manufacturing-intelligence"

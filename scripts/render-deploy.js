@@ -2,7 +2,7 @@
 
 /**
  * Render Deployment Script
- * Deploys Sentia Manufacturing Dashboard to Render
+ * Deploys CapLiquify Manufacturing Platform to Render
  */
 
 // Node 18+ has global fetch

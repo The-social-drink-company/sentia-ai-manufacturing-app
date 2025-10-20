@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Sentia Manufacturing Dashboard provides a comprehensive RESTful API for managing manufacturing operations, financial data, AI analytics, and enterprise integrations. This documentation covers all endpoints, authentication, request/response formats, and integration examples.
+The CapLiquify Manufacturing Platform provides a comprehensive RESTful API for managing manufacturing operations, financial data, AI analytics, and enterprise integrations. This documentation covers all endpoints, authentication, request/response formats, and integration examples.
 
 **Base URL**: `https://web-production-1f10.up.railway.app/api`
 **API Version**: v1.0

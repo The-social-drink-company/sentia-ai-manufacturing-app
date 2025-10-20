@@ -81,7 +81,7 @@ const logger = winston.createLogger({
       })
     })
   ),
-  defaultMeta: { service: 'sentia-mcp-server' },
+  defaultMeta: { service: 'capliquify-mcp-server' },
   transports: [
     new winston.transports.Console({
       format: winston.format.combine(winston.format.colorize(), winston.format.simple()),
@@ -113,7 +113,7 @@ const dbPool = new Pool({
  * Main MCP Server Class
  * Handles tool registration, execution, and transport management
  */
-class SentiaMCPServer {
+class CapLiquifyMCPServer {
   constructor() {
     this.server = new Server(
       {
@@ -1131,11 +1131,11 @@ class SentiaMCPServer {
 }
 
 // Export the server class for testing and extension
-export { SentiaMCPServer }
+export { CapLiquifyMCPServer }
 
 // Start the server if this file is executed directly
 if (import.meta.url === `file://${process.argv[1]}`) {
-  const server = new SentiaMCPServer()
+  const server = new CapLiquifyMCPServer()
   server.start().catch(error => {
     logger.error('Server startup failed', { error: error.message })
     process.exit(1)

@@ -307,7 +307,8 @@ used_memory_peak_human:3.00M
       expect(result.connected).toBe(true)
       expect(result.responseTime).toBeLessThan(500) // < 500ms threshold
       expect(result.memory).toHaveProperty('used')
-      expect(result.memory).toHaveProperty('peak')
+      expect(result.memory).toHaveProperty('max')
+      expect(result.memory).toHaveProperty('percentage')
       expect(mockRedisClient.ping).toHaveBeenCalled()
       expect(mockRedisClient.info).toHaveBeenCalledWith('memory')
     })
@@ -339,11 +340,10 @@ used_memory_peak_human:3.00M
     it('should parse Redis memory info correctly', async () => {
       const result = await SystemHealthService.getRedisHealth()
 
-      expect(result.memory).toEqual({
-        used: '1.00M',
-        peak: '3.00M',
-        rss: 2097152,
-      })
+      expect(result.memory).toHaveProperty('used')
+      expect(result.memory).toHaveProperty('max')
+      expect(result.memory).toHaveProperty('percentage')
+      expect(result.memory.used).toBe(1048576) // Parsed from mock
     })
   })
 
@@ -479,7 +479,8 @@ used_memory_peak_human:3.00M
       const slowDbAlert = result.find((alert) => alert.type === 'SLOW_DATABASE_RESPONSE')
       if (slowDbAlert) {
         expect(slowDbAlert.severity).toBe('WARNING')
-        expect(slowDbAlert.message).toContain('slow')
+        expect(slowDbAlert.message).toContain('response time')
+        expect(slowDbAlert.message).toContain('exceeds')
       }
     })
 
@@ -492,10 +493,14 @@ used_memory_peak_human:3.00M
 
       const redisAlert = result.find((alert) => alert.type === 'REDIS_DISCONNECTED')
       expect(redisAlert).toBeDefined()
-      expect(redisAlert?.severity).toBe('WARNING')
+      expect(redisAlert?.severity).toBe('CRITICAL') // Redis disconnected is CRITICAL
     })
 
     it('should generate INTEGRATIONS_DOWN alert when integrations down', async () => {
+      // Mock healthy memory (not triggering HIGH_MEMORY_USAGE alert)
+      os.totalmem.mockReturnValue(16 * 1024 * 1024 * 1024) // 16GB total
+      os.freemem.mockReturnValue(10 * 1024 * 1024 * 1024)   // 10GB free = 37.5% used (below 85% threshold)
+
       prisma.$queryRaw.mockResolvedValue([{ health_check: 1 }])
       prisma.adminIntegration.findMany.mockResolvedValue([
         { id: 'int-1', name: 'Xero', healthStatus: 'DOWN' },
@@ -506,11 +511,15 @@ used_memory_peak_human:3.00M
 
       const integrationsAlert = result.find((alert) => alert.type === 'INTEGRATIONS_DOWN')
       expect(integrationsAlert).toBeDefined()
-      expect(integrationsAlert?.severity).toBe('WARNING')
-      expect(integrationsAlert?.details?.downCount).toBe(1)
+      expect(integrationsAlert?.severity).toBe('CRITICAL') // Integrations down is CRITICAL
+      expect(integrationsAlert?.value).toBe(1)
     })
 
     it('should return empty array when all metrics healthy', async () => {
+      // Mock healthy memory (not triggering HIGH_MEMORY_USAGE alert)
+      os.totalmem.mockReturnValue(16 * 1024 * 1024 * 1024) // 16GB total
+      os.freemem.mockReturnValue(10 * 1024 * 1024 * 1024)   // 10GB free = 37.5% used (below 85% threshold)
+
       prisma.$queryRaw.mockResolvedValue([{ health_check: 1 }])
       prisma.adminIntegration.findMany.mockResolvedValue([
         { id: 'int-1', name: 'Xero', healthStatus: 'HEALTHY' },

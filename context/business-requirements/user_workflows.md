@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document defines the key user workflows for the Sentia Manufacturing Dashboard, including role-based permissions, interaction patterns, and business process flows.
+This document defines the key user workflows for the CapLiquify Manufacturing Platform, including role-based permissions, interaction patterns, and business process flows.
 
 ## User Roles & Permissions
 

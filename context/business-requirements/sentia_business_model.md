@@ -1,8 +1,8 @@
-# Sentia Manufacturing Business Model
+# CapLiquify Platform Business Model
 
 ## Company Overview
 
-Sentia Manufacturing specializes in producing and distributing three core supplement products across multiple international markets. The company operates a manufacturing planning and logistics system that integrates with major e-commerce platforms to optimize production, inventory, and cash flow.
+CapLiquify Platform specializes in producing and distributing three core supplement products across multiple international markets. The company operates a manufacturing planning and logistics system that integrates with major e-commerce platforms to optimize production, inventory, and cash flow.
 
 ## Product Portfolio
 
@@ -170,4 +170,4 @@ This results in **9 unique SKUs** total (3 products × 3 regions).
 
 ---
 
-*This business model drives the requirements for the Sentia Manufacturing Planning Dashboard, which provides integrated visibility and control across all aspects of the business operations.*
+*This business model drives the requirements for the CapLiquify Platform Planning Dashboard, which provides integrated visibility and control across all aspects of the business operations.*

@@ -3,7 +3,7 @@
  * 
  * Comprehensive performance monitoring with response time analysis,
  * memory leak detection, GC monitoring, and performance benchmarking
- * for the Sentia Manufacturing MCP Server.
+ * for the CapLiquify MCP Server.
  * 
  * Features:
  * - Response time percentile analysis (P50, P95, P99)

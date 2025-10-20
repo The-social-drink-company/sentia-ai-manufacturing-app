@@ -5,7 +5,7 @@
  * Provides secure API access with proper request signing and validation.
  * 
  * @version 1.0.0
- * @author Sentia Manufacturing Team
+ * @author CapLiquify Platform Team
  */
 
 import crypto from 'crypto';

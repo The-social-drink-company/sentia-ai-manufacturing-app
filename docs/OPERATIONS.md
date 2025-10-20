@@ -1,7 +1,7 @@
 # Operations Guide
 
 ## Overview
-Comprehensive operational procedures and best practices for managing the Sentia Manufacturing Dashboard in production.
+Comprehensive operational procedures and best practices for managing the CapLiquify Manufacturing Platform in production.
 
 ## Table of Contents
 1. [System Architecture](#system-architecture)

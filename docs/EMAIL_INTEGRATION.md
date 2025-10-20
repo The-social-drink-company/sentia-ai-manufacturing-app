@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Sentia Manufacturing Dashboard now includes comprehensive email notification capabilities using Microsoft Graph API. This system supports both admin notifications and data upload notifications using the configured email addresses.
+The CapLiquify Manufacturing Platform now includes comprehensive email notification capabilities using Microsoft Graph API. This system supports both admin notifications and data upload notifications using the configured email addresses.
 
 ## Configuration
 

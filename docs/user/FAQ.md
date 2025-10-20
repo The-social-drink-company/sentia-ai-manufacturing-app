@@ -1,7 +1,7 @@
 # Frequently Asked Questions
 
 ## Overview
-Common questions and answers for Sentia Manufacturing Dashboard users, organized by category for quick reference.
+Common questions and answers for CapLiquify Manufacturing Platform users, organized by category for quick reference.
 
 ## Table of Contents
 - [General Questions](#general-questions)
@@ -19,10 +19,10 @@ Common questions and answers for Sentia Manufacturing Dashboard users, organized
 
 ## General Questions
 
-### What is Sentia Manufacturing Dashboard?
+### What is CapLiquify Manufacturing Platform?
 
-**Q: What does the Sentia Manufacturing Dashboard do?**
-A: Sentia Manufacturing Dashboard is a comprehensive business intelligence platform designed specifically for manufacturing companies. It provides:
+**Q: What does the CapLiquify Manufacturing Platform do?**
+A: CapLiquify Manufacturing Platform is a comprehensive business intelligence platform designed specifically for manufacturing companies. It provides:
 - Real-time business performance monitoring
 - Working capital and cash flow management
 - Inventory optimization tools

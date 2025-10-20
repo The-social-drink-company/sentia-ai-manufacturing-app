@@ -46,7 +46,7 @@ A comprehensive BMAD tree sweep has identified **7 components** that are still s
 
 ## User Story
 
-**As a** developer maintaining the Sentia Manufacturing AI Dashboard
+**As a** developer maintaining the CapLiquify Platform AI Dashboard
 **I want to** refactor stubbed and misaligned components
 **So that** the codebase is architecturally consistent and production-ready
 

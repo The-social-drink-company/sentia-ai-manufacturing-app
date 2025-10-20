@@ -1,6 +1,6 @@
 # Xero Accounting Integration
 
-This document describes the Xero accounting software integration for the Sentia Manufacturing Dashboard.
+This document describes the Xero accounting software integration for the CapLiquify Manufacturing Platform.
 
 ## Overview
 

@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document outlines comprehensive disaster recovery procedures for the Sentia Manufacturing Dashboard, covering database recovery, application restoration, data backup strategies, and business continuity plans across all deployment environments.
+This document outlines comprehensive disaster recovery procedures for the CapLiquify Manufacturing Platform, covering database recovery, application restoration, data backup strategies, and business continuity plans across all deployment environments.
 
 ## Risk Assessment Matrix
 

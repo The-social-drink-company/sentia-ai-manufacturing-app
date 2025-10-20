@@ -345,3 +345,4 @@
 - Integrate TrialCountdown into DashboardEnterprise.jsx when file is stable
 
 
+- Refreshed Clerk SignIn/SignUp branding for Sentia and reconfirmed Protected/Public route guards align with production setup.

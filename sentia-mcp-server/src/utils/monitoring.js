@@ -3,7 +3,7 @@
  * 
  * Comprehensive monitoring system providing application monitoring,
  * business metrics, system metrics, and real-time dashboards
- * for the Sentia Manufacturing MCP Server.
+ * for the CapLiquify MCP Server.
  * 
  * Features:
  * - Application health monitoring

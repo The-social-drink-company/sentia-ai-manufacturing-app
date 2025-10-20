@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Sentia Manufacturing Dashboard integrates with Unleashed Software ERP to provide real-time manufacturing intelligence including:
+The CapLiquify Manufacturing Platform integrates with Unleashed Software ERP to provide real-time manufacturing intelligence including:
 - Assembly job tracking (active batches, planned jobs, completed jobs)
 - Stock on hand inventory levels
 - Production schedule and capacity planning
@@ -31,7 +31,7 @@ This guide will walk you through setting up the Unleashed ERP integration using 
 3. Click **"Add API Key"**
 
 4. Configure API key:
-   - **Key Name**: `Sentia Manufacturing Dashboard`
+   - **Key Name**: `CapLiquify Manufacturing Platform`
    - **Key Description**: `Manufacturing intelligence platform integration`
 
 5. Select API permissions:

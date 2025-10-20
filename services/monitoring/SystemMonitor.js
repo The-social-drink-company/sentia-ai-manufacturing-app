@@ -1,7 +1,7 @@
 /**
  * System Monitoring Service
  * 
- * Comprehensive monitoring for the Sentia Manufacturing Dashboard system.
+ * Comprehensive monitoring for the CapLiquify Manufacturing Platform system.
  * Tracks performance metrics, health checks, error rates, and system resources.
  * 
  * Features:

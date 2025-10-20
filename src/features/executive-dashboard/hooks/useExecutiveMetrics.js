@@ -96,7 +96,7 @@ const mockExecutiveData = {
 const fetchExecutiveMetrics = async period => {
   // Simulate API call to MCP server
   const mcpUrl =
-    import.meta.env?.VITE_MCP_SERVER_URL || 'https://sentia-mcp-production.onrender.com'
+    import.meta.env?.VITE_MCP_SERVER_URL || 'https://mcp.capliquify.com'
 
   try {
     const response = await fetch(`${mcpUrl}/v1/executive/metrics?period=${period}`, {

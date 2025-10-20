@@ -217,7 +217,7 @@ app.get('*', (req, res) => {
       <!DOCTYPE html>
       <html>
       <head>
-        <title>Sentia Manufacturing Dashboard</title>
+        <title>CapLiquify Manufacturing Platform</title>
         <style>
           body {
             font-family: system-ui;
@@ -233,7 +233,7 @@ app.get('*', (req, res) => {
         </style>
       </head>
       <body>
-        <h1>ÃƒÂ°Ã…Â¸Ã…Â¡Ã¢â€šÂ¬ Sentia Manufacturing Dashboard</h1>
+        <h1>ÃƒÂ°Ã…Â¸Ã…Â¡Ã¢â€šÂ¬ CapLiquify Manufacturing Platform</h1>
         <p class="status">Server is running successfully</p>
         <p class="error">Frontend build not found - please run build process</p>
 

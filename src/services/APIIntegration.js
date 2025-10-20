@@ -6,7 +6,7 @@
 class APIIntegration {
   constructor() {
     this.baseURLs = {
-      mcp: import.meta.env.VITE_MCP_SERVER_URL || 'https://sentia-mcp-production.onrender.com',
+      mcp: import.meta.env.VITE_MCP_SERVER_URL || 'https://mcp.capliquify.com',
       shopifyUK: import.meta.env.VITE_SHOPIFY_UK_SHOP_URL || 'https://sentiaspirits.myshopify.com',
       shopifyUSA:
         import.meta.env.VITE_SHOPIFY_USA_SHOP_URL || 'https://ussentiaspirits.myshopify.com',

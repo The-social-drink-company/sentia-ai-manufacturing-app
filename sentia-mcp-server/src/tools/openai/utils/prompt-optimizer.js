@@ -5,7 +5,7 @@
  * Provides prompt templates, optimization strategies, and token management.
  * 
  * @version 1.0.0
- * @author Sentia Manufacturing Team
+ * @author CapLiquify Platform Team
  */
 
 import { createLogger } from '../../../utils/logger.js';

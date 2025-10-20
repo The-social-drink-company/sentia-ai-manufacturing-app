@@ -1,8 +1,8 @@
-# Sentia Manufacturing Dashboard - Complete UI Specification
+# CapLiquify Manufacturing Platform - Complete UI Specification
 
 ## 🎨 User Interface Overview
 
-The Sentia Manufacturing Dashboard is a world-class, enterprise-level manufacturing intelligence platform with comprehensive AI/ML capabilities and MCP (Model Context Protocol) integration. The interface features a modern, responsive design with dark/light theme support, real-time data updates, and intuitive navigation.
+The CapLiquify Manufacturing Platform is a world-class, enterprise-level manufacturing intelligence platform with comprehensive AI/ML capabilities and MCP (Model Context Protocol) integration. The interface features a modern, responsive design with dark/light theme support, real-time data updates, and intuitive navigation.
 
 ---
 
@@ -82,7 +82,7 @@ The Sentia Manufacturing Dashboard is a world-class, enterprise-level manufactur
 │  SENTIA                              🌙 □ ─ ✕   │
 ├─────────────────────────────────────────────────┤
 │                                                  │
-│     Welcome to Sentia Manufacturing             │
+│     Welcome to CapLiquify Platform             │
 │     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━             │
 │                                                  │
 │     🌿 Functional Botanical Beverages           │
@@ -684,4 +684,4 @@ const UIPermissions = {
 
 ---
 
-This comprehensive UI specification ensures your Sentia Manufacturing Dashboard delivers a world-class user experience with advanced AI/ML capabilities and seamless MCP integration.
+This comprehensive UI specification ensures your CapLiquify Manufacturing Platform delivers a world-class user experience with advanced AI/ML capabilities and seamless MCP integration.

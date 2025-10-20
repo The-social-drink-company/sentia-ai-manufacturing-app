@@ -5,7 +5,7 @@
  * cache invalidation, and performance optimization.
  * 
  * @version 1.0.0
- * @author Sentia Manufacturing Team
+ * @author CapLiquify Platform Team
  */
 
 import NodeCache from 'node-cache';

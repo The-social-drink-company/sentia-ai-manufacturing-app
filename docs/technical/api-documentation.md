@@ -1,8 +1,8 @@
-# Sentia Manufacturing Dashboard - API Documentation
+# CapLiquify Manufacturing Platform - API Documentation
 
 ## Overview
 
-The Sentia Manufacturing Dashboard provides a comprehensive RESTful API for managing manufacturing operations, demand forecasting, inventory optimization, and production scheduling. All API endpoints follow REST conventions and return JSON responses.
+The CapLiquify Manufacturing Platform provides a comprehensive RESTful API for managing manufacturing operations, demand forecasting, inventory optimization, and production scheduling. All API endpoints follow REST conventions and return JSON responses.
 
 ## Base URL
 
@@ -1142,4 +1142,4 @@ ws.send(JSON.stringify({
 }
 ```
 
-This comprehensive API documentation provides developers with all the information needed to integrate with the Sentia Manufacturing Dashboard system.
+This comprehensive API documentation provides developers with all the information needed to integrate with the CapLiquify Manufacturing Platform system.

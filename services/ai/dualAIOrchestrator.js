@@ -1,6 +1,6 @@
 /**
  * Dual AI Orchestrator
- * Sentia Manufacturing Dashboard - Enterprise Edition
+ * CapLiquify Manufacturing Platform - Enterprise Edition
  * 
  * Orchestrates dual AI models (OpenAI GPT-4 + Claude 3 Sonnet) for enhanced
  * forecasting accuracy and business intelligence capabilities.

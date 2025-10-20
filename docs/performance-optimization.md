@@ -1,7 +1,7 @@
 # Performance Optimization Guide
 
 ## Overview
-This document describes the performance optimization overlay implemented for the Sentia Manufacturing Dashboard to achieve the following targets:
+This document describes the performance optimization overlay implemented for the CapLiquify Manufacturing Platform to achieve the following targets:
 - API p95 < 500ms on core endpoints
 - Dashboard TTI < 2s baseline
 - Subsequent navigation < 500ms

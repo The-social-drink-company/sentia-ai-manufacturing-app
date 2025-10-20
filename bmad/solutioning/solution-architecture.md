@@ -1,5 +1,5 @@
 # Solution Architecture
-## Sentia Manufacturing AI Dashboard
+## CapLiquify Platform AI Dashboard
 
 **Date**: 2025-10-19
 **Version**: 1.0
@@ -654,7 +654,7 @@ CREATE INDEX idx_products_region ON products(region);
 
 ## Conclusion
 
-This solution architecture provides a robust foundation for the Sentia Manufacturing AI Dashboard transformation from prototype to production. The three-tier fallback strategy ensures data integrity, the service layer pattern enables clean external API integration, and the comprehensive testing strategy ensures production readiness.
+This solution architecture provides a robust foundation for the CapLiquify Platform AI Dashboard transformation from prototype to production. The three-tier fallback strategy ensures data integrity, the service layer pattern enables clean external API integration, and the comprehensive testing strategy ensures production readiness.
 
 **Key Architectural Principles**:
 1. **No Mock Data**: Real data or explicit error states, never fake data

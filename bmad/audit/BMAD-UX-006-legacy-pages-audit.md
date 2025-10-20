@@ -89,7 +89,7 @@ $ grep -r "from.*App-environment-aware" src --include="*.jsx" --include="*.js"
 const AppNoClerk = () => {
   return (
     <div>
-      <h1>Sentia Manufacturing Dashboard</h1>
+      <h1>CapLiquify Manufacturing Platform</h1>
       <p>Clerk authentication not configured. Running in development mode.</p>
     </div>
   )
@@ -386,7 +386,7 @@ $ grep -r "from.*AIChatbot-simple" src (0 results)
 
 **Overall Legacy Page Status: 100% CLEAN ✅**
 
-The Sentia Manufacturing Dashboard has a clean, well-structured routing architecture with:
+The CapLiquify Manufacturing Platform has a clean, well-structured routing architecture with:
 - ✅ Single production entry point (`App-simple-environment.jsx`)
 - ✅ No duplicate routes or conflicting pages
 - ✅ Clean separation of concerns (Landing vs Dashboard)

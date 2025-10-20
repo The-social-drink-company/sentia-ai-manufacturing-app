@@ -1,5 +1,5 @@
 # Epic Breakdown
-## Sentia Manufacturing AI Dashboard
+## CapLiquify Platform AI Dashboard
 
 **Date**: 2025-10-19
 **Version**: 1.0
@@ -10,7 +10,7 @@
 
 ## Epic Overview
 
-This document defines the 7 major epics required to transform the Sentia Manufacturing AI Dashboard from a high-fidelity prototype (75% functional) into a production-ready enterprise platform (100% complete).
+This document defines the 7 major epics required to transform the CapLiquify Platform AI Dashboard from a high-fidelity prototype (75% functional) into a production-ready enterprise platform (100% complete).
 
 **Total Stories**: 78 stories across 7 epics
 **Total Estimated Time**: 20-22 weeks
@@ -523,7 +523,7 @@ Mock data undermines user trust and prevents production deployment. Real data in
 
 ### Epic Goal
 
-Transform the Sentia Manufacturing Dashboard to match the professional mockup design at https://manufacture-ng7zmx.manus.space/, achieving ≥90% visual consistency with the target design while maintaining all current functionality and improving user experience.
+Transform the CapLiquify Manufacturing Platform to match the professional mockup design at https://manufacture-ng7zmx.manus.space/, achieving ≥90% visual consistency with the target design while maintaining all current functionality and improving user experience.
 
 ### Business Value
 

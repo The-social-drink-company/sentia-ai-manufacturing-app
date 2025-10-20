@@ -1,4 +1,4 @@
-# Acceptance Criteria for Sentia Manufacturing Dashboard
+# Acceptance Criteria for CapLiquify Manufacturing Platform
 
 ## Core System Requirements
 

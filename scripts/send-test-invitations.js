@@ -90,7 +90,7 @@ async function createDevelopmentWarningBanner() {
 
 async function main() {
   console.log('=================================');
-  console.log('Sentia Manufacturing Dashboard');
+  console.log('CapLiquify Manufacturing Platform');
   console.log('Test Access Invitation Script');
   console.log('=================================\n');
 

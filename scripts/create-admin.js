@@ -43,7 +43,7 @@ async function createAdminUser() {
         // Optional: Create organization and make user admin
         try {
             const org = await clerkClient.organizations.createOrganization({
-                name: 'Sentia Manufacturing',
+                name: 'CapLiquify Platform',
                 slug: 'sentia-manufacturing',
                 createdBy: user.id,
             });

@@ -1,5 +1,5 @@
 /**
- * Sentia Manufacturing MCP Server - Main Implementation
+ * CapLiquify MCP Server - Main Implementation
  * 
  * Enterprise-grade Model Context Protocol server with comprehensive
  * business intelligence capabilities for manufacturing operations.
@@ -12,7 +12,7 @@
  * - Production-ready error handling and logging
  * 
  * @version 3.0.0
- * @author Sentia Manufacturing Team
+ * @author CapLiquify Platform Team
  */
 
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';

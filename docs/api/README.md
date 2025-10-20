@@ -1,6 +1,6 @@
 # API Documentation
 
-## Sentia Manufacturing Dashboard API Reference
+## CapLiquify Manufacturing Platform API Reference
 
 ### Base URL
 - **Development**: `http://localhost:5000/api`

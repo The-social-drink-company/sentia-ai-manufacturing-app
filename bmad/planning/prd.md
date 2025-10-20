@@ -1,5 +1,5 @@
 # Product Requirements Document (PRD)
-## Sentia Manufacturing AI Dashboard
+## CapLiquify Platform AI Dashboard
 
 **Date**: 2025-10-19
 **Version**: 1.0
@@ -11,7 +11,7 @@
 
 ## Executive Summary
 
-The Sentia Manufacturing AI Dashboard is an enterprise-grade manufacturing intelligence platform that provides real-time visibility and control across all aspects of Sentia Manufacturing's operations. The platform integrates with external e-commerce platforms (Amazon, Shopify), financial systems (Xero), and ERP systems (Unleashed) to deliver data-driven insights for manufacturing planning, inventory optimization, financial management, and demand forecasting.
+The CapLiquify Platform AI Dashboard is an enterprise-grade manufacturing intelligence platform that provides real-time visibility and control across all aspects of CapLiquify Platform's operations. The platform integrates with external e-commerce platforms (Amazon, Shopify), financial systems (Xero), and ERP systems (Unleashed) to deliver data-driven insights for manufacturing planning, inventory optimization, financial management, and demand forecasting.
 
 **Current Status**: 75% functional implementation with sophisticated architecture but requiring elimination of mock data and completion of external API integrations.
 
@@ -21,7 +21,7 @@ The Sentia Manufacturing AI Dashboard is an enterprise-grade manufacturing intel
 
 ## Product Vision
 
-**Vision Statement**: Empower Sentia Manufacturing with AI-powered intelligence that eliminates guesswork from manufacturing planning, inventory management, and financial forecasting, enabling data-driven decisions that optimize cash flow, reduce waste, and maximize profitability.
+**Vision Statement**: Empower CapLiquify Platform with AI-powered intelligence that eliminates guesswork from manufacturing planning, inventory management, and financial forecasting, enabling data-driven decisions that optimize cash flow, reduce waste, and maximize profitability.
 
 **Strategic Goals**:
 1. **Eliminate Operational Blind Spots**: Provide real-time visibility into all critical business metrics

@@ -1,7 +1,7 @@
 # Observability Configuration
 
 ## Overview
-This document outlines the comprehensive observability strategy for the Sentia Manufacturing Dashboard, including logging, metrics, alerts, and dashboards.
+This document outlines the comprehensive observability strategy for the CapLiquify Manufacturing Platform, including logging, metrics, alerts, and dashboards.
 
 ## Logging Strategy
 
@@ -965,4 +965,4 @@ const slaTargets = {
 };
 ```
 
-This comprehensive observability configuration provides deep insights into system performance, user behavior, and business metrics while enabling proactive incident response and continuous improvement of the Sentia Manufacturing Dashboard.
+This comprehensive observability configuration provides deep insights into system performance, user behavior, and business metrics while enabling proactive incident response and continuous improvement of the CapLiquify Manufacturing Platform.

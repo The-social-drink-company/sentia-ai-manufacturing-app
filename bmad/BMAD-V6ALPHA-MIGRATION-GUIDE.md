@@ -1,6 +1,6 @@
 # BMAD v6-Alpha Migration Guide
 
-**Project**: Sentia Manufacturing AI Dashboard
+**Project**: CapLiquify Platform AI Dashboard
 **Date**: October 20, 2025
 **Migration**: Manual v6a → Official v6-alpha (6.0.0-alpha.0)
 **Status**: ✅ Complete

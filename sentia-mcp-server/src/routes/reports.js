@@ -2,7 +2,7 @@
  * Interactive Reporting System API
  * 
  * Comprehensive REST API for advanced reporting, custom dashboards, automated
- * report generation, and business intelligence for the Sentia Manufacturing
+ * report generation, and business intelligence for the CapLiquify Platform
  * MCP Server. Integrates with advanced analytics engine and visualization
  * components for complete reporting solution.
  * 

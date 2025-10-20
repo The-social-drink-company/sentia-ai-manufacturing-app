@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document defines the layout structures, widget configurations, and responsive design patterns for the Sentia Manufacturing Dashboard interface.
+This document defines the layout structures, widget configurations, and responsive design patterns for the CapLiquify Manufacturing Platform interface.
 
 ## Current Implementation Status
 - **React Grid Layout**: Drag-and-drop dashboard with responsive breakpoints ✅ IMPLEMENTED

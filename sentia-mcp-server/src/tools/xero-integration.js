@@ -2,7 +2,7 @@
  * Xero Integration MCP Tool
  * 
  * Main MCP tool that integrates the comprehensive Xero accounting system
- * with the Sentia Manufacturing MCP server.
+ * with the CapLiquify Platform MCP server.
  * 
  * @version 1.0.0
  */

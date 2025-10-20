@@ -5,7 +5,7 @@
  * Provides enterprise-grade tools for production, inventory, and supply chain management.
  * 
  * @version 1.0.0
- * @author Sentia Manufacturing Team
+ * @author CapLiquify Platform Team
  */
 
 import { createLogger } from '../utils/logger.js';

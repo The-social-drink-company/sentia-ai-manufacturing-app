@@ -28,7 +28,7 @@
 
 ## Epic Summary
 
-**Goal**: Replace all mock/synthetic data throughout the Sentia Manufacturing AI Dashboard with live data from external APIs (Xero, Shopify, Amazon SP-API, Unleashed ERP), implementing proper error handling and empty state UI patterns.
+**Goal**: Replace all mock/synthetic data throughout the CapLiquify Platform AI Dashboard with live data from external APIs (Xero, Shopify, Amazon SP-API, Unleashed ERP), implementing proper error handling and empty state UI patterns.
 
 **Business Value**: Transform application from sophisticated demo to genuinely functional manufacturing intelligence platform with real-time business data.
 
@@ -42,7 +42,7 @@
 
 ### Problem Statement
 
-The Sentia Manufacturing AI Dashboard currently displays mock/synthetic data in most features:
+The CapLiquify Platform AI Dashboard currently displays mock/synthetic data in most features:
 - Financial KPIs use hardcoded values
 - Demand forecasts use random number generation
 - Inventory levels are fabricated

@@ -74,7 +74,7 @@ class MfaService {
         // Generate new TOTP secret
         const secret = speakeasy.generateSecret({
           name: `Sentia Admin (${user.email})`,
-          issuer: 'Sentia Manufacturing',
+          issuer: 'CapLiquify Platform',
           length: 32,
         })
 

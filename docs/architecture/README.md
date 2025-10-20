@@ -1,5 +1,5 @@
 # 📐 Architecture Overview
-## Sentia Manufacturing Dashboard - Enterprise Architecture
+## CapLiquify Manufacturing Platform - Enterprise Architecture
 
 ### System Architecture
 

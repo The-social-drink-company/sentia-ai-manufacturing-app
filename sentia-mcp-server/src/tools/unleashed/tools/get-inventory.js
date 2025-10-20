@@ -5,7 +5,7 @@
  * lot/serial numbers, reserved quantities, and inventory valuation.
  * 
  * @version 1.0.0
- * @author Sentia Manufacturing Team
+ * @author CapLiquify Platform Team
  */
 
 import { createLogger } from '../../../utils/logger.js';

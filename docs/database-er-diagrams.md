@@ -1,4 +1,4 @@
-# Sentia Manufacturing Dashboard - Entity Relationship Diagrams
+# CapLiquify Manufacturing Platform - Entity Relationship Diagrams
 
 **Version**: 1.0
 **Date**: October 17, 2025

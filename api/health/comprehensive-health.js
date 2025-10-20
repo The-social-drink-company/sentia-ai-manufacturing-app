@@ -284,7 +284,7 @@ router.get('/live', (req, res) => {
 // System status dashboard endpoint
 router.get('/status', async (req, res) => {
   const status = {
-    service: 'Sentia Manufacturing Dashboard',
+    service: 'CapLiquify Manufacturing Platform',
     version: process.env.npm_package_version || null,
     environment: process.env.NODE_ENV || null,
     status: 'operational',

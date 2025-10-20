@@ -9,7 +9,7 @@
 
 ## Overview
 
-This guide covers the tooltip system implemented for the Sentia Manufacturing Dashboard. The system provides 5 specialized tooltip components for different use cases, all built on Radix UI primitives for accessibility.
+This guide covers the tooltip system implemented for the CapLiquify Manufacturing Platform. The system provides 5 specialized tooltip components for different use cases, all built on Radix UI primitives for accessibility.
 
 ---
 

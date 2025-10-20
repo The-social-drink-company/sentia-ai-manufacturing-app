@@ -115,7 +115,7 @@ const LandingPage = () => {
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center space-x-3">
               <Factory className="w-8 h-8 text-blue-500" />
-              <span className="text-2xl font-bold text-white">Sentia Manufacturing</span>
+              <span className="text-2xl font-bold text-white">CapLiquify Platform</span>
               {mcpStatus === 'connected' && (
                 <span className="px-2 py-1 bg-green-500/20 text-green-400 text-xs rounded-full">
                   MCP Connected
@@ -350,7 +350,7 @@ const LandingPage = () => {
             <iframe
               className="absolute inset-0 w-full h-full"
               src="https://www.youtube.com/embed/dQw4w9WgXcQ"
-              title="Sentia Manufacturing Demo"
+              title="CapLiquify Platform Demo"
               frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
@@ -448,7 +448,7 @@ const LandingPage = () => {
             </div>
           </div>
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-            <p>2024 Sentia Manufacturing. All rights reserved.</p>
+            <p>2024 CapLiquify Platform. All rights reserved.</p>
           </div>
         </div>
       </footer>

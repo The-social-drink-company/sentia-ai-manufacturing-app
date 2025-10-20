@@ -1,7 +1,7 @@
 # Component Library Documentation
 
 ## Overview
-Comprehensive documentation for the Sentia Manufacturing Dashboard component library, including design system, reusable components, and usage guidelines.
+Comprehensive documentation for the CapLiquify Manufacturing Platform component library, including design system, reusable components, and usage guidelines.
 
 ## Table of Contents
 - [Design System](#design-system)
@@ -1327,4 +1327,4 @@ function useAPI<T>(url: string, options?: RequestInit): APIState<T> & {
 }
 ```
 
-This component library documentation provides a comprehensive guide to all reusable components, design patterns, and utility functions used throughout the Sentia Manufacturing Dashboard application.
+This component library documentation provides a comprehensive guide to all reusable components, design patterns, and utility functions used throughout the CapLiquify Manufacturing Platform application.

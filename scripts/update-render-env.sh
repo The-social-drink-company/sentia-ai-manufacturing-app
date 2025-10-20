@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# Render Environment Variable Update Script for Sentia Manufacturing Dashboard
+# Render Environment Variable Update Script for CapLiquify Manufacturing Platform
 # This script helps you update Clerk authentication keys across all environments
 
-echo "🔐 Sentia Manufacturing Dashboard - Clerk Environment Setup"
+echo "🔐 CapLiquify Manufacturing Platform - Clerk Environment Setup"
 echo "=========================================================="
 
 # Colors for output

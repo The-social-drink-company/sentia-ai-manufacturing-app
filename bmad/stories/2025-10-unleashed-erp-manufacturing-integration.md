@@ -153,7 +153,7 @@ class UnleashedERPService {
    - Navigate to: https://go.unleashedsoftware.com/
    - Go to: **Integration** → **API Access**
    - Click **Add API Key**
-   - Key name: `Sentia Manufacturing Dashboard`
+   - Key name: `CapLiquify Manufacturing Platform`
    - Select permissions:
      - ✅ Assembly Jobs (Read)
      - ✅ Stock On Hand (Read)
@@ -1389,7 +1389,7 @@ describe('Unleashed Error Handling', () => {
 
 ## Overview
 
-Connect your Unleashed Software ERP system to the Sentia Manufacturing Dashboard for real-time production tracking, inventory management, and quality control.
+Connect your Unleashed Software ERP system to the CapLiquify Manufacturing Platform for real-time production tracking, inventory management, and quality control.
 
 ## Prerequisites
 
@@ -1404,7 +1404,7 @@ Connect your Unleashed Software ERP system to the Sentia Manufacturing Dashboard
 2. Navigate to: **Integration** → **API Access**
 3. Click **Add API Key**
 4. Configure key:
-   - Key name: `Sentia Manufacturing Dashboard`
+   - Key name: `CapLiquify Manufacturing Platform`
    - Permissions:
      - ✅ Assembly Jobs (Read)
      - ✅ Stock On Hand (Read)

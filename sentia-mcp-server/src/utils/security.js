@@ -2,7 +2,7 @@
  * Core Security Utilities
  * 
  * Comprehensive security utilities with environment-aware implementation
- * for the Sentia Manufacturing MCP Server.
+ * for the CapLiquify MCP Server.
  * 
  * CRITICAL: Development environment bypasses most security checks
  * for faster development workflow.

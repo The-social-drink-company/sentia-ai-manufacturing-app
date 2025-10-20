@@ -1,8 +1,8 @@
-# Original Intent - Sentia Manufacturing Dashboard
+# Original Intent - CapLiquify Manufacturing Platform
 
 ## Executive Summary
 
-The Sentia Manufacturing Dashboard was designed to solve the complex operational challenges of a **multi-market, multi-channel supplement manufacturing business**. The system integrates production planning, demand forecasting, inventory optimization, and financial management into a unified platform serving users across three continents (UK, EU, USA) and five sales channels (2x Amazon, 3x Shopify stores).
+The CapLiquify Manufacturing Platform was designed to solve the complex operational challenges of a **multi-market, multi-channel supplement manufacturing business**. The system integrates production planning, demand forecasting, inventory optimization, and financial management into a unified platform serving users across three continents (UK, EU, USA) and five sales channels (2x Amazon, 3x Shopify stores).
 
 **Core Business Problem**: Managing 9 unique SKUs (3 products × 3 regional variants) across 5 e-commerce channels while optimizing working capital, production schedules, and inventory levels in real-time.
 
@@ -14,7 +14,7 @@ The Sentia Manufacturing Dashboard was designed to solve the complex operational
 
 ### Company Overview
 
-**Sentia Manufacturing** specializes in producing and distributing three core GABA-based supplement products across multiple international markets. The company operates at the intersection of e-commerce, manufacturing, and regulatory compliance across three major jurisdictions.
+**CapLiquify Platform** specializes in producing and distributing three core GABA-based supplement products across multiple international markets. The company operates at the intersection of e-commerce, manufacturing, and regulatory compliance across three major jurisdictions.
 
 ### Product Portfolio
 
@@ -101,7 +101,7 @@ Each market has distinct regulatory requirements:
 
 ### Primary Objectives
 
-The Sentia Manufacturing Dashboard was designed to achieve these core business objectives:
+The CapLiquify Manufacturing Platform was designed to achieve these core business objectives:
 
 #### 1. Operational Excellence
 - **Demand Forecasting Accuracy**: Achieve >85% forecast accuracy for 30-day rolling forecasts
@@ -1134,7 +1134,7 @@ The system was designed for four distinct user roles, each with specific needs a
 
 ## 10. Conclusion
 
-The Sentia Manufacturing Dashboard was conceived as a **comprehensive enterprise solution** to the complex challenges of operating a multi-market, multi-channel supplement manufacturing business. The original intent was not merely to create reporting tools, but to build an **intelligent operating system** that could:
+The CapLiquify Manufacturing Platform was conceived as a **comprehensive enterprise solution** to the complex challenges of operating a multi-market, multi-channel supplement manufacturing business. The original intent was not merely to create reporting tools, but to build an **intelligent operating system** that could:
 
 1. **Predict the future** with AI-powered demand forecasting
 2. **Optimize resources** through sophisticated inventory and financial management

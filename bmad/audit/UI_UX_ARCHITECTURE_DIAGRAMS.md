@@ -1,5 +1,5 @@
 # UI/UX Architecture Diagrams
-## Sentia Manufacturing Dashboard
+## CapLiquify Manufacturing Platform
 
 **Companion Document to:** COMPREHENSIVE_UI_UX_AUTHENTICATION_PLAN.md
 **Created:** October 19, 2025

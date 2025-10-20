@@ -1,4 +1,4 @@
-# Clerk Authentication Setup Guide for Sentia Manufacturing App
+# Clerk Authentication Setup Guide for CapLiquify Platform App
 
 **Issue**: BMAD-DEPLOY-001 Issue #12 - Sign In/Sign Out Not Working
 **Root Cause**: CapLiquify Clerk application cannot be used with Sentia domain
@@ -9,7 +9,7 @@
 
 ## 🚨 **CRITICAL PROBLEM**
 
-The Sentia Manufacturing application is currently using a Clerk publishable key from the **CapLiquify.com** domain:
+The CapLiquify Platform application is currently using a Clerk publishable key from the **CapLiquify.com** domain:
 
 ```
 VITE_CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsuY2FwbGlxdWlmeS5jb20k
@@ -34,7 +34,7 @@ You need to create a **NEW Clerk application** specifically for the Sentia domai
 1. Go to: https://dashboard.clerk.com
 2. Sign in to your Clerk account
 3. Click "Add Application" (or "+ Create Application")
-4. **Application Name**: `Sentia Manufacturing` (or your preferred name)
+4. **Application Name**: `CapLiquify Platform` (or your preferred name)
 5. **Authentication Methods**: Select what you want to allow:
    - ✅ Email (recommended)
    - ✅ Password (recommended)
@@ -165,7 +165,7 @@ Clerk: Production Keys are only allowed for domain "capliquify.com"
 **Free Tier**:
 - 10,000 monthly active users (MAUs)
 - All authentication methods
-- Perfect for Sentia Manufacturing app
+- Perfect for CapLiquify Platform app
 
 **Pro Tier** ($25/month):
 - 1,000 MAUs included

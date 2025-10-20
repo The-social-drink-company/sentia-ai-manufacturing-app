@@ -32,7 +32,7 @@ class MCPClient {
       timeout: this.config.timeout || 30000,
       headers: {
         'Content-Type': 'application/json',
-        'User-Agent': 'Sentia-Dashboard/3.0.0',
+        'User-Agent': 'CapLiquify-Dashboard/3.0.0',
       },
     })
 

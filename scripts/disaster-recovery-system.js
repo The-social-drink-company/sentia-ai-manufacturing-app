@@ -798,7 +798,7 @@ class DisasterRecoverySystem {
 
       default:
         console.log(`
-Disaster Recovery & Rollback System - Sentia Manufacturing Dashboard
+Disaster Recovery & Rollback System - CapLiquify Manufacturing Platform
 
 Usage:
   node scripts/disaster-recovery-system.js <command> [options]

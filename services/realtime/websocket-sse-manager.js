@@ -1,5 +1,5 @@
 /**
- * WebSocket and SSE Manager for Sentia Manufacturing Dashboard
+ * WebSocket and SSE Manager for CapLiquify Manufacturing Platform
  * Handles all real-time communication for production deployment
  */
 
@@ -66,7 +66,7 @@ class RealtimeManager extends EventEmitter {
         type: 'connection',
         clientId,
         timestamp: new Date().toISOString(),
-        message: 'Connected to Sentia Manufacturing Dashboard'
+        message: 'Connected to CapLiquify Manufacturing Platform'
       });
 
       // Handle messages

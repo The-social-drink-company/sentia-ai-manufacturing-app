@@ -41,11 +41,11 @@ class APIClient {
     const hostname = window.location.hostname
 
     if (hostname.includes('development') || hostname.includes('621h')) {
-      return 'https://sentia-mcp-production.onrender.com'
+      return 'https://mcp.capliquify.com'
     } else if (hostname.includes('test')) {
-      return 'https://sentia-mcp-production.onrender.com'
+      return 'https://mcp.capliquify.com'
     } else if (hostname.includes('production')) {
-      return 'https://sentia-mcp-production.onrender.com'
+      return 'https://mcp.capliquify.com'
     }
 
     // Default to localhost for local development

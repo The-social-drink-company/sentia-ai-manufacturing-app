@@ -2,7 +2,7 @@
 
 /**
  * Enterprise Monitoring & Alerting System
- * Real-time monitoring for Sentia Manufacturing Dashboard across all environments
+ * Real-time monitoring for CapLiquify Manufacturing Platform across all environments
  */
 
 import { execSync } from 'child_process';
@@ -414,7 +414,7 @@ class EnterpriseMonitoring {
         
       default:
         console.log(`
-Enterprise Monitoring System - Sentia Manufacturing Dashboard
+Enterprise Monitoring System - CapLiquify Manufacturing Platform
 
 Usage:
   node scripts/monitoring-system.js <command> [options]

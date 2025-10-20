@@ -20,7 +20,7 @@ export default function Sidebar() {
   return (
     <nav aria-label="Primary" className="flex flex-col gap-4">
       <div className="text-[0.7rem] uppercase tracking-[0.3em] text-crystal-border/60">
-        Sentia Navigation
+        CapLiquify Navigation
       </div>
       <ul className="space-y-1">
         {navigationItems.map(item => (

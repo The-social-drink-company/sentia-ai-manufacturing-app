@@ -12,7 +12,7 @@
 
 ## Story Summary
 
-**Goal**: Build professional UI foundation components for the Sentia Manufacturing Dashboard including landing page, navigation, header, and KPI display system.
+**Goal**: Build professional UI foundation components for the CapLiquify Manufacturing Platform including landing page, navigation, header, and KPI display system.
 
 **Business Value**: Transform application from basic demo to professional enterprise dashboard with modern UX patterns matching industry-leading manufacturing platforms.
 
@@ -81,7 +81,7 @@ This story encompasses 4 major feature implementations completed in a single foc
 
 **Components Created**:
 1. `src/components/layout/DashboardSidebar.jsx` (221 lines)
-   - Logo section with "S" icon and "Sentia Manufacturing" branding
+   - Logo section with "S" icon and "CapLiquify Platform" branding
    - 4 navigation groups with 8 total menu items
    - Mobile responsive with translateX animation
    - Active state management with React Router useLocation

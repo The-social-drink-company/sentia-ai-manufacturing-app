@@ -1,7 +1,7 @@
 # BMM Module Configuration
 # BMAD Method - Agile AI-Driven Development
 # Generated: 2025-10-20
-# Project: Sentia Manufacturing AI Dashboard
+# Project: CapLiquify Platform AI Dashboard
 # Version: 6.0.0-alpha.0
 
 code: bmm
@@ -13,7 +13,7 @@ name: "BMM: BMad Method Agile-AI Driven-Development"
 # - output_folder: {project-root}/docs
 
 # Project configuration
-project_name: "Sentia Manufacturing AI Dashboard"
+project_name: "CapLiquify Platform AI Dashboard"
 
 user_skill_level: "expert"
 

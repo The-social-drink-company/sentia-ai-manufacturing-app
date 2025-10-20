@@ -2,7 +2,7 @@
 
 /**
  * RENDER START SCRIPT - ENTERPRISE OPTIMIZED
- * Fortune 500-Level Server Startup for Sentia Manufacturing Dashboard
+ * Fortune 500-Level Server Startup for CapLiquify Manufacturing Platform
  * Handles graceful startup, health checks, and monitoring
  */
 

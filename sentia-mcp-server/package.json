@@ -1,7 +1,7 @@
 {
   "name": "sentia-mcp-server",
   "version": "3.0.0",
-  "description": "Sentia Manufacturing MCP Server - Standalone Model Context Protocol server for manufacturing intelligence",
+  "description": "CapLiquify MCP Server - Standalone Model Context Protocol server for manufacturing intelligence",
   "type": "module",
   "main": "src/server.js",
   "bin": {
@@ -100,7 +100,7 @@
     "business-intelligence",
     "automation"
   ],
-  "author": "Sentia Manufacturing Team",
+  "author": "CapLiquify Platform Team",
   "license": "MIT",
   "repository": {
     "type": "git",

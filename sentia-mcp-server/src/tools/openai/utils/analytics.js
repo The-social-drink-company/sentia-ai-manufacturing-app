@@ -5,7 +5,7 @@
  * Provides comprehensive analytics for OpenAI tool usage and effectiveness.
  * 
  * @version 1.0.0
- * @author Sentia Manufacturing Team
+ * @author CapLiquify Platform Team
  */
 
 import { createLogger } from '../../../utils/logger.js';

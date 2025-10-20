@@ -109,7 +109,7 @@ class EnterpriseSecurityManager {
   }
 
   // Multi-Factor Authentication (MFA)
-  generateMFASecret(userId, appName = 'Sentia Manufacturing') {
+  generateMFASecret(userId, appName = 'CapLiquify Platform') {
     const secret = speakeasy.generateSecret({
       name: `${appName} (${userId})`,
       length: 32,
@@ -133,7 +133,7 @@ class EnterpriseSecurityManager {
     const otpauth = speakeasy.otpauthURL({
       secret: secret,
       label: `Sentia:${userId}`,
-      issuer: 'Sentia Manufacturing',
+      issuer: 'CapLiquify Platform',
       encoding: 'base32',
     })
 

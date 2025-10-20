@@ -2,7 +2,7 @@
 
 /**
  * RENDER BUILD SCRIPT - ENTERPRISE OPTIMIZED
- * Fortune 500-Level Build Process for Sentia Manufacturing Dashboard
+ * Fortune 500-Level Build Process for CapLiquify Manufacturing Platform
  * Handles all environments with performance optimization and error recovery
  */
 
@@ -270,7 +270,7 @@ export default defineConfig({
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sentia Manufacturing Dashboard</title>
+    <title>CapLiquify Manufacturing Platform</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -287,7 +287,7 @@ export default defineConfig({
 </head>
 <body>
     <div class="container">
-        <div class="logo">🏭 Sentia Manufacturing</div>
+        <div class="logo">🏭 CapLiquify Platform</div>
         <div class="status">Enterprise Dashboard Deploying...</div>
         <p>The manufacturing dashboard is being optimized for ${NODE_ENV} deployment.</p>
         <div class="info">
@@ -299,7 +299,7 @@ export default defineConfig({
     </div>
     <script>
         setTimeout(() => window.location.reload(), 30000);
-        console.log('Sentia Manufacturing Dashboard - Emergency Build Active');
+        console.log('CapLiquify Manufacturing Platform - Emergency Build Active');
     </script>
 </body>
 </html>`;

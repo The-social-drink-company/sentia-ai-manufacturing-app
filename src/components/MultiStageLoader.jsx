@@ -44,7 +44,7 @@ const MultiStageLoader = ({ onComplete }) => {
           <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-400 p-3">
             <div className="h-full w-full rounded bg-white/30" />
           </div>
-          <span className="text-2xl font-bold text-white">Sentia</span>
+            <span className="text-2xl font-bold text-white">CapLiquify</span>
         </div>
 
         {/* Loading Animation */}

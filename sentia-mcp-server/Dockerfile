@@ -1,4 +1,4 @@
-# Sentia Manufacturing MCP Server Dockerfile
+# CapLiquify MCP Server Dockerfile
 # Enterprise-grade multi-stage build with security hardening and performance optimization
 
 # Stage 1: Build dependencies with security scanning
@@ -125,9 +125,9 @@ ENTRYPOINT ["tini", "--", "dumb-init", "--"]
 CMD ["node", "--enable-source-maps", "--trace-warnings", "--trace-uncaught", "--report-uncaught-exception", "--unhandled-rejections=warn", "scripts/start-mcp-server.js"]
 
 # Enhanced labels for enterprise container management
-LABEL maintainer="Sentia Manufacturing Team"
+LABEL maintainer="CapLiquify Platform Team"
 LABEL version="3.0.0"
-LABEL description="Sentia Manufacturing MCP Server - Enterprise Model Context Protocol server for manufacturing intelligence"
+LABEL description="CapLiquify MCP Server - Enterprise Model Context Protocol server for manufacturing intelligence"
 LABEL org.opencontainers.image.title="Sentia MCP Server"
 LABEL org.opencontainers.image.description="Enterprise-grade MCP server for manufacturing operations with AI integration"
 LABEL org.opencontainers.image.version="3.0.0"
@@ -135,7 +135,7 @@ LABEL org.opencontainers.image.source="https://github.com/The-social-drink-compa
 LABEL org.opencontainers.image.url="https://github.com/The-social-drink-company/sentia-ai-manufacturing-app/tree/main/sentia-mcp-server"
 LABEL org.opencontainers.image.documentation="https://github.com/The-social-drink-company/sentia-ai-manufacturing-app/blob/main/sentia-mcp-server/docs/MCP_SERVER_SETUP.md"
 LABEL org.opencontainers.image.licenses="MIT"
-LABEL org.opencontainers.image.vendor="Sentia Manufacturing"
+LABEL org.opencontainers.image.vendor="CapLiquify Platform"
 LABEL org.opencontainers.image.created="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
 LABEL security.scan="enabled"
 LABEL performance.optimized="true"

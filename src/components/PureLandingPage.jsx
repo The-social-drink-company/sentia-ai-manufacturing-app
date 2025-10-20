@@ -194,7 +194,7 @@ const PureLandingPage = () => {
               Ready to Transform Your Manufacturing?
             </h2>
             <p className="mt-4 text-lg text-blue-100">
-              Join leading manufacturers who trust Sentia for their operations intelligence
+              Join leading manufacturers who trust CapLiquify for their operations intelligence
             </p>
             <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:justify-center">
               <Button

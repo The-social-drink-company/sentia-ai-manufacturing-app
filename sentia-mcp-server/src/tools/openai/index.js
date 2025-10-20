@@ -5,7 +5,7 @@
  * Provides convenient access to authentication, tools, utilities, and configuration.
  * 
  * @version 1.0.0
- * @author Sentia Manufacturing Team
+ * @author CapLiquify Platform Team
  */
 
 // Authentication

@@ -1,5 +1,5 @@
 # Feature Roadmap & Timeline
-## Sentia Manufacturing AI Dashboard
+## CapLiquify Platform AI Dashboard
 
 **Date**: 2025-10-19
 **Version**: 2.0

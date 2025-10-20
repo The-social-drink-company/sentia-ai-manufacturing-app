@@ -201,14 +201,14 @@ class EmailService {
       </head>
       <body>
         <div class="header">
-          <h1>Sentia Manufacturing Dashboard</h1>
+          <h1>CapLiquify Manufacturing Platform</h1>
           <p>Administrative Notification</p>
         </div>
         <div class="content">
           ${content}
         </div>
         <div class="footer">
-          <p>This is an automated message from the Sentia Manufacturing Dashboard system.</p>
+          <p>This is an automated message from the CapLiquify Manufacturing Platform system.</p>
           <p>Timestamp: ${new Date().toISOString()}</p>
         </div>
       </body>
@@ -241,7 +241,7 @@ class EmailService {
           ${content}
         </div>
         <div class="footer">
-          <p>This is an automated message from the Sentia Manufacturing Dashboard data processing system.</p>
+          <p>This is an automated message from the CapLiquify Manufacturing Platform data processing system.</p>
           <p>Timestamp: ${new Date().toISOString()}</p>
         </div>
       </body>

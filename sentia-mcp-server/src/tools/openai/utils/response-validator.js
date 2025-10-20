@@ -5,7 +5,7 @@
  * Ensures AI responses meet quality standards and business requirements.
  * 
  * @version 1.0.0
- * @author Sentia Manufacturing Team
+ * @author CapLiquify Platform Team
  */
 
 import { createLogger } from '../../../utils/logger.js';

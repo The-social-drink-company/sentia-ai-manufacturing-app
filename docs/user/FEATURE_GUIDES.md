@@ -1,7 +1,7 @@
 # Feature Guides
 
 ## Overview
-Step-by-step guides for using specific features of the Sentia Manufacturing Dashboard.
+Step-by-step guides for using specific features of the CapLiquify Manufacturing Platform.
 
 ## Table of Contents
 - [Dashboard Customization](#dashboard-customization)
@@ -757,4 +757,4 @@ const orders = await response.json();
    - API webhook
    - Cloud storage (Dropbox, Google Drive)
 
-This comprehensive feature guide provides detailed instructions for using all major features of the Sentia Manufacturing Dashboard. Each section includes step-by-step instructions, examples, and best practices to help users maximize the platform's value.
+This comprehensive feature guide provides detailed instructions for using all major features of the CapLiquify Manufacturing Platform. Each section includes step-by-step instructions, examples, and best practices to help users maximize the platform's value.

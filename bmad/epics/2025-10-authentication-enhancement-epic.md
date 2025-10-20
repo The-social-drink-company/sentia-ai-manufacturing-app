@@ -149,7 +149,7 @@ export default ProtectedRoute
 **Estimated**: 4 hours (baseline) → 1 hour (projected with 4.1x velocity)
 **Dependencies**: BMAD-AUTH-002 (Protected Routes)
 
-**User Story**: As a user signing in to the Sentia Manufacturing Dashboard, I need a professionally branded authentication experience that matches the application design system, so that I trust the platform and feel confident in the security of the login process.
+**User Story**: As a user signing in to the CapLiquify Manufacturing Platform, I need a professionally branded authentication experience that matches the application design system, so that I trust the platform and feel confident in the security of the login process.
 
 **Acceptance Criteria**:
 - [ ] `SignInPage.jsx` created in `src/pages/`
@@ -158,7 +158,7 @@ export default ProtectedRoute
 - [ ] Sentia branding applied:
   - Blue-purple gradient background (`from-blue-600 via-purple-600 to-purple-700`)
   - Sentia logo/icon (S letter in blue-600)
-  - "Sentia Manufacturing" heading
+  - "CapLiquify Platform" heading
   - "Enterprise Dashboard" subtitle
 - [ ] PublicOnlyRoute wrapper redirects authenticated users to `/dashboard`
 - [ ] "Back to Home" link functional
@@ -181,7 +181,7 @@ const SignInPage = () => {
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-xl bg-white shadow-lg">
               <span className="text-3xl font-bold text-blue-600">S</span>
             </div>
-            <h1 className="text-3xl font-bold text-white">Sentia Manufacturing</h1>
+            <h1 className="text-3xl font-bold text-white">CapLiquify Platform</h1>
             <p className="mt-2 text-purple-100">Enterprise Dashboard</p>
           </div>
 

@@ -2,7 +2,7 @@
 
 /**
  * Production Deployment and System Initialization
- * Complete setup for production-ready Sentia Manufacturing Dashboard
+ * Complete setup for production-ready CapLiquify Manufacturing Platform
  */
 
 import { PrismaClient } from '@prisma/client';

@@ -1,4 +1,4 @@
-# Sentia Manufacturing Dashboard - Database Operations Script
+# CapLiquify Manufacturing Platform - Database Operations Script
 # Handles migrations, backups, and database maintenance
 
 param(

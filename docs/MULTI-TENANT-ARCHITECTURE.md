@@ -1,6 +1,6 @@
-# Capliquify Multi-Tenant Architecture
+# CapLiquify Multi-Tenant Architecture
 
-**Platform**: Capliquify (SaaS)
+**Platform**: CapLiquify (SaaS)
 **Architecture**: Schema-per-Tenant with Prisma ORM
 **Authentication**: Clerk
 **RBAC**: 5-tier role system
@@ -9,11 +9,11 @@
 
 ## Executive Summary
 
-Capliquify is a **multi-tenant SaaS platform** that provides manufacturing intelligence dashboards to multiple customers (tenants). Each tenant operates in complete isolation with their own data, users, and API integrations.
+CapLiquify is a **multi-tenant SaaS platform** that provides manufacturing intelligence dashboards to multiple customers (tenants). Each tenant operates in complete isolation with their own data, users, and API integrations.
 
 **Key Concepts**:
-- **Capliquify** = The SaaS platform (product name)
-- **Tenant** = A customer/client using Capliquify (e.g., Sentia Spirits)
+- **CapLiquify** = The SaaS platform (product name)
+- **Tenant** = A customer/client using CapLiquify (e.g., Sentia Spirits)
 - **Master Admin** = Platform owner managing all tenants
 - **Tenant Admin** = Customer admin managing their own tenant
 
@@ -58,7 +58,7 @@ const MASTER_ADMIN_EMAILS = [
 **Purpose**: Tenant-level administration
 **Route**: `/app/admin`
 **Role Required**: `admin` (tenant admin role)
-**Color Scheme**: Blue/Purple (Capliquify brand colors)
+**Color Scheme**: Blue/Purple (CapLiquify brand colors)
 
 **Capabilities**:
 - ✅ Manage API integrations (Xero, Shopify, Amazon, Unleashed)
@@ -90,11 +90,11 @@ const MASTER_ADMIN_EMAILS = [
 
 ## Role Hierarchy
 
-Capliquify uses a 5-tier RBAC system:
+CapLiquify uses a 5-tier RBAC system:
 
 | Role | Level | Capabilities | Typical Use Case |
 |------|-------|--------------|------------------|
-| **master_admin** | 5 (Highest) | Platform-wide access, all tenant management | Capliquify platform owners |
+| **master_admin** | 5 (Highest) | Platform-wide access, all tenant management | CapLiquify platform owners |
 | **admin** | 4 | Tenant management, API integrations, user admin | Customer IT managers |
 | **manager** | 3 | Advanced analytics, forecasting, reports | Operations managers |
 | **operator** | 2 | Daily operations, inventory, data entry | Floor supervisors |
@@ -254,16 +254,16 @@ Located at `/app/admin`, the Integration Management page allows tenant admins to
 
 ## Branding Hierarchy
 
-### Platform Branding (Capliquify)
+### Platform Branding (CapLiquify)
 - Used in: Sign-in/sign-up pages, marketing pages, master admin dashboard
 - Colors: Blue (#2563eb) / Purple (#7c3aed)
 - Logo: "C" icon
-- Name: **Capliquify Manufacturing Dashboard**
+- Name: **CapLiquify Manufacturing Dashboard**
 
 ### Tenant Branding (Optional Custom Branding)
 - Enterprise tier tenants can upload custom logos
 - Tenant name displayed in dashboard header
-- Custom domain support (e.g., `dashboard.sentiadrinks.com` → Capliquify tenant)
+- Custom domain support (e.g., `dashboard.sentiadrinks.com` → CapLiquify tenant)
 
 ---
 
@@ -311,7 +311,7 @@ Located at `/app/admin`, the Integration Management page allows tenant admins to
 
 ### Planned Features
 - [ ] Tenant-specific custom domains (e.g., `dashboard.sentiadrinks.com`)
-- [ ] White-label branding (remove "Capliquify" branding for enterprise)
+- [ ] White-label branding (remove "CapLiquify" branding for enterprise)
 - [ ] Tenant analytics dashboard (usage metrics, API call counts)
 - [ ] Automated tenant provisioning (self-service trial signup)
 - [ ] Tenant migration tools (import/export tenant data)
@@ -345,4 +345,4 @@ Located at `/app/admin`, the Integration Management page allows tenant admins to
 - [Master Admin Epic](bmad/epics/2025-10-19-capliquify-phase-5-1-master-admin.md)
 - [Authentication System](context/authentication-config.md)
 - [Security Guidelines](context/security-guidelines.md)
-- [Sentia to Capliquify Renaming Guide](docs/SENTIA_TO_CAPLIQUIFY_RENAMING_GUIDE.md)
+- [Sentia to CapLiquify Renaming Guide](docs/SENTIA_TO_CAPLIQUIFY_RENAMING_GUIDE.md)

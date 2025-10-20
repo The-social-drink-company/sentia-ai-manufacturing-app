@@ -1,6 +1,6 @@
 # Render Deployment Quickstart (October 2025)
 
-This playbook explains how to launch the Sentia Manufacturing Dashboard on Render using the checked-in `render.yaml` blueprint. Follow the steps in order—the backend now applies Prisma migrations at boot and the static build no longer depends on Prisma, so deployments will complete without manual patches.
+This playbook explains how to launch the CapLiquify Manufacturing Platform on Render using the checked-in `render.yaml` blueprint. Follow the steps in order—the backend now applies Prisma migrations at boot and the static build no longer depends on Prisma, so deployments will complete without manual patches.
 
 ## Blueprint Overview
 - **Database:** `sentia-db-prod` (PostgreSQL starter plan)

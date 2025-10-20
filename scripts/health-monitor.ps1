@@ -1,4 +1,4 @@
-# Sentia Manufacturing Dashboard - Health Monitoring Script
+# CapLiquify Manufacturing Platform - Health Monitoring Script
 # Monitors all Railway deployments and sends alerts if issues detected
 
 param(
@@ -123,7 +123,7 @@ function Get-StatusReport {
     )
 
     Write-ColorOutput "=========================================" -Color Blue
-    Write-ColorOutput "Sentia Manufacturing Dashboard Health Check" -Color Blue
+    Write-ColorOutput "CapLiquify Manufacturing Platform Health Check" -Color Blue
     Write-ColorOutput "=========================================" -Color Blue
 
     $allHealthy = $true
@@ -234,7 +234,7 @@ function Export-HTMLReport {
     </style>
 </head>
 <body>
-    <h1>Sentia Manufacturing Dashboard - Health Report</h1>
+    <h1>CapLiquify Manufacturing Platform - Health Report</h1>
     <p class="timestamp">Generated: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')</p>
 
     <h2>Overall Status: $(if($Report.AllHealthy){'<span class="status-pass">OPERATIONAL</span>'}else{'<span class="status-fail">ISSUES DETECTED</span>'})</h2>
@@ -281,7 +281,7 @@ function Export-HTMLReport {
 
 # Main execution
 function Start-Monitoring {
-    Write-ColorOutput "Starting Sentia Manufacturing Dashboard Monitoring" -Color Cyan
+    Write-ColorOutput "Starting CapLiquify Manufacturing Platform Monitoring" -Color Cyan
     Write-ColorOutput "Mode: $Mode" -Color Cyan
 
     if ($Mode -eq "continuous") {

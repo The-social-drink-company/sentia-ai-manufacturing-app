@@ -12,7 +12,7 @@ export const xeroApiResponses = {
       reportType: 'ProfitAndLoss',
       reportTitles: [
         'Profit and Loss',
-        'Sentia Manufacturing Corp',
+        'CapLiquify Platform Corp',
         'For the period 1 January 2024 to 31 October 2024'
       ],
       reportDate: '31 October 2024',
@@ -267,7 +267,7 @@ export const xeroApiResponses = {
     {
       tenantId: 'tenant-manufacturing-001',
       tenantType: 'ORGANISATION',
-      tenantName: 'Sentia Manufacturing Corp',
+      tenantName: 'CapLiquify Platform Corp',
       organisationCountryCode: 'US',
       baseCurrency: 'USD',
       organisationType: 'COMPANY'
@@ -328,7 +328,7 @@ export const shopifyApiResponses = {
             quantity: 3,
             price: '24999.99',
             sku: 'IE-PUMP-CENTRIFUGAL-150',
-            vendor: 'Sentia Manufacturing',
+            vendor: 'CapLiquify Platform',
             fulfillable_quantity: 3,
             fulfillment_status: null,
             properties: [
@@ -376,7 +376,7 @@ export const shopifyApiResponses = {
         id: 632910392,
         title: 'Industrial Centrifugal Pump 150HP',
         body_html: '<p>Heavy-duty centrifugal pump designed for industrial applications requiring high flow rates and reliability.</p>',
-        vendor: 'Sentia Manufacturing',
+        vendor: 'CapLiquify Platform',
         product_type: 'Industrial Equipment',
         created_at: '2024-08-15T10:00:00-04:00',
         handle: 'industrial-centrifugal-pump-150hp',
@@ -689,7 +689,7 @@ export const anthropicApiResponses = {
     content: [
       {
         type: 'text',
-        text: 'Financial Analysis Summary for Sentia Manufacturing:\n\n**Revenue Growth**: 16.7% YoY increase in sales revenue ($2.45M vs $2.1M)\n\n**Cost Structure Analysis**:\n- Material costs: 40% of revenue (industry benchmark: 35-45%)\n- Direct labor: 20% of revenue (efficient for precision manufacturing)\n- Manufacturing overhead: 10% of revenue (well-controlled)\n\n**Profitability Metrics**:\n- Gross profit margin: 30.5% (strong for manufacturing sector)\n- Working capital: $1.045M (healthy liquidity position)\n\n**Key Recommendations**:\n1. Investigate material cost optimization opportunities\n2. Consider automation to reduce labor dependency\n3. Evaluate pricing strategy for premium products\n4. Monitor cash conversion cycle for working capital efficiency\n\n**Risk Factors**:\n- Heavy dependence on automotive sector (diversification opportunity)\n- Rising material costs impacting margins\n- Capacity constraints limiting growth potential'
+        text: 'Financial Analysis Summary for CapLiquify Platform:\n\n**Revenue Growth**: 16.7% YoY increase in sales revenue ($2.45M vs $2.1M)\n\n**Cost Structure Analysis**:\n- Material costs: 40% of revenue (industry benchmark: 35-45%)\n- Direct labor: 20% of revenue (efficient for precision manufacturing)\n- Manufacturing overhead: 10% of revenue (well-controlled)\n\n**Profitability Metrics**:\n- Gross profit margin: 30.5% (strong for manufacturing sector)\n- Working capital: $1.045M (healthy liquidity position)\n\n**Key Recommendations**:\n1. Investigate material cost optimization opportunities\n2. Consider automation to reduce labor dependency\n3. Evaluate pricing strategy for premium products\n4. Monitor cash conversion cycle for working capital efficiency\n\n**Risk Factors**:\n- Heavy dependence on automotive sector (diversification opportunity)\n- Rising material costs impacting margins\n- Capacity constraints limiting growth potential'
       }
     ],
     model: 'claude-3-sonnet-20240229',

@@ -1,7 +1,7 @@
 /**
  * Role-Based Access Control (RBAC) Middleware
  * 
- * Comprehensive RBAC system with development bypass for the Sentia Manufacturing MCP Server.
+ * Comprehensive RBAC system with development bypass for the CapLiquify MCP Server.
  * 
  * CRITICAL: Development environment grants admin permissions automatically
  * while maintaining full RBAC enforcement in production.

@@ -24,6 +24,7 @@ import trialUpgradeRouter from './server/routes/billing/trial-upgrade.js'
 import cronRouter from './server/routes/cron.routes.js'
 import onboardingRouter from './server/routes/onboarding.js'
 import invitationsRouter from './server/routes/invitations.js'
+import usersRouter from './server/routes/users.js'
 import subscriptionRouter from './server/api/subscription.js'
 import stripeWebhookRouter from './server/routes/webhooks/stripe.js'
 
@@ -372,6 +373,7 @@ app.use('/api/billing', trialUpgradeRouter)  // Trial upgrade billing routes (BM
 app.use('/api/cron', cronRouter)
 app.use('/api/onboarding', onboardingRouter)
 app.use('/api/invitations', invitationsRouter)
+app.use('/api/users', usersRouter)
 app.use('/api/subscription', subscriptionRouter)
 app.use('/api/webhooks/stripe', stripeWebhookRouter)
 

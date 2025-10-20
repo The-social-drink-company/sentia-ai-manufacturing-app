@@ -134,7 +134,7 @@
     "winston": "^3.11.0",
     "winston-daily-rotate-file": "^5.0.0",
     "xero-node": "^4.38.0",
-    "zod": "^3.24.4",
+    "zod": "^3.25.76",
     "zustand": "^5.0.8"
   },
   "devDependencies": {

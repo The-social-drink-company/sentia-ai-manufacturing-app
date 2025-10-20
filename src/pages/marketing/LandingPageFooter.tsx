@@ -14,28 +14,28 @@ import { Link } from 'react-router-dom'
 export const SocialProofSection = () => {
   const testimonials = [
     {
-      quote: "CapLiquify helped us reduce our cash conversion cycle from 78 days to 55 days in just 3 months. The AI forecasting is incredibly accurate.",
-      author: "Sarah Johnson",
-      title: "CFO",
-      company: "Acme Manufacturing",
-      metric: "Reduced CCC by 23 days",
-      avatar: "SJ"
+      quote: "Built on the proven FinanceFlo.ai infrastructure that powers finance automation for 450+ UK businesses, achieving 66% cost reduction and 500% ROI.",
+      author: "Proven Infrastructure",
+      title: "Enterprise-Grade Platform",
+      company: "FinanceFlo Ecosystem",
+      metric: "450+ businesses trust this infrastructure",
+      avatar: "FF"
     },
     {
-      quote: "The real-time dashboards and proactive alerts have transformed how we manage working capital. We now make decisions based on data, not gut feelings.",
-      author: "Michael Chen",
-      title: "Finance Director",
-      company: "TechParts Industries",
-      metric: "87% forecast accuracy",
-      avatar: "MC"
+      quote: "The AI forecasting delivers >85% accuracy with ensemble models (ARIMA, LSTM, Prophet, Random Forest), helping manufacturers achieve <55-day cash conversion cycles.",
+      author: "Advanced AI Technology",
+      title: "Best-in-Class Accuracy",
+      company: "Powered by FinanceFlo",
+      metric: ">85% forecast accuracy",
+      avatar: "AI"
     },
     {
-      quote: "Implementation was seamless - we were up and running in under a week. The ROI was immediate with better inventory optimization alone.",
-      author: "Emily Rodriguez",
-      title: "VP of Operations",
-      company: "BuildPro Manufacturing",
-      metric: "$320K freed up in working capital",
-      avatar: "ER"
+      quote: "Real-time dashboards with <5-second latency, 20+ ERP integrations, and automated working capital optimization - all on infrastructure trusted by hundreds of businesses.",
+      author: "Complete Platform",
+      title: "Enterprise Features",
+      company: "FinanceFlo Infrastructure",
+      metric: "20+ ERP integrations",
+      avatar: "CP"
     }
   ]
 
@@ -257,9 +257,9 @@ export const Footer = () => {
             <h4 className="font-semibold text-white mb-4">Company</h4>
             <ul className="space-y-2 text-sm">
               <li><Link to="/about" className="hover:text-blue-400 transition-colors">About</Link></li>
+              <li><Link to="/ecosystem" className="hover:text-blue-400 transition-colors">Ecosystem</Link></li>
               <li><Link to="/blog" className="hover:text-blue-400 transition-colors">Blog</Link></li>
-              <li><Link to="/careers" className="hover:text-blue-400 transition-colors">Careers</Link></li>
-              <li><Link to="/contact" className="hover:text-blue-400 transition-colors">Contact</Link></li>
+              <li><a href="https://financeflo.ai" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 transition-colors">FinanceFlo.ai →</a></li>
             </ul>
           </div>
 
@@ -275,21 +275,31 @@ export const Footer = () => {
           </div>
         </div>
 
-        <div className="pt-8 border-t border-gray-800 flex flex-col md:flex-row items-center justify-between">
-          <div className="text-sm text-gray-400 mb-4 md:mb-0">
-            © {new Date().getFullYear()} CapLiquify. All rights reserved.
+        <div className="pt-8 border-t border-gray-800 space-y-4">
+          <div className="flex flex-col md:flex-row items-center justify-between">
+            <div className="text-sm text-gray-400 mb-4 md:mb-0">
+              © {new Date().getFullYear()} CapLiquify. All rights reserved.
+            </div>
+
+            <div className="flex items-center gap-6">
+              <a href="https://twitter.com/capliquify" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 transition-colors">
+                <Twitter className="w-5 h-5" />
+              </a>
+              <a href="https://linkedin.com/company/capliquify" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 transition-colors">
+                <Linkedin className="w-5 h-5" />
+              </a>
+              <a href="mailto:hello@capliquify.com" className="hover:text-blue-400 transition-colors">
+                <Mail className="w-5 h-5" />
+              </a>
+            </div>
           </div>
 
-          <div className="flex items-center gap-6">
-            <a href="https://twitter.com/capliquify" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 transition-colors">
-              <Twitter className="w-5 h-5" />
+          <div className="text-center text-sm text-gray-500 pb-4">
+            <a href="https://financeflo.ai" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 transition-colors">
+              Powered by FinanceFlo.ai infrastructure
             </a>
-            <a href="https://linkedin.com/company/capliquify" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 transition-colors">
-              <Linkedin className="w-5 h-5" />
-            </a>
-            <a href="mailto:hello@capliquify.com" className="hover:text-blue-400 transition-colors">
-              <Mail className="w-5 h-5" />
-            </a>
+            <span className="mx-2">•</span>
+            <span>Trusted by 450+ businesses</span>
           </div>
         </div>
       </div>

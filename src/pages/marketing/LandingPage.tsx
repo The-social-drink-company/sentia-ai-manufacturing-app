@@ -247,12 +247,24 @@ const TrustBar = () => {
   return (
     <section className="py-8 bg-white border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <p className="text-sm text-gray-500 text-center mb-6">Trusted by 50+ manufacturers</p>
-        <div className="flex items-center justify-center gap-12 opacity-40 grayscale">
-          <div className="text-2xl font-bold text-gray-400">Acme Mfg</div>
-          <div className="text-2xl font-bold text-gray-400">TechCo</div>
-          <div className="text-2xl font-bold text-gray-400">Global Parts</div>
-          <div className="text-2xl font-bold text-gray-400">BuildPro</div>
+        <div className="text-center">
+          <p className="text-sm text-gray-500 mb-2">Built on FinanceFlo.ai infrastructure</p>
+          <div className="flex flex-wrap items-center justify-center gap-4 md:gap-8 text-sm font-semibold text-gray-700">
+            <div className="flex items-center gap-2">
+              <Check className="w-4 h-4 text-green-500" />
+              <span>450+ businesses</span>
+            </div>
+            <div className="hidden sm:block text-gray-300">•</div>
+            <div className="flex items-center gap-2">
+              <Check className="w-4 h-4 text-green-500" />
+              <span>66% cost reduction</span>
+            </div>
+            <div className="hidden sm:block text-gray-300">•</div>
+            <div className="flex items-center gap-2">
+              <Check className="w-4 h-4 text-green-500" />
+              <span>500% ROI</span>
+            </div>
+          </div>
         </div>
       </div>
     </section>

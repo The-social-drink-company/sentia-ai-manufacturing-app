@@ -211,7 +211,7 @@ if (xeroData?.success) {
 
 ## IMPLEMENTATION STATUS BY FEATURE
 
-### **✅ FULLY FUNCTIONAL FEATURES (85%)** ⬆️ **EPIC-002 & ONBOARDING COMPLETE**
+### **✅ FULLY FUNCTIONAL FEATURES (92%)** ⬆️ **EPIC-002, EPIC-003, EPIC-006, EPIC-008, ONBOARDING-001 COMPLETE**
 
 #### **Navigation System** ✅
 
@@ -811,7 +811,8 @@ scripts/               # Utility scripts
 **Enterprise Git Workflow**: All development work happens in the `main` branch, which deploys to the production Render services:
 
 1. **Main Branch**: All coding, fixing, and development work happens in `main` branch
-   - Auto-deploys to: `sentia-frontend-prod`, `sentia-backend-prod`, `sentia-mcp-prod`
+   - Auto-deploys to: `capliquify-frontend-prod`, `capliquify-backend-prod`, `capliquify-mcp-prod`
+   - Custom domains: app.capliquify.com, api.capliquify.com, mcp.capliquify.com
 2. **Test Branch**: Push to `test` branch for user acceptance testing (future separate environment)
 3. **Production Branch**: Production-ready releases (future dedicated environment)
 

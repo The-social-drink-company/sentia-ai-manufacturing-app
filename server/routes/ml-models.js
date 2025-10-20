@@ -1,6 +1,9 @@
 /**
- * ML Models API Routes
- * Endpoints for managing machine learning models, training, and predictions
+ * ML Models API Routes - Multi-Tenant
+ * Endpoints for managing machine learning models, training, and predictions.
+ * All routes are tenant-scoped and require Professional+ tier (ai_forecasting feature).
+ *
+ * @module routes/ml-models
  */
 
 import express from 'express'
@@ -14,18 +17,26 @@ import {
   getModelPerformanceHistory,
 } from '../../services/ai-forecasting-engine-persistence.js'
 import { logInfo, logError } from '../../services/observability/structuredLogger.js'
+import { tenantContext, requireFeature, requireRole } from '../middleware/tenantContext.js'
 
 const router = express.Router()
 
+// Apply tenant middleware and feature gating to all routes
+// Professional+ tier required for AI forecasting
+router.use(tenantContext)
+router.use(requireFeature('ai_forecasting'))
+
 /**
  * GET /api/ml-models
- * List all ML models with optional filters
+ * List all ML models with optional filters (tenant-scoped)
  */
 router.get('/', async (req, res) => {
   try {
     const { name, isActive, status, modelType } = req.query
+    const { tenant } = req
+    const tenantId = tenant.id
 
-    const filters = {}
+    const filters = { tenantId } // Scope to tenant
     if (name) filters.name = name
     if (isActive !== undefined) filters.isActive = isActive === 'true'
     if (status) filters.status = status
@@ -59,6 +70,11 @@ router.get('/', async (req, res) => {
         trainingCount: model._count?.trainingHistory || 0,
         predictionCount: model._count?.predictions || 0,
       })),
+      tenant: {
+        id: tenant.id,
+        name: tenant.name,
+        tier: tenant.subscriptionTier
+      }
     })
   } catch (error) {
     logError('Failed to list ML models:', error)
@@ -156,12 +172,14 @@ router.get('/:name/performance', async (req, res) => {
 
 /**
  * POST /api/ml-models/:name/train
- * Train a specific model with provided data
+ * Train a specific model with provided data (tenant-scoped)
  */
-router.post('/:name/train', async (req, res) => {
+router.post('/:name/train', requireRole(['owner', 'admin']), async (req, res) => {
   try {
     const { name } = req.params
     const { data, saveToDatabase = true } = req.body
+    const { tenant, tenantSchema } = req
+    const tenantId = tenant.id
 
     if (!data || !Array.isArray(data)) {
       return res.status(400).json({
@@ -171,13 +189,16 @@ router.post('/:name/train', async (req, res) => {
       })
     }
 
-    logInfo(`Starting training for model: ${name}`)
+    logInfo(`Starting training for model: ${name} (tenant: ${tenant.name})`)
 
-    // Train model with persistence
+    // Train model with persistence (tenant-scoped)
     const originalPersistenceState = aiForecastingEngine.persistenceEnabled
     aiForecastingEngine.persistenceEnabled = saveToDatabase
 
-    const result = await trainModelWithPersistence(aiForecastingEngine, name, data)
+    const result = await trainModelWithPersistence(aiForecastingEngine, name, data, {
+      tenantId,
+      tenantSchema,
+    })
 
     aiForecastingEngine.persistenceEnabled = originalPersistenceState
 
@@ -191,6 +212,11 @@ router.post('/:name/train', async (req, res) => {
         version: result.version || null,
         persisted: result.persisted,
       },
+      tenant: {
+        id: tenant.id,
+        name: tenant.name,
+        tier: tenant.subscriptionTier
+      }
     })
   } catch (error) {
     logError(`Failed to train model ${req.params.name}:`, error)
@@ -204,11 +230,13 @@ router.post('/:name/train', async (req, res) => {
 
 /**
  * POST /api/ml-models/train-all
- * Train all models with provided data
+ * Train all models with provided data (tenant-scoped, admin-only)
  */
-router.post('/train-all', async (req, res) => {
+router.post('/train-all', requireRole(['owner', 'admin']), async (req, res) => {
   try {
     const { data, saveToDatabase = true } = req.body
+    const { tenant, tenantSchema } = req
+    const tenantId = tenant.id
 
     if (!data || !Array.isArray(data)) {
       return res.status(400).json({
@@ -218,19 +246,22 @@ router.post('/train-all', async (req, res) => {
       })
     }
 
-    logInfo('Starting training for all models')
+    logInfo(`Starting training for all models (tenant: ${tenant.name})`)
 
     const originalPersistenceState = aiForecastingEngine.persistenceEnabled
     aiForecastingEngine.persistenceEnabled = saveToDatabase
 
     const results = await aiForecastingEngine.trainAllModels(data)
 
-    // Save each model to database if persistence enabled
+    // Save each model to database if persistence enabled (tenant-scoped)
     if (saveToDatabase) {
       for (const [modelName, result] of Object.entries(results)) {
         if (result.success !== false) {
           try {
-            await saveModelToDatabase(aiForecastingEngine, modelName, result.trainingHistory)
+            await saveModelToDatabase(aiForecastingEngine, modelName, result.trainingHistory, {
+              tenantId,
+              tenantSchema,
+            })
           } catch (error) {
             logError(`Failed to save ${modelName} to database:`, error)
           }
@@ -243,6 +274,11 @@ router.post('/train-all', async (req, res) => {
     res.json({
       success: true,
       results,
+      tenant: {
+        id: tenant.id,
+        name: tenant.name,
+        tier: tenant.subscriptionTier
+      }
     })
   } catch (error) {
     logError('Failed to train all models:', error)
@@ -256,16 +292,19 @@ router.post('/train-all', async (req, res) => {
 
 /**
  * POST /api/ml-models/:id/activate
- * Activate a specific model version
+ * Activate a specific model version (tenant-scoped, admin-only)
  */
-router.post('/:id/activate', async (req, res) => {
+router.post('/:id/activate', requireRole(['owner', 'admin']), async (req, res) => {
   try {
     const { id } = req.params
+    const { tenant } = req
+    const tenantId = tenant.id
 
-    const updatedModel = await modelPersistenceService.activateModel(id)
+    // Verify model belongs to tenant before activating
+    const updatedModel = await modelPersistenceService.activateModel(id, tenantId)
 
     // Reload models from database to get the activated version
-    await loadModelsFromDatabase(aiForecastingEngine)
+    await loadModelsFromDatabase(aiForecastingEngine, { tenantId })
 
     res.json({
       success: true,
@@ -277,6 +316,11 @@ router.post('/:id/activate', async (req, res) => {
         status: updatedModel.status,
         isActive: updatedModel.isActive,
       },
+      tenant: {
+        id: tenant.id,
+        name: tenant.name,
+        tier: tenant.subscriptionTier
+      }
     })
   } catch (error) {
     logError(`Failed to activate model ${req.params.id}:`, error)
@@ -290,13 +334,16 @@ router.post('/:id/activate', async (req, res) => {
 
 /**
  * DELETE /api/ml-models/:id
- * Delete (archive) a model version
+ * Delete (archive) a model version (tenant-scoped, admin-only)
  */
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', requireRole(['owner', 'admin']), async (req, res) => {
   try {
     const { id } = req.params
+    const { tenant } = req
+    const tenantId = tenant.id
 
-    const deletedModel = await modelPersistenceService.deleteModel(id)
+    // Verify model belongs to tenant before deleting
+    const deletedModel = await modelPersistenceService.deleteModel(id, tenantId)
 
     res.json({
       success: true,
@@ -307,6 +354,11 @@ router.delete('/:id', async (req, res) => {
         version: deletedModel.version,
         status: deletedModel.status,
       },
+      tenant: {
+        id: tenant.id,
+        name: tenant.name,
+        tier: tenant.subscriptionTier
+      }
     })
   } catch (error) {
     logError(`Failed to delete model ${req.params.id}:`, error)

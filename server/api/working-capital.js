@@ -1,4 +1,4 @@
-﻿import express from 'express'
+import express from 'express'
 import axios from 'axios'
 import { PrismaClient } from '@prisma/client'
 import { authenticateToken } from '../middleware/auth.js'
@@ -167,36 +167,69 @@ const parseCashFlowData = data => {
 }
 
 const fetchInventorySummary = async () => {
-  const items = await prisma.inventory.findMany({
+  const items = await prisma.inventoryItem.findMany({
     include: { movements: true },
   })
 
-  const totalValue = items.reduce((sum, item) => sum + toNumber(item.totalValue), 0)
-  const totalQuantity = items.reduce((sum, item) => sum + toNumber(item.quantity), 0)
+  if (!items.length) {
+    return null
+  }
 
-  const outgoing = items.reduce(
-    (sum, item) =>
-      sum +
-      item.movements
+  const totals = items.reduce(
+    (acc, item) => {
+      const quantityOnHand = toNumber(item.quantityOnHand)
+      const totalValue = toNumber(item.totalValue)
+      const reorderPoint = toNumber(item.reorderPoint, 0)
+
+      const outgoing = item.movements
         .filter(movement => movement.type === 'OUT')
-        .reduce((subtotal, movement) => subtotal + toNumber(movement.quantity), 0),
-    0
+        .reduce((sum, movement) => sum + toNumber(movement.quantity), 0)
+
+      const locationKey = item.location || item.warehouseId || 'General'
+
+      acc.totalQuantity += quantityOnHand
+      acc.totalValue += totalValue
+      acc.outgoing += outgoing
+      acc.stockouts += quantityOnHand <= reorderPoint ? 1 : 0
+      acc.excessStock += reorderPoint > 0 && quantityOnHand >= reorderPoint * 2 ? 1 : 0
+
+      if (!acc.categories[locationKey]) {
+        acc.categories[locationKey] = {
+          warehouse: locationKey,
+          items: 0,
+          value: 0,
+        }
+      }
+
+      acc.categories[locationKey].items += 1
+      acc.categories[locationKey].value += totalValue
+
+      return acc
+    },
+    {
+      totalQuantity: 0,
+      totalValue: 0,
+      outgoing: 0,
+      stockouts: 0,
+      excessStock: 0,
+      categories: {},
+    }
   )
 
   const turnoverRate =
-    totalValue > 0 ? Number(((outgoing || 0) / Math.max(totalValue, 1)).toFixed(2)) : 0
+    totals.totalValue > 0
+      ? Number(((totals.outgoing || 0) / Math.max(totals.totalValue, 1)).toFixed(2))
+      : 0
 
-  const stockouts = items.filter(item => item.quantity <= item.reorderPoint).length
-  const excessStock = items.filter(item => item.quantity >= item.reorderPoint * 2).length
-
-  const categories = items.reduce((acc, item) => {
-    const key = item.warehouse || 'General'
-    if (!acc[key]) {
-      acc[key] = {
-        warehouse: key,
-        items: 0,
-        value: 0,
-      }
+  return {
+    totalValue: Number(totals.totalValue.toFixed(2)),
+    totalQuantity: Number(totals.totalQuantity.toFixed(2)),
+    turnoverRate,
+    stockouts: totals.stockouts,
+    excessStock: totals.excessStock,
+    categories: Object.values(totals.categories),
+  }
+}
     }
     acc[key].items += 1
     acc[key].value += toNumber(item.totalValue)
@@ -342,28 +375,22 @@ const calculateDaysInventory = summary => {
  */
 router.get('/', async (req, res) => {
   try {
-    console.log('📊 Working capital data requested - attempting Xero integration first')
-
-    // PRIORITY 1: Try Xero API first (REAL DATA)
-    const xeroHealth = await xeroService.healthCheck()
+    const xeroHealth = await xeroService.healthCheck().catch(error => {
+      console.warn('[WorkingCapital] Xero health check failed:', error?.message)
+      return { status: 'disconnected', error }
+    })
 
     if (xeroHealth.status === 'connected') {
-      console.log('✅ Xero connected - fetching REAL working capital data')
-
       try {
-        // Get REAL working capital from Xero
         const xeroWcResult = await xeroService.calculateWorkingCapital()
 
         if (xeroWcResult.success && xeroWcResult.data) {
           const wcData = xeroWcResult.data
-
-          // Get inventory data from database
           const [inventorySummary, cashFlowData] = await Promise.all([
             fetchInventoryData(),
             xeroService.getCashFlow(3),
           ])
 
-          // Build response from REAL Xero data
           const workingCapitalData = {
             workingCapital: toNumber(wcData.workingCapital),
             currentRatio: toNumber(wcData.currentRatio),
@@ -377,7 +404,7 @@ router.get('/', async (req, res) => {
             dio: wcData.dio || 0,
             dpo: wcData.dpo || 0,
             liquiditySnapshot: {
-              bankAccounts: wcData.bankAccounts || [],
+              bankAccounts: parseBankAccounts(wcData.bankAccounts, wcData.cash),
               currentAssets: {
                 cash: toNumber(wcData.cash),
                 accountsReceivable: toNumber(wcData.accountsReceivable),
@@ -395,21 +422,31 @@ router.get('/', async (req, res) => {
               inventory: parseInventory(inventorySummary),
             },
             cashFlowHistory: Array.isArray(cashFlowData) ? cashFlowData : [],
-            forecast: [], // Could integrate AI forecast in future
+            forecast: [],
             lastCalculated: wcData.timestamp || new Date().toISOString(),
           }
 
-          console.log('✅ Working capital data retrieved from REAL Xero API')
-
-          // Broadcast real-time update via SSE to all connected dashboard clients
-          emitWorkingCapitalUpdate({
-            workingCapital: workingCapitalData.workingCapital,
-            currentRatio: workingCapitalData.currentRatio,
-            quickRatio: workingCapitalData.quickRatio,
-            cashConversionCycle: workingCapitalData.cashConversionCycle,
-            dataSource: 'xero_api',
-            timestamp: new Date().toISOString(),
+          return res.json({
+            success: true,
+            data: workingCapitalData,
           })
+        }
+
+        console.warn('[WorkingCapital] Xero response did not include data payload')
+      } catch (xeroError) {
+        console.error('[WorkingCapital] Xero API error:', xeroError)
+      }
+    }
+  } catch (error) {
+    console.error('[WorkingCapital] Unexpected error while contacting Xero:', error)
+  }
+
+  return res.status(503).json({
+    success: false,
+    error: 'data_source_unavailable',
+    message: 'Connect the Sentia Xero integration to fetch live working capital metrics.',
+  })
+})
           console.log('📡 SSE broadcast sent: working_capital:update')
 
           return res.json({
@@ -795,3 +832,5 @@ router.get('/forecasts/cashflow', authenticateToken, async (_req, res) => {
 })
 
 export default router
+
+

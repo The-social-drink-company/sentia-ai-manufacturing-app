@@ -91,6 +91,10 @@ export default function OnboardingWizard() {
       try {
         const response = await onboardingService.fetchProgress()
         if (response.success) {
+          if (response.skipped) {
+            navigate('/dashboard')
+            return
+          }
           if (response.isComplete) {
             navigate('/dashboard?onboarding=complete&tour=auto')
             return

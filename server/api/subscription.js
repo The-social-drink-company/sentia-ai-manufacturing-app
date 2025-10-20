@@ -1,284 +1,312 @@
 /**
- * Subscription Management API Endpoints
+ * Subscription Management API Endpoints - PRODUCTION VERSION
  *
  * Handles upgrade, downgrade, and billing cycle changes for CapLiquify subscriptions.
+ * Integrates with Stripe, PostgreSQL database, and email services.
  *
  * @epic EPIC-008 (Feature Gating System)
- * @story BMAD-GATE-009 (Upgrade/Downgrade Flows)
+ * @story BMAD-GATE-010 (Production Stripe Integration)
  */
 
 import express from 'express';
+import subscriptionManager from '../services/stripe/subscription-manager.js';
+import stripeService from '../services/stripe/stripe-service.js';
+import subscriptionRepository from '../services/subscription/subscription-repository.js';
+import emailService from '../services/email/email-service.js';
+
+// Initialize dependencies
+subscriptionManager.setDependencies({ subscriptionRepository, emailService });
 
 const router = express.Router();
-
-// Pricing tiers for reference
-const PRICING_TIERS = {
-  starter: {
-    monthlyPrice: 149,
-    annualPrice: 1490,
-    features: {
-      maxUsers: 5,
-      maxEntities: 500,
-      maxIntegrations: 3,
-    },
-  },
-  professional: {
-    monthlyPrice: 295,
-    annualPrice: 2950,
-    features: {
-      maxUsers: 25,
-      maxEntities: 5000,
-      maxIntegrations: 10,
-    },
-  },
-  enterprise: {
-    monthlyPrice: 595,
-    annualPrice: 5950,
-    features: {
-      maxUsers: 100,
-      maxEntities: 'unlimited',
-      maxIntegrations: 'unlimited',
-    },
-  },
-};
 
 /**
  * Preview upgrade proration
  * POST /api/subscription/preview-upgrade
+ *
+ * Body: { newTier: string, newCycle: string }
+ * Returns: Proration calculation with amount due
  */
 router.post('/preview-upgrade', async (req, res) => {
   try {
     const { newTier, newCycle } = req.body;
 
-    // In production, this would:
-    // 1. Get current subscription from Stripe
-    // 2. Calculate proration using Stripe API
-    // 3. Return preview
+    // Validate input
+    if (!newTier || !newCycle) {
+      return res.status(400).json({
+        error: 'Missing required fields: newTier, newCycle'
+      });
+    }
 
-    // Mock proration preview for demo
-    const tierConfig = PRICING_TIERS[newTier];
-    if (!tierConfig) {
+    if (!['starter', 'professional', 'enterprise'].includes(newTier)) {
       return res.status(400).json({ error: 'Invalid tier' });
     }
 
-    const newPrice = newCycle === 'monthly' ? tierConfig.monthlyPrice : tierConfig.annualPrice;
+    if (!['monthly', 'annual'].includes(newCycle)) {
+      return res.status(400).json({ error: 'Invalid cycle' });
+    }
 
-    // Calculate mock proration credit (30% of current period remaining)
-    const currentPrice = 295; // Assume current professional monthly
-    const daysInMonth = 30;
-    const daysRemaining = 15; // Mock: halfway through month
-    const proratedCredit = Math.floor((currentPrice * daysRemaining) / daysInMonth);
+    // Get tenant ID from session/auth (for now, use mock)
+    const tenantId = req.user?.tenantId || 'demo-tenant';
 
-    const amountDue = (newPrice - proratedCredit) * 100; // Convert to cents
-
-    const nextBillingDate = new Date();
-    nextBillingDate.setMonth(nextBillingDate.getMonth() + (newCycle === 'monthly' ? 1 : 12));
-
-    res.json({
-      success: true,
-      amountDue: Math.max(0, amountDue),
-      credit: proratedCredit * 100, // Convert to cents
-      nextBillingDate: nextBillingDate.toLocaleDateString(),
-      newPrice,
+    // Get proration preview from subscription manager
+    const preview = await subscriptionManager.previewUpgrade({
+      tenantId,
       newTier,
       newCycle,
     });
+
+    res.json(preview);
   } catch (error) {
-    console.error('Error previewing upgrade:', error);
-    res.status(500).json({ error: 'Failed to preview upgrade' });
+    console.error('[API] Error previewing upgrade:', error.message);
+    res.status(500).json({
+      error: 'Failed to preview upgrade',
+      message: error.message,
+    });
   }
 });
 
 /**
- * Process upgrade
+ * Process subscription upgrade
  * POST /api/subscription/upgrade
+ *
+ * Body: { newTier: string, newCycle: string }
+ * Returns: Updated subscription details
  */
 router.post('/upgrade', async (req, res) => {
   try {
     const { newTier, newCycle } = req.body;
 
-    // In production, this would:
-    // 1. Validate user has permission
-    // 2. Create Stripe subscription update
-    // 3. Update database with new tier
-    // 4. Trigger webhook for provisioning
-
-    const tierConfig = PRICING_TIERS[newTier];
-    if (!tierConfig) {
-      return res.status(400).json({ error: 'Invalid tier' });
+    // Validate input
+    if (!newTier || !newCycle) {
+      return res.status(400).json({
+        error: 'Missing required fields: newTier, newCycle'
+      });
     }
 
-    // Mock successful upgrade
-    const subscription = {
-      id: 'sub_' + Math.random().toString(36).substring(7),
-      tier: newTier,
-      cycle: newCycle,
-      status: 'active',
-      currentPeriodEnd: new Date(Date.now() + (newCycle === 'monthly' ? 30 : 365) * 24 * 60 * 60 * 1000),
-      price: newCycle === 'monthly' ? tierConfig.monthlyPrice : tierConfig.annualPrice,
-    };
+    // Get tenant and user ID from session/auth (for now, use mock)
+    const tenantId = req.user?.tenantId || 'demo-tenant';
+    const userId = req.user?.id || 'demo-user';
 
-    console.log(`[Subscription] Upgrade processed: ${newTier} (${newCycle})`);
-
-    res.json({
-      success: true,
-      subscription,
-      message: `Successfully upgraded to ${newTier}`,
+    // Process upgrade through subscription manager
+    const result = await subscriptionManager.processUpgrade({
+      tenantId,
+      newTier,
+      newCycle,
+      userId,
     });
+
+    res.json(result);
   } catch (error) {
-    console.error('Error processing upgrade:', error);
-    res.status(500).json({ error: 'Failed to process upgrade' });
+    console.error('[API] Error processing upgrade:', error.message);
+    res.status(500).json({
+      error: 'Failed to process upgrade',
+      message: error.message,
+    });
   }
 });
 
 /**
  * Check downgrade impact
- * GET /api/subscription/downgrade-impact
+ * GET /api/subscription/downgrade-impact?newTier=starter
+ *
+ * Query: { newTier: string }
+ * Returns: Impact analysis (users/entities/integrations over limit)
  */
 router.get('/downgrade-impact', async (req, res) => {
   try {
     const { newTier } = req.query;
 
-    const tierConfig = PRICING_TIERS[newTier];
-    if (!tierConfig) {
+    // Validate input
+    if (!newTier) {
+      return res.status(400).json({ error: 'Missing required parameter: newTier' });
+    }
+
+    if (!['starter', 'professional', 'enterprise'].includes(newTier)) {
       return res.status(400).json({ error: 'Invalid tier' });
     }
 
-    // In production, this would query database for actual counts
-    // Mock data showing potential impacts
-    const currentUsage = {
-      users: 15,
-      entities: 2500,
-      integrations: 7,
-    };
+    // Get tenant ID from session/auth (for now, use mock)
+    const tenantId = req.user?.tenantId || 'demo-tenant';
 
-    const newLimits = tierConfig.features;
-
-    const impact = {
-      hasImpact: false,
-      usersOverLimit: 0,
-      entitiesOverLimit: 0,
-      integrationsOverLimit: 0,
-    };
-
-    if (currentUsage.users > newLimits.maxUsers) {
-      impact.hasImpact = true;
-      impact.usersOverLimit = currentUsage.users - newLimits.maxUsers;
-    }
-
-    if (currentUsage.entities > newLimits.maxEntities && newLimits.maxEntities !== 'unlimited') {
-      impact.hasImpact = true;
-      impact.entitiesOverLimit = currentUsage.entities - newLimits.maxEntities;
-    }
-
-    if (currentUsage.integrations > newLimits.maxIntegrations && newLimits.maxIntegrations !== 'unlimited') {
-      impact.hasImpact = true;
-      impact.integrationsOverLimit = currentUsage.integrations - newLimits.maxIntegrations;
-    }
+    // Get impact analysis from subscription manager
+    const impact = await subscriptionManager.checkDowngradeImpact({
+      tenantId,
+      newTier,
+    });
 
     res.json(impact);
   } catch (error) {
-    console.error('Error checking downgrade impact:', error);
-    res.status(500).json({ error: 'Failed to check downgrade impact' });
+    console.error('[API] Error checking downgrade impact:', error.message);
+    res.status(500).json({
+      error: 'Failed to check downgrade impact',
+      message: error.message,
+    });
   }
 });
 
 /**
- * Schedule downgrade
+ * Schedule subscription downgrade
  * POST /api/subscription/downgrade
+ *
+ * Body: { newTier: string }
+ * Returns: Scheduled downgrade confirmation
  */
 router.post('/downgrade', async (req, res) => {
   try {
     const { newTier } = req.body;
 
-    // In production, this would:
-    // 1. Validate user has permission
-    // 2. Schedule downgrade in Stripe (at period end)
-    // 3. Update database with scheduled change
-    // 4. Send confirmation email
-
-    const tierConfig = PRICING_TIERS[newTier];
-    if (!tierConfig) {
-      return res.status(400).json({ error: 'Invalid tier' });
+    // Validate input
+    if (!newTier) {
+      return res.status(400).json({ error: 'Missing required field: newTier' });
     }
 
-    // Mock scheduled downgrade
-    const effectiveDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days from now
+    // Get tenant and user ID from session/auth (for now, use mock)
+    const tenantId = req.user?.tenantId || 'demo-tenant';
+    const userId = req.user?.id || 'demo-user';
 
-    console.log(`[Subscription] Downgrade scheduled: ${newTier} (effective ${effectiveDate.toLocaleDateString()})`);
-
-    res.json({
-      success: true,
-      message: `Downgrade to ${newTier} scheduled for ${effectiveDate.toLocaleDateString()}`,
-      effectiveDate,
+    // Schedule downgrade through subscription manager
+    const result = await subscriptionManager.scheduleDowngrade({
+      tenantId,
       newTier,
-      canCancel: true,
+      userId,
     });
+
+    res.json(result);
   } catch (error) {
-    console.error('Error scheduling downgrade:', error);
-    res.status(500).json({ error: 'Failed to schedule downgrade' });
+    console.error('[API] Error scheduling downgrade:', error.message);
+    res.status(500).json({
+      error: 'Failed to schedule downgrade',
+      message: error.message,
+    });
   }
 });
 
 /**
- * Switch billing cycle
+ * Switch billing cycle (monthly <-> annual)
  * POST /api/subscription/switch-cycle
+ *
+ * Body: { newCycle: string }
+ * Returns: Updated subscription with new cycle
  */
 router.post('/switch-cycle', async (req, res) => {
   try {
     const { newCycle } = req.body;
 
+    // Validate input
+    if (!newCycle) {
+      return res.status(400).json({ error: 'Missing required field: newCycle' });
+    }
+
     if (!['monthly', 'annual'].includes(newCycle)) {
       return res.status(400).json({ error: 'Invalid billing cycle' });
     }
 
-    // In production, this would:
-    // 1. Update Stripe subscription
-    // 2. Calculate proration
-    // 3. Update database
-    // 4. Send confirmation
+    // Get tenant and user ID from session/auth (for now, use mock)
+    const tenantId = req.user?.tenantId || 'demo-tenant';
+    const userId = req.user?.id || 'demo-user';
 
-    // Mock cycle switch
-    const currentTier = 'professional'; // Mock current tier
-    const tierConfig = PRICING_TIERS[currentTier];
-    const newPrice = newCycle === 'monthly' ? tierConfig.monthlyPrice : tierConfig.annualPrice;
-
-    console.log(`[Subscription] Billing cycle switched: ${newCycle}`);
-
-    res.json({
-      success: true,
-      message: `Billing cycle switched to ${newCycle}`,
+    // Switch cycle through subscription manager
+    const result = await subscriptionManager.switchBillingCycle({
+      tenantId,
       newCycle,
-      newPrice,
-      effectiveImmediately: true,
+      userId,
     });
+
+    res.json(result);
   } catch (error) {
-    console.error('Error switching billing cycle:', error);
-    res.status(500).json({ error: 'Failed to switch billing cycle' });
+    console.error('[API] Error switching billing cycle:', error.message);
+    res.status(500).json({
+      error: 'Failed to switch billing cycle',
+      message: error.message,
+    });
   }
 });
 
 /**
  * Cancel scheduled downgrade
  * POST /api/subscription/cancel-downgrade
+ *
+ * Returns: Cancellation confirmation
  */
 router.post('/cancel-downgrade', async (req, res) => {
   try {
-    // In production, this would:
-    // 1. Cancel scheduled change in Stripe
-    // 2. Update database
-    // 3. Send confirmation
+    // Get tenant and user ID from session/auth (for now, use mock)
+    const tenantId = req.user?.tenantId || 'demo-tenant';
+    const userId = req.user?.id || 'demo-user';
 
-    console.log('[Subscription] Scheduled downgrade cancelled');
+    // Cancel scheduled downgrade through subscription manager
+    const result = await subscriptionManager.cancelScheduledDowngrade({
+      tenantId,
+      userId,
+    });
+
+    res.json(result);
+  } catch (error) {
+    console.error('[API] Error cancelling downgrade:', error.message);
+    res.status(500).json({
+      error: 'Failed to cancel downgrade',
+      message: error.message,
+    });
+  }
+});
+
+/**
+ * Get current subscription status
+ * GET /api/subscription/status
+ *
+ * Returns: Current subscription details
+ */
+router.get('/status', async (req, res) => {
+  try {
+    // Get tenant ID from session/auth (for now, use mock)
+    const tenantId = req.user?.tenantId || 'demo-tenant';
+
+    // Get current subscription from repository
+    const subscription = await subscriptionRepository.getCurrentSubscription(tenantId);
+
+    if (!subscription) {
+      return res.status(404).json({
+        error: 'No active subscription found',
+        hasSubscription: false,
+      });
+    }
 
     res.json({
       success: true,
-      message: 'Scheduled downgrade cancelled',
+      subscription: {
+        id: subscription.id,
+        tier: subscription.tier,
+        status: subscription.status,
+        billingCycle: subscription.billingCycle,
+        currentPeriodEnd: subscription.currentPeriodEnd,
+        cancelAtPeriodEnd: subscription.cancelAtPeriodEnd,
+      },
     });
   } catch (error) {
-    console.error('Error cancelling downgrade:', error);
-    res.status(500).json({ error: 'Failed to cancel downgrade' });
+    console.error('[API] Error getting subscription status:', error.message);
+    res.status(500).json({
+      error: 'Failed to get subscription status',
+      message: error.message,
+    });
   }
+});
+
+/**
+ * Health check endpoint
+ * GET /api/subscription/health
+ *
+ * Returns: Service health status
+ */
+router.get('/health', (req, res) => {
+  res.json({
+    status: 'healthy',
+    service: 'subscription-api',
+    version: '1.0.0',
+    stripe: {
+      configured: stripeService.isConfigured(),
+    },
+    timestamp: new Date().toISOString(),
+  });
 });
 
 export default router;

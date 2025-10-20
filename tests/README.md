@@ -132,6 +132,12 @@ Mocks configured:
 - ✅ TanStack Query (`@tanstack/react-query`)
 - ⚠️ Testing Library (commented out - missing dependency)
 
+### Playwright End-to-End Coverage
+
+| Scenario | File | Tags |
+|----------|------|------|
+| Trial onboarding wizard regression (completion, refresh, skip) | `tests/e2e/onboarding-wizard.spec.ts` | `@onboarding`, `@smoke` |
+
 ---
 
 ## BMAD-METHOD Alignment

@@ -86,7 +86,7 @@ const sendDay12Warnings = async () => {
     threeDaysEnd.setHours(23, 59, 59, 999)
 
     // Find tenants with trials expiring in exactly 3 days
-    const expiring Tenants = await prisma.tenant.findMany({
+    const expiringTenants = await prisma.tenant.findMany({
       where: {
         isInTrial: true,
         trialEndDate: {

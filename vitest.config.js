@@ -2,9 +2,13 @@ import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import dotenv from 'dotenv'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
+
+// Load test environment variables
+dotenv.config({ path: '.env.test' })
 
 export default defineConfig({
   plugins: [react()],
@@ -19,12 +23,16 @@ export default defineConfig({
     include: [
       'tests/unit/**/*.test.jsx',
       'tests/unit/**/*.test.js',
+      'tests/integration/**/*.test.js',
       'services/__tests__/**/*.test.js',
       'services/__tests__/**/*.test.jsx',
     ],
     exclude: ['legacy/**'],
     environment: 'jsdom',
-    environmentMatchGlobs: [['services/__tests__/**', 'node']],
+    environmentMatchGlobs: [
+      ['services/__tests__/**', 'node'],
+      ['tests/integration/**', 'node'],
+    ],
     setupFiles: ['tests/setup.js'],
     globals: true,
     reporters: ['default', 'hanging-process'],

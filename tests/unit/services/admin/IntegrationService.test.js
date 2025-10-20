@@ -280,34 +280,36 @@ describe('IntegrationService', () => {
       })
     })
 
-    it('should handle health check timeout', async () => {
-      const mockIntegration = {
-        id: 'int-timeout',
-        type: 'XERO',
-        consecutiveFailures: 0,
-      }
+    it(
+      'should handle health check timeout',
+      async () => {
+        const mockIntegration = {
+          id: 'int-timeout',
+          type: 'XERO',
+          consecutiveFailures: 0,
+        }
 
-      const xeroModule = await import('../../../../server/integrations/xero.js')
-      // Mock a promise that never resolves (simulating timeout)
-      xeroModule.healthCheck.mockImplementation(
-        () => new Promise(() => {}) // Never resolves
-      )
+        const xeroModule = await import('../../../../server/integrations/xero.js')
+        // Mock a promise that never resolves (simulating timeout)
+        xeroModule.healthCheck.mockImplementation(() => new Promise(() => {})) // Never resolves
 
-      prisma.adminIntegration.findUnique.mockResolvedValue(mockIntegration)
-      prisma.adminIntegration.update.mockResolvedValue({
-        ...mockIntegration,
-        healthStatus: 'DEGRADED',
-      })
-      prisma.adminSyncJob.create.mockResolvedValue({ id: 'sync-timeout' })
+        prisma.adminIntegration.findUnique.mockResolvedValue(mockIntegration)
+        prisma.adminIntegration.update.mockResolvedValue({
+          ...mockIntegration,
+          healthStatus: 'DEGRADED',
+        })
+        prisma.adminSyncJob.create.mockResolvedValue({ id: 'sync-timeout' })
 
-      const result = await IntegrationService.testConnection('int-timeout')
+        const result = await IntegrationService.testConnection('int-timeout')
 
-      expect(result.healthy).toBe(false)
-      expect(result.message).toContain('timeout')
+        expect(result.healthy).toBe(false)
+        expect(result.message).toContain('timeout')
 
-      // Restore the mock for other tests
-      xeroModule.healthCheck.mockResolvedValue({ success: true, responseTime: 150 })
-    })
+        // Restore the mock for other tests
+        xeroModule.healthCheck.mockResolvedValue({ success: true, responseTime: 150 })
+      },
+      15000
+    ) // 15 second timeout (implementation has 10 second timeout)
   })
 
   describe('syncIntegration', () => {

@@ -21,6 +21,12 @@ On October 19, 2025, at 09:00 UTC, the Backend API and MCP Server production ser
 - ❌ Backend API: DOWN (502) from 09:00-19:03 UTC
 - ❌ MCP Server: DOWN (502) from 09:00-19:03 UTC
 
+**Issue #12 - Authentication Failure** (Discovered after 502 resolution):
+- ✅ Backend: Restored (200 OK)
+- ❌ Sign In/Sign Out: Non-functional (Clerk domain mismatch)
+- Root Cause: Clerk key for `capliquify.com` used with `sentia-*` service names
+- Resolution: Comprehensive Sentia → CapLiquify renaming (2025-10-20)
+
 ### Resolution Timeline
 
 | Time | Event |
@@ -441,9 +447,12 @@ Production parity in development catches issues before deployment.
 - **Related**: [BMAD-INFRA-004](../stories/2025-10-bmad-infra-004-pgvector-extension-compatibility.md)
 - **Epic**: [EPIC-005](../epics/2025-10-EPIC-005-production-deployment-hardening.md)
 - **Deployment Guide**: `docs/render-deployment-guide.md`
+- **Issue #12 Resolution**: [2025-10-20-BMAD-DEPLOY-001-capliquify-renaming.md](2025-10-20-BMAD-DEPLOY-001-capliquify-renaming.md)
+- **Renaming Guide**: [docs/SENTIA_TO_CAPLIQUIFY_RENAMING_GUIDE.md](../../docs/SENTIA_TO_CAPLIQUIFY_RENAMING_GUIDE.md)
 
 ---
 
-**Retrospective Completed**: 2025-10-19 19:30 UTC
+**Retrospective Completed**: 2025-10-19 19:30 UTC (502 resolution)
+**Updated**: 2025-10-20 (Issue #12 - CapLiquify renaming added)
 **Participants**: Claude (BMAD Developer Agent), BMAD-METHOD v6a Framework
-**Next Review**: After next production deployment
+**Next Review**: After Render services renamed and authentication verified

@@ -162,7 +162,8 @@
       "Bash(DATABASE_URL=\"postgresql://capliquify_test_db_user:CSgcCKzGdnh5PKok489sgcqaMH3eNsEH@dpg-d3r4aa7diees73apt8ng-a.frankfurt-postgres.render.com/capliquify_test_db\" npx prisma migrate deploy:*)",
       "Bash(PGPASSWORD=CSgcCKzGdnh5PKok489sgcqaMH3eNsEH psql:*)",
       "Bash(DATABASE_URL=\"postgresql://capliquify_test_db_user:CSgcCKzGdnh5PKok489sgcqaMH3eNsEH@dpg-d3r4aa7diees73apt8ng-a.frankfurt-postgres.render.com/capliquify_test_db\" node:*)",
-      "Bash(DATABASE_URL=\"postgresql://capliquify_test_db_user:CSgcCKzGdnh5PKok489sgcqaMH3eNsEH@dpg-d3r4aa7diees73apt8ng-a.frankfurt-postgres.render.com/capliquify_test_db\" npx prisma migrate resolve:*)"
+      "Bash(DATABASE_URL=\"postgresql://capliquify_test_db_user:CSgcCKzGdnh5PKok489sgcqaMH3eNsEH@dpg-d3r4aa7diees73apt8ng-a.frankfurt-postgres.render.com/capliquify_test_db\" npx prisma migrate resolve:*)",
+      "Bash(mkdir:*)"
     ],
     "deny": [],
     "ask": []

@@ -1,38 +1,67 @@
-# CLAUDE.md
+# CLAUDE.md - Navigation Index
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## 🚀 **DEVELOPMENT METHODOLOGY: BMAD-METHOD v6-Alpha**
+**Last Updated**: October 23, 2025
+**Documentation Structure**: Modular shards for better maintainability
+**Current Status**: 85% production-ready | Multi-tenant Phases 1-6 complete | 4-6 weeks to production
 
-**CRITICAL**: This project now uses **BMAD-METHOD v6-alpha (6.0.0-alpha.0)** - Official alpha release with modular architecture.
+## 🚨 Critical Rules (MUST READ)
 
-**Framework**: https://github.com/bmad-code-org/BMAD-METHOD (v6-alpha branch)
-**Implementation Guide**: See [BMAD-METHOD-V6A-IMPLEMENTATION.md](BMAD-METHOD-V6A-IMPLEMENTATION.md)
-**Status**: Phase 4 (Implementation) - ACTIVE with v6-alpha framework
-**Updated**: 2025-10-20 (Migrated from manual v6a to official v6-alpha)
-**Migration Guide**: [BMAD-V6ALPHA-MIGRATION-GUIDE.md](bmad/BMAD-V6ALPHA-MIGRATION-GUIDE.md)
+### 🔴 NEVER AUTOMATICALLY COMMIT TO TEST/PRODUCTION BRANCHES
+- ✅ Work in `main` branch
+- ❌ NO auto-commits to `test` or `production` without explicit instruction
+- ❌ NO PRs to test/production without explicit user request
 
-### BMAD Four-Phase Workflow
+### 📝 Development Standards
+- Do what's asked; nothing more, nothing less
+- NEVER create files unless absolutely necessary
+- ALWAYS prefer editing existing files
+- DO NOT add code comments unless asked
 
-```
-Phase 1: ANALYSIS → Phase 2: PLANNING → Phase 3: SOLUTIONING → Phase 4: IMPLEMENTATION
-```
+## 📚 Documentation Structure
 
-### BMAD Agent Roles
+The documentation is organized into focused shards for better maintainability:
 
-- **PM** (`bmad pm`) - Project planning, epic creation
-- **Architect** (`bmad architect`) - Solution architecture, tech specs
-- **Scrum Master** (`bmad sm`) - Story creation, retrospectives
-- **Developer** (`bmad dev`) - Code implementation
-- **QA** (`bmad qa`) - Quality assurance, testing
+### [01-methodology/](claude-shards/01-methodology/)
+- **[bmad-method.md](claude-shards/01-methodology/bmad-method.md)** - BMAD-METHOD v6-Alpha framework
+- **[bmad-auto-update.md](claude-shards/01-methodology/bmad-auto-update.md)** - Autonomous framework updates
+- **[autonomous-git.md](claude-shards/01-methodology/autonomous-git.md)** - Git automation system
 
-### Quick Reference
+### [02-project-context/](claude-shards/02-project-context/)
+- **[ecosystem-positioning.md](claude-shards/02-project-context/ecosystem-positioning.md)** - CapLiquify & FinanceFlo.ai relationship
+- **[multi-tenant-transformation.md](claude-shards/02-project-context/multi-tenant-transformation.md)** - SaaS transformation progress
+- **[implementation-status.md](claude-shards/02-project-context/implementation-status.md)** - Feature completion tracking
 
-- **Next Action**: Run `bmad pm workflow-status` to check project status
-- **Documentation**: See `bmad/docs/` for workflows and guides
-- **Implementation Plan**: Complete roadmap in BMAD-METHOD-V6A-IMPLEMENTATION.md
+### [03-technical/](claude-shards/03-technical/)
+- **[architecture-overview.md](claude-shards/03-technical/architecture-overview.md)** - System architecture
+- **[authentication-system.md](claude-shards/03-technical/authentication-system.md)** - Clerk auth integration
+- **[integrations.md](claude-shards/03-technical/integrations.md)** - External API status
+- **[database-config.md](claude-shards/03-technical/database-config.md)** - Database setup
+- **[project-structure.md](claude-shards/03-technical/project-structure.md)** - Directory organization
 
-### 🤖 **BMAD Auto-Update Agent** ✅ **ACTIVE** (NEW - 2025-10-21)
+### [04-deployment/](claude-shards/04-deployment/)
+- **[deployment-infrastructure.md](claude-shards/04-deployment/deployment-infrastructure.md)** - Render setup
+- **[environment-setup.md](claude-shards/04-deployment/environment-setup.md)** - Environment variables
+- **[branch-strategy.md](claude-shards/04-deployment/branch-strategy.md)** - Git workflow
+- **[critical-deployment-rules.md](claude-shards/04-deployment/critical-deployment-rules.md)** - ⚠️ MUST READ
+
+### [05-guidelines/](claude-shards/05-guidelines/)
+- **[reality-summary.md](claude-shards/05-guidelines/reality-summary.md)** - What actually works
+- **[code-standards.md](claude-shards/05-guidelines/code-standards.md)** - Development standards
+- **[security.md](claude-shards/05-guidelines/security.md)** - Security practices
+- **[important-instructions.md](claude-shards/05-guidelines/important-instructions.md)** - Critical instructions
+
+## 🚀 Quick Start
+
+1. **Development Methodology**: Using BMAD-METHOD v6-Alpha (see [methodology](claude-shards/01-methodology/bmad-method.md))
+2. **Current Status**: Multi-tenant SaaS transformation Phases 1-6 complete
+3. **Integrations**: 2/4 operational (Shopify, Amazon), 1/4 partial (Unleashed), 1/4 stub (Xero)
+4. **Next Action**: Run `bmad pm workflow-status` to check project status
+
+## ⚡ Active Systems
+
+### 🤖 BMAD Auto-Update Agent ✅
 
 **Status**: Operational - Autonomous daily framework updates
 **Version**: 1.0.0
@@ -63,63 +92,54 @@ node scripts/test-update.cjs --verbose
 powershell -ExecutionPolicy Bypass -File scripts/setup-task-scheduler.ps1
 ```
 
-**Documentation**:
-- [Auto-Update Guide](docs/BMAD-AUTO-UPDATE.md) - Complete usage documentation
-- [Workflow Integration](bmad/BMAD-AUTO-UPDATE-AGENT.md) - BMAD workflow integration
-- Configuration: `scripts/bmad-update-config.json`
+For complete documentation, see [bmad-auto-update.md](claude-shards/01-methodology/bmad-auto-update.md)
 
-**What Gets Updated**: Framework files only (bmad/core/, bmad/bmm/)
-**What's Preserved**: All project files (epics/, stories/, retrospectives/, planning/, etc.)
-**Logs**: `logs/bmad-updates/` | **Reports**: `bmad/status/auto-update-*.md`
+### 🤖 Autonomous Git Agent ✅
+**Status**: Operational - Auto-commits, pushes, and suggests PRs
+For complete documentation, see [autonomous-git.md](claude-shards/01-methodology/autonomous-git.md)
 
-## 🌐 **ECOSYSTEM POSITIONING: CAPLIQUIFY & FINANCEFLO.AI**
+## 📌 Project Context
 
-**Date**: October 20, 2025
-**Status**: Platform integration complete
-**Founder**: Dudley Peacock (CEO of both platforms)
+### Ecosystem Positioning
+**CapLiquify** is a specialized working capital SaaS built on **FinanceFlo.ai** infrastructure.
+For complete details, see [ecosystem-positioning.md](claude-shards/02-project-context/ecosystem-positioning.md)
 
-### Platform Relationship
+### Multi-Tenant Transformation
+**Status**: Phases 1-6 complete (Database, Backend, Auth, Marketing, Admin, Billing)
+For complete details, see [multi-tenant-transformation.md](claude-shards/02-project-context/multi-tenant-transformation.md)
 
-**CapLiquify** and **FinanceFlo.ai** form a unified ecosystem under Dudley Peacock's leadership:
+### Implementation Status
+**Current**: 85% production-ready | 4-6 weeks remaining
+For complete details, see [implementation-status.md](claude-shards/02-project-context/implementation-status.md)
 
-**FinanceFlo.ai** = Infrastructure Platform
-- Enterprise-grade ERP integration and finance automation
-- 450+ UK businesses, 66% cost reduction, 500% ROI
-- Services: ERP implementation, AI automation, custom workflows
-- Target: Businesses needing comprehensive finance automation
 
-**CapLiquify** = Specialized Application
-- Working capital optimization SaaS built on FinanceFlo infrastructure
-- AI-powered forecasting (>85% accuracy), <55 day cash conversion cycles
-- Target: Global manufacturers needing working capital management
-- Specialized focus: Manufacturing operations, inventory optimization
+## 🔧 Technical Details
 
-**Trust Transfer Strategy**: CapLiquify leverages FinanceFlo's proven infrastructure (450+ businesses) for credibility while maintaining specialized manufacturing focus.
+For architecture, authentication, integrations, and database configuration, see:
+- [03-technical/](claude-shards/03-technical/) - Technical documentation
 
-**Marketing Integration**:
-- ✅ "Powered by FinanceFlo.ai infrastructure" messaging throughout site
-- ✅ All testimonials replaced with real FinanceFlo metrics (no fake customer names)
-- ✅ Ecosystem page explaining platform relationship
-- ✅ About page with Dudley Peacock bio (founder of both)
-- ✅ Cross-links between platforms in footer and navigation
+## 🚢 Deployment
 
-**Key Pages**:
-- [EcosystemPage.tsx](src/pages/marketing/EcosystemPage.tsx) - Platform relationship diagram, decision tree
-- [AboutPage.tsx](src/pages/marketing/AboutPage.tsx) - Company history, Dudley Peacock leadership
-- [LandingPage.tsx](src/pages/marketing/LandingPage.tsx) - TrustBar with FinanceFlo metrics
-- [LandingPageFooter.tsx](src/pages/marketing/LandingPageFooter.tsx) - FinanceFlo links, powered by badge
+For deployment infrastructure, environment setup, and branch strategy, see:
+- [04-deployment/](claude-shards/04-deployment/) - Deployment documentation
+
+## 📋 Guidelines
+
+For reality summary, code standards, and security practices, see:
+- [05-guidelines/](claude-shards/05-guidelines/) - Guidelines and standards
 
 ---
 
-## 🚀 **CAPLIQUIFY MULTI-TENANT TRANSFORMATION** ✅ **PHASE 1 & 2 COMPLETE**
+## 🎯 Summary
 
-**Date**: October 19, 2025
-**Status**: Foundation complete - Multi-tenant SaaS infrastructure ready
-**Commit**: 9897f4e9
+This project is an **85% production-ready** manufacturing intelligence platform with:
+- ✅ Complete multi-tenant SaaS foundation (Phases 1-6 done)
+- ✅ Enterprise-grade architecture (React, Node.js, Prisma, PostgreSQL)
+- ✅ Production-ready authentication (Clerk) and billing (Stripe)
+- ⚠️ 2/4 integrations operational (Shopify, Amazon), 1 partial (Unleashed), 1 stub (Xero)
+- ⏳ 4-6 weeks remaining: integration fixes + testing + hardening
 
-### Transformation Overview
-
-**CapLiquify** is the multi-tenant SaaS evolution of the CapLiquify Manufacturing Platform. The transformation converts a single-tenant application into a scalable, enterprise-grade platform supporting 100+ tenants with schema-per-tenant isolation.
+**For detailed information, navigate to the appropriate shard documentation above.**
 
 ### Completed Phases ✅
 
@@ -230,18 +250,44 @@ PostgreSQL Database
 **Velocity**: 1.5x faster than estimated (4 hours vs 6 hours)
 **Documentation**: [Phase 5.1 Retrospective](bmad/retrospectives/2025-10-20-phase-5-1-master-admin-completion.md)
 
+### Completed Phases (Continued)
+
+**Phase 3: Authentication & Tenant Management** (100% Complete) ✅ **NEW - October 23, 2025**
+- ✅ Clerk webhooks integration (709 lines)
+- ✅ Tenant provisioning service (432 lines)
+- ✅ Organization switcher UI (142 lines)
+- ✅ User invitation system with email notifications (750 lines)
+- ✅ Multi-tenant onboarding flow verification
+- ✅ Organization metadata sync via webhooks
+- ✅ User role management API + UI (1,200 lines)
+- ✅ Multi-tenant auth flow with middleware (452 lines)
+
+**Deliverables**: 8/8 stories complete, ~2,400 lines of code, ~1,800 lines of documentation
+**Velocity**: Completed in 6 hours (2 sessions)
+**Documentation**: [Phase 3 Retrospective](bmad/retrospectives/2025-10-23-phase-3-complete.md)
+
+**Phase 6: Billing & Subscriptions (Stripe)** (100% Complete) ✅ **NEW - October 23, 2025**
+- ✅ Stripe billing integration (BMAD-MULTITENANT-004)
+- ✅ Subscription management system
+- ✅ Pricing tiers implementation (Starter/Professional/Enterprise)
+- ✅ Trial automation and expiration handling
+- ✅ Stripe webhook handlers for subscription events
+
+**Deliverables**: 4/4 stories complete (BMAD-MULTITENANT-004)
+**Documentation**: [Phase 6 Retrospective](bmad/retrospectives/2025-10-23-BMAD-MULTITENANT-004-retrospective.md)
+
 ### Remaining Phases
 
 | Phase | Description | Estimated Time | Status |
 |-------|-------------|----------------|--------|
-| **Phase 3** | Authentication & Tenant Management | 3-4 weeks | ⏳ Pending |
+| **Phase 3** | Authentication & Tenant Management | 3-4 weeks | ✅ **COMPLETE** (October 23, 2025) |
 | **Phase 4** | Marketing Website | 2-3 weeks | ✅ **COMPLETE** (October 22, 2025) |
 | **Phase 5** | Master Admin Dashboard | 2-3 weeks | ✅ **COMPLETE** (October 20, 2025) |
-| **Phase 6** | Billing & Subscriptions (Stripe) | 3-4 weeks | ⏳ Pending |
+| **Phase 6** | Billing & Subscriptions (Stripe) | 3-4 weeks | ✅ **COMPLETE** (October 23, 2025) |
 | **Phase 7** | Data Migration & Testing | 2-3 weeks | ⏳ Pending |
 | **Phase 8** | Production Launch & Monitoring | 1-2 weeks | ⏳ Pending |
 
-**Total Estimated Time to Production**: 9-15 weeks (2-3.5 months) - Updated after Phases 4 & 5 completion
+**Total Estimated Time to Production**: 3-5 weeks (Phases 7 & 8 only) - Updated after Phases 1-6 completion
 
 ### Documentation
 
@@ -271,30 +317,39 @@ PostgreSQL Database
 - ✅ **Three-Tier Fallback**: API → Database → 503 Setup Instructions (never fake data) ⬆️ **EPIC-002**
 - ✅ **Deployment Chain**: 4 critical blockers resolved (Prisma, ES modules, Clerk env var, UI polish) ⬆️ **NEW**
 
-## ✅ **CRITICAL DATA INTEGRITY COMPLIANCE ACHIEVED**
+## ⚠️ **DATA INTEGRITY STATUS** ⬆️ **CORRECTED (October 23, 2025)**
 
-**BREAKTHROUGH**: Complete elimination of mock data violations achieved through systematic reconstruction. The application now maintains 100% data integrity compliance with error-first architecture.
+**Status**: Significant progress made, but mock data violations still exist in 1 integration.
 
-**✅ Mock Data Violations Eliminated**:
+**✅ Mock Data Violations Eliminated** (Partial):
 
-- ✅ **FinancialAlgorithms.js**: All hardcoded fallbacks removed, uses real Sentia data only
-- ✅ **APIIntegration.js**: Fake order generation eliminated, real Shopify integration operational
-- ✅ **All Services**: Proper "no data available" states instead of mock data fallbacks
+- ✅ **FinancialAlgorithms.js**: Hardcoded fallbacks removed, uses real data
+- ✅ **APIIntegration.js**: Fake order generation eliminated
+- ✅ **Shopify Integration**: Full implementation, no mock fallbacks
+- ✅ **Amazon SP-API**: Full implementation, no mock fallbacks
+- ⚠️ **Unleashed Integration**: **HAS MOCK FALLBACK** (lines 40-66) - violates zero mock data claim
+- ❌ **Xero Integration**: Stub only - returns empty arrays
 
-**✅ Live External Data Integration**:
+**⚠️ Remaining Mock Data Violations**:
 
 ```javascript
-// Shopify Integration - Real commission calculations
-const transactionFeeRate = 0.029 // 2.9% Shopify transaction fee
-const netRevenue = grossRevenue - grossRevenue * transactionFeeRate
-
-// Xero Integration - Real-time financial data
-const xeroData = await xeroService.getWorkingCapital()
-if (xeroData?.success) {
-  enhancedData.accountsReceivable = xeroData.data.accountsReceivable
-  enhancedData.accountsPayable = xeroData.data.accountsPayable
+// unleashed.js lines 40-66 - MOCK FALLBACK PRESENT
+async makeRequest(endpoint, params = {}) {
+  if (this.mockMode) {
+    return this.getMockData(endpoint)  // FALLBACK TO MOCK
+  }
+  // ... real API calls ...
+  catch (error) {
+    console.error('Unleashed API error:', error.message)
+    return this.getMockData(endpoint)  // FALLBACK ON ERROR ⚠️
+  }
 }
 ```
+
+**Action Required**:
+1. Remove mock fallback from Unleashed integration
+2. Implement proper 503 error responses
+3. Implement Xero integration OR remove claims
 
 ## IMPLEMENTATION STATUS BY FEATURE
 
@@ -360,13 +415,13 @@ if (xeroData?.success) {
 - **Components**: shopify-multistore.js with live data streaming
 - **Reality**: 500+ real transactions, live inventory sync, net revenue tracking
 
-#### **Xero Financial Integration** ✅ **COMPLETE**
+#### **Xero Financial Integration** ❌ **STUB ONLY - NOT IMPLEMENTED**
 
-- **Status**: Live receivables/payables data streaming
-- **Functionality**: Real-time working capital enhancement
-- **Components**: xeroService.js with OAuth integration
-- **Reality**: Actual financial data supplementing Sentia database
-- **Epic**: BMAD-MOCK-001 (EPIC-002)
+- **Status**: 7-line stub returning empty arrays
+- **Functionality**: NOT FUNCTIONAL - requires full implementation
+- **Components**: xero.js (7 lines) - stub file only
+- **Reality**: Returns empty array `[]` - no OAuth, no API calls
+- **Action Required**: Implement full Xero integration OR remove from marketing claims
 
 #### **Amazon SP-API Integration** ✅ **NEW** (EPIC-002)
 
@@ -376,12 +431,13 @@ if (xeroData?.success) {
 - **Reality**: Real-time inventory data, order revenue, unshipped items tracking
 - **Epic**: BMAD-MOCK-005 (EPIC-002)
 
-#### **Unleashed ERP Integration** ✅ **NEW** (EPIC-002)
+#### **Unleashed ERP Integration** ⚠️ **PARTIAL** (EPIC-002)
 
-- **Status**: Live manufacturing data streaming with HMAC-SHA256 authentication
+- **Status**: Full implementation with mock data fallback (lines 40-66)
 - **Functionality**: Assembly job tracking, stock on hand sync, production schedule, quality alerts
-- **Components**: unleashed-erp.js with 15-minute sync, SSE real-time updates
-- **Reality**: Real-time production metrics, quality control alerts (yield <95%), low-stock alerts
+- **Components**: unleashed.js (462 lines) with HMAC-SHA256 authentication
+- **Reality**: Falls back to mock data on API errors - violates "zero mock data" principle
+- **Action Required**: Remove mock fallback, return proper 503 errors instead
 - **Epic**: BMAD-MOCK-006 (EPIC-002)
 
 #### **Import/Export System** ✅ **COMPLETE** (Phase 2)
@@ -577,33 +633,46 @@ if (xeroData?.success) {
 - ✅ **Code Verification**: All components tested and functional
 - ✅ **Production Readiness**: APPROVED (pending Render restoration)
 
-## INTEGRATION STATUS
+## INTEGRATION STATUS ⬆️ **CORRECTED (October 23, 2025)**
 
-### **Xero Integration** ✅ **OPERATIONAL**
+### **Integration Summary**
 
-- **Framework**: Service classes fully functional
-- **Reality**: Live OAuth connection with real-time data streaming
-- **Status**: Operational - providing receivables, payables, and working capital data
+| Integration | Status | Details |
+|-------------|--------|---------|
+| Shopify | ✅ Operational | 486 lines, full implementation |
+| Amazon SP-API | ✅ Operational | 583 lines, full implementation |
+| Unleashed ERP | ⚠️ Partial | 462 lines, has mock fallback |
+| Xero | ❌ Stub Only | 7 lines, not implemented |
 
 ### **Shopify Integration** ✅ **OPERATIONAL**
 
-- **Framework**: Multi-store service fully implemented
+- **Framework**: Multi-store service fully implemented (486 lines)
 - **Reality**: UK/EU/USA stores actively syncing with 2.9% commission tracking
 - **Status**: Operational - 500+ real transactions, live inventory sync
+- **Authentication**: API keys configured via environment variables
 
 ### **Amazon SP-API** ✅ **OPERATIONAL** (EPIC-002)
 
-- **Framework**: Complete OAuth 2.0 + AWS IAM authentication implemented
+- **Framework**: Complete OAuth 2.0 + AWS IAM authentication implemented (583 lines)
 - **Reality**: FBA inventory sync, order metrics, channel performance tracking
 - **Status**: Operational - 15-minute sync, rate limiting respected, ready for credential configuration
 - **Epic**: BMAD-MOCK-005 (completed 2025-10-19)
 
-### **Unleashed ERP** ✅ **OPERATIONAL** (EPIC-002)
+### **Unleashed ERP** ⚠️ **PARTIAL IMPLEMENTATION** (EPIC-002)
 
-- **Framework**: HMAC-SHA256 authentication, 15-minute background sync
-- **Reality**: Assembly job tracking, stock on hand, production schedule, quality alerts
-- **Status**: Operational - SSE real-time updates, low-stock alerts, quality control monitoring
-- **Epic**: BMAD-MOCK-006 (completed 2025-10-19)
+- **Framework**: HMAC-SHA256 authentication, full API implementation (462 lines)
+- **Reality**: Has mock data fallback on errors (lines 40-66) - **violates "zero mock data" claim**
+- **Status**: Partial - works with credentials, falls back to mock without
+- **Action Required**: Remove mock fallback, implement proper 503 error responses
+- **Epic**: BMAD-MOCK-006 (completed 2025-10-19, needs revision)
+
+### **Xero Financial Integration** ❌ **STUB ONLY - NOT IMPLEMENTED**
+
+- **Framework**: 7-line stub file returning empty arrays
+- **Reality**: NO OAuth, NO API calls, NO data streaming
+- **Status**: Not implemented - returns `[]` for all methods
+- **Action Required**: Full implementation (8-12 hours) OR remove from documentation/marketing
+- **Epic**: BMAD-MOCK-001 (INCORRECTLY marked complete)
 
 ## DEPLOYMENT INFRASTRUCTURE ✅
 
@@ -1023,50 +1092,64 @@ Claude must ONLY work in the `main` branch. Any commits, pushes, or PRs to `test
 - Environment variables automatically injected from Render dashboard
 - Health checks configured at `/health` endpoint
 
-## 🚨 **HONEST REALITY SUMMARY** ⬆️ **UPDATED (EPIC-002 COMPLETE)**
+## 🚨 **HONEST REALITY SUMMARY** ⬆️ **UPDATED (October 23, 2025)**
 
 ### **What This Application Actually Is**
 
-This is a **production-ready manufacturing intelligence platform** with enterprise-grade architecture and **ZERO mock data** (EPIC-002 complete). The infrastructure, UI, deployment, and **all external API integrations** are genuinely functional. Remaining work focuses on frontend polish (EPIC-003), test coverage (EPIC-004), and production deployment (EPIC-005).
+This is a **near production-ready manufacturing intelligence platform** with enterprise-grade architecture and **multi-tenant SaaS foundation complete** (Phases 1-6 done). The infrastructure, UI, deployment, and authentication are genuinely functional. **Integration reality**: 2/4 integrations fully operational, 1 partial, 1 stub. Remaining work focuses on integration completion, test coverage (EPIC-004), and production hardening (EPIC-005).
 
 ### **What Works vs What's Claimed**
 
 - ✅ **Architecture**: Genuinely enterprise-grade (React, Node.js, Prisma, PostgreSQL)
-- ✅ **Deployment**: Professional CI/CD with multiple environments
+- ✅ **Multi-Tenant Foundation**: Phases 1-6 complete (DB, Backend, Auth, Marketing, Admin, Billing) ⬆️ **NEW**
+- ✅ **Deployment**: Professional CI/CD with three-service architecture
 - ✅ **UI/UX**: Modern, responsive interface with proper component library
-- ✅ **Data Layer**: **ZERO mock data** - all services return real data OR 503 setup instructions ⬆️ **EPIC-002**
-- ✅ **Integrations**: 4 live API integrations (Xero, Shopify, Amazon SP-API, Unleashed ERP) ⬆️ **EPIC-002**
-- ✅ **Three-Tier Fallback**: API → Database → 503 (never fake data) ⬆️ **EPIC-002**
-- ✅ **Frontend Polish**: Breadcrumbs, status badges, error boundaries complete (EPIC-003) ⬆️ **NEW**
-- ✅ **Deployment Chain**: All critical blockers resolved (BMAD-DEPLOY-002/003/004) ⬆️ **NEW**
-- 🟡 **Render Deployment**: 95% complete, 2 manual actions pending (15-20 min) ⬆️ **NEW**
-- ⏳ **Test Coverage**: 40% current, targeting 90%+ (EPIC-004)
+- ✅ **Frontend Polish**: Breadcrumbs, status badges, error boundaries complete (EPIC-003)
+- ⚠️ **Data Layer**: Shopify & Amazon integrations complete, Unleashed has mock fallback, Xero is stub
+- ⚠️ **Integrations**: 2/4 fully operational (Shopify, Amazon), 1/4 partial (Unleashed), 1/4 stub (Xero)
+- ⚠️ **Test Coverage**: Estimated 20-30% actual (not 40% as claimed)
 - ⏳ **Production Hardening**: Security, monitoring, performance (EPIC-005)
+
+### **Integration Status (CORRECTED)**
+
+| Integration | Status | Implementation | Lines | Reality |
+|-------------|--------|----------------|-------|---------|
+| **Shopify** | ✅ Operational | Full multi-store support | 486 | UK/EU/USA stores, 2.9% commission tracking |
+| **Amazon SP-API** | ✅ Operational | OAuth 2.0 + AWS IAM | 583 | FBA inventory, order metrics, ready for credentials |
+| **Unleashed ERP** | ⚠️ Partial | Has mock fallback | 462 | Falls back to mock data on error (lines 40-66) |
+| **Xero** | ❌ Stub Only | 7-line stub | 7 | Returns empty array, not implemented |
+
+**Action Required**: Implement Xero integration OR remove claims, eliminate Unleashed mock fallback
 
 ### **Bottom Line**
 
-**BREAKTHROUGH ACHIEVED** (October 20, 2025):
-- ✅ EPIC-002 (Eliminate All Mock Data): **Complete** in 34 hours vs 140 hours estimated (4.1x velocity)
-- ✅ EPIC-003 (UI/UX Polish): **Complete** in 6.5 hours vs 120 hours estimated (18.5x velocity)
-- ✅ Deployment Chain (BMAD-DEPLOY-002/003/004): **Complete** in 1 hour vs 24+ hours estimated (24x velocity)
+**MULTI-TENANT TRANSFORMATION COMPLETE** (October 23, 2025):
+- ✅ **Phases 1-6 Complete**: Database, Backend, Auth, Marketing, Admin Dashboard, Billing (100%)
+- ✅ **Phase 3 (Auth)**: Completed October 23 in 6 hours (~2,400 lines of code)
+- ✅ **Phase 6 (Billing)**: Completed October 23 (BMAD-MULTITENANT-004)
+- ⚠️ **Integration Gaps**: Xero stub, Unleashed mock fallback need resolution
+- ⏳ **Phase 7 (Data Migration & Testing)**: 2-3 weeks
+- ⏳ **Phase 8 (Production Launch)**: 1-2 weeks
 
-**Previous Estimate**: 7-10 months to production
-**Current Progress**: **95% production-ready** (up from 88% on October 18)
-**Revised Estimate**: **3-4 weeks to production** (EPIC-004 Test Coverage, EPIC-005 Production Hardening)
+**Current Progress**: **85% production-ready** (realistic assessment, down from 95% claim)
+**Revised Estimate**: **4-6 weeks to production** (integration fixes + testing + hardening)
 
 ### **For Users/Stakeholders**
 
-- The application loads and looks professional ✅
-- Navigation and UI interactions work perfectly ✅
-- **All business data is REAL** (Xero, Shopify, Amazon, Unleashed) ✅
-- External integrations require credentials but are **fully operational** ✅
-- Setup prompts provide clear configuration instructions ✅
-- **Breadcrumb navigation** showing current location ✅ ⬆️ **NEW (EPIC-003)**
-- **System status badge** monitoring integration health ✅ ⬆️ **NEW (EPIC-003)**
-- **Error boundaries** preventing app crashes ✅ ⬆️ **NEW (EPIC-003)**
-- Deployment: 95% complete, 2 manual Render actions pending (15-20 min) 🟡 ⬆️ **NEW**
-- Test coverage expansion pending (EPIC-004) ⏳
-- Production hardening pending (EPIC-005) ⏳
+**What's Ready**:
+- ✅ Application loads and looks professional
+- ✅ Navigation and UI interactions work perfectly
+- ✅ Multi-tenant infrastructure complete (6 phases done)
+- ✅ Authentication system production-ready (Clerk)
+- ✅ Billing system operational (Stripe)
+- ✅ Breadcrumb navigation, system status badges, error boundaries
 
-**Recommendation**: **95% production-ready** (EPIC-002 & EPIC-003 complete). After 2 manual Render actions (15-20 min), application fully functional. Remaining work: test coverage (2 weeks), production hardening (1.5 weeks) = **3.5 weeks to production**.
+**What Needs Work**:
+- ⚠️ Xero integration is stub (returns empty data)
+- ⚠️ Unleashed has mock data fallback (needs fixing)
+- ⚠️ Test coverage at 20-30% (needs expansion to 70%+)
+- ⚠️ Security audit required before production
+- ⚠️ Performance testing not yet completed
+
+**Recommendation**: **85% production-ready** with 4-6 weeks remaining work. Multi-tenant foundation is solid (Phases 1-6 complete), but integration completion and testing critical before launch.
 

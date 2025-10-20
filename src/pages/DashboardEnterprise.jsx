@@ -144,16 +144,17 @@ const deriveTrend = (trendValue, direction, fallback) => {
   }
   return fallback ?? null
 }
+const resolveMetricLabel = (metric = '') =>
+  (metric || '')
+    .toString()
+    .replace(/[\\s_-]+/g, ' ')
+    .trim()
+    .replace(/\\b\\w/g, char => char.toUpperCase())
+
 const mapApiDataToKpis = data => {
   if (!data) {
     return createDefaultKpis()
   }
-const resolveMetricLabel = (metric = '') =>
-  (metric || '')
-    .toString()
-    .replace(/[\s_-]+/g, ' ')
-    .trim()
-    .replace(/\b\w/g, char => char.toUpperCase())
   const normalizedEntries = Object.entries(data).reduce((acc, [key, value]) => {
     const normalizedKey = normalizeMetricKey(key)
     if (normalizedKey) {
@@ -956,3 +957,5 @@ const DashboardEnterprise = () => {
   )
 }
 export default DashboardEnterprise
+
+

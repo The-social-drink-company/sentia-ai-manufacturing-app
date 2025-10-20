@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { render, screen, cleanup } from '@testing-library/react'
 import AlertWidget from '../../../../src/components/widgets/AlertWidget'
 
 // Mock Card components
@@ -50,6 +50,10 @@ describe('AlertWidget', () => {
       isLoading: false,
       error: null,
     }
+  })
+
+  afterEach(() => {
+    cleanup() // Clean up DOM after each test
   })
 
   describe('Loading State', () => {

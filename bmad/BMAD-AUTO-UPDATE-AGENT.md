@@ -133,13 +133,13 @@ git log --oneline --grep="Auto-update BMAD" -5
 
 ```bash
 # Dry-run test
-node scripts/bmad-auto-update.js --dry-run
+node scripts/bmad-auto-update.cjs --dry-run
 
 # Force update now
-node scripts/bmad-auto-update.js --force
+node scripts/bmad-auto-update.cjs --force
 
 # Update without commit
-node scripts/bmad-auto-update.js --no-commit
+node scripts/bmad-auto-update.cjs --no-commit
 ```
 
 ### Integration with BMAD Agents

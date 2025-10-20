@@ -159,7 +159,7 @@ Access at: https://dashboard.render.com
 
 ### GitHub Repository
 
-https://github.com/Capliquify/sentia-manufacturing-dashboard
+https://github.com/financeflo-ai/sentia-manufacturing-dashboard
 
 ### Known Issues
 

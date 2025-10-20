@@ -196,7 +196,7 @@ You'll know it's working when:
 
 ### GitHub Repository
 
-- URL: https://github.com/Capliquify/sentia-manufacturing-dashboard
+- URL: https://github.com/financeflo-ai/sentia-manufacturing-dashboard
 - Branch: production (simplified server deployed)
 
 ### Test URLs

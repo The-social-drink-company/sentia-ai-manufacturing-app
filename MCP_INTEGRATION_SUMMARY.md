@@ -293,7 +293,7 @@ SHOPIFY_API_SECRET=[your-secret]
 
 ### Support Channels
 
-- GitHub Issues: [Report Issue](https://github.com/Capliquify/sentia-manufacturing-dashboard/issues)
+- GitHub Issues: [Report Issue](https://github.com/financeflo-ai/sentia-manufacturing-dashboard/issues)
 - Railway Support: [Get Help](https://railway.app/help)
 - Email: support@sentia.com
 

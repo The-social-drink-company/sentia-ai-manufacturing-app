@@ -42,7 +42,7 @@ This guide provides complete instructions for deploying the CapLiquify Manufactu
                        ↓
 ┌──────────────────────────────────────────────────────────┐
 │                    GitHub Repository                      │
-│   github.com/Capliquify/                   │
+│   github.com/financeflo-ai/                   │
 │                capliquify-ai-dashboard-app                │
 │                                                           │
 │  Branches:                                               │
@@ -141,7 +141,7 @@ This guide provides complete instructions for deploying the CapLiquify Manufactu
 cd /path/to/your/projects
 
 # Clone the repository
-git clone https://github.com/Capliquify/capliquify-ai-dashboard-app.git
+git clone https://github.com/financeflo-ai/capliquify-ai-dashboard-app.git
 
 # Navigate into project
 cd capliquify-ai-dashboard-app
@@ -681,7 +681,7 @@ git push origin development
 
 **Repository**
 
-- GitHub: https://github.com/Capliquify/capliquify-ai-dashboard-app
+- GitHub: https://github.com/financeflo-ai/capliquify-ai-dashboard-app
 
 ### Key Files
 

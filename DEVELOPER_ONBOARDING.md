@@ -17,7 +17,7 @@ Welcome to the CapLiquify Manufacturing Platform development team! This guide wi
 - [ ] GitHub repository access granted
 - [ ] Clone repository:
   ```bash
-  git clone https://github.com/Capliquify/sentia-manufacturing-dashboard.git
+  git clone https://github.com/financeflo-ai/sentia-manufacturing-dashboard.git
   cd sentia-manufacturing-dashboard
   ```
 - [ ] Set up Git credentials:

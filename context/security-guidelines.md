@@ -34,7 +34,7 @@ Based on security audit findings:
 ### **SECURITY VULNERABILITIES IDENTIFIED** ⚠️
 **GitHub Security Alert**: 4 vulnerabilities detected (1 critical, 1 high, 2 moderate)
 - **Action Required**: Address security issues before production deployment
-- **Location**: https://github.com/Capliquify/capliquify-ai-dashboard-app/security/dependabot
+- **Location**: https://github.com/financeflo-ai/capliquify-ai-dashboard-app/security/dependabot
 
 ## Pre-Development Checklist
 1. **Check ESLint configuration** - Ensure proper exclusions and globals

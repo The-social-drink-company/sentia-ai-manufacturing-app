@@ -802,7 +802,7 @@ test -> production (after UAT approval)
 
 ```bash
 # Setup
-git clone https://github.com/Capliquify/sentia-manufacturing-dashboard.git
+git clone https://github.com/financeflo-ai/sentia-manufacturing-dashboard.git
 cd sentia-manufacturing-dashboard
 npm install
 
@@ -1143,7 +1143,7 @@ const optimization = await mcpClient.request({
 
 ### External Resources
 
-- GitHub: https://github.com/Capliquify/sentia-manufacturing-dashboard
+- GitHub: https://github.com/financeflo-ai/sentia-manufacturing-dashboard
 - Render Dashboard: https://dashboard.render.com
 - Railway Dashboard: https://railway.app (backup)
 

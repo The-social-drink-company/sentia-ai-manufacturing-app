@@ -336,8 +336,8 @@ Backend (Node.js)
 
 ### Repositories
 
-- **Main**: https://github.com/Capliquify/capliquify-ai-dashboard-app
-- **Issues**: https://github.com/Capliquify/capliquify-ai-dashboard-app/issues
+- **Main**: https://github.com/financeflo-ai/capliquify-ai-dashboard-app
+- **Issues**: https://github.com/financeflo-ai/capliquify-ai-dashboard-app/issues
 
 ### Deployments
 

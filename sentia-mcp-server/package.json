@@ -104,10 +104,10 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Capliquify/capliquify-ai-dashboard-app.git",
+    "url": "https://github.com/financeflo-ai/capliquify-ai-dashboard-app.git",
     "directory": "sentia-mcp-server"
   },
-  "homepage": "https://github.com/Capliquify/capliquify-ai-dashboard-app/tree/main/sentia-mcp-server#readme",
+  "homepage": "https://github.com/financeflo-ai/capliquify-ai-dashboard-app/tree/main/sentia-mcp-server#readme",
   "pnpm": {
     "overrides": {
       "esbuild": ">=0.25.0",

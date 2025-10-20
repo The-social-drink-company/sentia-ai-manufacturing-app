@@ -135,7 +135,7 @@ Send production deployment notification to stakeholders with:
 
 If critical issues arise:
 - Render Support: https://render.com/support
-- Repository: https://github.com/Capliquify/capliquify-ai-dashboard-app
+- Repository: https://github.com/financeflo-ai/capliquify-ai-dashboard-app
 - Document all issues immediately
 
 Remember: Production deployments are serious. Follow all quality gates and never skip verification steps.

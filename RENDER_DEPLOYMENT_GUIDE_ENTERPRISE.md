@@ -165,7 +165,7 @@ Development → Testing → Production
 
 ```bash
 # Clone repository
-git clone https://github.com/Capliquify/capliquify-ai-dashboard-app.git
+git clone https://github.com/financeflo-ai/capliquify-ai-dashboard-app.git
 cd capliquify-ai-dashboard-app
 
 # Verify branch structure

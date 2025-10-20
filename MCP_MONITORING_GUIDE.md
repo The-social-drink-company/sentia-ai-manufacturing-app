@@ -390,7 +390,7 @@ railway logs | grep -i "api\|request"
 
 ### Contact Information
 
-- **GitHub Issues**: [Create Issue](https://github.com/Capliquify/sentia-manufacturing-dashboard/issues)
+- **GitHub Issues**: [Create Issue](https://github.com/financeflo-ai/sentia-manufacturing-dashboard/issues)
 - **Railway Support**: [Get Help](https://railway.app/help)
 - **Emergency**: support@sentia.com
 

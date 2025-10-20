@@ -301,7 +301,7 @@ BMAD-DEPLOY-002 → BMAD-DEPLOY-003 → BMAD-DEPLOY-004 → EPIC-003
 
 **External**:
 - Clerk Dashboard: https://dashboard.clerk.com
-- GitHub Repo: https://github.com/Capliquify/capliquify-ai-dashboard-app
+- GitHub Repo: https://github.com/financeflo-ai/capliquify-ai-dashboard-app
 
 ---
 

@@ -15,8 +15,8 @@ The repository has been successfully renamed from **sentia-ai-manufacturing-app*
 ## ✅ Completed Tasks
 
 ### 1. Git Remote Updated ✅
-- **Old**: `https://github.com/Capliquify/sentia-ai-manufacturing-app.git`
-- **New**: `https://github.com/Capliquify/capliquify-ai-dashboard-app.git`
+- **Old**: `https://github.com/financeflo-ai/sentia-ai-manufacturing-app.git`
+- **New**: `https://github.com/financeflo-ai/capliquify-ai-dashboard-app.git`
 - **Status**: ✅ Verified (`git remote -v`)
 
 ### 2. Documentation Mass Update ✅
@@ -45,7 +45,7 @@ The repository has been successfully renamed from **sentia-ai-manufacturing-app*
   "description": "CapLiquify Manufacturing Dashboard - Enterprise AI-powered manufacturing intelligence",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Capliquify/capliquify-ai-dashboard-app.git"
+    "url": "https://github.com/financeflo-ai/capliquify-ai-dashboard-app.git"
   }
 }
 ```
@@ -77,9 +77,9 @@ The repository has been successfully renamed from **sentia-ai-manufacturing-app*
 **Status**: ⏳ **PENDING USER ACTION**
 
 **Steps**:
-1. Go to: https://github.com/Capliquify/capliquify-ai-dashboard-app
+1. Go to: https://github.com/financeflo-ai/capliquify-ai-dashboard-app
 2. **If 404 Error**:
-   - Go to old repo: https://github.com/Capliquify/sentia-ai-manufacturing-app
+   - Go to old repo: https://github.com/financeflo-ai/sentia-ai-manufacturing-app
    - Click **Settings** → **General**
    - Scroll to "Repository name"
    - Rename to: `capliquify-ai-dashboard-app`
@@ -98,7 +98,7 @@ CRON_SECRET_KEY = d13e91df86215bb4da04a7e6a30d87d56526432eca4cb3a07d501c60d521bb
 ```
 
 **Steps**:
-1. Go to: https://github.com/Capliquify/capliquify-ai-dashboard-app/settings/secrets/actions
+1. Go to: https://github.com/financeflo-ai/capliquify-ai-dashboard-app/settings/secrets/actions
 2. Click **New repository secret**
 3. Name: `CRON_SECRET_KEY`
 4. Value: `d13e91df86215bb4da04a7e6a30d87d56526432eca4cb3a07d501c60d521bb66`
@@ -114,7 +114,7 @@ CRON_SECRET_KEY = d13e91df86215bb4da04a7e6a30d87d56526432eca4cb3a07d501c60d521bb
 5. Click **Save Changes** (service will redeploy)
 
 **Test Workflow**:
-1. Go to: https://github.com/Capliquify/capliquify-ai-dashboard-app/actions
+1. Go to: https://github.com/financeflo-ai/capliquify-ai-dashboard-app/actions
 2. Select **Trial Expiration Monitor** workflow
 3. Click **Run workflow**
 4. Select branch: `main`, dry_run: `true`
@@ -164,9 +164,9 @@ CRON_SECRET_KEY = d13e91df86215bb4da04a7e6a30d87d56526432eca4cb3a07d501c60d521bb
 **Status**: ⏳ **PENDING USER DECISION**
 
 You mentioned three repositories that may need renaming:
-1. `https://github.com/Capliquify/sentia-manufacturing-dashboard.git`
-2. `https://github.com/Capliquify/sentia-ai-dashboard.git`
-3. `https://github.com/Capliquify/sentia-ai-manufacturing-app.git` ✅ **COMPLETE**
+1. `https://github.com/financeflo-ai/sentia-manufacturing-dashboard.git`
+2. `https://github.com/financeflo-ai/sentia-ai-dashboard.git`
+3. `https://github.com/financeflo-ai/sentia-ai-manufacturing-app.git` ✅ **COMPLETE**
 
 **If you want to rename the other two repositories**, you'll need to:
 1. Clone each repository locally
@@ -184,8 +184,8 @@ You mentioned three repositories that may need renaming:
 ### Git Remote Verification ✅
 ```bash
 $ git remote -v
-origin  https://github.com/Capliquify/capliquify-ai-dashboard-app.git (fetch)
-origin  https://github.com/Capliquify/capliquify-ai-dashboard-app.git (push)
+origin  https://github.com/financeflo-ai/capliquify-ai-dashboard-app.git (fetch)
+origin  https://github.com/financeflo-ai/capliquify-ai-dashboard-app.git (push)
 ```
 
 ### Documentation Verification ✅
@@ -279,7 +279,7 @@ f8a0e9e0 chore: Add multi-tenant UI messaging and minor improvements
 - [GitHub Actions Cron Setup](bmad/docs/GITHUB-ACTIONS-CRON-SETUP.md) - Complete guide for trial automation
 - [Trial Countdown Integration](bmad/docs/TRIAL-COUNTDOWN-INTEGRATION-GUIDE.md) - Frontend integration guide
 - [BMAD Method Implementation](BMAD-METHOD-V6A-IMPLEMENTATION.md) - Project methodology
-- [Rebranding Commit](https://github.com/Capliquify/capliquify-ai-dashboard-app/commit/329fb93d) - Full diff
+- [Rebranding Commit](https://github.com/financeflo-ai/capliquify-ai-dashboard-app/commit/329fb93d) - Full diff
 
 ---
 

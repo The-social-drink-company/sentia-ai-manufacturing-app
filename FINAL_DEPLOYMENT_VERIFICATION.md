@@ -8,7 +8,7 @@
 
 | Check             | Status         | Details                                                                          |
 | ----------------- | -------------- | -------------------------------------------------------------------------------- |
-| GitHub Remote     | ✅ VERIFIED    | `https://github.com/Capliquify/sentia-manufacturing-dashboard.git` |
+| GitHub Remote     | ✅ VERIFIED    | `https://github.com/financeflo-ai/sentia-manufacturing-dashboard.git` |
 | Current Branch    | ✅ VERIFIED    | `development`                                                                    |
 | Required Branches | ✅ ALL EXIST   | `development`, `test`, `production`                                              |
 | Git Status        | ⚠️ UNCOMMITTED | Some new files need to be committed                                              |

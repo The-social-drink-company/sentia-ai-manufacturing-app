@@ -152,7 +152,8 @@
       "Bash(bash:*)",
       "Bash(for i in {1..3})",
       "Bash(do echo \"=== Run $i ===\")",
-      "Bash(git rev-parse:*)"
+      "Bash(git rev-parse:*)",
+      "Bash(for file in server/routes/*.js)"
     ],
     "deny": [],
     "ask": []

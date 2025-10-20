@@ -299,7 +299,7 @@ git log --oneline -10
 
 | Role             | Contact                                                                                           | When to Contact               |
 | ---------------- | ------------------------------------------------------------------------------------------------- | ----------------------------- |
-| GitHub Issues    | [Create Issue](https://github.com/Capliquify/sentia-manufacturing-dashboard/issues) | Bug reports, feature requests |
+| GitHub Issues    | [Create Issue](https://github.com/financeflo-ai/sentia-manufacturing-dashboard/issues) | Bug reports, feature requests |
 | Railway Support  | [Get Help](https://railway.app/help)                                                              | Deployment issues             |
 | Development Team | support@sentia.com                                                                                | Critical issues               |
 

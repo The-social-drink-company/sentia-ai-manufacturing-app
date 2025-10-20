@@ -117,7 +117,7 @@ The following endpoints are now REQUIRED but NOT YET IMPLEMENTED:
 
 **4 vulnerabilities detected** (1 critical, 1 high, 2 moderate)
 
-- Details: https://github.com/Capliquify/sentia-manufacturing-dashboard/security/dependabot
+- Details: https://github.com/financeflo-ai/sentia-manufacturing-dashboard/security/dependabot
 - **Action Required**: Address before production use
 
 ---

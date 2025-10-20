@@ -17,7 +17,7 @@
 
 **Duration**: 7 development sessions across 3 calendar days
 
-**PR**: #15 - https://github.com/Capliquify/capliquify-ai-dashboard-app/pull/15
+**PR**: #15 - https://github.com/financeflo-ai/capliquify-ai-dashboard-app/pull/15
 
 ---
 
@@ -332,7 +332,7 @@ const rules = {
 **Related Documents**:
 - [BMAD Story: Import/Export UI](./2025-10-import-export-frontend-ui.md)
 - [BMAD Implementation Plan](../BMAD-METHOD-V6A-IMPLEMENTATION.md)
-- [PR #15](https://github.com/Capliquify/capliquify-ai-dashboard-app/pull/15)
+- [PR #15](https://github.com/financeflo-ai/capliquify-ai-dashboard-app/pull/15)
 
 **Future Stories**:
 - BMAD-UI-002: Advanced Import Features (duplicate detection, incremental imports)

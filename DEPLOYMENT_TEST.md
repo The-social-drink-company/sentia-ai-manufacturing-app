@@ -4,7 +4,7 @@ Railway Project ID: `ef36131f-d36e-4c2d-8ab9-1914288d5781`
 
 ## GitHub to Railway Integration Status
 
-- ✅ Repository: https://github.com/Capliquify/sentia-manufacturing-dashboard.git
+- ✅ Repository: https://github.com/financeflo-ai/sentia-manufacturing-dashboard.git
 - ✅ Branch structure: development, test, production
 - ✅ Auto-deployment configured via GitHub integration
 - ✅ Railway configuration files in place (railway.json, Nixpacks)

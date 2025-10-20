@@ -12,7 +12,7 @@
 
 ```bash
 # 1. Clone repository
-git clone https://github.com/Capliquify/sentia-manufacturing-dashboard.git
+git clone https://github.com/financeflo-ai/sentia-manufacturing-dashboard.git
 cd sentia-manufacturing-dashboard
 
 # 2. Install dependencies
@@ -901,7 +901,7 @@ MCP Server:
 
 ### Development Team Resources
 
-- **GitHub Repository**: https://github.com/Capliquify/sentia-manufacturing-dashboard
+- **GitHub Repository**: https://github.com/financeflo-ai/sentia-manufacturing-dashboard
 - **Render Dashboard**: https://dashboard.render.com
 - **Railway Dashboard**: https://railway.app
 - **Documentation**: See `/context` folder for detailed specs

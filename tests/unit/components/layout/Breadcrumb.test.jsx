@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { render, screen, cleanup } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import Breadcrumb from '../../../../src/components/layout/Breadcrumb'
 
@@ -15,6 +15,7 @@ vi.mock('react-router-dom', async () => {
 
 describe('Breadcrumb', () => {
   afterEach(() => {
+    cleanup() // Clean up DOM after each test
     vi.clearAllMocks()
   })
   describe('Rendering', () => {

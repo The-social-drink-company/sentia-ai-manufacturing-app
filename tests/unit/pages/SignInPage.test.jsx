@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { render, screen, cleanup } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import SignInPage from '../../../src/pages/SignInPage'
 
@@ -32,6 +32,10 @@ vi.mock('react-router-dom', async () => {
 describe('SignInPage', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+  })
+
+  afterEach(() => {
+    cleanup() // Clean up DOM after each test
   })
 
   describe('Branding and Layout', () => {

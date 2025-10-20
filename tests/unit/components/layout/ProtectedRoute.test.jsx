@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { render, screen, cleanup } from '@testing-library/react'
 import { MemoryRouter, useLocation } from 'react-router-dom'
 import ProtectedRoute from '../../../../src/components/layout/ProtectedRoute'
 import { useAuth } from '../../../../src/hooks/useAuth.js'
@@ -33,6 +33,10 @@ vi.mock('../../../../src/hooks/useAuth.js', () => ({
 describe('ProtectedRoute', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+  })
+
+  afterEach(() => {
+    cleanup() // Clean up DOM after each test
   })
 
   describe('Authenticated Users', () => {

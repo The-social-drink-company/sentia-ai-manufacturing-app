@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { render, screen, cleanup } from '@testing-library/react'
 import KPIWidget from '../../../../src/components/widgets/KPIWidget'
 
 // Mock Card components
@@ -19,6 +19,10 @@ vi.mock('@/components/ui/card', () => ({
 describe('KPIWidget', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+  })
+
+  afterEach(() => {
+    cleanup() // Clean up DOM after each test
   })
 
   describe('Default Props', () => {

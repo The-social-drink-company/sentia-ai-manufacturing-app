@@ -24,6 +24,7 @@ const Inventory = lazy(() => import('@/components/inventory/InventoryDashboard')
 const DataImport = lazy(() => import('@/components/data/DataImportWidget'))
 const AdminPanel = lazy(() => import('@/pages/AdminPanelEnhanced'))
 const Onboarding = lazy(() => import('@/pages/Onboarding'))
+const TrialOnboarding = lazy(() => import('@/pages/onboarding/OnboardingWizard'))
 const MasterAdminDashboard = lazy(() => import('@/pages/master-admin/MasterAdminDashboard'))
 const TrialSignup = lazy(() => import('@/pages/auth/TrialSignup'))
 // const ImportWizard = lazy(() => import('@/pages/admin/ImportWizard')) // TODO: Create ImportWizard component
@@ -291,6 +292,18 @@ const App = () => {
                   <ErrorBoundary fallbackMessage="Onboarding failed to load.">
                     <Suspense fallback={<Loader />}>
                       <Onboarding />
+                    </Suspense>
+                  </ErrorBoundary>
+                }
+              />
+
+              {/* Trial Onboarding Wizard */}
+              <Route
+                path="/trial-onboarding"
+                element={
+                  <ErrorBoundary fallbackMessage="Trial onboarding failed to load.">
+                    <Suspense fallback={<Loader />}>
+                      <TrialOnboarding />
                     </Suspense>
                   </ErrorBoundary>
                 }

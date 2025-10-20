@@ -1,4 +1,5 @@
 import { Suspense, lazy, useState, useEffect, useCallback } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { useXero } from '@/contexts/useXero'
@@ -7,6 +8,9 @@ import { useIntegrationStatus } from '@/hooks/useIntegrationStatus'
 import KPIGrid from '@/components/dashboard/KPIGrid'
 import WorkingCapitalCard from '@/components/dashboard/WorkingCapitalCard'
 import ShopifySetupPrompt from '@/components/integrations/ShopifySetupPrompt'
+import ProductTour, { useProductTour } from '@/components/onboarding/ProductTour'
+import Confetti from 'react-confetti'
+import { useWindowSize } from '@/hooks/useWindowSize'
 
 const RegionalContributionChart = lazy(
   () => import('@/components/dashboard/RegionalContributionChart')
@@ -24,12 +28,18 @@ import workingCapitalApi from '@/services/api/workingCapitalApi'
 import { ApiError } from '@/services/api/baseApi'
 
 const DashboardEnterprise = () => {
+  const [searchParams] = useSearchParams()
+  const { width, height } = useWindowSize()
+  const { shouldShowTour } = useProductTour()
+
   const { isConnected: xeroConnected } = useXero()
   const { shopify: shopifyStatus, loading: integrationLoading } = useIntegrationStatus()
 
   const [plData, setPLData] = useState([])
   const [plLoading, setPLLoading] = useState(true)
   const [plError, setPLError] = useState(null)
+  const [showConfetti, setShowConfetti] = useState(false)
+  const [startTour, setStartTour] = useState(false)
   const [performanceKpis, setPerformanceKpis] = useState([])
   const [kpiLoading, setKpiLoading] = useState(true)
   const [kpiError, setKpiError] = useState(null)
@@ -117,6 +127,26 @@ const DashboardEnterprise = () => {
   const { connected: dashboardConnected, latency: dashboardLatency } = useSSE('dashboard', {
     onMessage: handleDashboardMessage,
   })
+
+  // Handle onboarding completion celebration
+  useEffect(() => {
+    const onboardingComplete = searchParams.get('onboarding') === 'complete'
+    const autoStartTour = searchParams.get('tour') === 'auto'
+
+    if (onboardingComplete) {
+      // Show confetti celebration
+      setShowConfetti(true)
+      setTimeout(() => setShowConfetti(false), 5000)
+
+      // Show welcome toast (you can replace with your toast library)
+      console.log('🎉 Welcome to CapLiquify! Your workspace is ready.')
+    }
+
+    if (autoStartTour && shouldShowTour) {
+      // Delay tour start to allow page to fully render
+      setTimeout(() => setStartTour(true), 1000)
+    }
+  }, [searchParams, shouldShowTour])
 
   // Fetch P&L analysis data
   useEffect(() => {
@@ -479,6 +509,12 @@ const DashboardEnterprise = () => {
 
   return (
     <section className="space-y-6">
+      {/* Confetti celebration */}
+      {showConfetti && <Confetti width={width} height={height} recycle={false} numberOfPieces={500} />}
+
+      {/* Product Tour */}
+      {startTour && <ProductTour autoStart={true} />}
+
       {/* Xero connection banners removed - custom connections don't require user interaction */}
 
       <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -508,7 +544,7 @@ const DashboardEnterprise = () => {
       </header>
 
       {/* Capital Position - New KPI Grid */}
-      <div>
+      <div data-tour="working-capital">
         <div className="mb-4">
           <h2 className="text-xl font-semibold">Capital Position</h2>
           <p className="text-sm text-muted-foreground">
@@ -571,7 +607,7 @@ const DashboardEnterprise = () => {
       </div>
 
       {/* Performance Metrics - New KPI Grid */}
-      <div>
+      <div data-tour="demand-forecast">
         <div className="mb-4">
           <h2 className="text-xl font-semibold">Performance Metrics</h2>
           <p className="text-sm text-muted-foreground">
@@ -779,23 +815,25 @@ const DashboardEnterprise = () => {
       </div>
 
       {/* Second row - Stock Levels (single chart) */}
-      <Suspense
-        fallback={
-          <Card>
-            <CardHeader>
-              <CardTitle>Current Stock Levels</CardTitle>
-              <CardDescription>Loading inventory data...</CardDescription>
-            </CardHeader>
-            <CardContent className="h-64">
-              <div className="flex h-full items-center justify-center">
-                <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-              </div>
-            </CardContent>
-          </Card>
-        }
-      >
-        <StockLevelsWidget />
-      </Suspense>
+      <div data-tour="inventory-management">
+        <Suspense
+          fallback={
+            <Card>
+              <CardHeader>
+                <CardTitle>Current Stock Levels</CardTitle>
+                <CardDescription>Loading inventory data...</CardDescription>
+              </CardHeader>
+              <CardContent className="h-64">
+                <div className="flex h-full items-center justify-center">
+                  <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                </div>
+              </CardContent>
+            </Card>
+          }
+        >
+          <StockLevelsWidget />
+        </Suspense>
+      </div>
 
       {/* Working Capital Card */}
       <WorkingCapitalCard
@@ -808,23 +846,25 @@ const DashboardEnterprise = () => {
       />
 
       {/* Quick Actions Section */}
-      <Suspense
-        fallback={
-          <Card className="mt-8">
-            <CardHeader>
-              <CardTitle>Quick Actions</CardTitle>
-              <CardDescription>Loading quick actions...</CardDescription>
-            </CardHeader>
-            <CardContent className="h-32">
-              <div className="flex h-full items-center justify-center">
-                <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-              </div>
-            </CardContent>
-          </Card>
-        }
-      >
-        <QuickActions />
-      </Suspense>
+      <div data-tour="quick-actions">
+        <Suspense
+          fallback={
+            <Card className="mt-8">
+              <CardHeader>
+                <CardTitle>Quick Actions</CardTitle>
+                <CardDescription>Loading quick actions...</CardDescription>
+              </CardHeader>
+              <CardContent className="h-32">
+                <div className="flex h-full items-center justify-center">
+                  <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                </div>
+              </CardContent>
+            </Card>
+          }
+        >
+          <QuickActions />
+        </Suspense>
+      </div>
     </section>
   )
 }

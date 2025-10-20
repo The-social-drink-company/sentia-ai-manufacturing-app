@@ -24,6 +24,7 @@ import {
   ArrowLeft,
   Sparkles,
 } from 'lucide-react'
+import onboardingService from '@/services/onboardingService'
 
 // Import step components
 import CompanyDetailsStep from './steps/CompanyDetailsStep'
@@ -91,17 +92,16 @@ export default function OnboardingWizard() {
 
   const loadProgress = async () => {
     try {
-      const response = await fetch('/api/onboarding/progress')
-      if (response.ok) {
-        const data = await response.json()
-        if (data.currentStep !== undefined) {
-          setCurrentStep(data.currentStep)
+      const response = await onboardingService.fetchProgress()
+      if (response.success) {
+        if (response.currentStep !== undefined) {
+          setCurrentStep(response.currentStep)
         }
-        if (data.completedSteps) {
-          setCompletedSteps(data.completedSteps)
+        if (response.completedSteps) {
+          setCompletedSteps(response.completedSteps)
         }
-        if (data.data) {
-          setOnboardingData(data.data)
+        if (response.data) {
+          setOnboardingData(response.data)
         }
       }
     } catch (error) {
@@ -153,15 +153,7 @@ export default function OnboardingWizard() {
     data: any
   ) => {
     try {
-      await fetch('/api/onboarding/progress', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          currentStep: nextStep,
-          completedSteps: completed,
-          data,
-        }),
-      })
+      await onboardingService.saveProgress(nextStep, completed, data)
     } catch (error) {
       console.error('Failed to save progress:', error)
     }
@@ -172,15 +164,11 @@ export default function OnboardingWizard() {
 
     try {
       // Mark onboarding as complete
-      const response = await fetch('/api/onboarding/complete', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      })
+      const response = await onboardingService.completeOnboarding(data)
 
-      if (response.ok) {
-        // Navigate to dashboard with celebration
-        navigate('/dashboard?onboarding=complete')
+      if (response.success) {
+        // Navigate to dashboard with celebration and auto-tour
+        navigate('/dashboard?onboarding=complete&tour=auto')
       } else {
         throw new Error('Failed to complete onboarding')
       }

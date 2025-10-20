@@ -21,6 +21,7 @@ import {
   Package,
   DollarSign,
 } from 'lucide-react'
+import onboardingService from '@/services/onboardingService'
 
 interface DataImportStepProps {
   data?: {
@@ -50,20 +51,18 @@ export default function DataImportStep({
     setGenerating(true)
     try {
       // Call API to generate sample data
-      const response = await fetch('/api/onboarding/generate-sample', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-      })
+      const response = await onboardingService.generateSampleData()
 
-      if (response.ok) {
+      if (response.success) {
         setGenerated(true)
         setSelectedMethod('sample')
         setTimeout(() => {
-          onNext({ method: 'sample' })
+          onNext({ method: 'sample', generatedData: response.data })
         }, 1500)
       }
     } catch (error) {
       console.error('Failed to generate sample data:', error)
+      // Show error toast or notification here if needed
     } finally {
       setGenerating(false)
     }

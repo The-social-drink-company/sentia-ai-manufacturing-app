@@ -272,7 +272,7 @@ const BRANCH = process.env.BRANCH || 'development'
 // Startup information
 logger.info(`
 ========================================
-SENTIA MANUFACTURING DASHBOARD
+CAPLIQUIFY MANUFACTURING PLATFORM
 COMPREHENSIVE ENTERPRISE SERVER
 ========================================
 Environment: ${NODE_ENV}
@@ -292,9 +292,17 @@ app.use(
 
 // CORS configuration - Standardized with MCP server
 const allowedOrigins = [
+  // CapLiquify production domains (renamed from Sentia)
+  'https://capliquify-frontend-prod.onrender.com', // Production Frontend
+  'https://capliquify-backend-prod.onrender.com', // Production Backend
+  'https://capliquify-mcp-prod.onrender.com', // Production MCP
+
+  // Legacy Sentia domains (deprecated but kept for transition)
   'https://sentia-manufacturing-dashboard-621h.onrender.com', // Development
   'https://sentia-manufacturing-dashboard-test.onrender.com', // Testing
   'https://sentia-manufacturing-dashboard-production.onrender.com', // Production
+
+  // Local development
   'http://localhost:3000', // Local development
   'http://localhost:5173', // Vite dev server
   'http://localhost:3001', // Local MCP server
@@ -356,7 +364,7 @@ app.get('/health', async (req, res) => {
 
   const health = {
     status: 'healthy',
-    service: 'sentia-manufacturing-dashboard',
+    service: 'capliquify-backend-api',
     version: '1.0.6',
     environment: NODE_ENV,
     branch: BRANCH,
@@ -396,7 +404,7 @@ app.get('/health', async (req, res) => {
 // API Status endpoint
 app.get('/api/status', (req, res) => {
   res.json({
-    service: 'Sentia Manufacturing API',
+    service: 'CapLiquify Manufacturing API',
     version: '1.0.6',
     environment: NODE_ENV,
     branch: BRANCH,
@@ -2820,7 +2828,7 @@ io.on('connection', socket => {
     type: 'connection-established',
     clientId: socket.id,
     timestamp: new Date().toISOString(),
-    message: 'Connected to Sentia Manufacturing real-time data stream',
+    message: 'Connected to CapLiquify Manufacturing real-time data stream',
   })
 
   socket.on('subscribe', channel => {

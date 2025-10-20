@@ -9,6 +9,7 @@
 
 import express from 'express'
 import { logInfo, logError, logWarn } from '../../services/observability/structuredLogger.js'
+import { generateSampleData } from '../services/sampleDataGenerator.js'
 // import authMiddleware from '../middleware/authMiddleware.js'
 
 const router = express.Router()
@@ -214,17 +215,19 @@ router.post('/generate-sample', async (req, res) => {
       select: { industry: true, size: true },
     })
 
-    // TODO: Call sample data generator service
-    // For now, return success
-    logInfo('Sample data generation started', {
+    // Call sample data generator service
+    const result = await generateSampleData(prisma, tenantId, org?.industry)
+
+    logInfo('Sample data generation complete', {
       tenantId,
       industry: org?.industry,
+      result,
     })
 
     res.json({
       success: true,
-      message: 'Sample data generation started',
-      estimatedTime: '30 seconds',
+      message: 'Sample data generated successfully',
+      data: result.data,
     })
   } catch (error) {
     logError('Failed to generate sample data', error)

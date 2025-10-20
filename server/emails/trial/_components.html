@@ -1,0 +1,212 @@
+<!--
+  CapLiquify Email Components
+  Reusable email components for trial email templates
+-->
+
+<!-- PRIMARY CTA BUTTON -->
+<!-- Usage: {{> primaryButton text="Get Started" url="https://app.capliquify.com"}} -->
+<script id="primaryButton" type="text/x-handlebars-template">
+<div class="cta-container">
+    <a href="{{url}}" class="cta-button" style="background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%); color: #ffffff; text-decoration: none; padding: 16px 32px; border-radius: 8px; display: inline-block; font-weight: 600;">
+        {{text}}
+    </a>
+</div>
+</script>
+
+<!-- SECONDARY BUTTON (Outline) -->
+<!-- Usage: {{> secondaryButton text="Learn More" url="https://capliquify.com"}} -->
+<script id="secondaryButton" type="text/x-handlebars-template">
+<div style="text-align: center; margin: 20px 0;">
+    <a href="{{url}}" style="display: inline-block; padding: 14px 28px; border: 2px solid #3B82F6; color: #3B82F6; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 15px;">
+        {{text}}
+    </a>
+</div>
+</script>
+
+<!-- FEATURE CARD -->
+<!-- Usage: {{> featureCard icon="✓" title="Real-time Sync" description="Connect your ERP"}} -->
+<script id="featureCard" type="text/x-handlebars-template">
+<div class="card" style="background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 24px; margin: 20px 0;">
+    <div style="display: flex; align-items: flex-start;">
+        <div style="font-size: 24px; margin-right: 16px; flex-shrink: 0;">{{icon}}</div>
+        <div>
+            <h3 class="card-title" style="margin: 0 0 8px 0; font-size: 18px; font-weight: 700; color: #1E293B;">{{title}}</h3>
+            <p class="card-text" style="margin: 0; font-size: 15px; color: #475569; line-height: 1.6;">{{description}}</p>
+        </div>
+    </div>
+</div>
+</script>
+
+<!-- CHECKLIST ITEM -->
+<!-- Usage: {{> checklistItem text="Connect your Xero account"}} -->
+<script id="checklistItem" type="text/x-handlebars-template">
+<div class="checklist-item" style="padding: 12px 0; border-bottom: 1px solid #E2E8F0; display: flex; align-items: center;">
+    <div class="checklist-icon" style="width: 24px; height: 24px; background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%); border-radius: 50%; margin-right: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+        <span style="color: #ffffff; font-size: 14px; font-weight: 700;">✓</span>
+    </div>
+    <span style="font-size: 15px; color: #0F172A;">{{text}}</span>
+</div>
+</script>
+
+<!-- STATS BOX -->
+<!-- Usage: {{> statsBox number="14" label="Days of Free Access"}} -->
+<script id="statsBox" type="text/x-handlebars-template">
+<div class="stats-box" style="background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%); border-radius: 12px; padding: 24px; text-align: center; color: #ffffff; margin: 20px 0;">
+    <div class="stats-number" style="font-size: 36px; font-weight: 700; margin-bottom: 8px;">{{number}}</div>
+    <div class="stats-label" style="font-size: 14px; opacity: 0.9;">{{label}}</div>
+</div>
+</script>
+
+<!-- PRICING FEATURE LIST -->
+<!-- Usage: {{> pricingFeature text="Unlimited forecasts"}} -->
+<script id="pricingFeature" type="text/x-handlebars-template">
+<div style="display: flex; align-items: center; padding: 8px 0;">
+    <span style="color: #10B981; margin-right: 12px; font-size: 18px;">✓</span>
+    <span style="font-size: 15px; color: #475569;">{{text}}</span>
+</div>
+</script>
+
+<!-- ALERT BOX (INFO) -->
+<!-- Usage: {{> alertInfo text="Your trial includes full access to all features"}} -->
+<script id="alertInfo" type="text/x-handlebars-template">
+<div style="background-color: #EFF6FF; border-left: 4px solid #3B82F6; padding: 16px; margin: 20px 0; border-radius: 4px;">
+    <p style="margin: 0; color: #1E3A8A; font-size: 14px; line-height: 1.6;">
+        <strong style="font-weight: 600;">ℹ️ Note:</strong> {{text}}
+    </p>
+</div>
+</script>
+
+<!-- ALERT BOX (WARNING) -->
+<!-- Usage: {{> alertWarning text="Your trial expires in 2 days"}} -->
+<script id="alertWarning" type="text/x-handlebars-template">
+<div style="background-color: #FEF3C7; border-left: 4px solid #F59E0B; padding: 16px; margin: 20px 0; border-radius: 4px;">
+    <p style="margin: 0; color: #92400E; font-size: 14px; line-height: 1.6;">
+        <strong style="font-weight: 600;">⚠️ Important:</strong> {{text}}
+    </p>
+</div>
+</script>
+
+<!-- ALERT BOX (URGENT) -->
+<!-- Usage: {{> alertUrgent text="Your trial has expired"}} -->
+<script id="alertUrgent" type="text/x-handlebars-template">
+<div style="background-color: #FEE2E2; border-left: 4px solid #EF4444; padding: 16px; margin: 20px 0; border-radius: 4px;">
+    <p style="margin: 0; color: #991B1B; font-size: 14px; line-height: 1.6;">
+        <strong style="font-weight: 600;">🚨 Urgent:</strong> {{text}}
+    </p>
+</div>
+</script>
+
+<!-- PROGRESS BAR -->
+<!-- Usage: {{> progressBar percentage="60" label="Trial Progress"}} -->
+<script id="progressBar" type="text/x-handlebars-template">
+<div style="margin: 20px 0;">
+    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+        <span style="font-size: 14px; color: #64748B; font-weight: 600;">{{label}}</span>
+        <span style="font-size: 14px; color: #64748B; font-weight: 600;">{{percentage}}%</span>
+    </div>
+    <div style="background-color: #E2E8F0; border-radius: 10px; height: 8px; overflow: hidden;">
+        <div style="background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%); height: 100%; width: {{percentage}}%; transition: width 0.3s ease;"></div>
+    </div>
+</div>
+</script>
+
+<!-- DIVIDER -->
+<!-- Usage: {{> divider}} -->
+<script id="divider" type="text/x-handlebars-template">
+<div class="divider" style="height: 1px; background: linear-gradient(90deg, transparent 0%, #E2E8F0 50%, transparent 100%); margin: 30px 0;"></div>
+</script>
+
+<!-- BADGE -->
+<!-- Usage: {{> badge text="Professional Plan"}} -->
+<script id="badge" type="text/x-handlebars-template">
+<span class="badge" style="display: inline-block; padding: 6px 12px; background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%); color: #ffffff; border-radius: 20px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">
+    {{text}}
+</span>
+</script>
+
+<!-- SUPPORT CONTACT BOX -->
+<!-- Usage: {{> supportContact}} -->
+<script id="supportContact" type="text/x-handlebars-template">
+<div style="background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 20px; margin: 30px 0; text-align: center;">
+    <p style="margin: 0 0 12px 0; font-size: 16px; color: #1E293B; font-weight: 600;">Need Help?</p>
+    <p style="margin: 0 0 16px 0; font-size: 14px; color: #64748B;">Our team is here to help you get the most out of CapLiquify</p>
+    <a href="mailto:support@capliquify.com" style="color: #3B82F6; text-decoration: none; font-weight: 600; font-size: 14px;">support@capliquify.com</a>
+    <span style="color: #CBD5E1; margin: 0 8px;">|</span>
+    <a href="https://capliquify.com/help" style="color: #3B82F6; text-decoration: none; font-weight: 600; font-size: 14px;">Help Center</a>
+</div>
+</script>
+
+<!-- PRICING TIER CARD -->
+<!-- Usage: {{> pricingTierCard name="Professional" price="$99" period="month" features="..."}} -->
+<script id="pricingTierCard" type="text/x-handlebars-template">
+<div style="background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%); border-radius: 12px; padding: 30px; text-align: center; color: #ffffff; margin: 20px 0;">
+    <h3 style="margin: 0 0 8px 0; font-size: 24px; font-weight: 700;">{{name}}</h3>
+    <div style="margin: 20px 0;">
+        <span style="font-size: 48px; font-weight: 700;">{{price}}</span>
+        <span style="font-size: 18px; opacity: 0.9;">/{{period}}</span>
+    </div>
+    <div style="background-color: rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 20px; margin: 20px 0; text-align: left;">
+        {{{features}}}
+    </div>
+</div>
+</script>
+
+<!-- COUNTDOWN TIMER (Static) -->
+<!-- Usage: {{> countdownTimer days="2" hours="14" minutes="35"}} -->
+<script id="countdownTimer" type="text/x-handlebars-template">
+<div style="background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%); border-radius: 12px; padding: 30px; text-align: center; color: #ffffff; margin: 30px 0;">
+    <p style="margin: 0 0 20px 0; font-size: 16px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; opacity: 0.9;">Time Remaining</p>
+    <div style="display: flex; justify-content: center; gap: 20px;">
+        <div>
+            <div style="font-size: 48px; font-weight: 700;">{{days}}</div>
+            <div style="font-size: 12px; text-transform: uppercase; opacity: 0.8; letter-spacing: 1px;">Days</div>
+        </div>
+        <div style="font-size: 48px; font-weight: 300; opacity: 0.5;">:</div>
+        <div>
+            <div style="font-size: 48px; font-weight: 700;">{{hours}}</div>
+            <div style="font-size: 12px; text-transform: uppercase; opacity: 0.8; letter-spacing: 1px;">Hours</div>
+        </div>
+        <div style="font-size: 48px; font-weight: 300; opacity: 0.5;">:</div>
+        <div>
+            <div style="font-size: 48px; font-weight: 700;">{{minutes}}</div>
+            <div style="font-size: 12px; text-transform: uppercase; opacity: 0.8; letter-spacing: 1px;">Minutes</div>
+        </div>
+    </div>
+</div>
+</script>
+
+<!-- QUICK LINKS GRID -->
+<!-- Usage: {{> quickLinksGrid links="..."}} -->
+<script id="quickLinksGrid" type="text/x-handlebars-template">
+<div style="margin: 30px 0;">
+    <h3 style="margin: 0 0 20px 0; font-size: 18px; font-weight: 700; color: #1E293B;">Quick Links</h3>
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+        <tr>
+            {{{links}}}
+        </tr>
+    </table>
+</div>
+</script>
+
+<!-- QUICK LINK ITEM -->
+<!-- Usage: {{> quickLinkItem icon="📊" title="Dashboard" url="..."}} -->
+<script id="quickLinkItem" type="text/x-handlebars-template">
+<td style="padding: 10px; width: 50%;">
+    <a href="{{url}}" style="display: block; background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 20px; text-align: center; text-decoration: none; transition: all 0.3s ease;">
+        <div style="font-size: 32px; margin-bottom: 8px;">{{icon}}</div>
+        <div style="font-size: 14px; font-weight: 600; color: #1E293B;">{{title}}</div>
+    </a>
+</td>
+</script>
+
+<!-- TESTIMONIAL QUOTE -->
+<!-- Usage: {{> testimonialQuote quote="..." author="..." company="..."}} -->
+<script id="testimonialQuote" type="text/x-handlebars-template">
+<div style="background-color: #F8FAFC; border-left: 4px solid #8B5CF6; padding: 24px; margin: 30px 0; border-radius: 4px;">
+    <p style="margin: 0 0 16px 0; font-size: 16px; color: #1E293B; font-style: italic; line-height: 1.6;">"{{quote}}"</p>
+    <p style="margin: 0; font-size: 14px; color: #64748B;">
+        <strong style="font-weight: 600; color: #1E293B;">{{author}}</strong>
+        {{#if company}} — {{company}}{{/if}}
+    </p>
+</div>
+</script>

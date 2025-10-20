@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>7 Days Left in Your Trial - How's It Going?</title>
+    <style>
+        body { margin: 0; padding: 0; background-color: #F1F5F9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; }
+        .email-container { max-width: 600px; margin: 0 auto; background-color: #ffffff; }
+        .email-header { background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%); padding: 40px 20px; text-align: center; }
+        .email-content { padding: 40px 30px; background-color: #ffffff; }
+        .cta-button { display: inline-block; padding: 16px 32px; background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%); color: #ffffff !important; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; box-shadow: 0 4px 6px rgba(59, 130, 246, 0.25); }
+        .card { background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 24px; margin: 20px 0; }
+        .progress-bar { background-color: #E2E8F0; border-radius: 10px; height: 8px; overflow: hidden; }
+        .email-footer { background-color: #F8FAFC; padding: 30px 20px; text-align: center; }
+        @media screen and (max-width: 600px) {
+            .email-content { padding: 30px 20px !important; }
+            .cta-button { display: block !important; width: 100% !important; }
+        }
+    </style>
+</head>
+<body>
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+        <tr>
+            <td style="padding: 20px 0;">
+                <table role="presentation" class="email-container" cellspacing="0" cellpadding="0" border="0" align="center">
+                    <!-- Header -->
+                    <tr>
+                        <td class="email-header">
+                            <h1 style="margin: 0; color: #ffffff; font-size: 32px; font-weight: 700;">CapLiquify</h1>
+                            <p style="margin: 10px 0 0 0; color: #ffffff; font-size: 16px; opacity: 0.9;">Your Trial Progress Update</p>
+                        </td>
+                    </tr>
+
+                    <!-- Main Content -->
+                    <tr>
+                        <td class="email-content">
+                            <!-- Badge -->
+                            <div style="text-align: center; margin-bottom: 30px;">
+                                <span style="display: inline-block; padding: 8px 16px; background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); color: #ffffff; border-radius: 20px; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">
+                                    ⏰ Day 7 of 14
+                                </span>
+                            </div>
+
+                            <!-- Greeting -->
+                            <h2 style="margin: 0 0 20px 0; font-size: 24px; color: #0F172A; font-weight: 700; text-align: center;">
+                                Halfway There, {{firstName}}!
+                            </h2>
+
+                            <p style="margin: 0 0 30px 0; font-size: 16px; color: #475569; line-height: 1.8; text-align: center;">
+                                You're at the midpoint of your <strong>{{tier}} Plan</strong> trial. Let's make sure you're getting the most out of CapLiquify!
+                            </p>
+
+                            <!-- Progress Bar -->
+                            <div style="margin: 30px 0;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                    <span style="font-size: 14px; color: #64748B; font-weight: 600;">Trial Progress</span>
+                                    <span style="font-size: 14px; color: #64748B; font-weight: 600;">50%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div style="background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%); height: 100%; width: 50%;"></div>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; margin-top: 8px;">
+                                    <span style="font-size: 12px; color: #94A3B8;">Started {{trialStartDate}}</span>
+                                    <span style="font-size: 12px; color: #94A3B8; font-weight: 600;">7 days remaining</span>
+                                </div>
+                            </div>
+
+                            <!-- Your Activity Summary -->
+                            <h3 style="margin: 40px 0 20px 0; font-size: 20px; font-weight: 700; color: #1E293B;">📊 Your Activity Summary</h3>
+
+                            <div class="card">
+                                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                                    <tr>
+                                        <td style="padding: 16px; border-right: 1px solid #E2E8F0; text-align: center; width: 33.33%;">
+                                            <div style="font-size: 32px; font-weight: 700; color: #3B82F6; margin-bottom: 8px;">{{loginCount}}</div>
+                                            <div style="font-size: 13px; color: #64748B; text-transform: uppercase; letter-spacing: 0.5px;">Logins</div>
+                                        </td>
+                                        <td style="padding: 16px; border-right: 1px solid #E2E8F0; text-align: center; width: 33.33%;">
+                                            <div style="font-size: 32px; font-weight: 700; color: #8B5CF6; margin-bottom: 8px;">{{forecastsCreated}}</div>
+                                            <div style="font-size: 13px; color: #64748B; text-transform: uppercase; letter-spacing: 0.5px;">Forecasts</div>
+                                        </td>
+                                        <td style="padding: 16px; text-align: center; width: 33.33%;">
+                                            <div style="font-size: 32px; font-weight: 700; color: #10B981; margin-bottom: 8px;">{{integrationsConnected}}</div>
+                                            <div style="font-size: 13px; color: #64748B; text-transform: uppercase; letter-spacing: 0.5px;">Integrations</div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+
+                            <!-- Tips to Maximize Value -->
+                            <h3 style="margin: 40px 0 20px 0; font-size: 20px; font-weight: 700; color: #1E293B;">💡 Get Even More Value</h3>
+
+                            <div style="background-color: #ffffff; border: 1px solid #E2E8F0; border-radius: 8px; padding: 20px;">
+                                <div style="display: flex; align-items: flex-start; padding: 16px 0; border-bottom: 1px solid #E2E8F0;">
+                                    <div style="font-size: 32px; margin-right: 16px; flex-shrink: 0;">🔗</div>
+                                    <div>
+                                        <strong style="display: block; font-size: 16px; color: #0F172A; margin-bottom: 6px;">Connect All Your Data Sources</strong>
+                                        <p style="margin: 0; font-size: 14px; color: #64748B; line-height: 1.6;">
+                                            The more data CapLiquify has, the better your forecasts. Connect Xero, Shopify, Amazon, and Unleashed for maximum accuracy.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div style="display: flex; align-items: flex-start; padding: 16px 0; border-bottom: 1px solid #E2E8F0;">
+                                    <div style="font-size: 32px; margin-right: 16px; flex-shrink: 0;">📈</div>
+                                    <div>
+                                        <strong style="display: block; font-size: 16px; color: #0F172A; margin-bottom: 6px;">Review AI-Generated Insights</strong>
+                                        <p style="margin: 0; font-size: 14px; color: #64748B; line-height: 1.6;">
+                                            Check your dashboard daily for new recommendations on inventory optimization and working capital improvements.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div style="display: flex; align-items: flex-start; padding: 16px 0; border-bottom: 1px solid #E2E8F0;">
+                                    <div style="font-size: 32px; margin-right: 16px; flex-shrink: 0;">⚙️</div>
+                                    <div>
+                                        <strong style="display: block; font-size: 16px; color: #0F172A; margin-bottom: 6px;">Customize Alert Thresholds</strong>
+                                        <p style="margin: 0; font-size: 14px; color: #64748B; line-height: 1.6;">
+                                            Set custom reorder points and low-stock alerts to match your business needs and avoid stockouts.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div style="display: flex; align-items: flex-start; padding: 16px 0;">
+                                    <div style="font-size: 32px; margin-right: 16px; flex-shrink: 0;">👥</div>
+                                    <div>
+                                        <strong style="display: block; font-size: 16px; color: #0F172A; margin-bottom: 6px;">Invite Your Team</strong>
+                                        <p style="margin: 0; font-size: 14px; color: #64748B; line-height: 1.6;">
+                                            Collaborate with colleagues by inviting team members. Share dashboards and reports with stakeholders.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- CTA -->
+                            <div style="text-align: center; margin: 40px 0;">
+                                <a href="{{dashboardUrl}}" class="cta-button">
+                                    Explore Your Dashboard →
+                                </a>
+                            </div>
+
+                            <!-- Testimonial -->
+                            <div style="background-color: #F8FAFC; border-left: 4px solid #8B5CF6; padding: 24px; margin: 30px 0; border-radius: 4px;">
+                                <p style="margin: 0 0 16px 0; font-size: 16px; color: #1E293B; font-style: italic; line-height: 1.6;">
+                                    "CapLiquify helped us reduce our cash cycle by 18 days in the first month. The AI forecasting is remarkably accurate."
+                                </p>
+                                <p style="margin: 0; font-size: 14px; color: #64748B;">
+                                    <strong style="font-weight: 600; color: #1E293B;">Sarah Mitchell</strong> — Operations Director, Craft Beverages Ltd
+                                </p>
+                            </div>
+
+                            <!-- Need Help Section -->
+                            <div style="background-color: #EFF6FF; border: 1px solid #DBEAFE; border-radius: 8px; padding: 24px; margin: 30px 0;">
+                                <div style="display: flex; align-items: flex-start;">
+                                    <div style="font-size: 32px; margin-right: 16px; flex-shrink: 0;">💬</div>
+                                    <div>
+                                        <h4 style="margin: 0 0 8px 0; font-size: 16px; font-weight: 700; color: #1E3A8A;">Need Help Getting Started?</h4>
+                                        <p style="margin: 0 0 16px 0; font-size: 14px; color: #1E40AF; line-height: 1.6;">
+                                            Book a free 30-minute onboarding call with our team. We'll help you set up integrations, configure forecasts, and answer any questions.
+                                        </p>
+                                        <a href="https://calendly.com/capliquify/onboarding" style="color: #3B82F6; text-decoration: none; font-weight: 600; font-size: 14px;">
+                                            Schedule Your Call →
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Quick Links -->
+                            <h3 style="margin: 40px 0 20px 0; font-size: 18px; font-weight: 700; color: #1E293B;">Quick Actions</h3>
+
+                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                                <tr>
+                                    <td style="padding: 8px 8px 8px 0; width: 50%;">
+                                        <a href="{{dashboardUrl}}/integrations" style="display: block; background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 16px; text-decoration: none;">
+                                            <div style="font-size: 24px; margin-bottom: 8px;">🔌</div>
+                                            <div style="font-size: 14px; font-weight: 600; color: #1E293B;">Add Integration</div>
+                                        </a>
+                                    </td>
+                                    <td style="padding: 8px 0 8px 8px; width: 50%;">
+                                        <a href="{{dashboardUrl}}/team" style="display: block; background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 16px; text-decoration: none;">
+                                            <div style="font-size: 24px; margin-bottom: 8px;">👥</div>
+                                            <div style="font-size: 14px; font-weight: 600; color: #1E293B;">Invite Team</div>
+                                        </a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 8px 8px 0 0; width: 50%;">
+                                        <a href="{{dashboardUrl}}/forecasts" style="display: block; background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 16px; text-decoration: none;">
+                                            <div style="font-size: 24px; margin-bottom: 8px;">📈</div>
+                                            <div style="font-size: 14px; font-weight: 600; color: #1E293B;">View Forecasts</div>
+                                        </a>
+                                    </td>
+                                    <td style="padding: 8px 0 0 8px; width: 50%;">
+                                        <a href="{{dashboardUrl}}/reports" style="display: block; background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 16px; text-decoration: none;">
+                                            <div style="font-size: 24px; margin-bottom: 8px;">📊</div>
+                                            <div style="font-size: 14px; font-weight: 600; color: #1E293B;">Export Report</div>
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Final Message -->
+                            <p style="margin: 40px 0 20px 0; font-size: 15px; color: #64748B; text-align: center; line-height: 1.8;">
+                                Questions or feedback? Just reply to this email—our team reads every message and we'd love to hear from you! 💙
+                            </p>
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td class="email-footer">
+                            <p style="margin: 0 0 15px 0; font-size: 14px; color: #64748B; line-height: 1.6;">
+                                <strong>CapLiquify</strong><br>
+                                Manufacturing Intelligence &amp; Working Capital Optimization
+                            </p>
+
+                            <div style="margin: 20px 0;">
+                                <a href="https://app.capliquify.com/dashboard" style="color: #3B82F6; text-decoration: none; margin: 0 10px; font-size: 14px;">Dashboard</a>
+                                <a href="https://capliquify.com/help" style="color: #3B82F6; text-decoration: none; margin: 0 10px; font-size: 14px;">Help Center</a>
+                                <a href="https://capliquify.com/contact" style="color: #3B82F6; text-decoration: none; margin: 0 10px; font-size: 14px;">Contact</a>
+                            </div>
+
+                            <p style="margin: 20px 0 0 0; font-size: 12px; color: #94A3B8;">
+                                You're receiving this email because you're on day 7 of your CapLiquify trial.<br>
+                                <a href="{{unsubscribeUrl}}" style="color: #64748B; text-decoration: underline;">Unsubscribe</a> | <a href="{{preferencesUrl}}" style="color: #64748B; text-decoration: underline;">Email Preferences</a>
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

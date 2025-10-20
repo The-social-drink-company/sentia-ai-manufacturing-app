@@ -1,0 +1,155 @@
+name: Trial Expiration Monitor
+
+on:
+  schedule:
+    # Run every hour at minute 0
+    - cron: '0 * * * *'
+
+  # Allow manual trigger for testing
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry run (no emails sent)'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
+
+jobs:
+  check-trial-expirations:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Check trial expirations and send emails
+        id: check_trials
+        env:
+          API_BASE_URL: ${{ secrets.CAPLIQUIFY_API_URL || 'https://sentia-backend-prod.onrender.com' }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET_KEY }}
+          DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
+        run: |
+          echo "🔍 Checking trial expirations..."
+          echo "API URL: $API_BASE_URL"
+          echo "Dry run: $DRY_RUN"
+
+          # Call the trial expiration cron endpoint
+          RESPONSE=$(curl -s -w "\n%{http_code}" \
+            -X POST \
+            -H "Content-Type: application/json" \
+            -H "X-Cron-Secret: $CRON_SECRET" \
+            -d "{\"dryRun\": $DRY_RUN}" \
+            "$API_BASE_URL/api/cron/trial-expiration")
+
+          # Extract HTTP status code (last line)
+          HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+
+          # Extract response body (everything except last line)
+          RESPONSE_BODY=$(echo "$RESPONSE" | sed '$d')
+
+          echo "Response: $RESPONSE_BODY"
+          echo "HTTP Status: $HTTP_CODE"
+
+          # Save response for summary
+          echo "response_body=$RESPONSE_BODY" >> $GITHUB_OUTPUT
+          echo "http_code=$HTTP_CODE" >> $GITHUB_OUTPUT
+
+          # Check if request was successful
+          if [ "$HTTP_CODE" -eq 200 ]; then
+            echo "✅ Trial expiration check completed successfully"
+            exit 0
+          else
+            echo "❌ Trial expiration check failed with status $HTTP_CODE"
+            exit 1
+          fi
+
+      - name: Parse results
+        if: success()
+        env:
+          RESPONSE: ${{ steps.check_trials.outputs.response_body }}
+        run: |
+          echo "📊 Trial Expiration Summary:"
+          echo "$RESPONSE" | jq -r '
+            "Total tenants checked: \(.stats.totalChecked // 0)",
+            "Day 1 welcome emails: \(.stats.day1Sent // 0)",
+            "Day 7 check-in emails: \(.stats.day7Sent // 0)",
+            "Day 12 ending soon emails: \(.stats.day12Sent // 0)",
+            "Day 14 expired emails: \(.stats.day14Sent // 0)",
+            "Grace period expiring: \(.stats.gracePeriodExpiring // 0)",
+            "Errors: \(.stats.errors // 0)"
+          '
+
+      - name: Create job summary
+        if: always()
+        env:
+          RESPONSE: ${{ steps.check_trials.outputs.response_body }}
+          HTTP_CODE: ${{ steps.check_trials.outputs.http_code }}
+        run: |
+          echo "# Trial Expiration Monitor Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Timestamp:** $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
+          echo "**HTTP Status:** $HTTP_CODE" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ "$HTTP_CODE" = "200" ]; then
+            echo "✅ **Status:** Success" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "## Statistics" >> $GITHUB_STEP_SUMMARY
+            echo "$RESPONSE" | jq -r '
+              "- **Total Checked:** \(.stats.totalChecked // 0)",
+              "- **Day 1 Welcome:** \(.stats.day1Sent // 0)",
+              "- **Day 7 Check-in:** \(.stats.day7Sent // 0)",
+              "- **Day 12 Ending Soon:** \(.stats.day12Sent // 0)",
+              "- **Day 14 Expired:** \(.stats.day14Sent // 0)",
+              "- **Grace Period Expiring:** \(.stats.gracePeriodExpiring // 0)",
+              "- **Errors:** \(.stats.errors // 0)"
+            ' >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ **Status:** Failed" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Error:** $RESPONSE" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Notify on failure
+        if: failure()
+        env:
+          RESPONSE: ${{ steps.check_trials.outputs.response_body }}
+        run: |
+          echo "::error title=Trial Expiration Check Failed::HTTP Status ${{ steps.check_trials.outputs.http_code }}: $RESPONSE"
+
+  # Optional: Health check job to verify API is reachable
+  health-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Check API health
+        env:
+          API_BASE_URL: ${{ secrets.CAPLIQUIFY_API_URL || 'https://sentia-backend-prod.onrender.com' }}
+        run: |
+          echo "🏥 Checking API health..."
+
+          HEALTH_RESPONSE=$(curl -s -w "\n%{http_code}" "$API_BASE_URL/api/health")
+          HTTP_CODE=$(echo "$HEALTH_RESPONSE" | tail -n1)
+          HEALTH_BODY=$(echo "$HEALTH_RESPONSE" | sed '$d')
+
+          echo "Health check response: $HEALTH_BODY"
+          echo "HTTP Status: $HTTP_CODE"
+
+          if [ "$HTTP_CODE" -eq 200 ]; then
+            echo "✅ API is healthy"
+            exit 0
+          else
+            echo "⚠️ API health check returned status $HTTP_CODE"
+            exit 0  # Don't fail the workflow if health check fails
+          fi

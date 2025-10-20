@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Your Trial Has Expired - 3-Day Grace Period Active</title>
+    <style>
+        body { margin: 0; padding: 0; background-color: #F1F5F9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; }
+        .email-container { max-width: 600px; margin: 0 auto; background-color: #ffffff; }
+        .email-header { background: linear-gradient(135deg, #DC2626 0%, #991B1B 100%); padding: 40px 20px; text-align: center; }
+        .email-content { padding: 40px 30px; background-color: #ffffff; }
+        .cta-button { display: inline-block; padding: 18px 36px; background: linear-gradient(135deg, #10B981 0%, #059669 100%); color: #ffffff !important; text-decoration: none; border-radius: 8px; font-weight: 700; font-size: 17px; box-shadow: 0 4px 6px rgba(16, 185, 129, 0.3); }
+        .grace-period-box { background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); border-radius: 12px; padding: 30px; text-align: center; color: #ffffff; margin: 30px 0; }
+        .stats-highlight { background-color: #F8FAFC; border: 2px solid #E2E8F0; border-radius: 12px; padding: 24px; margin: 20px 0; }
+        .pricing-card { background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%); border-radius: 12px; padding: 30px; color: #ffffff; margin: 30px 0; }
+        .email-footer { background-color: #F8FAFC; padding: 30px 20px; text-align: center; }
+        @media screen and (max-width: 600px) {
+            .email-content { padding: 30px 20px !important; }
+            .cta-button { display: block !important; width: 100% !important; margin: 10px 0 !important; }
+        }
+    </style>
+</head>
+<body>
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+        <tr>
+            <td style="padding: 20px 0;">
+                <table role="presentation" class="email-container" cellspacing="0" cellpadding="0" border="0" align="center">
+                    <!-- Header -->
+                    <tr>
+                        <td class="email-header">
+                            <h1 style="margin: 0; color: #ffffff; font-size: 32px; font-weight: 700;">CapLiquify</h1>
+                            <p style="margin: 10px 0 0 0; color: #ffffff; font-size: 16px; opacity: 0.95; font-weight: 600;">Trial Expired</p>
+                        </td>
+                    </tr>
+
+                    <!-- Main Content -->
+                    <tr>
+                        <td class="email-content">
+                            <!-- Expired Badge -->
+                            <div style="text-align: center; margin-bottom: 30px;">
+                                <span style="display: inline-block; padding: 8px 16px; background: linear-gradient(135deg, #DC2626 0%, #991B1B 100%); color: #ffffff; border-radius: 20px; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">
+                                    ⏱️ Trial Expired
+                                </span>
+                            </div>
+
+                            <!-- Greeting -->
+                            <h2 style="margin: 0 0 20px 0; font-size: 26px; color: #0F172A; font-weight: 700; text-align: center;">
+                                Your Trial Has Ended
+                            </h2>
+
+                            <p style="margin: 0 0 30px 0; font-size: 17px; color: #475569; line-height: 1.8; text-align: center;">
+                                {{firstName}}, your 14-day trial of <strong>CapLiquify {{tier}}</strong> expired on {{trialEndDate}}. But don't worry—we've activated a <strong style="color: #F59E0B;">3-day grace period</strong> so you can still reactivate your account.
+                            </p>
+
+                            <!-- Grace Period Box -->
+                            <div class="grace-period-box">
+                                <p style="margin: 0 0 16px 0; font-size: 16px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; opacity: 0.95;">⏰ Grace Period Active</p>
+                                <div style="font-size: 48px; font-weight: 700; margin: 16px 0;">3 Days</div>
+                                <p style="margin: 0; font-size: 15px; opacity: 0.95;">
+                                    Reactivate before {{gracePeriodEnd}} to keep your data and insights
+                                </p>
+                            </div>
+
+                            <!-- Primary CTA -->
+                            <div style="text-align: center; margin: 30px 0;">
+                                <a href="{{reactivateUrl}}" class="cta-button">
+                                    Reactivate My Account Now →
+                                </a>
+                                <p style="margin: 16px 0 0 0; font-size: 14px; color: #94A3B8;">
+                                    Instant reactivation • All your data preserved
+                                </p>
+                            </div>
+
+                            <!-- What Happens Next -->
+                            <div style="background-color: #FEE2E2; border-left: 4px solid #DC2626; padding: 20px; margin: 30px 0; border-radius: 4px;">
+                                <p style="margin: 0 0 12px 0; color: #991B1B; font-size: 16px; font-weight: 700;">
+                                    ⚠️ After the Grace Period:
+                                </p>
+                                <ul style="margin: 0; padding-left: 20px; color: #991B1B; line-height: 1.8;">
+                                    <li><strong>Your account will be deactivated</strong> and you'll lose access to your dashboard</li>
+                                    <li><strong>All forecasts and reports will be deleted</strong> after 30 days</li>
+                                    <li><strong>Integration configurations will be removed</strong></li>
+                                    <li><strong>Your team members will lose access</strong></li>
+                                </ul>
+                            </div>
+
+                            <!-- Your Trial Summary -->
+                            <h3 style="margin: 40px 0 20px 0; font-size: 22px; font-weight: 700; color: #1E293B; text-align: center;">What You Accomplished During Your Trial</h3>
+
+                            <div class="stats-highlight">
+                                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                                    <tr>
+                                        <td style="padding: 16px; text-align: center; width: 25%;">
+                                            <div style="font-size: 36px; font-weight: 700; color: #3B82F6; margin-bottom: 8px;">{{forecastsCreated}}</div>
+                                            <div style="font-size: 13px; color: #64748B; text-transform: uppercase; letter-spacing: 0.5px;">Forecasts</div>
+                                        </td>
+                                        <td style="padding: 16px; text-align: center; width: 25%;">
+                                            <div style="font-size: 36px; font-weight: 700; color: #8B5CF6; margin-bottom: 8px;">{{insightsGenerated}}</div>
+                                            <div style="font-size: 13px; color: #64748B; text-transform: uppercase; letter-spacing: 0.5px;">AI Insights</div>
+                                        </td>
+                                        <td style="padding: 16px; text-align: center; width: 25%;">
+                                            <div style="font-size: 36px; font-weight: 700; color: #10B981; margin-bottom: 8px;">${{potentialSavings}}</div>
+                                            <div style="font-size: 13px; color: #64748B; text-transform: uppercase; letter-spacing: 0.5px;">Savings ID'd</div>
+                                        </td>
+                                        <td style="padding: 16px; text-align: center; width: 25%;">
+                                            <div style="font-size: 36px; font-weight: 700; color: #F59E0B; margin-bottom: 8px;">{{daysUsed}}</div>
+                                            <div style="font-size: 13px; color: #64748B; text-transform: uppercase; letter-spacing: 0.5px;">Days Active</div>
+                                        </td>
+                                    </tr>
+                                </table>
+
+                                <div style="margin: 24px 0 0 0; padding: 20px; background-color: #ffffff; border-radius: 8px;">
+                                    <p style="margin: 0 0 12px 0; font-size: 16px; color: #1E293B; font-weight: 600; text-align: center;">
+                                        🎯 Your Projected Annual Impact
+                                    </p>
+                                    <div style="text-align: center; margin: 12px 0;">
+                                        <span style="font-size: 42px; font-weight: 700; color: #10B981;">${{projectedAnnualSavings}}</span>
+                                        <span style="font-size: 18px; color: #64748B;"> in savings</span>
+                                    </div>
+                                    <p style="margin: 12px 0 0 0; font-size: 14px; color: #64748B; text-align: center;">
+                                        Based on your trial usage and identified optimizations
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Pricing Reminder -->
+                            <h3 style="margin: 50px 0 20px 0; font-size: 22px; font-weight: 700; color: #1E293B; text-align: center;">Continue with {{tier}} Plan</h3>
+
+                            <div class="pricing-card">
+                                <div style="text-align: center; margin-bottom: 24px;">
+                                    <div style="font-size: 52px; font-weight: 700; line-height: 1;">$99</div>
+                                    <div style="font-size: 18px; opacity: 0.95; margin-top: 8px;">/month</div>
+                                    <div style="font-size: 14px; opacity: 0.85; margin-top: 12px;">
+                                        💰 Save 20% with annual billing ($950/year)
+                                    </div>
+                                </div>
+
+                                <div style="background-color: rgba(255, 255, 255, 0.15); border-radius: 8px; padding: 20px; margin: 24px 0;">
+                                    <div style="display: flex; align-items: center; padding: 8px 0;">
+                                        <span style="color: #ffffff; margin-right: 12px; font-size: 18px;">✓</span>
+                                        <span style="font-size: 15px;">Up to 20 users</span>
+                                    </div>
+                                    <div style="display: flex; align-items: center; padding: 8px 0;">
+                                        <span style="color: #ffffff; margin-right: 12px; font-size: 18px;">✓</span>
+                                        <span style="font-size: 15px;">Unlimited forecasts &amp; AI insights</span>
+                                    </div>
+                                    <div style="display: flex; align-items: center; padding: 8px 0;">
+                                        <span style="color: #ffffff; margin-right: 12px; font-size: 18px;">✓</span>
+                                        <span style="font-size: 15px;">All integrations (Xero, Shopify, Amazon)</span>
+                                    </div>
+                                    <div style="display: flex; align-items: center; padding: 8px 0;">
+                                        <span style="color: #ffffff; margin-right: 12px; font-size: 18px;">✓</span>
+                                        <span style="font-size: 15px;">Priority support</span>
+                                    </div>
+                                    <div style="display: flex; align-items: center; padding: 8px 0;">
+                                        <span style="color: #ffffff; margin-right: 12px; font-size: 18px;">✓</span>
+                                        <span style="font-size: 15px;">Cancel anytime</span>
+                                    </div>
+                                </div>
+
+                                <div style="text-align: center; margin-top: 24px;">
+                                    <a href="{{reactivateUrl}}" style="display: inline-block; padding: 16px 32px; background-color: #ffffff; color: #8B5CF6 !important; text-decoration: none; border-radius: 8px; font-weight: 700; font-size: 16px;">
+                                        Reactivate Now →
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- ROI Calculator -->
+                            <div style="background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 24px; margin: 30px 0;">
+                                <h4 style="margin: 0 0 16px 0; font-size: 18px; font-weight: 700; color: #1E293B; text-align: center;">📊 Your ROI Breakdown</h4>
+
+                                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                                    <tr>
+                                        <td style="padding: 12px 0; border-bottom: 1px solid #E2E8F0;">
+                                            <span style="font-size: 14px; color: #64748B;">Monthly Cost:</span>
+                                            <strong style="float: right; font-size: 16px; color: #DC2626;">-$99</strong>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 12px 0; border-bottom: 1px solid #E2E8F0;">
+                                            <span style="font-size: 14px; color: #64748B;">Monthly Savings:</span>
+                                            <strong style="float: right; font-size: 16px; color: #10B981;">+${{monthlySavings}}</strong>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 12px 0;">
+                                            <span style="font-size: 15px; color: #1E293B; font-weight: 600;">Net Monthly Benefit:</span>
+                                            <strong style="float: right; font-size: 20px; color: #10B981;">+${{netBenefit}}</strong>
+                                        </td>
+                                    </tr>
+                                </table>
+
+                                <p style="margin: 20px 0 0 0; font-size: 13px; color: #64748B; text-align: center; line-height: 1.6;">
+                                    <strong style="color: #10B981;">{{roiPercentage}}% ROI</strong> based on your trial performance
+                                </p>
+                            </div>
+
+                            <!-- Testimonial -->
+                            <div style="background-color: #F8FAFC; border-left: 4px solid #8B5CF6; padding: 24px; margin: 30px 0; border-radius: 4px;">
+                                <p style="margin: 0 0 16px 0; font-size: 16px; color: #1E293B; font-style: italic; line-height: 1.6;">
+                                    "We almost let our trial expire, but I'm so glad we didn't. Within 3 months, CapLiquify had paid for itself 10x over through inventory optimizations alone."
+                                </p>
+                                <p style="margin: 0; font-size: 14px; color: #64748B;">
+                                    <strong style="font-weight: 600; color: #1E293B;">James Patterson</strong> — CFO, Artisan Foods Group
+                                </p>
+                            </div>
+
+                            <!-- Final CTA -->
+                            <div style="text-align: center; margin: 50px 0 30px 0;">
+                                <a href="{{reactivateUrl}}" class="cta-button">
+                                    Reactivate & Keep My Data →
+                                </a>
+                                <p style="margin: 16px 0 0 0; font-size: 14px; color: #94A3B8;">
+                                    🔒 Secure checkout • Takes 2 minutes • Cancel anytime
+                                </p>
+                            </div>
+
+                            <!-- Alternative Options -->
+                            <div style="background-color: #ffffff; border: 1px solid #E2E8F0; border-radius: 8px; padding: 24px; margin: 30px 0;">
+                                <h4 style="margin: 0 0 16px 0; font-size: 16px; font-weight: 700; color: #1E293B; text-align: center;">Other Options</h4>
+
+                                <div style="text-align: center; margin: 12px 0;">
+                                    <a href="{{pricingUrl}}" style="color: #3B82F6; text-decoration: none; font-weight: 600; font-size: 14px; display: block; padding: 8px 0;">
+                                        View All Plans & Pricing →
+                                    </a>
+                                    <a href="{{downgradUrl}}" style="color: #3B82F6; text-decoration: none; font-weight: 600; font-size: 14px; display: block; padding: 8px 0;">
+                                        Switch to Starter Plan ($49/month) →
+                                    </a>
+                                    <a href="https://calendly.com/capliquify/upgrade-call" style="color: #3B82F6; text-decoration: none; font-weight: 600; font-size: 14px; display: block; padding: 8px 0;">
+                                        Talk to Sales About Enterprise →
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- Support -->
+                            <div style="background-color: #EFF6FF; border: 1px solid #DBEAFE; border-radius: 8px; padding: 24px; margin: 30px 0; text-align: center;">
+                                <p style="margin: 0 0 12px 0; font-size: 16px; color: #1E3A8A; font-weight: 600;">Have Questions?</p>
+                                <p style="margin: 0 0 16px 0; font-size: 14px; color: #1E40AF; line-height: 1.6;">
+                                    Our team is here to help you make the right decision for your business.
+                                </p>
+                                <a href="mailto:support@capliquify.com" style="color: #3B82F6; text-decoration: none; font-weight: 600; font-size: 14px;">
+                                    support@capliquify.com
+                                </a>
+                                <span style="color: #CBD5E1; margin: 0 8px;">|</span>
+                                <a href="https://calendly.com/capliquify/reactivation-help" style="color: #3B82F6; text-decoration: none; font-weight: 600; font-size: 14px;">
+                                    Schedule Call
+                                </a>
+                            </div>
+
+                            <!-- Final Note -->
+                            <p style="margin: 40px 0 20px 0; font-size: 15px; color: #64748B; text-align: center; line-height: 1.8;">
+                                Thank you for trying CapLiquify. We'd love to continue helping you optimize your manufacturing operations. If you choose not to continue, we respect your decision and wish you the best! 💙
+                            </p>
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td class="email-footer">
+                            <p style="margin: 0 0 15px 0; font-size: 14px; color: #64748B; line-height: 1.6;">
+                                <strong>CapLiquify</strong><br>
+                                Manufacturing Intelligence &amp; Working Capital Optimization
+                            </p>
+
+                            <div style="margin: 20px 0;">
+                                <a href="{{reactivateUrl}}" style="color: #3B82F6; text-decoration: none; margin: 0 10px; font-size: 14px;">Reactivate</a>
+                                <a href="https://capliquify.com/pricing" style="color: #3B82F6; text-decoration: none; margin: 0 10px; font-size: 14px;">Pricing</a>
+                                <a href="https://capliquify.com/contact" style="color: #3B82F6; text-decoration: none; margin: 0 10px; font-size: 14px;">Contact</a>
+                            </div>
+
+                            <p style="margin: 20px 0 0 0; font-size: 12px; color: #94A3B8;">
+                                You're receiving this email because your trial has expired.<br>
+                                <a href="{{unsubscribeUrl}}" style="color: #64748B; text-decoration: underline;">Unsubscribe</a> | <a href="{{preferencesUrl}}" style="color: #64748B; text-decoration: underline;">Email Preferences</a>
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

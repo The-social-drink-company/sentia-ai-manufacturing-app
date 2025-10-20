@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Your Trial Ends in 2 Days - Don't Lose Access</title>
+    <style>
+        body { margin: 0; padding: 0; background-color: #F1F5F9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; }
+        .email-container { max-width: 600px; margin: 0 auto; background-color: #ffffff; }
+        .email-header { background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%); padding: 40px 20px; text-align: center; }
+        .email-content { padding: 40px 30px; background-color: #ffffff; }
+        .cta-button { display: inline-block; padding: 18px 36px; background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%); color: #ffffff !important; text-decoration: none; border-radius: 8px; font-weight: 700; font-size: 17px; box-shadow: 0 4px 6px rgba(239, 68, 68, 0.3); }
+        .cta-button-secondary { display: inline-block; padding: 16px 32px; background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%); color: #ffffff !important; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; }
+        .countdown-box { background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%); border-radius: 12px; padding: 30px; text-align: center; color: #ffffff; margin: 30px 0; }
+        .pricing-card { background-color: #ffffff; border: 2px solid #E2E8F0; border-radius: 12px; padding: 30px; margin: 20px 0; }
+        .pricing-card-featured { border: 2px solid #8B5CF6; box-shadow: 0 8px 16px rgba(139, 92, 246, 0.2); }
+        .email-footer { background-color: #F8FAFC; padding: 30px 20px; text-align: center; }
+        @media screen and (max-width: 600px) {
+            .email-content { padding: 30px 20px !important; }
+            .cta-button, .cta-button-secondary { display: block !important; width: 100% !important; margin: 10px 0 !important; }
+            .countdown-timer td { padding: 8px !important; }
+        }
+    </style>
+</head>
+<body>
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+        <tr>
+            <td style="padding: 20px 0;">
+                <table role="presentation" class="email-container" cellspacing="0" cellpadding="0" border="0" align="center">
+                    <!-- Header -->
+                    <tr>
+                        <td class="email-header">
+                            <h1 style="margin: 0; color: #ffffff; font-size: 32px; font-weight: 700;">CapLiquify</h1>
+                            <p style="margin: 10px 0 0 0; color: #ffffff; font-size: 16px; opacity: 0.95; font-weight: 600;">⏰ Your Trial Ends Soon</p>
+                        </td>
+                    </tr>
+
+                    <!-- Main Content -->
+                    <tr>
+                        <td class="email-content">
+                            <!-- Urgent Badge -->
+                            <div style="text-align: center; margin-bottom: 30px;">
+                                <span style="display: inline-block; padding: 8px 16px; background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%); color: #ffffff; border-radius: 20px; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">
+                                    🚨 Urgent: Day 12 of 14
+                                </span>
+                            </div>
+
+                            <!-- Greeting -->
+                            <h2 style="margin: 0 0 20px 0; font-size: 26px; color: #0F172A; font-weight: 700; text-align: center;">
+                                Don't Lose Access, {{firstName}}!
+                            </h2>
+
+                            <p style="margin: 0 0 30px 0; font-size: 17px; color: #475569; line-height: 1.8; text-align: center;">
+                                Your <strong>{{tier}} Plan</strong> trial ends in just <strong style="color: #EF4444;">2 days</strong>. Add a payment method now to keep your data and continue optimizing your manufacturing operations.
+                            </p>
+
+                            <!-- Countdown Timer -->
+                            <div class="countdown-box">
+                                <p style="margin: 0 0 20px 0; font-size: 16px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; opacity: 0.95;">Time Remaining in Your Trial</p>
+                                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" class="countdown-timer">
+                                    <tr>
+                                        <td style="text-align: center; padding: 0 12px;">
+                                            <div style="font-size: 52px; font-weight: 700; line-height: 1;">{{daysRemaining}}</div>
+                                            <div style="font-size: 13px; text-transform: uppercase; opacity: 0.9; letter-spacing: 1px; margin-top: 8px;">Days</div>
+                                        </td>
+                                        <td style="text-align: center; font-size: 52px; font-weight: 300; opacity: 0.5;">:</td>
+                                        <td style="text-align: center; padding: 0 12px;">
+                                            <div style="font-size: 52px; font-weight: 700; line-height: 1;">{{hoursRemaining}}</div>
+                                            <div style="font-size: 13px; text-transform: uppercase; opacity: 0.9; letter-spacing: 1px; margin-top: 8px;">Hours</div>
+                                        </td>
+                                        <td style="text-align: center; font-size: 52px; font-weight: 300; opacity: 0.5;">:</td>
+                                        <td style="text-align: center; padding: 0 12px;">
+                                            <div style="font-size: 52px; font-weight: 700; line-height: 1;">{{minutesRemaining}}</div>
+                                            <div style="font-size: 13px; text-transform: uppercase; opacity: 0.9; letter-spacing: 1px; margin-top: 8px;">Minutes</div>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <p style="margin: 20px 0 0 0; font-size: 14px; opacity: 0.9;">Trial expires {{trialEndDate}}</p>
+                            </div>
+
+                            <!-- Primary CTA -->
+                            <div style="text-align: center; margin: 30px 0;">
+                                <a href="{{addPaymentUrl}}" class="cta-button">
+                                    Add Payment Method & Continue →
+                                </a>
+                            </div>
+
+                            <!-- What You'll Lose -->
+                            <div style="background-color: #FEE2E2; border-left: 4px solid #EF4444; padding: 20px; margin: 30px 0; border-radius: 4px;">
+                                <p style="margin: 0 0 12px 0; color: #991B1B; font-size: 16px; font-weight: 700;">
+                                    ⚠️ What You'll Lose Without Upgrading:
+                                </p>
+                                <ul style="margin: 0; padding-left: 20px; color: #991B1B; line-height: 1.8;">
+                                    <li>All your demand forecasts and historical data</li>
+                                    <li>Custom integration configurations (Xero, Shopify, Amazon)</li>
+                                    <li>AI-generated insights and recommendations</li>
+                                    <li>Team members and access permissions</li>
+                                    <li>Saved reports and dashboard customizations</li>
+                                </ul>
+                            </div>
+
+                            <!-- Your Results So Far -->
+                            <h3 style="margin: 40px 0 20px 0; font-size: 20px; font-weight: 700; color: #1E293B;">📊 Your Results So Far</h3>
+                            <p style="margin: 0 0 20px 0; font-size: 15px; color: #64748B;">
+                                Here's what you've achieved during your trial:
+                            </p>
+
+                            <div style="background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 24px;">
+                                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                                    <tr>
+                                        <td style="padding: 12px 0; border-bottom: 1px solid #E2E8F0;">
+                                            <span style="font-size: 15px; color: #64748B;">Forecasts Created:</span>
+                                            <strong style="float: right; font-size: 18px; color: #3B82F6;">{{forecastsCreated}}</strong>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 12px 0; border-bottom: 1px solid #E2E8F0;">
+                                            <span style="font-size: 15px; color: #64748B;">AI Insights Generated:</span>
+                                            <strong style="float: right; font-size: 18px; color: #8B5CF6;">{{insightsGenerated}}</strong>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 12px 0; border-bottom: 1px solid #E2E8F0;">
+                                            <span style="font-size: 15px; color: #64748B;">Potential Savings Identified:</span>
+                                            <strong style="float: right; font-size: 18px; color: #10B981;">${{potentialSavings}}</strong>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 12px 0;">
+                                            <span style="font-size: 15px; color: #64748B;">Cash Cycle Improvement:</span>
+                                            <strong style="float: right; font-size: 18px; color: #059669;">{{cashCycleImprovement}} days</strong>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+
+                            <!-- Pricing Section -->
+                            <h3 style="margin: 50px 0 30px 0; font-size: 22px; font-weight: 700; color: #1E293B; text-align: center;">Choose Your Plan</h3>
+
+                            <!-- Professional Plan (Featured) -->
+                            <div class="pricing-card pricing-card-featured">
+                                <div style="text-align: center; margin-bottom: 20px;">
+                                    <span style="display: inline-block; padding: 6px 12px; background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%); color: #ffffff; border-radius: 20px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">
+                                        🌟 Current Plan
+                                    </span>
+                                </div>
+
+                                <h4 style="margin: 0 0 8px 0; font-size: 24px; font-weight: 700; color: #1E293B; text-align: center;">Professional</h4>
+
+                                <div style="text-align: center; margin: 20px 0;">
+                                    <span style="font-size: 48px; font-weight: 700; color: #1E293B;">$99</span>
+                                    <span style="font-size: 18px; color: #64748B;">/month</span>
+                                </div>
+
+                                <div style="text-align: center; margin: 0 0 24px 0;">
+                                    <span style="display: inline-block; padding: 8px 16px; background-color: #DCFCE7; color: #166534; border-radius: 20px; font-size: 13px; font-weight: 600;">
+                                        Save 20% with Annual Plan
+                                    </span>
+                                </div>
+
+                                <div style="margin: 20px 0;">
+                                    <div style="display: flex; align-items: center; padding: 8px 0;">
+                                        <span style="color: #10B981; margin-right: 12px; font-size: 18px;">✓</span>
+                                        <span style="font-size: 15px; color: #475569;">Up to 20 users</span>
+                                    </div>
+                                    <div style="display: flex; align-items: center; padding: 8px 0;">
+                                        <span style="color: #10B981; margin-right: 12px; font-size: 18px;">✓</span>
+                                        <span style="font-size: 15px; color: #475569;">Unlimited forecasts &amp; reports</span>
+                                    </div>
+                                    <div style="display: flex; align-items: center; padding: 8px 0;">
+                                        <span style="color: #10B981; margin-right: 12px; font-size: 18px;">✓</span>
+                                        <span style="font-size: 15px; color: #475569;">AI-powered analytics</span>
+                                    </div>
+                                    <div style="display: flex; align-items: center; padding: 8px 0;">
+                                        <span style="color: #10B981; margin-right: 12px; font-size: 18px;">✓</span>
+                                        <span style="font-size: 15px; color: #475569;">All integrations (Xero, Shopify, Amazon)</span>
+                                    </div>
+                                    <div style="display: flex; align-items: center; padding: 8px 0;">
+                                        <span style="color: #10B981; margin-right: 12px; font-size: 18px;">✓</span>
+                                        <span style="font-size: 15px; color: #475569;">Priority support</span>
+                                    </div>
+                                </div>
+
+                                <div style="text-align: center; margin-top: 24px;">
+                                    <a href="{{addPaymentUrl}}" class="cta-button-secondary" style="width: 100%; display: block; text-align: center;">
+                                        Continue with Professional →
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- Other Plans -->
+                            <div style="margin: 20px 0;">
+                                <p style="text-align: center; font-size: 14px; color: #64748B; margin: 20px 0;">
+                                    Need a different plan?
+                                    <a href="{{pricingUrl}}" style="color: #3B82F6; text-decoration: none; font-weight: 600;">View all pricing options →</a>
+                                </p>
+                            </div>
+
+                            <!-- FAQ Section -->
+                            <h3 style="margin: 50px 0 20px 0; font-size: 20px; font-weight: 700; color: #1E293B;">Common Questions</h3>
+
+                            <div style="background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 20px; margin: 10px 0;">
+                                <strong style="display: block; font-size: 15px; color: #1E293B; margin-bottom: 8px;">Can I cancel anytime?</strong>
+                                <p style="margin: 0; font-size: 14px; color: #64748B; line-height: 1.6;">
+                                    Yes! Cancel anytime with no questions asked. You'll have access until the end of your billing period.
+                                </p>
+                            </div>
+
+                            <div style="background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 20px; margin: 10px 0;">
+                                <strong style="display: block; font-size: 15px; color: #1E293B; margin-bottom: 8px;">What happens to my data?</strong>
+                                <p style="margin: 0; font-size: 14px; color: #64748B; line-height: 1.6;">
+                                    All your data, forecasts, and configurations are preserved when you upgrade. Nothing changes except you keep your access!
+                                </p>
+                            </div>
+
+                            <div style="background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 20px; margin: 10px 0;">
+                                <strong style="display: block; font-size: 15px; color: #1E293B; margin-bottom: 8px;">Can I change plans later?</strong>
+                                <p style="margin: 0; font-size: 14px; color: #64748B; line-height: 1.6;">
+                                    Absolutely. Upgrade or downgrade your plan anytime to match your evolving needs.
+                                </p>
+                            </div>
+
+                            <!-- Final CTA -->
+                            <div style="text-align: center; margin: 50px 0 30px 0;">
+                                <a href="{{addPaymentUrl}}" class="cta-button">
+                                    Secure Your Account Now →
+                                </a>
+                                <p style="margin: 16px 0 0 0; font-size: 14px; color: #94A3B8;">
+                                    Takes less than 2 minutes • No long-term commitment
+                                </p>
+                            </div>
+
+                            <!-- Support -->
+                            <div style="background-color: #EFF6FF; border: 1px solid #DBEAFE; border-radius: 8px; padding: 24px; margin: 30px 0; text-align: center;">
+                                <p style="margin: 0 0 12px 0; font-size: 16px; color: #1E3A8A; font-weight: 600;">Questions About Upgrading?</p>
+                                <p style="margin: 0 0 16px 0; font-size: 14px; color: #1E40AF; line-height: 1.6;">
+                                    Our team is here to help. Reply to this email or schedule a quick call.
+                                </p>
+                                <a href="https://calendly.com/capliquify/upgrade-call" style="color: #3B82F6; text-decoration: none; font-weight: 600; font-size: 14px;">
+                                    Schedule Call →
+                                </a>
+                                <span style="color: #CBD5E1; margin: 0 8px;">|</span>
+                                <a href="mailto:support@capliquify.com" style="color: #3B82F6; text-decoration: none; font-weight: 600; font-size: 14px;">
+                                    Email Support
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td class="email-footer">
+                            <p style="margin: 0 0 15px 0; font-size: 14px; color: #64748B; line-height: 1.6;">
+                                <strong>CapLiquify</strong><br>
+                                Manufacturing Intelligence &amp; Working Capital Optimization
+                            </p>
+
+                            <div style="margin: 20px 0;">
+                                <a href="https://app.capliquify.com/dashboard" style="color: #3B82F6; text-decoration: none; margin: 0 10px; font-size: 14px;">Dashboard</a>
+                                <a href="https://capliquify.com/pricing" style="color: #3B82F6; text-decoration: none; margin: 0 10px; font-size: 14px;">Pricing</a>
+                                <a href="https://capliquify.com/contact" style="color: #3B82F6; text-decoration: none; margin: 0 10px; font-size: 14px;">Contact</a>
+                            </div>
+
+                            <p style="margin: 20px 0 0 0; font-size: 12px; color: #94A3B8;">
+                                You're receiving this email because your trial ends in 2 days.<br>
+                                <a href="{{unsubscribeUrl}}" style="color: #64748B; text-decoration: underline;">Unsubscribe</a> | <a href="{{preferencesUrl}}" style="color: #64748B; text-decoration: underline;">Email Preferences</a>
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

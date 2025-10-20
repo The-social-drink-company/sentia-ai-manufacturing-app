@@ -157,7 +157,8 @@
       "Bash(for dir in The-social*/)",
       "Bash(do echo \"Directory: ''''$dir''''\")",
       "Bash(ls:*)",
-      "Bash(if not exist \"tests\\utils\" mkdir \"tests\\utils\")"
+      "Bash(if not exist \"tests\\utils\" mkdir \"tests\\utils\")",
+      "Bash(bmad pm:*)"
     ],
     "deny": [],
     "ask": []

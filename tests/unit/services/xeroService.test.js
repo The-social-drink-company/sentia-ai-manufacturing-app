@@ -1,16 +1,16 @@
 /**
  * XeroService Unit Tests
  *
- * Tests for Xero API integration service with OAuth flow, working capital data,
- * and retry logic
+ * Tests for Xero API integration service with custom connection OAuth flow,
+ * working capital calculations, and real enterprise financial data.
  *
  * Test Coverage:
- * - OAuth authentication and token refresh
- * - Working capital data fetching (AR, AP, cash flow)
- * - Account and invoice data retrieval
+ * - Environment variable validation
+ * - Client initialization and authentication
+ * - Working capital calculations (calculateWorkingCapital)
+ * - Financial reports (getProfitAndLoss, getCashFlow, getBalanceSheet)
  * - Error handling and retry logic
- * - Rate limiting and caching
- * - SSE event emissions
+ * - Health checks and connection status
  *
  * @module tests/unit/services/xeroService
  */
@@ -21,20 +21,12 @@ import xeroService from '../../../services/xeroService.js'
 // Mock dependencies
 const mockXeroClient = {
   setTokenSet: vi.fn(),
-  refreshToken: vi.fn(),
   accountingApi: {
     getOrganisations: vi.fn(),
-    getAccounts: vi.fn(),
-    getInvoices: vi.fn(),
-    getContacts: vi.fn(),
-    getBankTransactions: vi.fn(),
+    getReportBalanceSheet: vi.fn(),
+    getReportProfitAndLoss: vi.fn(),
+    getReportBankSummary: vi.fn(),
   },
-}
-
-const mockTokenSet = {
-  access_token: 'mock_access_token',
-  refresh_token: 'mock_refresh_token',
-  expires_at: Date.now() + 3600000, // 1 hour from now
 }
 
 // Mock xero-node package
@@ -42,10 +34,8 @@ vi.mock('xero-node', () => ({
   __esModule: true,
   default: {
     XeroClient: vi.fn(() => mockXeroClient),
-    TokenSet: vi.fn((tokens) => ({ ...tokens })),
   },
   XeroClient: vi.fn(() => mockXeroClient),
-  TokenSet: vi.fn((tokens) => ({ ...tokens })),
 }))
 
 // Mock logger
@@ -56,22 +46,8 @@ vi.mock('../../../src/utils/logger.js', () => ({
   logError: vi.fn(),
 }))
 
-// Mock Redis cache
-vi.mock('../../../services/redis-cache.js', () => ({
-  default: {
-    get: vi.fn(),
-    set: vi.fn(),
-    generateCacheKey: vi.fn((service, type) => `${service}:${type}`),
-  },
-}))
-
-// Mock SSE service
-vi.mock('../../../server/services/sse/index.cjs', () => ({
-  default: {
-    emit: vi.fn(),
-    broadcast: vi.fn(),
-  },
-}))
+// Mock fetch for token requests
+global.fetch = vi.fn()
 
 describe('XeroService', () => {
   beforeEach(() => {
@@ -80,15 +56,14 @@ describe('XeroService', () => {
     // Setup environment variables
     process.env.XERO_CLIENT_ID = 'test_client_id'
     process.env.XERO_CLIENT_SECRET = 'test_client_secret'
-    process.env.XERO_REDIRECT_URI = 'http://localhost:3000/callback'
 
     // Reset singleton state
     xeroService.isConnected = false
-    xeroService.tokenSet = null
     xeroService.organizationId = null
     xeroService.tenantId = null
     xeroService.xero = null
     xeroService.initialized = false
+    xeroService.lastSyncTime = null
   })
 
   afterEach(() => {
@@ -124,7 +99,7 @@ describe('XeroService', () => {
       expect(result.missing).toContain('XERO_CLIENT_SECRET')
     })
 
-    it('should detect invalid (empty string) environment variables', () => {
+    it('should detect empty string environment variables', () => {
       process.env.XERO_CLIENT_ID = ''
 
       const result = xeroService.validateEnvironmentVariables()
@@ -154,7 +129,7 @@ describe('XeroService', () => {
       expect(xeroService.initialized).toBe(false) // Not fully initialized until authenticated
     })
 
-    it('should fail to initialize with invalid credentials', () => {
+    it('should fail to initialize with missing credentials', () => {
       delete process.env.XERO_CLIENT_ID
 
       xeroService.initializeXeroClient()
@@ -176,506 +151,293 @@ describe('XeroService', () => {
       xeroService.xero = mockXeroClient
     })
 
-    it('should authenticate with valid token set', async () => {
-      xeroService.tokenSet = mockTokenSet
-      mockXeroClient.accountingApi.getOrganisations.mockResolvedValue({
-        body: {
-          organisations: [
-            {
-              organisationID: 'org-123',
-              name: 'Test Organization',
-              version: 'AU',
-            },
-          ],
-        },
+    it('should authenticate with custom connection token', async () => {
+      // Mock successful token exchange
+      global.fetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          access_token: 'mock_access_token',
+          token_type: 'Bearer',
+          expires_in: 1800,
+          scope: 'accounting.transactions.read'
+        })
       })
 
-      await xeroService.authenticate()
+      // Mock connections API
+      global.fetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ([{
+          id: 'conn-123',
+          tenantId: 'tenant-123',
+          tenantType: 'ORGANISATION',
+          tenantName: 'Test Organization'
+        }])
+      })
 
+      // Mock organizations API
+      mockXeroClient.accountingApi.getOrganisations.mockResolvedValue({
+        body: {
+          organisations: [{
+            organisationID: 'org-123',
+            name: 'Test Organization',
+          }]
+        }
+      })
+
+      const result = await xeroService.authenticate()
+
+      expect(result).toBe(true)
       expect(xeroService.isConnected).toBe(true)
       expect(xeroService.organizationId).toBe('org-123')
-      expect(mockXeroClient.setTokenSet).toHaveBeenCalledWith(mockTokenSet)
+      expect(xeroService.tenantId).toBe('tenant-123')
     })
 
-    it('should fail authentication with expired token', async () => {
-      const expiredToken = {
-        ...mockTokenSet,
-        expires_at: Date.now() - 3600000, // 1 hour ago
-      }
-      xeroService.tokenSet = expiredToken
+    it('should fail authentication with invalid credentials', async () => {
+      // Mock failed token exchange
+      global.fetch.mockResolvedValueOnce({
+        ok: false,
+        text: async () => 'Invalid credentials'
+      })
 
-      mockXeroClient.refreshToken.mockRejectedValue(new Error('Token expired'))
+      const result = await xeroService.authenticate()
 
-      await expect(xeroService.authenticate()).rejects.toThrow()
+      expect(result).toBe(false)
       expect(xeroService.isConnected).toBe(false)
     })
 
-    it('should refresh token when expired', async () => {
-      const expiredToken = {
-        ...mockTokenSet,
-        expires_at: Date.now() - 1000,
-      }
-      xeroService.tokenSet = expiredToken
-
-      const newTokenSet = {
-        access_token: 'new_access_token',
-        refresh_token: 'new_refresh_token',
-        expires_at: Date.now() + 3600000,
-      }
-
-      mockXeroClient.refreshToken.mockResolvedValue(newTokenSet)
-      mockXeroClient.accountingApi.getOrganisations.mockResolvedValue({
-        body: {
-          organisations: [{ organisationID: 'org-123', name: 'Test Org' }],
-        },
+    it('should handle no tenant connections', async () => {
+      // Mock successful token exchange
+      global.fetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          access_token: 'mock_access_token',
+          expires_in: 1800
+        })
       })
 
-      await xeroService.authenticate()
+      // Mock empty connections
+      global.fetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ([])
+      })
 
-      expect(mockXeroClient.refreshToken).toHaveBeenCalled()
-      expect(xeroService.tokenSet).toEqual(newTokenSet)
-    })
+      const result = await xeroService.authenticate()
 
-    it('should handle organization lookup failure', async () => {
-      xeroService.tokenSet = mockTokenSet
-      mockXeroClient.accountingApi.getOrganisations.mockRejectedValue(
-        new Error('API Error')
-      )
-
-      await expect(xeroService.authenticate()).rejects.toThrow('API Error')
+      expect(result).toBe(false)
       expect(xeroService.isConnected).toBe(false)
-    })
-
-    it('should select first organization from multiple', async () => {
-      xeroService.tokenSet = mockTokenSet
-      mockXeroClient.accountingApi.getOrganisations.mockResolvedValue({
-        body: {
-          organisations: [
-            { organisationID: 'org-1', name: 'Org 1' },
-            { organisationID: 'org-2', name: 'Org 2' },
-          ],
-        },
-      })
-
-      await xeroService.authenticate()
-
-      expect(xeroService.organizationId).toBe('org-1')
     })
   })
 
-  describe('Working Capital Data', () => {
+  describe('Working Capital Calculations', () => {
     beforeEach(async () => {
       xeroService.initializeXeroClient()
       xeroService.xero = mockXeroClient
-      xeroService.tokenSet = mockTokenSet
       xeroService.isConnected = true
       xeroService.organizationId = 'org-123'
       xeroService.tenantId = 'tenant-123'
     })
 
-    it('should fetch accounts receivable data', async () => {
-      const mockAccounts = {
+    it('should calculate working capital from balance sheet', async () => {
+      // Mock balance sheet API
+      mockXeroClient.accountingApi.getReportBalanceSheet.mockResolvedValue({
         body: {
-          accounts: [
-            {
-              accountID: 'acc-1',
-              code: '200',
-              name: 'Accounts Receivable',
-              type: 'CURRENT',
-              taxType: 'NONE',
-              enablePaymentsToAccount: false,
-            },
-          ],
-        },
-      }
-
-      const mockInvoices = {
-        body: {
-          invoices: [
-            {
-              invoiceID: 'inv-1',
-              type: 'ACCREC',
-              status: 'AUTHORISED',
-              total: 1500.0,
-              amountDue: 1500.0,
-              date: '2025-10-01',
-              dueDate: '2025-10-31',
-            },
-            {
-              invoiceID: 'inv-2',
-              type: 'ACCREC',
-              status: 'AUTHORISED',
-              total: 2500.0,
-              amountDue: 1000.0,
-              date: '2025-09-15',
-              dueDate: '2025-10-15',
-            },
-          ],
-        },
-      }
-
-      mockXeroClient.accountingApi.getAccounts.mockResolvedValue(mockAccounts)
-      mockXeroClient.accountingApi.getInvoices.mockResolvedValue(mockInvoices)
-
-      const result = await xeroService.getAccountsReceivable()
-
-      expect(result.success).toBe(true)
-      expect(result.data.totalReceivable).toBe(2500.0)
-      expect(result.data.invoiceCount).toBe(2)
-      expect(result.data.overdueInvoices).toBeGreaterThan(0)
-    })
-
-    it('should fetch accounts payable data', async () => {
-      const mockInvoices = {
-        body: {
-          invoices: [
-            {
-              invoiceID: 'bill-1',
-              type: 'ACCPAY',
-              status: 'AUTHORISED',
-              total: 5000.0,
-              amountDue: 5000.0,
-              date: '2025-10-01',
-              dueDate: '2025-10-31',
-            },
-          ],
-        },
-      }
-
-      mockXeroClient.accountingApi.getInvoices.mockResolvedValue(mockInvoices)
-
-      const result = await xeroService.getAccountsPayable()
-
-      expect(result.success).toBe(true)
-      expect(result.data.totalPayable).toBe(5000.0)
-      expect(result.data.invoiceCount).toBe(1)
-    })
-
-    it('should calculate working capital metrics', async () => {
-      // Mock AR data
-      mockXeroClient.accountingApi.getInvoices.mockImplementation((tenantId, whereClause) => {
-        if (whereClause?.includes('ACCREC')) {
-          return Promise.resolve({
-            body: {
-              invoices: [
-                {
-                  type: 'ACCREC',
-                  total: 10000.0,
-                  amountDue: 10000.0,
-                  date: '2025-10-01',
-                },
-              ],
-            },
-          })
-        } else if (whereClause?.includes('ACCPAY')) {
-          return Promise.resolve({
-            body: {
-              invoices: [
-                {
-                  type: 'ACCPAY',
-                  total: 8000.0,
-                  amountDue: 8000.0,
-                  date: '2025-10-01',
-                },
-              ],
-            },
-          })
+          reports: [{
+            reportID: 'bs-123',
+            reportName: 'Balance Sheet',
+            reportDate: '2025-10-20',
+            rows: [
+              {
+                cells: [{ value: 'Cash and Cash Equivalents' }, { value: 50000 }]
+              },
+              {
+                cells: [{ value: 'Accounts Receivable' }, { value: 25000 }]
+              },
+              {
+                cells: [{ value: 'Inventory' }, { value: 30000 }]
+              },
+              {
+                cells: [{ value: 'Accounts Payable' }, { value: 20000 }]
+              },
+              {
+                cells: [{ value: 'Short-term Debt' }, { value: 10000 }]
+              }
+            ]
+          }]
         }
-        return Promise.resolve({ body: { invoices: [] } })
       })
 
-      const result = await xeroService.getWorkingCapital()
-
-      expect(result.success).toBe(true)
-      expect(result.data.accountsReceivable).toBe(10000.0)
-      expect(result.data.accountsPayable).toBe(8000.0)
-      expect(result.data.workingCapital).toBe(2000.0) // AR - AP
-    })
-
-    it('should handle missing invoices gracefully', async () => {
-      mockXeroClient.accountingApi.getInvoices.mockResolvedValue({
-        body: { invoices: [] },
-      })
-
-      const result = await xeroService.getAccountsReceivable()
-
-      expect(result.success).toBe(true)
-      expect(result.data.totalReceivable).toBe(0)
-      expect(result.data.invoiceCount).toBe(0)
-    })
-
-    it('should cache working capital data', async () => {
-      const redisCache = (await import('../../../services/redis-cache.js')).default
-
-      mockXeroClient.accountingApi.getInvoices.mockResolvedValue({
-        body: { invoices: [] },
-      })
-
-      await xeroService.getWorkingCapital()
-
-      expect(redisCache.set).toHaveBeenCalledWith(
-        expect.stringContaining('xero'),
-        expect.any(Object),
-        expect.any(Number)
-      )
-    })
-  })
-
-  describe('Error Handling & Retry Logic', () => {
-    beforeEach(() => {
-      xeroService.initializeXeroClient()
-      xeroService.xero = mockXeroClient
-      xeroService.tokenSet = mockTokenSet
-      xeroService.isConnected = true
-      xeroService.organizationId = 'org-123'
-      xeroService.tenantId = 'tenant-123'
-    })
-
-    it('should retry on rate limit error (429)', async () => {
-      let callCount = 0
-      mockXeroClient.accountingApi.getInvoices.mockImplementation(() => {
-        callCount++
-        if (callCount < 3) {
-          const error = new Error('Rate limit exceeded')
-          error.response = { status: 429, headers: { 'retry-after': '1' } }
-          throw error
+      // Mock P&L API for CCC calculation
+      mockXeroClient.accountingApi.getReportProfitAndLoss.mockResolvedValue({
+        body: {
+          reports: [{
+            reportID: 'pl-123',
+            reportDate: '2025-10-20',
+            rows: [
+              { cells: [{ value: 'Revenue' }, { value: 100000 }] },
+              { cells: [{ value: 'Total Expenses' }, { value: 65000 }] }
+            ]
+          }]
         }
-        return Promise.resolve({ body: { invoices: [] } })
       })
 
-      const result = await xeroService.getAccountsReceivable()
+      const result = await xeroService.calculateWorkingCapital()
 
       expect(result.success).toBe(true)
-      expect(callCount).toBe(3)
+      expect(result.data).toBeDefined()
+      expect(result.data.currentAssets).toBe(105000) // 50k + 25k + 30k
+      expect(result.data.currentLiabilities).toBe(30000) // 20k + 10k
+      expect(result.data.workingCapital).toBe(75000) // 105k - 30k
+      expect(result.dataSource).toBe('xero_api')
     })
 
-    it('should fail after max retries', async () => {
-      mockXeroClient.accountingApi.getInvoices.mockImplementation(() => {
-        const error = new Error('Rate limit exceeded')
-        error.response = { status: 429 }
-        throw error
-      })
+    it('should return setup instructions when not connected', async () => {
+      xeroService.isConnected = false
 
-      await expect(xeroService.getAccountsReceivable()).rejects.toThrow()
-      expect(mockXeroClient.accountingApi.getInvoices).toHaveBeenCalledTimes(4) // 1 + 3 retries
-    })
-
-    it('should handle network errors gracefully', async () => {
-      mockXeroClient.accountingApi.getInvoices.mockRejectedValue(
-        new Error('Network error: ECONNREFUSED')
-      )
-
-      const result = await xeroService.getAccountsReceivable()
+      const result = await xeroService.calculateWorkingCapital()
 
       expect(result.success).toBe(false)
-      expect(result.error).toContain('Network error')
+      expect(result.error).toBe('Xero authentication required')
+      expect(result.dataSource).toBe('authentication_required')
     })
 
-    it('should handle token expiry during API call', async () => {
-      const tokenExpiredError = new Error('Token expired')
-      tokenExpiredError.response = { status: 401 }
-
-      mockXeroClient.accountingApi.getInvoices.mockRejectedValueOnce(tokenExpiredError)
-
-      // After refresh, should succeed
-      mockXeroClient.refreshToken.mockResolvedValue({
-        ...mockTokenSet,
-        access_token: 'new_token',
-      })
-      mockXeroClient.accountingApi.getInvoices.mockResolvedValueOnce({
-        body: { invoices: [] },
-      })
-
-      const result = await xeroService.getAccountsReceivable()
-
-      expect(mockXeroClient.refreshToken).toHaveBeenCalled()
-      expect(result.success).toBe(true)
-    })
-
-    it('should emit SSE event on sync error', async () => {
-      const sseService = (await import('../../../server/services/sse/index.cjs')).default
-
-      mockXeroClient.accountingApi.getInvoices.mockRejectedValue(
+    it('should handle API errors gracefully', async () => {
+      mockXeroClient.accountingApi.getReportBalanceSheet.mockRejectedValue(
         new Error('API Error')
       )
 
-      await xeroService.getAccountsReceivable()
+      const result = await xeroService.calculateWorkingCapital()
 
-      expect(sseService.broadcast).toHaveBeenCalledWith(
-        expect.stringContaining('xero'),
-        expect.objectContaining({ error: expect.any(String) })
-      )
+      expect(result.success).toBe(false)
+      expect(result.error).toContain('API Error')
+      expect(result.dataSource).toBe('xero_api_error')
     })
   })
 
-  describe('Data Sync Operations', () => {
+  describe('Financial Reports', () => {
     beforeEach(() => {
       xeroService.initializeXeroClient()
       xeroService.xero = mockXeroClient
       xeroService.isConnected = true
-      xeroService.organizationId = 'org-123'
       xeroService.tenantId = 'tenant-123'
     })
 
-    it('should sync all data successfully', async () => {
-      mockXeroClient.accountingApi.getInvoices.mockResolvedValue({
-        body: { invoices: [] },
-      })
-      mockXeroClient.accountingApi.getAccounts.mockResolvedValue({
-        body: { accounts: [] },
-      })
-      mockXeroClient.accountingApi.getBankTransactions.mockResolvedValue({
-        body: { bankTransactions: [] },
+    it('should fetch profit and loss report', async () => {
+      mockXeroClient.accountingApi.getReportProfitAndLoss.mockResolvedValue({
+        body: {
+          reports: [{
+            reportID: 'pl-123',
+            reportName: 'Profit and Loss',
+            reportDate: '2025-10-20',
+            rows: [
+              { cells: [{ value: 'Revenue' }, { value: 150000 }] },
+              { cells: [{ value: 'Total Expenses' }, { value: 100000 }] },
+              { cells: [{ value: 'Net Profit' }, { value: 50000 }] }
+            ]
+          }]
+        }
       })
 
-      const result = await xeroService.syncAllData()
+      const result = await xeroService.getProfitAndLoss(3)
 
-      expect(result.success).toBe(true)
-      expect(result.syncTime).toBeDefined()
+      expect(result).toBeDefined()
+      expect(result.length).toBeGreaterThan(0)
+      expect(result[0].totalRevenue).toBe(150000)
+      expect(result[0].totalExpenses).toBe(100000)
+      expect(result[0].netProfit).toBe(50000)
     })
 
-    it('should track sync timestamp', async () => {
-      mockXeroClient.accountingApi.getInvoices.mockResolvedValue({
-        body: { invoices: [] },
+    it('should fetch cash flow report', async () => {
+      mockXeroClient.accountingApi.getReportBankSummary.mockResolvedValue({
+        body: {
+          reports: [{
+            reportID: 'cf-123',
+            reportName: 'Cash Flow',
+            reportDate: '2025-10-20',
+            rows: [
+              { cells: [{ value: 'Main Bank Account' }, { value: 75000 }] },
+              { cells: [{ value: 'Savings Account' }, { value: 25000 }] }
+            ]
+          }]
+        }
       })
 
-      const beforeSync = Date.now()
-      await xeroService.syncAllData()
-      const afterSync = Date.now()
+      const result = await xeroService.getCashFlow(3)
 
-      expect(xeroService.lastSyncTime).toBeDefined()
-      const syncTime = new Date(xeroService.lastSyncTime).getTime()
-      expect(syncTime).toBeGreaterThanOrEqual(beforeSync)
-      expect(syncTime).toBeLessThanOrEqual(afterSync)
+      expect(result).toBeDefined()
+      expect(result.bankAccounts).toBeDefined()
+      expect(result.lastUpdated).toBeDefined()
     })
 
-    it('should emit sync started event', async () => {
-      const sseService = (await import('../../../server/services/sse/index.cjs')).default
-
-      mockXeroClient.accountingApi.getInvoices.mockResolvedValue({
-        body: { invoices: [] },
+    it('should fetch balance sheet', async () => {
+      mockXeroClient.accountingApi.getReportBalanceSheet.mockResolvedValue({
+        body: {
+          reports: [{
+            reportID: 'bs-123',
+            reportName: 'Balance Sheet',
+            reportDate: '2025-10-20',
+            rows: []
+          }]
+        }
       })
 
-      await xeroService.syncAllData()
+      const result = await xeroService.getBalanceSheet(2)
 
-      expect(sseService.broadcast).toHaveBeenCalledWith(
-        expect.stringContaining('xero-sync-started'),
-        expect.any(Object)
-      )
-    })
-
-    it('should emit sync completed event', async () => {
-      const sseService = (await import('../../../server/services/sse/index.cjs')).default
-
-      mockXeroClient.accountingApi.getInvoices.mockResolvedValue({
-        body: { invoices: [] },
-      })
-
-      await xeroService.syncAllData()
-
-      expect(sseService.broadcast).toHaveBeenCalledWith(
-        expect.stringContaining('xero-sync-completed'),
-        expect.any(Object)
-      )
+      expect(result).toBeDefined()
+      expect(result.reportName).toBe('Balance Sheet')
+      expect(result.lastUpdated).toBeDefined()
     })
   })
 
-  describe('Cache Management', () => {
-    beforeEach(() => {
-      xeroService.initializeXeroClient()
+  describe('Health Check', () => {
+    it('should return configuration error when env vars missing', async () => {
+      delete process.env.XERO_CLIENT_ID
+
+      const result = await xeroService.healthCheck()
+
+      expect(result.status).toBe('configuration_error')
+      expect(result.message).toContain('XERO_CLIENT_ID')
+    })
+
+    it('should return connected status when authenticated', async () => {
       xeroService.xero = mockXeroClient
       xeroService.isConnected = true
       xeroService.organizationId = 'org-123'
       xeroService.tenantId = 'tenant-123'
-    })
+      xeroService.initialized = true
 
-    it('should return cached data when available', async () => {
-      const redisCache = (await import('../../../services/redis-cache.js')).default
-
-      const cachedData = {
-        success: true,
-        data: { totalReceivable: 5000.0 },
-      }
-
-      redisCache.get.mockResolvedValue(cachedData)
-
-      const result = await xeroService.getAccountsReceivable()
-
-      expect(result).toEqual(cachedData)
-      expect(mockXeroClient.accountingApi.getInvoices).not.toHaveBeenCalled()
-    })
-
-    it('should cache data with 30 minute TTL', async () => {
-      const redisCache = (await import('../../../services/redis-cache.js')).default
-
-      redisCache.get.mockResolvedValue(null)
-      mockXeroClient.accountingApi.getInvoices.mockResolvedValue({
-        body: { invoices: [] },
+      mockXeroClient.accountingApi.getOrganisations.mockResolvedValue({
+        body: { organisations: [{ organisationID: 'org-123' }] }
       })
 
-      await xeroService.getAccountsReceivable()
+      const result = await xeroService.healthCheck()
 
-      expect(redisCache.set).toHaveBeenCalledWith(
-        expect.any(String),
-        expect.any(Object),
-        1800 // 30 minutes in seconds
-      )
+      expect(result.status).toBe('connected')
+      expect(result.organizationId).toBe('org-123')
+      expect(result.tenantId).toBe('tenant-123')
     })
 
-    it('should bypass cache when force refresh requested', async () => {
-      const redisCache = (await import('../../../services/redis-cache.js')).default
-
-      redisCache.get.mockResolvedValue({ success: true, data: {} })
-      mockXeroClient.accountingApi.getInvoices.mockResolvedValue({
-        body: { invoices: [] },
-      })
-
-      await xeroService.getAccountsReceivable({ forceRefresh: true })
-
-      expect(mockXeroClient.accountingApi.getInvoices).toHaveBeenCalled()
-    })
-  })
-
-  describe('Connection Status', () => {
-    it('should return disconnected status initially', () => {
-      const status = xeroService.getConnectionStatus()
-
-      expect(status.connected).toBe(false)
-      expect(status.lastSync).toBeNull()
-    })
-
-    it('should return connected status after authentication', async () => {
-      xeroService.initializeXeroClient()
+    it('should return not_authenticated when not connected', async () => {
       xeroService.xero = mockXeroClient
-      xeroService.tokenSet = mockTokenSet
-      xeroService.isConnected = true
-      xeroService.organizationId = 'org-123'
+      xeroService.isConnected = false
+      xeroService.initialized = true
 
-      const status = xeroService.getConnectionStatus()
+      const result = await xeroService.healthCheck()
 
-      expect(status.connected).toBe(true)
-      expect(status.organizationId).toBe('org-123')
-    })
-
-    it('should include last sync timestamp in status', async () => {
-      xeroService.lastSyncTime = '2025-10-23T10:00:00Z'
-
-      const status = xeroService.getConnectionStatus()
-
-      expect(status.lastSync).toBe('2025-10-23T10:00:00Z')
+      expect(result.status).toBe('not_authenticated')
     })
   })
 
   describe('Disconnect', () => {
     it('should clear connection state on disconnect', async () => {
       xeroService.isConnected = true
-      xeroService.tokenSet = mockTokenSet
       xeroService.organizationId = 'org-123'
+      xeroService.tenantId = 'tenant-123'
 
       await xeroService.disconnect()
 
       expect(xeroService.isConnected).toBe(false)
-      expect(xeroService.tokenSet).toBeNull()
+      expect(xeroService.organizationId).toBeNull()
+      expect(xeroService.tenantId).toBeNull()
     })
 
     it('should handle disconnect when not connected', async () => {

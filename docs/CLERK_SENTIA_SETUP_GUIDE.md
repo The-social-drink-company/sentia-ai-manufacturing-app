@@ -20,7 +20,7 @@ VITE_CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsuY2FwbGlxdWlmeS5jb20k
 **This key CANNOT work** with the Sentia application because:
 1. Clerk enforces strict domain restrictions on publishable keys
 2. The CapLiquify key only allows requests from `*.capliquify.com` domains
-3. Sentia application runs on `sentia-frontend-prod.onrender.com`
+3. Sentia application runs on `capliquify-frontend-prod.onrender.com`
 4. Result: **All authentication requests fail with 400 Bad Request**
 
 ---
@@ -47,7 +47,7 @@ You need to create a **NEW Clerk application** specifically for the Sentia domai
 
 1. In the new Sentia Clerk application, go to **Settings → Domains**
 2. Add the following allowed domains:
-   - `sentia-frontend-prod.onrender.com` (production)
+   - `capliquify-frontend-prod.onrender.com` (production)
    - `localhost` (for local development - optional)
 3. Save changes
 
@@ -75,7 +75,7 @@ You need to create a **NEW Clerk application** specifically for the Sentia domai
 
 ### **Step 6: Test Authentication**
 
-1. Navigate to: https://sentia-frontend-prod.onrender.com
+1. Navigate to: https://capliquify-frontend-prod.onrender.com
 2. Click "Sign In" button
 3. **Expected**: Clerk sign-in modal appears
 4. Complete sign-in
@@ -90,7 +90,7 @@ You need to create a **NEW Clerk application** specifically for the Sentia domai
 After completing the steps above, verify:
 
 - [ ] New Clerk application created for Sentia
-- [ ] Allowed domain includes `sentia-frontend-prod.onrender.com`
+- [ ] Allowed domain includes `capliquify-frontend-prod.onrender.com`
 - [ ] New publishable key copied from Sentia Clerk app
 - [ ] `VITE_CLERK_PUBLISHABLE_KEY` updated in Render
 - [ ] Render deployment completed successfully
@@ -111,7 +111,7 @@ After completing the steps above, verify:
 Run this command to see what Clerk key is in the deployed bundle:
 
 ```bash
-curl -s "https://sentia-frontend-prod.onrender.com/" | grep -o 'pk_[a-zA-Z0-9_]*' | head -1
+curl -s "https://capliquify-frontend-prod.onrender.com/" | grep -o 'pk_[a-zA-Z0-9_]*' | head -1
 ```
 
 **Expected**: Should show your NEW Sentia Clerk key
@@ -181,7 +181,7 @@ For Sentia's use case, **Free Tier is sufficient**.
 - **Clerk Documentation**: https://clerk.com/docs
 - **Clerk React Guide**: https://clerk.com/docs/quickstarts/react
 - **Render Dashboard** (Sentia Frontend): https://dashboard.render.com/web/srv-d3p789umcj7s739rfnf0/env
-- **Sentia Frontend URL**: https://sentia-frontend-prod.onrender.com
+- **Sentia Frontend URL**: https://capliquify-frontend-prod.onrender.com
 
 ---
 

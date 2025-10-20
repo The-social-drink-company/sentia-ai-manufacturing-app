@@ -224,9 +224,9 @@
 **Discovery**: 2025-10-19 17:14 GMT
 
 **Service Health**:
-- Frontend: ✅ 200 OK (https://sentia-frontend-prod.onrender.com)
-- Backend: ❌ 502 Bad Gateway (https://sentia-backend-prod.onrender.com/api/health)
-- MCP Server: ✅ 200 OK (https://sentia-mcp-prod.onrender.com/health)
+- Frontend: ✅ 200 OK (https://capliquify-frontend-prod.onrender.com)
+- Backend: ❌ 502 Bad Gateway (https://capliquify-backend-prod.onrender.com/api/health)
+- MCP Server: ✅ 200 OK (https://capliquify-mcp-prod.onrender.com/health)
 
 **Root Cause**: No active deployment on Render platform
 ```http

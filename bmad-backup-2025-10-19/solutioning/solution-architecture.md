@@ -407,7 +407,7 @@ app.get('/api/financial', requirePermission('financial:read'), handler)
 ### 6.1 Render Infrastructure (IMPLEMENTED ✅)
 
 **Environments**:
-- **Development**: https://sentia-frontend-prod.onrender.com
+- **Development**: https://capliquify-frontend-prod.onrender.com
   - Branch: `development`
   - Auto-deploy on push
   - Uses dev database, relaxed security

@@ -11,9 +11,9 @@
 
 | Service | URL | Status | Branch |
 |---------|-----|--------|--------|
-| **Frontend** | https://sentia-frontend-prod.onrender.com | ✅ Active | development |
-| **Backend API** | https://sentia-backend-prod.onrender.com | 🔄 Active | development |
-| **MCP Server** | https://sentia-mcp-prod.onrender.com | 🔄 Active | development |
+| **Frontend** | https://capliquify-frontend-prod.onrender.com | ✅ Active | development |
+| **Backend API** | https://capliquify-backend-prod.onrender.com | 🔄 Active | development |
+| **MCP Server** | https://capliquify-mcp-prod.onrender.com | 🔄 Active | development |
 | **Database** | Internal (PostgreSQL 17) | ✅ Active | N/A |
 
 ### Critical Configuration
@@ -178,7 +178,7 @@ VITE_CLERK_PUBLISHABLE_KEY=pk_live_xxxxx
 DATABASE_URL=postgresql://...
 
 # MCP Server (auto-injected from service reference)
-MCP_SERVER_URL=https://sentia-mcp-prod.onrender.com
+MCP_SERVER_URL=https://capliquify-mcp-prod.onrender.com
 ```
 
 #### Frontend (sentia-frontend-prod)
@@ -187,7 +187,7 @@ MCP_SERVER_URL=https://sentia-mcp-prod.onrender.com
 VITE_CLERK_PUBLISHABLE_KEY=pk_live_xxxxx
 
 # Backend API (auto-injected from service reference)
-VITE_API_BASE_URL=https://sentia-backend-prod.onrender.com
+VITE_API_BASE_URL=https://capliquify-backend-prod.onrender.com
 ```
 
 **How to Set Variables**:
@@ -310,8 +310,8 @@ Action Required:
 - [ ] Monitor build logs for errors
 - [ ] Verify all 3 services deploy successfully (MCP, Backend, Frontend)
 - [ ] Test health endpoints:
-  - https://sentia-mcp-prod.onrender.com/health
-  - https://sentia-backend-prod.onrender.com/api/health
+  - https://capliquify-mcp-prod.onrender.com/health
+  - https://capliquify-backend-prod.onrender.com/api/health
 - [ ] Test frontend loads correctly
 - [ ] Verify integrations work (if applicable)
 
@@ -411,19 +411,19 @@ Test these URLs to verify service health:
 
 **MCP Server**:
 ```bash
-curl https://sentia-mcp-prod.onrender.com/health
+curl https://capliquify-mcp-prod.onrender.com/health
 # Expected: {"status":"healthy","timestamp":"2025-10-19T..."}
 ```
 
 **Backend API**:
 ```bash
-curl https://sentia-backend-prod.onrender.com/api/health
+curl https://capliquify-backend-prod.onrender.com/api/health
 # Expected: {"status":"healthy","database":"connected","timestamp":"..."}
 ```
 
 **Frontend**:
 ```bash
-curl -I https://sentia-frontend-prod.onrender.com
+curl -I https://capliquify-frontend-prod.onrender.com
 # Expected: HTTP/2 200 (HTML page loads)
 ```
 

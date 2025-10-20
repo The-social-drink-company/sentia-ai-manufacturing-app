@@ -296,9 +296,9 @@ PostgreSQL Database
 
 | Service | URL | Status | Version |
 |---------|-----|--------|---------|
-| **Frontend** | https://sentia-frontend-prod.onrender.com | ✅ Healthy | Latest |
-| **Backend API** | https://sentia-backend-prod.onrender.com | ✅ Healthy | v2.0.0-bulletproof |
-| **MCP Server** | https://sentia-mcp-prod.onrender.com | ✅ Healthy | v3.0.0 |
+| **Frontend** | https://capliquify-frontend-prod.onrender.com | ✅ Healthy | Latest |
+| **Backend API** | https://capliquify-backend-prod.onrender.com | ✅ Healthy | v2.0.0-bulletproof |
+| **MCP Server** | https://capliquify-mcp-prod.onrender.com | ✅ Healthy | v3.0.0 |
 
 ### Git Status
 

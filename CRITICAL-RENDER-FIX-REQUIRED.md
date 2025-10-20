@@ -162,7 +162,7 @@ Manual overrides in Render dashboard:
 
 1. **Check application logs** for runtime errors
 2. **Verify database connection** (DATABASE_URL env var)
-3. **Test health endpoint** manually: `curl https://sentia-backend-prod.onrender.com/api/health`
+3. **Test health endpoint** manually: `curl https://capliquify-backend-prod.onrender.com/api/health`
 4. **Check Prisma Client** is generated (build logs)
 
 ---

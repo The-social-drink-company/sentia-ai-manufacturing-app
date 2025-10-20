@@ -14,9 +14,9 @@
 
 | Service | Status | URL | Health Check | Notes |
 |---------|--------|-----|--------------|-------|
-| **Frontend** | ✅ **HEALTHY** | https://sentia-frontend-prod.onrender.com | 200 OK | Fully operational |
-| **MCP Server** | ✅ **HEALTHY** | https://sentia-mcp-prod.onrender.com | 200 OK | Uptime: 19 min, 8 tools loaded |
-| **Backend API** | 🔴 **DOWN** | https://sentia-backend-prod.onrender.com | 502 Bad Gateway | `x-render-routing: no-deploy` |
+| **Frontend** | ✅ **HEALTHY** | https://capliquify-frontend-prod.onrender.com | 200 OK | Fully operational |
+| **MCP Server** | ✅ **HEALTHY** | https://capliquify-mcp-prod.onrender.com | 200 OK | Uptime: 19 min, 8 tools loaded |
+| **Backend API** | 🔴 **DOWN** | https://capliquify-backend-prod.onrender.com | 502 Bad Gateway | `x-render-routing: no-deploy` |
 
 ---
 
@@ -62,7 +62,7 @@
 **Latest Render Log**:
 ```
 Waiting for internal health check to return a successful response code at:
-sentia-backend-prod.onrender.com:10000 /api/health
+capliquify-backend-prod.onrender.com:10000 /api/health
 ```
 
 **Timeline**:

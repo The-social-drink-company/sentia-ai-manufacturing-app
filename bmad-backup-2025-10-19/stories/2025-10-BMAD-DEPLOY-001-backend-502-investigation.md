@@ -34,9 +34,9 @@
 
 | Service | URL | Status | HTTP Code |
 |---------|-----|--------|-----------|
-| **Frontend** | https://sentia-frontend-prod.onrender.com | ✅ Healthy | 200 |
-| **Backend API** | https://sentia-backend-prod.onrender.com/api/health | ⚠️ **DOWN** | **502** |
-| **MCP Server** | https://sentia-mcp-prod.onrender.com/health | ⚠️ **DOWN** | **502** |
+| **Frontend** | https://capliquify-frontend-prod.onrender.com | ✅ Healthy | 200 |
+| **Backend API** | https://capliquify-backend-prod.onrender.com/api/health | ⚠️ **DOWN** | **502** |
+| **MCP Server** | https://capliquify-mcp-prod.onrender.com/health | ⚠️ **DOWN** | **502** |
 
 ### Impact Assessment
 
@@ -202,15 +202,15 @@ const PORT = process.env.PORT || 5000;
 
 ```bash
 # 1. Backend API Health
-curl -I https://sentia-backend-prod.onrender.com/api/health
+curl -I https://capliquify-backend-prod.onrender.com/api/health
 # Expected: HTTP/1.1 200 OK
 
 # 2. MCP Server Health
-curl -I https://sentia-mcp-prod.onrender.com/health
+curl -I https://capliquify-mcp-prod.onrender.com/health
 # Expected: HTTP/1.1 200 OK
 
 # 3. Frontend (Control Test)
-curl -I https://sentia-frontend-prod.onrender.com
+curl -I https://capliquify-frontend-prod.onrender.com
 # Expected: HTTP/1.1 200 OK (already passing)
 ```
 
@@ -218,13 +218,13 @@ curl -I https://sentia-frontend-prod.onrender.com
 
 ```bash
 # Test dashboard API
-curl https://sentia-backend-prod.onrender.com/api/dashboard/kpi
+curl https://capliquify-backend-prod.onrender.com/api/dashboard/kpi
 
 # Test Xero integration
-curl https://sentia-backend-prod.onrender.com/api/dashboard/working-capital
+curl https://capliquify-backend-prod.onrender.com/api/dashboard/working-capital
 
 # Test Shopify integration
-curl https://sentia-backend-prod.onrender.com/api/dashboard/shopify-orders
+curl https://capliquify-backend-prod.onrender.com/api/dashboard/shopify-orders
 ```
 
 ---

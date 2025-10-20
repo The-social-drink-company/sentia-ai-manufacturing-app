@@ -942,7 +942,7 @@ LEGEND:
 │                                                                  │
 │  ┌──────────────────────────────────────────────────────────┐  │
 │  │ Development Environment                                   │  │
-│  │ https://sentia-frontend-prod.onrender.com │  │
+│  │ https://capliquify-frontend-prod.onrender.com │  │
 │  │ • Auto-deploys on push to development branch             │  │
 │  │ • VITE_DEVELOPMENT_MODE=true                             │  │
 │  └──────────────────────────────────────────────────────────┘  │

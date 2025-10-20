@@ -304,7 +304,7 @@ Once Render deployment completes, verify:
 ### 1. Service Health ✅
 
 ```bash
-curl https://sentia-frontend-prod.onrender.com/health
+curl https://capliquify-frontend-prod.onrender.com/health
 # Expected: {"status":"ok","timestamp":"..."}
 ```
 

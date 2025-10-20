@@ -2,7 +2,7 @@
   "version": "1.0.7",
   "environments": {
     "development": {
-      "url": "https://sentia-frontend-prod.onrender.com",
+      "url": "https://capliquify-frontend-prod.onrender.com",
       "service": "sentia-manufacturing-development",
       "type": "render",
       "env_vars": {
@@ -12,7 +12,7 @@
         "DATABASE_URL": "postgresql://neondb_owner:npg_2wVD9gdintm@ep-broad-resonance-ablmx6yo-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require",
         "VITE_MCP_SERVER_URL": "https://sentia-mcp-production.onrender.com",
         "VITE_API_BASE_URL": "/api",
-        "CORS_ORIGINS": "https://sentia-frontend-prod.onrender.com,https://sentia-manufacturing-dashboard-test.onrender.com,https://sentia-manufacturing-dashboard-production.onrender.com",
+        "CORS_ORIGINS": "https://capliquify-frontend-prod.onrender.com,https://sentia-manufacturing-dashboard-test.onrender.com,https://sentia-manufacturing-dashboard-production.onrender.com",
         "UNLEASHED_API_ID": "d5313df6-db35-430c-a69e-ae27dffe0c5a",
         "MICROSOFT_EMAIL_CLIENT_ID": "peI8Q~4QJG.ax3ekxtWrv.PXVENVQ3vw_Br1qayM",
         "MICROSOFT_EMAIL_CLIENT_SECRET": "c16d6fba-0e6b-45ea-a016-eb697ff7a7ae",
@@ -35,7 +35,7 @@
         "DATABASE_URL": "postgresql://neondb_owner:npg_2wVD9gdintm@ep-broad-resonance-ablmx6yo-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require",
         "VITE_MCP_SERVER_URL": "https://sentia-mcp-production.onrender.com",
         "VITE_API_BASE_URL": "/api",
-        "CORS_ORIGINS": "https://sentia-frontend-prod.onrender.com,https://sentia-manufacturing-dashboard-test.onrender.com,https://sentia-manufacturing-dashboard-production.onrender.com",
+        "CORS_ORIGINS": "https://capliquify-frontend-prod.onrender.com,https://sentia-manufacturing-dashboard-test.onrender.com,https://sentia-manufacturing-dashboard-production.onrender.com",
         "UNLEASHED_API_ID": "d5313df6-db35-430c-a69e-ae27dffe0c5a",
         "MICROSOFT_EMAIL_CLIENT_ID": "peI8Q~4QJG.ax3ekxtWrv.PXVENVQ3vw_Br1qayM",
         "MICROSOFT_EMAIL_CLIENT_SECRET": "c16d6fba-0e6b-45ea-a016-eb697ff7a7ae",
@@ -58,7 +58,7 @@
         "DATABASE_URL": "postgresql://neondb_owner:npg_2wVD9gdintm@ep-broad-resonance-ablmx6yo-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require",
         "VITE_MCP_SERVER_URL": "https://sentia-mcp-production.onrender.com",
         "VITE_API_BASE_URL": "/api",
-        "CORS_ORIGINS": "https://sentia-frontend-prod.onrender.com,https://sentia-manufacturing-dashboard-test.onrender.com,https://sentia-manufacturing-dashboard-production.onrender.com",
+        "CORS_ORIGINS": "https://capliquify-frontend-prod.onrender.com,https://sentia-manufacturing-dashboard-test.onrender.com,https://sentia-manufacturing-dashboard-production.onrender.com",
         "UNLEASHED_API_ID": "d5313df6-db35-430c-a69e-ae27dffe0c5a",
         "MICROSOFT_EMAIL_CLIENT_ID": "peI8Q~4QJG.ax3ekxtWrv.PXVENVQ3vw_Br1qayM",
         "MICROSOFT_EMAIL_CLIENT_SECRET": "c16d6fba-0e6b-45ea-a016-eb697ff7a7ae",

@@ -13,7 +13,7 @@
 
 Successfully resolved critical backend deployment failures affecting the Sentia Manufacturing Dashboard production environment. The resolution required fixing **five distinct but interconnected issues** across database migrations, package configuration, logging infrastructure, and health check endpoints.
 
-**Final Result**: Backend service operational at `https://sentia-backend-prod.onrender.com` with stable 200 OK health responses and 0 runtime errors.
+**Final Result**: Backend service operational at `https://capliquify-backend-prod.onrender.com` with stable 200 OK health responses and 0 runtime errors.
 
 ---
 
@@ -283,7 +283,7 @@ BMAD-INFRA-004 successfully resolved a complex, multi-layered deployment failure
 ### Verification Commands
 ```bash
 # Test backend health
-curl https://sentia-backend-prod.onrender.com/api/health
+curl https://capliquify-backend-prod.onrender.com/api/health
 
 # Expected: HTTP 200 OK with JSON response
 
@@ -295,10 +295,10 @@ curl -H "Authorization: Bearer $RENDER_API_KEY" \
 ```
 
 ### Service URLs
-- **Frontend**: https://sentia-frontend-prod.onrender.com
-- **Backend**: https://sentia-backend-prod.onrender.com
-- **MCP Server**: https://sentia-mcp-prod.onrender.com
-- **Health Check**: https://sentia-backend-prod.onrender.com/api/health
+- **Frontend**: https://capliquify-frontend-prod.onrender.com
+- **Backend**: https://capliquify-backend-prod.onrender.com
+- **MCP Server**: https://capliquify-mcp-prod.onrender.com
+- **Health Check**: https://capliquify-backend-prod.onrender.com/api/health
 
 ---
 

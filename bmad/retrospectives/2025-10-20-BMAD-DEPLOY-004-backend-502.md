@@ -151,9 +151,9 @@ startCommand: |
 **Health Check Commands**:
 ```bash
 # Should all return 200 OK:
-curl -I https://sentia-frontend-prod.onrender.com
-curl -I https://sentia-backend-prod.onrender.com/api/health
-curl -I https://sentia-mcp-prod.onrender.com/health
+curl -I https://capliquify-frontend-prod.onrender.com
+curl -I https://capliquify-backend-prod.onrender.com/api/health
+curl -I https://capliquify-mcp-prod.onrender.com/health
 ```
 
 ---

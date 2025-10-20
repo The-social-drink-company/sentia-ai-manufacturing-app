@@ -12,8 +12,8 @@
 | Service | Status | Health | Uptime | URL |
 |---------|--------|--------|--------|-----|
 | **Frontend** | ✅ Live | 200 OK | Active | https://capliquify.com |
-| **Backend API** | ✅ Live | Healthy | 117s | https://sentia-backend-prod.onrender.com |
-| **MCP Server** | ✅ Live | Healthy | 13.4 days | https://sentia-mcp-prod.onrender.com |
+| **Backend API** | ✅ Live | Healthy | 117s | https://capliquify-backend-prod.onrender.com |
+| **MCP Server** | ✅ Live | Healthy | 13.4 days | https://capliquify-mcp-prod.onrender.com |
 | **Database** | ✅ Live | Connected | Active | Render PostgreSQL 17 |
 
 **Overall Health**: **100% (4/4 services operational)**
@@ -240,8 +240,8 @@ git checkout -b restore-sentia-$(date +%Y%m%d)
 
 ### Live Services
 - **Frontend**: https://capliquify.com
-- **Backend Health**: https://sentia-backend-prod.onrender.com/api/health
-- **MCP Health**: https://sentia-mcp-prod.onrender.com/health
+- **Backend Health**: https://capliquify-backend-prod.onrender.com/api/health
+- **MCP Health**: https://capliquify-mcp-prod.onrender.com/health
 
 ### Dashboards
 - **Render**: https://dashboard.render.com

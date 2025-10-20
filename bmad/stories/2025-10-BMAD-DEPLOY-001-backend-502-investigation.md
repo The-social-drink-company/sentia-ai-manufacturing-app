@@ -36,9 +36,9 @@
 
 | Service | URL | Status | HTTP Code |
 |---------|-----|--------|-----------|
-| **Frontend** | https://sentia-frontend-prod.onrender.com | ✅ **LIVE** | **200** |
-| **Backend API** | https://sentia-backend-prod.onrender.com/api/health | ✅ **LIVE** | **200** |
-| **MCP Server** | https://sentia-mcp-prod.onrender.com/health | ✅ **LIVE** | **200** |
+| **Frontend** | https://capliquify-frontend-prod.onrender.com | ✅ **LIVE** | **200** |
+| **Backend API** | https://capliquify-backend-prod.onrender.com/api/health | ✅ **LIVE** | **200** |
+| **MCP Server** | https://capliquify-mcp-prod.onrender.com/health | ✅ **LIVE** | **200** |
 
 **Resolution Time**: 10 hours 3 minutes (from initial 502 detection to full restoration)
 **Deployments Attempted**: 6 (5 failed, 1 successful)
@@ -348,7 +348,7 @@ buildCommand: |
   ```
 
 **Root Cause**:
-The Clerk publishable key embedded in the Frontend bundle is configured for a **different domain** (`capliquify.com`) than the Sentia application (`sentia-frontend-prod.onrender.com`):
+The Clerk publishable key embedded in the Frontend bundle is configured for a **different domain** (`capliquify.com`) than the Sentia application (`capliquify-frontend-prod.onrender.com`):
 
 ```javascript
 // Embedded in production bundle (index-bS2IMLw8.js):
@@ -359,8 +359,8 @@ const publishableKey = "pk_live_Y2xlcmsuY2FwbGlxdWlmeS5jb20k"
 **The Problem**:
 1. Clerk API keys are **domain-specific** for security
 2. `pk_live_Y2xlcmsuY2FwbGlxdWlmeS5jb20k` is registered for `capliquify.com`
-3. When users visit `sentia-frontend-prod.onrender.com`, Clerk's server checks:
-   - Request origin: `sentia-frontend-prod.onrender.com`
+3. When users visit `capliquify-frontend-prod.onrender.com`, Clerk's server checks:
+   - Request origin: `capliquify-frontend-prod.onrender.com`
    - Key's allowed domain: `capliquify.com`
    - **Mismatch detected** → 400 Bad Request
 4. Frontend cannot authenticate users → Sign In button fails silently
@@ -380,7 +380,7 @@ The user must perform the following steps:
    # Go to Clerk Dashboard: https://dashboard.clerk.com
    # Navigate to your Sentia application (or create a new one)
    # Copy the publishable key (starts with pk_live_ or pk_test_)
-   # Ensure the key is configured for domain: sentia-frontend-prod.onrender.com
+   # Ensure the key is configured for domain: capliquify-frontend-prod.onrender.com
    ```
 
 2. **Update Render Environment Variable**:
@@ -401,7 +401,7 @@ The user must perform the following steps:
 
 4. **Verify Fix**:
    ```bash
-   # Visit: https://sentia-frontend-prod.onrender.com
+   # Visit: https://capliquify-frontend-prod.onrender.com
    # Click "Sign In" button
    # Should redirect to Clerk sign-in page (not 400 error)
    ```
@@ -496,15 +496,15 @@ const PORT = process.env.PORT || 5000;
 
 ```bash
 # 1. Backend API Health
-curl -I https://sentia-backend-prod.onrender.com/api/health
+curl -I https://capliquify-backend-prod.onrender.com/api/health
 # Expected: HTTP/1.1 200 OK
 
 # 2. MCP Server Health
-curl -I https://sentia-mcp-prod.onrender.com/health
+curl -I https://capliquify-mcp-prod.onrender.com/health
 # Expected: HTTP/1.1 200 OK
 
 # 3. Frontend (Control Test)
-curl -I https://sentia-frontend-prod.onrender.com
+curl -I https://capliquify-frontend-prod.onrender.com
 # Expected: HTTP/1.1 200 OK (already passing)
 ```
 
@@ -512,13 +512,13 @@ curl -I https://sentia-frontend-prod.onrender.com
 
 ```bash
 # Test dashboard API
-curl https://sentia-backend-prod.onrender.com/api/dashboard/kpi
+curl https://capliquify-backend-prod.onrender.com/api/dashboard/kpi
 
 # Test Xero integration
-curl https://sentia-backend-prod.onrender.com/api/dashboard/working-capital
+curl https://capliquify-backend-prod.onrender.com/api/dashboard/working-capital
 
 # Test Shopify integration
-curl https://sentia-backend-prod.onrender.com/api/dashboard/shopify-orders
+curl https://capliquify-backend-prod.onrender.com/api/dashboard/shopify-orders
 ```
 
 ---
@@ -624,7 +624,7 @@ curl https://sentia-backend-prod.onrender.com/api/dashboard/shopify-orders
 - **20:08**: User shared browser console logs showing Clerk 400 error
 - **20:10**: **ROOT CAUSE #3 IDENTIFIED**: Clerk API key domain mismatch (Issue #9)
   - Publishable key: `pk_live_Y2xlcmsuY2FwbGlxdWlmeS5jb20k` (decodes to `clerk.capliquify.com$`)
-  - Application domain: `sentia-frontend-prod.onrender.com`
+  - Application domain: `capliquify-frontend-prod.onrender.com`
   - Clerk rejects authentication: "Production Keys are only allowed for domain 'capliquify.com'"
 - **20:12**: Verified bundle contents - landing page fully functional, only authentication blocked
 - **20:15**: ⏳ **BLOCKED - USER ACTION REQUIRED**

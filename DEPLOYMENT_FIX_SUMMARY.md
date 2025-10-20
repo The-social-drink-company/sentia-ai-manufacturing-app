@@ -61,7 +61,7 @@ startCommand: |
 
 ## ✅ Success: MCP Server Restored
 
-**URL**: https://sentia-mcp-prod.onrender.com/health
+**URL**: https://capliquify-mcp-prod.onrender.com/health
 **Status**: 200 OK ✅
 **Deploy Time**: ~2 minutes after push
 
@@ -71,7 +71,7 @@ The MCP server successfully redeployed with the fix and is now operational.
 
 ## ⏳ Pending: Backend API
 
-**URL**: https://sentia-backend-prod.onrender.com/api/health  
+**URL**: https://capliquify-backend-prod.onrender.com/api/health  
 **Status**: 502 (deploying)
 **Response Headers**: `x-render-routing: no-deploy`
 
@@ -113,7 +113,7 @@ The MCP server successfully redeployed with the fix and is now operational.
 
 **When Backend Deploys Successfully**:
 ```bash
-curl https://sentia-backend-prod.onrender.com/api/health
+curl https://capliquify-backend-prod.onrender.com/api/health
 # Expected: HTTP/1.1 200 OK
 ```
 
@@ -131,19 +131,19 @@ Once backend shows 200 OK, verify:
 
 1. **Health Endpoints**:
    ```bash
-   curl https://sentia-backend-prod.onrender.com/api/health
-   curl https://sentia-mcp-prod.onrender.com/health
+   curl https://capliquify-backend-prod.onrender.com/api/health
+   curl https://capliquify-mcp-prod.onrender.com/health
    ```
 
 2. **Dashboard Data**:
-   - Visit: https://sentia-frontend-prod.onrender.com
+   - Visit: https://capliquify-frontend-prod.onrender.com
    - Check: KPI widgets load
    - Verify: Working Capital data displays
 
 3. **Integration Tests**:
    ```bash
-   curl https://sentia-backend-prod.onrender.com/api/dashboard/kpi
-   curl https://sentia-backend-prod.onrender.com/api/dashboard/working-capital
+   curl https://capliquify-backend-prod.onrender.com/api/dashboard/kpi
+   curl https://capliquify-backend-prod.onrender.com/api/dashboard/working-capital
    ```
 
 ---

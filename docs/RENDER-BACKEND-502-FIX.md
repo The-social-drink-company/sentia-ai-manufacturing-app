@@ -133,7 +133,7 @@ Health check endpoint: /api/health
 
 2. **Test Health Endpoint**:
    ```bash
-   curl https://sentia-backend-prod.onrender.com/api/health
+   curl https://capliquify-backend-prod.onrender.com/api/health
    ```
    Expected response:
    ```json
@@ -152,8 +152,8 @@ Health check endpoint: /api/health
 4. **Test API Endpoints**:
    ```bash
    # Test a few endpoints
-   curl https://sentia-backend-prod.onrender.com/api/financial/working-capital
-   curl https://sentia-backend-prod.onrender.com/api/inventory
+   curl https://capliquify-backend-prod.onrender.com/api/financial/working-capital
+   curl https://capliquify-backend-prod.onrender.com/api/inventory
    ```
 
 ---
@@ -257,9 +257,9 @@ git push
 - ✅ No 502 errors when accessing API endpoints
 
 **Service Health**:
-- Frontend: ✅ 200 OK (https://sentia-frontend-prod.onrender.com)
-- Backend: ✅ 200 OK (https://sentia-backend-prod.onrender.com/api/health) ← **Target**
-- MCP: ✅ 200 OK (https://sentia-mcp-prod.onrender.com/health)
+- Frontend: ✅ 200 OK (https://capliquify-frontend-prod.onrender.com)
+- Backend: ✅ 200 OK (https://capliquify-backend-prod.onrender.com/api/health) ← **Target**
+- MCP: ✅ 200 OK (https://capliquify-mcp-prod.onrender.com/health)
 - **Overall**: ✅ **100%** (all services healthy)
 
 ---

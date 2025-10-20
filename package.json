@@ -1,7 +1,7 @@
 {
-  "name": "sentia-manufacturing-dashboard",
+  "name": "capliquify-manufacturing-dashboard",
   "version": "2.0.0",
-  "description": "Sentia Manufacturing Dashboard - Enterprise AI-powered manufacturing intelligence",
+  "description": "CapLiquify Manufacturing Dashboard - Enterprise AI-powered manufacturing intelligence",
   "private": true,
   "type": "module",
   "main": "server.js",

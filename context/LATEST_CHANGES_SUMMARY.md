@@ -154,7 +154,7 @@ Backend (Node.js)
 ### Render Platform - All Environments ✅
 
 **Development Environment**:
-- URL: https://sentia-frontend-prod.onrender.com
+- URL: https://capliquify-frontend-prod.onrender.com
 - Branch: `development`
 - Auto-deploy: ✅ Enabled
 - Status: ✅ Operational with Import/Export UI
@@ -341,7 +341,7 @@ Backend (Node.js)
 
 ### Deployments
 
-- **Development**: https://sentia-frontend-prod.onrender.com
+- **Development**: https://capliquify-frontend-prod.onrender.com
 - **Testing**: https://sentia-manufacturing-dashboard-test.onrender.com
 - **Production**: https://sentia-manufacturing-dashboard-production.onrender.com
 

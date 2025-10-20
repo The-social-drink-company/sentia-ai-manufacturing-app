@@ -133,7 +133,7 @@ SHOPIFY_US_ACCESS_TOKEN=shpat_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 ### 4.1 Check Dashboard
 
-1. Navigate to: `https://sentia-frontend-prod.onrender.com`
+1. Navigate to: `https://capliquify-frontend-prod.onrender.com`
 2. Go to executive dashboard
 3. You should see:
    - **Sales Performance** widget with real Shopify data
@@ -153,7 +153,7 @@ Compare dashboard values with Shopify Admin:
 
 ### 4.3 Check Sync Status
 
-API endpoint: `GET https://sentia-frontend-prod.onrender.com/api/v1/dashboard/shopify-sales`
+API endpoint: `GET https://capliquify-frontend-prod.onrender.com/api/v1/dashboard/shopify-sales`
 
 Expected response:
 ```json

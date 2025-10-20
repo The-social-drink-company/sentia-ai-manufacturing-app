@@ -10,7 +10,7 @@
 
 **Current Problem**:
 - Clerk key is for `capliquify.com` domain
-- Render services use `sentia-frontend-prod.onrender.com`
+- Render services use `capliquify-frontend-prod.onrender.com`
 - Domain mismatch → Authentication fails (400 Bad Request)
 
 **Solution**:
@@ -58,7 +58,7 @@ After renaming services, update the **Frontend** environment variables:
 
 1. Go to: https://dashboard.render.com/web/srv-d3p789umcj7s739rfnf0/env
 2. Find `VITE_API_BASE_URL`
-3. **Update** from: `https://sentia-backend-prod.onrender.com/api`
+3. **Update** from: `https://capliquify-backend-prod.onrender.com/api`
 4. **Update** to: `https://capliquify-backend-prod.onrender.com/api`
 5. Click **Save Changes** (triggers auto-deploy)
 
@@ -104,9 +104,9 @@ This key is already configured for the CapLiquify domain, so **no changes needed
 **Find and replace**:
 ```bash
 # Search for:
-sentia-frontend-prod.onrender.com
-sentia-backend-prod.onrender.com
-sentia-mcp-prod.onrender.com
+capliquify-frontend-prod.onrender.com
+capliquify-backend-prod.onrender.com
+capliquify-mcp-prod.onrender.com
 Sentia Manufacturing
 
 # Replace with:

@@ -169,7 +169,7 @@ npx prisma migrate deploy
 2. Click **+ Add Endpoint**
 3. Configure the endpoint:
    ```
-   Endpoint URL: https://sentia-backend-prod.onrender.com/api/webhooks/clerk
+   Endpoint URL: https://capliquify-backend-prod.onrender.com/api/webhooks/clerk
    ```
 
 4. Subscribe to these events:
@@ -262,7 +262,7 @@ svix listen http://localhost:10000/api/webhooks/clerk --secret whsec_...
 
 ```bash
 # Test webhook endpoint (without signature - will fail verification)
-curl -X POST https://sentia-backend-prod.onrender.com/api/webhooks/clerk \
+curl -X POST https://capliquify-backend-prod.onrender.com/api/webhooks/clerk \
   -H "Content-Type: application/json" \
   -H "svix-id: msg_test" \
   -H "svix-timestamp: $(date +%s)" \

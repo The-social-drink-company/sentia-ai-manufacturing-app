@@ -44,7 +44,7 @@ These decode to `champion-bulldog-92.clerk.accounts.dev$` which is a working sta
 
 In Clerk dashboard, ensure authorized domains include:
 
-- sentia-frontend-prod.onrender.com (development)
+- capliquify-frontend-prod.onrender.com (development)
 - sentia-manufacturing-dashboard-test.onrender.com (testing)
 - sentia-manufacturing-dashboard-production.onrender.com (production)
 

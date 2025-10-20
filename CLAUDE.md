@@ -458,15 +458,15 @@ All environments deployed on Render with proper CI/CD:
 
 | Service         | URL                                       | Status    | Purpose                   |
 | --------------- | ----------------------------------------- | --------- | ------------------------- |
-| **Frontend**    | https://sentia-frontend-prod.onrender.com | ✅ Active | React application UI      |
-| **Backend API** | https://sentia-backend-prod.onrender.com  | 🔄 Active | Express REST API + Prisma |
-| **MCP Server**  | https://sentia-mcp-prod.onrender.com      | 🔄 Active | External API integrations |
+| **Frontend**    | https://capliquify-frontend-prod.onrender.com | ✅ Active | React application UI      |
+| **Backend API** | https://capliquify-backend-prod.onrender.com  | 🔄 Active | Express REST API + Prisma |
+| **MCP Server**  | https://capliquify-mcp-prod.onrender.com      | 🔄 Active | External API integrations |
 | **Database**    | Internal PostgreSQL 17                    | ✅ Active | Main data store           |
 
 **Health Check Endpoints**:
 
-- MCP: https://sentia-mcp-prod.onrender.com/health
-- Backend: https://sentia-backend-prod.onrender.com/api/health
+- MCP: https://capliquify-mcp-prod.onrender.com/health
+- Backend: https://capliquify-backend-prod.onrender.com/api/health
 
 **⚠️ Critical Configuration**: All services MUST specify `branch: main` in render.yaml (see [docs/render-deployment-guide.md](docs/render-deployment-guide.md))
 
@@ -686,15 +686,15 @@ scripts/               # Utility scripts
 
 | Service         | URL                                       | Status    | Purpose                   |
 | --------------- | ----------------------------------------- | --------- | ------------------------- |
-| **Frontend**    | https://sentia-frontend-prod.onrender.com | ✅ Active | React application UI      |
-| **Backend API** | https://sentia-backend-prod.onrender.com  | 🔄 Active | Express REST API + Prisma |
-| **MCP Server**  | https://sentia-mcp-prod.onrender.com      | 🔄 Active | External API integrations |
+| **Frontend**    | https://capliquify-frontend-prod.onrender.com | ✅ Active | React application UI      |
+| **Backend API** | https://capliquify-backend-prod.onrender.com  | 🔄 Active | Express REST API + Prisma |
+| **MCP Server**  | https://capliquify-mcp-prod.onrender.com      | 🔄 Active | External API integrations |
 
 **Health Check Endpoints**:
 
-- Frontend: https://sentia-frontend-prod.onrender.com
-- Backend: https://sentia-backend-prod.onrender.com/api/health
-- MCP: https://sentia-mcp-prod.onrender.com/health
+- Frontend: https://capliquify-frontend-prod.onrender.com
+- Backend: https://capliquify-backend-prod.onrender.com/api/health
+- MCP: https://capliquify-mcp-prod.onrender.com/health
 
 #### Server File Configuration (SIMPLIFIED - October 2025)
 

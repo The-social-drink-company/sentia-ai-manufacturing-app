@@ -43,7 +43,7 @@ Relative references must start with either "/", "./", or "../".
 ### User Experience
 
 **What Users See**:
-1. Browser loads https://sentia-frontend-prod.onrender.com
+1. Browser loads https://capliquify-frontend-prod.onrender.com
 2. White screen for <1 second
 3. Browser console shows red error
 4. Application never renders
@@ -183,7 +183,7 @@ envVars:
    - Verify: No build errors
 
 5. **Verify Fix**:
-   - Open: https://sentia-frontend-prod.onrender.com
+   - Open: https://capliquify-frontend-prod.onrender.com
    - Open DevTools: F12 → Console tab
    - **Check**: NO "@clerk/clerk-react" errors ✅
    - **Check**: Landing page renders ✅
@@ -284,12 +284,12 @@ envVars:
 - [ ] Deployment reports success
 
 **Test 2: HTML Verification**
-- [ ] View page source: https://sentia-frontend-prod.onrender.com
+- [ ] View page source: https://capliquify-frontend-prod.onrender.com
 - [ ] Find: `<link rel="modulepreload" href="/assets/clerk-*.js">`
 - [ ] Confirm: Clerk module in bundle
 
 **Test 3: Browser Console Clean**
-- [ ] Open: https://sentia-frontend-prod.onrender.com
+- [ ] Open: https://capliquify-frontend-prod.onrender.com
 - [ ] Open DevTools → Console
 - [ ] Verify: NO "@clerk/clerk-react" errors
 - [ ] Verify: NO "Failed to resolve module specifier" errors
@@ -496,7 +496,7 @@ envVars:
 - [ ] Wait 5-10 minutes
 
 ### Step 4: Verify
-- [ ] Open: https://sentia-frontend-prod.onrender.com
+- [ ] Open: https://capliquify-frontend-prod.onrender.com
 - [ ] Check: No console errors
 - [ ] Test: Sign-in button works
 - [ ] Verify: Landing page renders

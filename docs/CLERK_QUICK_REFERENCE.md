@@ -19,7 +19,7 @@ Render Dashboard → sentia-backend-prod → Environment → Add
 ```
 https://dashboard.clerk.com → Webhooks → + Add Endpoint
 
-Endpoint URL: https://sentia-backend-prod.onrender.com/api/webhooks/clerk
+Endpoint URL: https://capliquify-backend-prod.onrender.com/api/webhooks/clerk
 
 Subscribe to:
 ✅ user.created
@@ -79,8 +79,8 @@ npx prisma migrate deploy
 | Service | URL |
 |---------|-----|
 | Clerk Dashboard | https://dashboard.clerk.com |
-| Webhook Endpoint | https://sentia-backend-prod.onrender.com/api/webhooks/clerk |
-| Subscription Status API | https://sentia-backend-prod.onrender.com/api/webhooks/subscription/status |
+| Webhook Endpoint | https://capliquify-backend-prod.onrender.com/api/webhooks/clerk |
+| Subscription Status API | https://capliquify-backend-prod.onrender.com/api/webhooks/subscription/status |
 | Render Dashboard | https://dashboard.render.com |
 
 ---

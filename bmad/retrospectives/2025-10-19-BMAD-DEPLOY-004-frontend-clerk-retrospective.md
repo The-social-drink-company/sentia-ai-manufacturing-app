@@ -155,7 +155,7 @@ useEffect(() => {
 ### Backend Verification (19:27 UTC)
 
 ```bash
-$ curl https://sentia-backend-prod.onrender.com/api/health
+$ curl https://capliquify-backend-prod.onrender.com/api/health
 ```
 
 **Response**:
@@ -186,7 +186,7 @@ $ curl https://sentia-backend-prod.onrender.com/api/health
 ### Frontend Verification (19:30 UTC)
 
 ```bash
-$ curl -I https://sentia-frontend-prod.onrender.com
+$ curl -I https://capliquify-frontend-prod.onrender.com
 ```
 
 **Response**:

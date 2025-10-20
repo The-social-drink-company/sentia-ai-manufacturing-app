@@ -96,7 +96,7 @@ Extended Prisma schema with comprehensive models:
 
 ### Environment-Specific Deployment
 
-- **Development**: `sentia-frontend-prod.onrender.com`
+- **Development**: `capliquify-frontend-prod.onrender.com`
 - **Testing**: `sentia-manufacturing-dashboard-test.onrender.com`
 - **Production**: `sentia-manufacturing-dashboard-production.onrender.com`
 

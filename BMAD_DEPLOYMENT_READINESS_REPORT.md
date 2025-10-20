@@ -176,9 +176,9 @@ Backup (Duplicated):
 
 | Service | URL | Status | Health | Issues |
 |---------|-----|--------|--------|--------|
-| Frontend | https://sentia-frontend-prod.onrender.com | ✅ UP | 200 OK | None |
-| Backend | https://sentia-backend-prod.onrender.com/api/health | ❌ DOWN | 502 Bad Gateway | Start command override |
-| MCP | https://sentia-mcp-prod.onrender.com/health | ✅ UP | 200 OK | None |
+| Frontend | https://capliquify-frontend-prod.onrender.com | ✅ UP | 200 OK | None |
+| Backend | https://capliquify-backend-prod.onrender.com/api/health | ❌ DOWN | 502 Bad Gateway | Start command override |
+| MCP | https://capliquify-mcp-prod.onrender.com/health | ✅ UP | 200 OK | None |
 
 **Overall Health**: 67% (2/3 services)
 
@@ -263,7 +263,7 @@ Remove Override → Manual Deploy → Verify Health → Update Docs
    - Monitor build logs
 
 3. **Verify Health** (1 min)
-   - Test: `curl https://sentia-backend-prod.onrender.com/api/health`
+   - Test: `curl https://capliquify-backend-prod.onrender.com/api/health`
    - Expected: HTTP 200 OK
 
 4. **Update Documentation** (5 min)
@@ -406,7 +406,7 @@ Remove Override → Manual Deploy → Verify Health → Update Docs
    - Monitor logs for successful startup
 
 3. **Verify backend health**
-   - Test: `curl https://sentia-backend-prod.onrender.com/api/health`
+   - Test: `curl https://capliquify-backend-prod.onrender.com/api/health`
    - Expected: HTTP 200 OK
    - Document result
 

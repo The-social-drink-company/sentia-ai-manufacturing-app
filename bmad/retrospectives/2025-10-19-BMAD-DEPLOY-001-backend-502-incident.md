@@ -102,7 +102,7 @@ app.get('/health', healthResponse)  # ← Server only has this path
 **Symptoms**:
 - Deployments stuck in `update_in_progress` for 10+ minutes
 - Health endpoint returning 502 Bad Gateway
-- Render logs: "Waiting for internal health check to return a successful response code at: sentia-backend-prod.onrender.com:10000 /api/health"
+- Render logs: "Waiting for internal health check to return a successful response code at: capliquify-backend-prod.onrender.com:10000 /api/health"
 - Deployment never marked as "live"
 
 **Why It Happened**:

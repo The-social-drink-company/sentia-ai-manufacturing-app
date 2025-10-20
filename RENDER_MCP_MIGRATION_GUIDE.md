@@ -124,7 +124,7 @@ Ensure the MCP server allows your Render app domains:
 ```yaml
 # mcp-server-prod
 - Branch: production
-- URL: https://sentia-mcp-prod.onrender.com
+- URL: https://capliquify-mcp-prod.onrender.com
 - Connected to: sentia-manufacturing-production.onrender.com
 ```
 

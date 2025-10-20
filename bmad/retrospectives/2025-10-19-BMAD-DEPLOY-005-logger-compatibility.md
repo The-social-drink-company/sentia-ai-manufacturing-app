@@ -157,7 +157,7 @@ Deploy trigger: 2025-10-19T18:48:24Z
 
 ```bash
 # Backend Health
-$ curl https://sentia-backend-prod.onrender.com/api/health
+$ curl https://capliquify-backend-prod.onrender.com/api/health
 HTTP/2 200 OK
 {
   "status": "healthy",
@@ -177,11 +177,11 @@ HTTP/2 200 OK
 }
 
 # Frontend
-$ curl -I https://sentia-frontend-prod.onrender.com
+$ curl -I https://capliquify-frontend-prod.onrender.com
 HTTP/2 200 OK
 
 # MCP Server
-$ curl https://sentia-mcp-prod.onrender.com/health
+$ curl https://capliquify-mcp-prod.onrender.com/health
 HTTP/2 200 OK
 {
   "status": "healthy",

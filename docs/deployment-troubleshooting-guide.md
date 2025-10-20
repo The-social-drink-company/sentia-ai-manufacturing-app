@@ -380,9 +380,9 @@ Create `scripts/check-deployment-health.sh`:
 
 set -e
 
-FRONTEND="https://sentia-frontend-prod.onrender.com"
-BACKEND="https://sentia-backend-prod.onrender.com/api/health"
-MCP="https://sentia-mcp-prod.onrender.com/health"
+FRONTEND="https://capliquify-frontend-prod.onrender.com"
+BACKEND="https://capliquify-backend-prod.onrender.com/api/health"
+MCP="https://capliquify-mcp-prod.onrender.com/health"
 
 echo "🔍 Checking deployment health..."
 echo ""

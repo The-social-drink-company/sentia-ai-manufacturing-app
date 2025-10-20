@@ -528,9 +528,9 @@ Epic document (834 lines) provided:
 ### Render Deployment
 
 **Target Services**:
-- sentia-frontend-prod.onrender.com
-- sentia-backend-prod.onrender.com
-- sentia-mcp-prod.onrender.com
+- capliquify-frontend-prod.onrender.com
+- capliquify-backend-prod.onrender.com
+- capliquify-mcp-prod.onrender.com
 
 **Auto-deployment**: Triggered on push to `main` branch
 

@@ -31,9 +31,9 @@
 
 | Service | URL | Status | Action Required |
 |---------|-----|--------|-----------------|
-| **Frontend** | https://sentia-frontend-prod.onrender.com | 🟡 Deployed, needs config | Add VITE_CLERK_PUBLISHABLE_KEY |
-| **Backend** | https://sentia-backend-prod.onrender.com | 🟡 Code ready | Trigger manual deploy |
-| **MCP** | https://sentia-mcp-prod.onrender.com | ✅ Healthy | None |
+| **Frontend** | https://capliquify-frontend-prod.onrender.com | 🟡 Deployed, needs config | Add VITE_CLERK_PUBLISHABLE_KEY |
+| **Backend** | https://capliquify-backend-prod.onrender.com | 🟡 Code ready | Trigger manual deploy |
+| **MCP** | https://capliquify-mcp-prod.onrender.com | ✅ Healthy | None |
 
 ### Deployment Chain
 
@@ -176,7 +176,7 @@ BMAD-DEPLOY-002 → BMAD-DEPLOY-003 → BMAD-DEPLOY-004 → EPIC-003
    - Wait 5-10 minutes for build
 
 4. **Verify**:
-   - Open: https://sentia-frontend-prod.onrender.com
+   - Open: https://capliquify-frontend-prod.onrender.com
    - Check: No console errors
    - Test: Sign-in button works
 
@@ -191,20 +191,20 @@ BMAD-DEPLOY-002 → BMAD-DEPLOY-003 → BMAD-DEPLOY-004 → EPIC-003
 ### After Both Manual Actions Complete
 
 **Backend Health**:
-- [ ] GET https://sentia-backend-prod.onrender.com/api/health → 200 OK
+- [ ] GET https://capliquify-backend-prod.onrender.com/api/health → 200 OK
 - [ ] Response includes: `{ status: "healthy", ... }`
 - [ ] No 502/503 errors
 - [ ] Service shows "Live" in Render Dashboard
 
 **Frontend Health**:
-- [ ] Open https://sentia-frontend-prod.onrender.com → Page loads
+- [ ] Open https://capliquify-frontend-prod.onrender.com → Page loads
 - [ ] Browser console: No "@clerk/clerk-react" errors
 - [ ] Sign-in button visible and clickable
 - [ ] Clerk modal opens when clicked
 - [ ] Landing page renders with gradient hero
 
 **MCP Health**:
-- [ ] GET https://sentia-mcp-prod.onrender.com/health → 200 OK
+- [ ] GET https://capliquify-mcp-prod.onrender.com/health → 200 OK
 - [ ] Service operational (already healthy)
 
 **EPIC-003 Features**:
@@ -295,9 +295,9 @@ BMAD-DEPLOY-002 → BMAD-DEPLOY-003 → BMAD-DEPLOY-004 → EPIC-003
 **Render Dashboard**: https://dashboard.render.com
 
 **Services**:
-- Frontend: https://sentia-frontend-prod.onrender.com
-- Backend: https://sentia-backend-prod.onrender.com
-- MCP: https://sentia-mcp-prod.onrender.com
+- Frontend: https://capliquify-frontend-prod.onrender.com
+- Backend: https://capliquify-backend-prod.onrender.com
+- MCP: https://capliquify-mcp-prod.onrender.com
 
 **External**:
 - Clerk Dashboard: https://dashboard.clerk.com

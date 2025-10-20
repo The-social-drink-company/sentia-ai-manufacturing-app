@@ -7,7 +7,7 @@
 
 ### Environment URLs
 
-- **Development**: https://sentia-frontend-prod.onrender.com
+- **Development**: https://capliquify-frontend-prod.onrender.com
 - **Testing**: https://sentia-manufacturing-dashboard-test.onrender.com
 - **Production**: https://sentia-manufacturing-dashboard-production.onrender.com (temporary)
 - **MCP Server**: https://mcp-server-tkyu.onrender.com
@@ -38,7 +38,7 @@
 ```javascript
 // Correct CORS configuration for all environments
 const corsOrigins = [
-  'https://sentia-frontend-prod.onrender.com', // Development
+  'https://capliquify-frontend-prod.onrender.com', // Development
   'https://sentia-manufacturing-dashboard-test.onrender.com', // Testing
   'https://sentia-manufacturing-dashboard-production.onrender.com', // Production
 ]
@@ -48,7 +48,7 @@ const corsOrigins = [
 
 ```bash
 # Development
-CORS_ORIGINS=https://sentia-frontend-prod.onrender.com
+CORS_ORIGINS=https://capliquify-frontend-prod.onrender.com
 
 # Testing
 CORS_ORIGINS=https://sentia-manufacturing-dashboard-test.onrender.com
@@ -73,7 +73,7 @@ VITE_API_BASE_URL=https://sentia-manufacturing-dashboard-production.onrender.com
 
 ✅ **New URLs (active)**:
 
-- `sentia-frontend-prod.onrender.com` (Development)
+- `capliquify-frontend-prod.onrender.com` (Development)
 - `sentia-manufacturing-dashboard-test.onrender.com` (Testing)
 - `sentia-manufacturing-dashboard-production.onrender.com` (Production)
 

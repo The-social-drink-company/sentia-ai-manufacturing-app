@@ -15,9 +15,9 @@ The Render account has reached its **free tier build spend limit**, preventing n
 
 | Service | URL | Status | Last Deploy |
 |---------|-----|--------|-------------|
-| **Frontend** | https://sentia-frontend-prod.onrender.com | ✅ OPERATIONAL | October 19, 2025 |
-| **Backend API** | https://sentia-backend-prod.onrender.com | 🔴 FAILED | October 18, 2025 (502 error) |
-| **MCP Server** | https://sentia-mcp-prod.onrender.com | ⚠️ DEPLOYED | October 19, 2025 |
+| **Frontend** | https://capliquify-frontend-prod.onrender.com | ✅ OPERATIONAL | October 19, 2025 |
+| **Backend API** | https://capliquify-backend-prod.onrender.com | 🔴 FAILED | October 18, 2025 (502 error) |
+| **MCP Server** | https://capliquify-mcp-prod.onrender.com | ⚠️ DEPLOYED | October 19, 2025 |
 
 ### Error Message
 
@@ -134,7 +134,7 @@ Once billing is resolved and deployment succeeds:
 ### 1. Backend Health Check
 
 ```bash
-curl https://sentia-backend-prod.onrender.com/api/health
+curl https://capliquify-backend-prod.onrender.com/api/health
 ```
 
 **Expected Response**:
@@ -151,7 +151,7 @@ curl https://sentia-backend-prod.onrender.com/api/health
 
 ```bash
 # From frontend, check API connectivity
-curl https://sentia-frontend-prod.onrender.com
+curl https://capliquify-frontend-prod.onrender.com
 # Should load without API errors in console
 ```
 

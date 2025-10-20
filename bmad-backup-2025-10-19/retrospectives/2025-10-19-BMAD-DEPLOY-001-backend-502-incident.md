@@ -166,11 +166,11 @@ git push origin development
 **Health Check Commands**:
 ```bash
 # Backend API
-curl -I https://sentia-backend-prod.onrender.com/api/health
+curl -I https://capliquify-backend-prod.onrender.com/api/health
 # Expected: HTTP/1.1 200 OK
 
 # MCP Server
-curl -I https://sentia-mcp-prod.onrender.com/health
+curl -I https://capliquify-mcp-prod.onrender.com/health
 # Expected: HTTP/1.1 200 OK
 ```
 

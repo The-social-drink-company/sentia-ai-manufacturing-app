@@ -289,9 +289,9 @@ NEXT EPIC
 
 | Service    | URL                                       | Status | Health |
 | ---------- | ----------------------------------------- | ------ | ------ |
-| Frontend   | https://sentia-frontend-prod.onrender.com | ✅ 200 | 100%   |
-| Backend    | https://sentia-backend-prod.onrender.com  | ❌ 502 | 0%     |
-| MCP Server | https://sentia-mcp-prod.onrender.com      | ✅ 200 | 100%   |
+| Frontend   | https://capliquify-frontend-prod.onrender.com | ✅ 200 | 100%   |
+| Backend    | https://capliquify-backend-prod.onrender.com  | ❌ 502 | 0%     |
+| MCP Server | https://capliquify-mcp-prod.onrender.com      | ✅ 200 | 100%   |
 | **OVERALL** | -                                         | 🔴     | **67%** |
 
 **Critical Issue**: Backend deployment failed with `x-render-routing: no-deploy`

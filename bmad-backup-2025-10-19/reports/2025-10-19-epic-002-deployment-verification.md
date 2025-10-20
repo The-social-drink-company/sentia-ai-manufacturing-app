@@ -267,16 +267,16 @@ All setup prompts follow 100% consistent patterns:
 
 ### Service Health Checks
 
-**Backend API**: https://sentia-backend-prod.onrender.com/api/health
+**Backend API**: https://capliquify-backend-prod.onrender.com/api/health
 - Expected: 200 OK with service status
 - Current: 502 (⏳ DEPLOYING - expected during initial deployment)
 - **Action**: Wait 5-10 minutes for deployment to complete
 
-**MCP Server**: https://sentia-mcp-prod.onrender.com/health
+**MCP Server**: https://capliquify-mcp-prod.onrender.com/health
 - Expected: 200 OK with service status
 - **Action**: Verify after backend deployment completes
 
-**Frontend**: https://sentia-frontend-prod.onrender.com
+**Frontend**: https://capliquify-frontend-prod.onrender.com
 - Expected: React application loads
 - **Action**: Verify after static site build completes
 
@@ -387,9 +387,9 @@ After deployment completes, verify the following endpoints:
    - Test API integration endpoints
 
 2. **Verify Service URLs**
-   - Frontend: https://sentia-frontend-prod.onrender.com
-   - Backend: https://sentia-backend-prod.onrender.com
-   - MCP: https://sentia-mcp-prod.onrender.com
+   - Frontend: https://capliquify-frontend-prod.onrender.com
+   - Backend: https://capliquify-backend-prod.onrender.com
+   - MCP: https://capliquify-mcp-prod.onrender.com
 
 ### Short-Term (Next 2 Weeks)
 

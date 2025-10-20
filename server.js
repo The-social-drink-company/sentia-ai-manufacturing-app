@@ -22,6 +22,7 @@ import masterAdminRouter from './server/routes/master-admin.routes.js'
 import trialRouter from './server/routes/trial.routes.js'
 import cronRouter from './server/routes/cron.routes.js'
 import onboardingRouter from './server/routes/onboarding.js'
+import invitationsRouter from './server/routes/invitations.js'
 import subscriptionRouter from './server/api/subscription.js'
 import stripeWebhookRouter from './server/routes/webhooks/stripe.js'
 
@@ -368,6 +369,7 @@ app.use('/api/master-admin', masterAdminRouter)
 app.use('/api/trial', trialRouter)
 app.use('/api/cron', cronRouter)
 app.use('/api/onboarding', onboardingRouter)
+app.use('/api/invitations', invitationsRouter)
 app.use('/api/subscription', subscriptionRouter)
 app.use('/api/webhooks/stripe', stripeWebhookRouter)
 

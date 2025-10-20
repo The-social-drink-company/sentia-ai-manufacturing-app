@@ -368,6 +368,114 @@ export async function sendDay12Email(options: {
 }
 
 /**
+ * Send User Invitation Email
+ */
+export async function sendInvitationEmail(options: {
+  to: string
+  organizationName: string
+  invitedByName: string
+  role: string
+  invitationUrl: string
+  expiresAt: string
+  unsubscribeUrl: string
+  preferencesUrl: string
+}): Promise<{ success: boolean; error?: string }> {
+  try {
+    // Check rate limits
+    const { canSend, reason } = canSendEmail()
+    if (!canSend) {
+      console.warn(`[SendGrid] Rate limit: ${reason}`)
+      return { success: false, error: reason }
+    }
+
+    // Create HTML content (inline for now, can be templated later)
+    const html = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>You're Invited to Join ${options.organizationName}</title>
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+  <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 10px 10px 0 0; text-align: center;">
+    <h1 style="margin: 0; font-size: 28px;">CapLiquify</h1>
+    <p style="margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;">Manufacturing Intelligence Platform</p>
+  </div>
+
+  <div style="background: #ffffff; padding: 40px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 10px 10px;">
+    <h2 style="color: #667eea; margin-top: 0;">You're Invited!</h2>
+
+    <p style="font-size: 16px; margin-bottom: 20px;">
+      <strong>${options.invitedByName}</strong> has invited you to join <strong>${options.organizationName}</strong> on CapLiquify.
+    </p>
+
+    <div style="background: #f3f4f6; padding: 20px; border-radius: 8px; margin: 25px 0;">
+      <p style="margin: 0 0 10px 0;"><strong>Your Role:</strong> ${options.role.charAt(0).toUpperCase() + options.role.slice(1)}</p>
+      <p style="margin: 0;"><strong>Organization:</strong> ${options.organizationName}</p>
+    </div>
+
+    <p style="font-size: 16px;">
+      Click the button below to accept your invitation and get started:
+    </p>
+
+    <div style="text-align: center; margin: 35px 0;">
+      <a href="${options.invitationUrl}" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 14px 40px; text-decoration: none; border-radius: 6px; font-weight: 600; display: inline-block; font-size: 16px;">
+        Accept Invitation
+      </a>
+    </div>
+
+    <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; margin: 25px 0; border-radius: 4px;">
+      <p style="margin: 0; color: #92400e; font-size: 14px;">
+        <strong>⏰ This invitation expires on ${new Date(options.expiresAt).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</strong>
+      </p>
+    </div>
+
+    <p style="font-size: 14px; color: #6b7280; margin-top: 30px;">
+      If the button doesn't work, copy and paste this link into your browser:<br>
+      <a href="${options.invitationUrl}" style="color: #667eea; word-break: break-all;">${options.invitationUrl}</a>
+    </p>
+
+    <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;">
+
+    <p style="font-size: 13px; color: #9ca3af; text-align: center; margin: 20px 0 0 0;">
+      <a href="${options.unsubscribeUrl}" style="color: #9ca3af; text-decoration: underline;">Unsubscribe</a> |
+      <a href="${options.preferencesUrl}" style="color: #9ca3af; text-decoration: underline;">Email Preferences</a>
+    </p>
+
+    <p style="font-size: 12px; color: #9ca3af; text-align: center; margin: 10px 0 0 0;">
+      © ${new Date().getFullYear()} CapLiquify. All rights reserved.
+    </p>
+  </div>
+</body>
+</html>
+    `
+
+    // Send email
+    const result = await sendEmailWithFailover(
+      options.to,
+      `You're invited to join ${options.organizationName} on CapLiquify`,
+      html
+    )
+
+    if (result.success) {
+      stats.sent++
+      rateLimitTracker.sentToday++
+      rateLimitTracker.sentThisHour++
+    } else {
+      stats.failed++
+    }
+
+    return result
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+    console.error('[SendGrid] Invitation email failed:', errorMessage)
+    stats.failed++
+    return { success: false, error: errorMessage }
+  }
+}
+
+/**
  * Send Day 14 Expired Email
  */
 export async function sendExpiredEmail(options: {
@@ -495,6 +603,7 @@ export default {
   sendDay7Email,
   sendDay12Email,
   sendExpiredEmail,
+  sendInvitationEmail,
   getEmailStats,
   clearTemplateCache,
   testEmailConfiguration,

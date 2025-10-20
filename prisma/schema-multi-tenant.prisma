@@ -49,6 +49,7 @@ model Tenant {
 
   // Relationships
   users                User[]
+  invitations          Invitation[]
   subscription         Subscription?
   auditLogs            AuditLog[]
 
@@ -149,6 +150,37 @@ model AuditLog {
   @@index([action], name: "idx_audit_logs_action")
   @@index([createdAt], name: "idx_audit_logs_created")
   @@map("audit_logs")
+  @@schema("public")
+}
+
+// ----------------------------------------------------------------------------
+// Invitation Model - User invitation system
+// ----------------------------------------------------------------------------
+model Invitation {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String   @map("tenant_id") @db.Uuid
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  // Invitation details
+  email       String   @db.VarChar(255)
+  role        UserRole
+  token       String   @unique @db.Uuid // UUID for invitation link
+  invitedBy   String   @map("invited_by") @db.Uuid // User ID who sent invitation
+
+  // Status tracking
+  expiresAt   DateTime @map("expires_at")
+  acceptedAt  DateTime? @map("accepted_at")
+  cancelledAt DateTime? @map("cancelled_at")
+
+  // Metadata
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@index([token], name: "idx_invitations_token")
+  @@index([email, tenantId], name: "idx_invitations_email_tenant")
+  @@index([tenantId], name: "idx_invitations_tenant")
+  @@index([expiresAt], name: "idx_invitations_expires")
+  @@map("invitations")
   @@schema("public")
 }
 

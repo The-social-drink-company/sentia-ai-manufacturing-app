@@ -296,7 +296,10 @@ const Sidebar = ({ isOpen, onToggle }) => {
         <div className="flex items-center justify-between p-4 h-16 border-b border-gray-200 dark:border-gray-700">
           {!collapsed && (
             <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-blue-800 rounded-lg flex items-center justify-center">
+              <div
+                className="w-8 h-8 bg-gradient-to-br from-blue-600 to-blue-800 rounded-lg flex items-center justify-center"
+                aria-label="CapLiquify icon"
+              >
                 <span className="text-white font-bold text-sm">C</span>
               </div>
               <div>

@@ -749,7 +749,7 @@ RESPONSIVE CLASSES
 ## 9. File Structure Diagram
 
 ```
-sentia-ai-manufacturing-app/
+capliquify-ai-dashboard-app/
 │
 ├── src/
 │   ├── main.jsx                    # App entry point

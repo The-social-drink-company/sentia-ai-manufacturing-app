@@ -118,7 +118,10 @@ const DashboardSidebar = ({ isOpen = false, onClose = () => {} }) => {
         <div className="border-b border-slate-700 p-6">
           <div className="flex items-center gap-3">
             {/* Logo Icon */}
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600 text-xl font-bold text-white shadow-md">
+            <div
+              className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600 text-xl font-bold text-white shadow-md"
+              aria-label="CapLiquify logo"
+            >
               C
             </div>
 

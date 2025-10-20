@@ -14,10 +14,10 @@
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://capliquify-frontend-prod.onrender.com/" />
+    <meta property="og:url" content="https://app.capliquify.com/" />
     <meta property="og:title" content="CapLiquify | AI-Powered Working Capital Optimization" />
     <meta property="og:description" content="Achieve <55 day cash conversion cycles with >85% AI forecast accuracy. Built specifically for manufacturers. 14-day free trial, no credit card required." />
-    <meta property="og:image" content="https://capliquify-frontend-prod.onrender.com/og-image.png" />
+    <meta property="og:image" content="https://app.capliquify.com/og-image.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:site_name" content="CapLiquify" />
@@ -25,10 +25,10 @@
 
     <!-- Twitter Card -->
     <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content="https://capliquify-frontend-prod.onrender.com/" />
+    <meta property="twitter:url" content="https://app.capliquify.com/" />
     <meta property="twitter:title" content="CapLiquify | AI-Powered Working Capital Optimization" />
     <meta property="twitter:description" content="Achieve <55 day cash conversion cycles with >85% AI forecast accuracy. 14-day free trial." />
-    <meta property="twitter:image" content="https://capliquify-frontend-prod.onrender.com/twitter-image.png" />
+    <meta property="twitter:image" content="https://app.capliquify.com/twitter-image.png" />
     <meta property="twitter:creator" content="@CapLiquify" />
 
     <!-- Additional Meta Tags -->
@@ -38,7 +38,13 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="CapLiquify" />
-    <link rel="canonical" href="https://capliquify-frontend-prod.onrender.com/" />
+    <link rel="canonical" href="https://app.capliquify.com/" />
+
+    <!-- Preconnect for Performance -->
+    <link rel="preconnect" href="https://api.capliquify.com" />
+    <link rel="preconnect" href="https://mcp.capliquify.com" />
+    <link rel="dns-prefetch" href="https://api.capliquify.com" />
+    <link rel="dns-prefetch" href="https://mcp.capliquify.com" />
 
     <!-- Structured Data (JSON-LD) -->
     <script type="application/ld+json">
@@ -70,8 +76,8 @@
       "provider": {
         "@type": "Organization",
         "name": "CapLiquify",
-        "url": "https://capliquify-frontend-prod.onrender.com",
-        "logo": "https://capliquify-frontend-prod.onrender.com/logo.png",
+        "url": "https://app.capliquify.com",
+        "logo": "https://app.capliquify.com/logo.png",
         "sameAs": [
           "https://twitter.com/CapLiquify",
           "https://linkedin.com/company/capliquify"
@@ -85,11 +91,15 @@
         "ERP integrations (Xero, QuickBooks, Shopify, Amazon)",
         "Multi-entity consolidation"
       ],
-      "screenshot": "https://capliquify-frontend-prod.onrender.com/screenshot.png"
+      "screenshot": "https://app.capliquify.com/screenshot.png"
     }
     </script>
   </head>
   <body class="bg-white text-gray-900">
+    <!-- Skip to main content link for accessibility -->
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-blue-600 text-white px-4 py-2 rounded-lg z-50">
+      Skip to main content
+    </a>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

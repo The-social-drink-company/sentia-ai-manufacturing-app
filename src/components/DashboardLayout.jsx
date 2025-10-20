@@ -70,6 +70,7 @@ const DashboardLayout = ({ children }) => {
           <div className="mx-auto max-w-7xl text-center">
             <p className="text-xs text-slate-500">© {new Date().getFullYear()} CapLiquify. All rights reserved.</p>
             <p className="text-xs text-slate-400">Current tenant: Sentia Spirits</p>
+            <p className="text-xs text-slate-400">Enterprise workspace powered by CapLiquify multi-tenant SaaS</p>
           </div>
         </footer>
       </div>

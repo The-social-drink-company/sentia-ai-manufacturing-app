@@ -12,6 +12,7 @@ const SignUpPage = () => {
           <h1 className="text-3xl font-bold text-white">CapLiquify Platform</h1>
           <p className="mt-2 text-purple-100">Multi-tenant manufacturing intelligence</p>
           <p className="text-xs uppercase tracking-[0.3em] text-purple-200">Tenant: Sentia Spirits</p>
+          <p className="text-sm text-purple-100">Provisioning CapLiquify workspace for Sentia Spirits</p>
         </div>
 
         <div className="rounded-2xl bg-white p-8 shadow-2xl">

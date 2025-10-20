@@ -13,7 +13,7 @@
 ## Actions Taken
 
 
-- Created backup: c:\Projects\The-social-drink-companysentia-ai-manufacturing-app\sentia-ai-manufacturing-app\bmad-backups\bmad-backup-2025-10-20-1760948617449
+- Created backup: c:\Projects\The-social-drink-companycapliquify-ai-dashboard-app\capliquify-ai-dashboard-app\bmad-backups\bmad-backup-2025-10-20-1760948617449
 - Updated framework files (core, BMM module)
 - Preserved all project files
 - Validated update success
@@ -75,14 +75,14 @@ Test 5: Testing update check...
 [2025-10-20T08:23:36.570Z] [INFO] This will make a GitHub API request...
 [2025-10-20T08:23:36.570Z] [INFO] === BMAD-METHOD Auto-Update Agent ===
 [2025-10-20T08:23:36.570Z] [INFO] Mode: LIVE
-[2025-10-20T08:23:36.570Z] [INFO] Project: c:\Projects\The-social-drink-companysentia-ai-manufacturing-app\sentia-ai-manufacturing-app
+[2025-10-20T08:23:36.570Z] [INFO] Project: c:\Projects\The-social-drink-companycapliquify-ai-dashboard-app\capliquify-ai-dashboard-app
 [2025-10-20T08:23:36.570Z] [INFO] Checking for BMAD-METHOD updates...
 [2025-10-20T08:23:36.571Z] [INFO] Current BMAD version: 6.0.0-alpha.0
 [2025-10-20T08:23:36.989Z] [INFO] Latest BMAD commit: 2a6eb71
 [2025-10-20T08:23:37.449Z] [SUCCESS] ✓ Update available!
 [2025-10-20T08:23:37.449Z] [INFO]   Local:  unknown
 [2025-10-20T08:23:37.449Z] [INFO]   Remote: 2a6eb71
-[2025-10-20T08:23:37.449Z] [INFO] Creating backup: c:\Projects\The-social-drink-companysentia-ai-manufacturing-app\sentia-ai-manufacturing-app\bmad-backups\bmad-backup-2025-10-20-1760948617449
+[2025-10-20T08:23:37.449Z] [INFO] Creating backup: c:\Projects\The-social-drink-companycapliquify-ai-dashboard-app\capliquify-ai-dashboard-app\bmad-backups\bmad-backup-2025-10-20-1760948617449
 [2025-10-20T08:23:37.766Z] [SUCCESS] ✓ Backup created (463 files)
 [2025-10-20T08:23:37.766Z] [INFO] Performing BMAD-METHOD update...
 [2025-10-20T08:23:37.766Z] [INFO] Cloning latest BMAD-METHOD v6-alpha...

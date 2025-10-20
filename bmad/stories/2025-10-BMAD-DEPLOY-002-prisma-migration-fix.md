@@ -225,7 +225,7 @@ bash scripts/prisma-safe-migrate.sh
 ✓ [Prisma Safe Migrate] Migration process completed successfully
 ═══════════════════════════════════════════════════════
 
-> sentia-ai-manufacturing-app@1.0.0 start:render
+> capliquify-ai-dashboard-app@1.0.0 start:render
 > node server.js
 
 [Backend] Starting CapLiquify Platform API Server...

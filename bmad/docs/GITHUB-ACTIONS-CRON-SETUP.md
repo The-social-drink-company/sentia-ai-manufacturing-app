@@ -453,7 +453,7 @@ GitHub Actions will:
 curl -X POST \
   -H "Authorization: Bearer $GITHUB_TOKEN" \
   -H "Accept: application/vnd.github.v3+json" \
-  https://api.github.com/repos/The-social-drink-company/sentia-ai-manufacturing-app/actions/workflows/trial-expiration.yml/dispatches \
+  https://api.github.com/repos/The-social-drink-company/capliquify-ai-dashboard-app/actions/workflows/trial-expiration.yml/dispatches \
   -d '{"ref":"main","inputs":{"dry_run":"true"}}'
 ```
 
@@ -465,7 +465,7 @@ Actions → Trial Expiration Monitor → Latest run
 
 # Via GitHub API
 curl -H "Authorization: Bearer $GITHUB_TOKEN" \
-  https://api.github.com/repos/The-social-drink-company/sentia-ai-manufacturing-app/actions/workflows/trial-expiration.yml/runs
+  https://api.github.com/repos/The-social-drink-company/capliquify-ai-dashboard-app/actions/workflows/trial-expiration.yml/runs
 ```
 
 ---

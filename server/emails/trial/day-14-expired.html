@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your CapLiquify Trial Has Ended - 3-Day Grace Period</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f3f4f6;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+        }
+        .header {
+            background: linear-gradient(135deg, #dc2626 0%, #7f1d1d 100%);
+            padding: 40px 20px;
+            text-align: center;
+        }
+        .logo {
+            font-size: 32px;
+            font-weight: bold;
+            color: #ffffff;
+            margin-bottom: 10px;
+        }
+        .expired-banner {
+            background-color: #fef2f2;
+            border: 3px solid #dc2626;
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            margin: -20px 20px 20px 20px;
+        }
+        .expired-banner h2 {
+            color: #991b1b;
+            font-size: 24px;
+            margin: 0 0 12px 0;
+        }
+        .expired-banner .icon {
+            font-size: 64px;
+            margin-bottom: 12px;
+        }
+        .content {
+            padding: 40px 30px;
+        }
+        h1 {
+            color: #111827;
+            font-size: 28px;
+            margin: 0 0 20px 0;
+        }
+        p {
+            color: #4b5563;
+            font-size: 16px;
+            line-height: 1.6;
+            margin: 0 0 16px 0;
+        }
+        .grace-period-box {
+            background-color: #fef3c7;
+            border: 2px solid #f59e0b;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 30px 0;
+        }
+        .grace-period-box h3 {
+            color: #92400e;
+            font-size: 22px;
+            margin: 0 0 12px 0;
+        }
+        .grace-period-box .countdown {
+            font-size: 48px;
+            font-weight: bold;
+            color: #f59e0b;
+            margin: 16px 0;
+        }
+        .cta-button {
+            display: inline-block;
+            background-color: #dc2626;
+            color: #ffffff;
+            text-decoration: none;
+            padding: 18px 48px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .pricing-options {
+            margin: 30px 0;
+        }
+        .pricing-card {
+            background-color: #f9fafb;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 16px;
+        }
+        .pricing-card.featured {
+            border-color: #2563eb;
+            background-color: #eff6ff;
+        }
+        .pricing-card h3 {
+            color: #111827;
+            font-size: 20px;
+            margin: 0 0 16px 0;
+        }
+        .price {
+            font-size: 42px;
+            font-weight: bold;
+            color: #2563eb;
+            margin-bottom: 8px;
+        }
+        .price-period {
+            color: #6b7280;
+            font-size: 16px;
+        }
+        .features-list {
+            margin: 20px 0;
+        }
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+        .feature-icon {
+            color: #16a34a;
+            margin-right: 10px;
+            font-size: 16px;
+            margin-top: 2px;
+        }
+        .testimonial {
+            background-color: #f0fdf4;
+            border-left: 4px solid #16a34a;
+            padding: 20px;
+            margin: 30px 0;
+            border-radius: 8px;
+        }
+        .testimonial-text {
+            font-style: italic;
+            color: #065f46;
+            margin-bottom: 12px;
+        }
+        .testimonial-author {
+            color: #047857;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .footer {
+            background-color: #f9fafb;
+            padding: 30px;
+            text-align: center;
+            color: #6b7280;
+            font-size: 14px;
+        }
+        .footer a {
+            color: #2563eb;
+            text-decoration: none;
+        }
+        .urgent-highlight {
+            background-color: #fef2f2;
+            border-left: 4px solid #dc2626;
+            padding: 20px;
+            margin: 30px 0;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">CapLiquify</div>
+        </div>
+
+        <!-- Expired Banner -->
+        <div class="expired-banner">
+            <div class="icon">⏱️</div>
+            <h2>Your Trial Has Expired</h2>
+            <p style="margin: 0; color: #7f1d1d; font-weight: 600;">But you still have 3 days to subscribe and keep your data</p>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <h1>Hi {{firstName}}, Your Trial Ended Today</h1>
+
+            <p>Your 14-day free trial of CapLiquify ended today. We hope you found value in optimizing {{companyName}}'s working capital and forecasting demand.</p>
+
+            <div class="grace-period-box">
+                <h3>🎯 3-Day Grace Period Active</h3>
+                <p style="margin: 0; color: #78350f; font-weight: 600;">You have limited access until {{gracePeriodEnd}}</p>
+                <div class="countdown">3 Days</div>
+                <p style="margin: 0; color: #78350f;">Subscribe now to maintain full access and keep your data</p>
+            </div>
+
+            <div class="urgent-highlight">
+                <h3 style="color: #991b1b; margin: 0 0 12px 0; font-size: 18px;">⚠️ What Happens After the Grace Period?</h3>
+                <ul style="color: #7f1d1d; margin: 0; padding-left: 20px;">
+                    <li>Your account will be suspended</li>
+                    <li>All integrations will be disconnected</li>
+                    <li>Data will be deleted after 30 days</li>
+                    <li>You'll lose access to forecasts and insights</li>
+                </ul>
+            </div>
+
+            <h2 style="color: #111827; font-size: 24px; margin: 40px 0 20px 0; text-align: center;">Choose Your Plan</h2>
+
+            <div class="pricing-options">
+                <!-- Starter Plan -->
+                <div class="pricing-card">
+                    <h3>Starter</h3>
+                    <div>
+                        <span class="price">$99</span>
+                        <span class="price-period">/month</span>
+                    </div>
+                    <div class="features-list">
+                        <div class="feature-item">
+                            <span class="feature-icon">✓</span>
+                            <p style="margin: 0; font-size: 14px;">Working Capital Optimization</p>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">✓</span>
+                            <p style="margin: 0; font-size: 14px;">Demand Forecasting</p>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">✓</span>
+                            <p style="margin: 0; font-size: 14px;">Up to 5 users, 100 products</p>
+                        </div>
+                    </div>
+                    <a href="{{paymentUrl}}?tier=starter" style="display: block; text-align: center; padding: 12px; background-color: #e5e7eb; color: #374151; text-decoration: none; border-radius: 8px; font-weight: 600; margin-top: 16px;">Select Starter</a>
+                </div>
+
+                <!-- Professional Plan (Featured) -->
+                <div class="pricing-card featured">
+                    <div style="background-color: #2563eb; color: white; margin: -24px -24px 16px -24px; padding: 8px 24px; border-radius: 10px 10px 0 0; text-align: center; font-weight: 600;">
+                        MOST POPULAR
+                    </div>
+                    <h3>Professional</h3>
+                    <div>
+                        <span class="price">$249</span>
+                        <span class="price-period">/month</span>
+                    </div>
+                    <div class="features-list">
+                        <div class="feature-item">
+                            <span class="feature-icon">✓</span>
+                            <p style="margin: 0; font-size: 14px;">All Starter features</p>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">✓</span>
+                            <p style="margin: 0; font-size: 14px;">AI-Powered Analytics</p>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">✓</span>
+                            <p style="margin: 0; font-size: 14px;">Advanced Reporting</p>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">✓</span>
+                            <p style="margin: 0; font-size: 14px;">Up to 20 users, 500 products</p>
+                        </div>
+                    </div>
+                    <a href="{{paymentUrl}}?tier=professional" style="display: block; text-align: center; padding: 12px; background-color: #2563eb; color: white; text-decoration: none; border-radius: 8px; font-weight: 600; margin-top: 16px;">Select Professional</a>
+                </div>
+
+                <!-- Enterprise Plan -->
+                <div class="pricing-card">
+                    <h3>Enterprise</h3>
+                    <div>
+                        <span class="price">$499</span>
+                        <span class="price-period">/month</span>
+                    </div>
+                    <div class="features-list">
+                        <div class="feature-item">
+                            <span class="feature-icon">✓</span>
+                            <p style="margin: 0; font-size: 14px;">All Professional features</p>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">✓</span>
+                            <p style="margin: 0; font-size: 14px;">API Access</p>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">✓</span>
+                            <p style="margin: 0; font-size: 14px;">Unlimited users & products</p>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">✓</span>
+                            <p style="margin: 0; font-size: 14px;">Dedicated support</p>
+                        </div>
+                    </div>
+                    <a href="{{paymentUrl}}?tier=enterprise" style="display: block; text-align: center; padding: 12px; background-color: #e5e7eb; color: #374151; text-decoration: none; border-radius: 8px; font-weight: 600; margin-top: 16px;">Select Enterprise</a>
+                </div>
+            </div>
+
+            <div style="background-color: #eff6ff; border: 2px dashed #2563eb; border-radius: 12px; padding: 20px; text-align: center; margin: 30px 0;">
+                <h3 style="color: #1e40af; margin: 0 0 12px 0; font-size: 18px;">💯 30-Day Money-Back Guarantee</h3>
+                <p style="margin: 0; color: #1e3a8a;">Try any plan risk-free. Get a full refund within 30 days if you're not satisfied.</p>
+            </div>
+
+            <div class="testimonial">
+                <p class="testimonial-text">"CapLiquify helped us reduce our cash conversion cycle by 17 days and identify $185K in working capital optimization opportunities. Worth every penny."</p>
+                <p class="testimonial-author">— Michael Chen, CFO at Peak Manufacturing</p>
+            </div>
+
+            <p style="margin-top: 40px;"><strong>Have questions or need help choosing a plan?</strong> Reply to this email or call us at <a href="tel:+1234567890" style="color: #2563eb; text-decoration: none;">+1 (234) 567-890</a>. We're here to help!</p>
+
+            <p style="margin-top: 30px;">
+                Thank you for trying CapLiquify,<br>
+                <strong>The CapLiquify Team</strong>
+            </p>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p><strong>CapLiquify</strong></p>
+            <p>Manufacturing Intelligence for Growing Businesses</p>
+            <p style="margin-top: 20px;">
+                <a href="{{pricingUrl}}">Pricing</a> |
+                <a href="{{supportUrl}}">Support</a> |
+                <a href="{{faqUrl}}">FAQ</a>
+            </p>
+            <p style="margin-top: 20px; font-size: 12px;">
+                © 2025 CapLiquify. All rights reserved.<br>
+                <a href="{{unsubscribeUrl}}" style="color: #9ca3af;">Unsubscribe</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

@@ -19,6 +19,10 @@ import { Server as SocketIOServer } from 'socket.io'
 import authRouter from './server/routes/auth.js'
 import sseRouter from './server/routes/sse.js'
 import masterAdminRouter from './server/routes/master-admin.routes.js'
+import trialRouter from './server/routes/trial.routes.js'
+
+// Import background jobs
+import { startTrialExpirationJob } from './server/jobs/trial-expiration.job.js'
 
 // Initialize logger with fallback
 let logger
@@ -341,6 +345,7 @@ app.locals.prisma = prisma
 app.use('/api/auth', authRouter)
 app.use('/api/v1/sse', sseRouter)
 app.use('/api/master-admin', masterAdminRouter)
+app.use('/api/trial', trialRouter)
 
 // Health check endpoint with REAL status
 app.get('/health', async (req, res) => {
@@ -3948,6 +3953,14 @@ Database: ${prismaInitialized ? 'Connected' : 'Not connected'}
     logger.info(`Active sync jobs: ${autoSyncManager.getStatus().activeJobs.join(', ') || 'none'}`)
   } catch (error) {
     logger.warn('Failed to initialize Auto-Sync Manager:', error.message)
+  }
+
+  // Initialize Trial Expiration Cron Job
+  try {
+    startTrialExpirationJob()
+    logger.info('Trial expiration cron job started successfully')
+  } catch (error) {
+    logger.warn('Failed to start trial expiration cron job:', error.message)
   }
 })
 

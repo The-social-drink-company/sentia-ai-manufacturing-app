@@ -812,6 +812,150 @@ model ScheduledJob {
   @@map("scheduled_jobs")
 }
 
+// ==================== MULTI-TENANT SAAS ====================
+
+model Tenant {
+  id   String @id @default(uuid())
+  name String @unique
+  slug String @unique // URL-safe identifier
+
+  // Organization Details
+  companyName String  @map("company_name")
+  domain      String? // Custom domain (optional)
+  logo        String?
+  industry    String?
+
+  // Trial Management
+  isInTrial      Boolean   @default(false) @map("is_in_trial")
+  trialStartDate DateTime? @map("trial_start_date")
+  trialEndDate   DateTime? @map("trial_end_date")
+  trialTier      String?   @map("trial_tier") // starter, professional, enterprise
+
+  // Subscription
+  subscriptionId     String?   @map("subscription_id")
+  subscription       Subscription? @relation(fields: [subscriptionId], references: [id])
+  subscriptionTier   String    @default("starter") @map("subscription_tier") // starter, professional, enterprise
+  subscriptionStatus String    @default("TRIAL") @map("subscription_status") // TRIAL, ACTIVE, SUSPENDED, CANCELLED
+
+  // Limits (based on tier)
+  maxUsers      Int     @default(5) @map("max_users")
+  maxEntities   Int     @default(100) @map("max_entities") // products/SKUs
+  maxStorage    Int     @default(1000) @map("max_storage") // MB
+  features      Json    @default("{}") @db.Json // Feature flags per tenant
+
+  // Billing
+  billingEmail      String?   @map("billing_email")
+  billingAddress    Json?     @map("billing_address") @db.Json
+  paymentMethodId   String?   @map("payment_method_id")
+  nextBillingDate   DateTime? @map("next_billing_date")
+
+  // Status
+  isActive      Boolean   @default(true) @map("is_active")
+  suspendedAt   DateTime? @map("suspended_at")
+  suspendedBy   String?   @map("suspended_by") // Admin user ID
+  suspendReason String?   @map("suspend_reason")
+
+  // Database
+  dbSchema      String    @unique @map("db_schema") // PostgreSQL schema name
+  dbConnectionString String? @map("db_connection_string") // Encrypted
+
+  // Metadata
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at") // Soft delete
+
+  // Relations
+  subscriptions Subscription[]
+
+  @@index([slug])
+  @@index([subscriptionStatus])
+  @@index([isInTrial])
+  @@map("tenants")
+}
+
+model Subscription {
+  id String @id @default(uuid())
+
+  // Subscription Details
+  tier   String // starter, professional, enterprise
+  status String @default("TRIAL") // TRIAL, ACTIVE, PAST_DUE, CANCELLED, SUSPENDED
+
+  // Billing
+  amount        Decimal   @db.Decimal(10, 2)
+  currency      String    @default("USD")
+  billingCycle  String    @default("MONTHLY") @map("billing_cycle") // MONTHLY, ANNUALLY
+
+  // Trial Information
+  trialEndDate   DateTime? @map("trial_end_date")
+  gracePeriodEnd DateTime? @map("grace_period_end") // 3 days after trial expiration
+
+  // Stripe Integration
+  stripeCustomerId      String? @unique @map("stripe_customer_id")
+  stripeSubscriptionId  String? @unique @map("stripe_subscription_id")
+  stripePriceId         String? @map("stripe_price_id")
+  stripePaymentMethodId String? @map("stripe_payment_method_id")
+
+  // Dates
+  startDate    DateTime  @map("start_date")
+  endDate      DateTime? @map("end_date")
+  cancelledAt  DateTime? @map("cancelled_at")
+  suspendedAt  DateTime? @map("suspended_at")
+
+  // Metadata
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  tenant   Tenant? @relation(fields: [tenantId], references: [id])
+  tenantId String? @map("tenant_id")
+
+  @@index([status])
+  @@index([tier])
+  @@index([stripeCustomerId])
+  @@index([stripeSubscriptionId])
+  @@map("subscriptions")
+}
+
+model TrialEmail {
+  id String @id @default(uuid())
+
+  // Email Details
+  tenantId String @map("tenant_id")
+  type     String // DAY_1, DAY_7, DAY_12, DAY_14
+
+  // Delivery Status
+  status     String    @default("PENDING") // PENDING, SENT, DELIVERED, FAILED, BOUNCED
+  sentAt     DateTime? @map("sent_at")
+  deliveredAt DateTime? @map("delivered_at")
+  openedAt   DateTime? @map("opened_at")
+  clickedAt  DateTime? @map("clicked_at")
+
+  // Email Provider
+  emailProvider String? @map("email_provider") // sendgrid, resend
+  externalId    String? @map("external_id") // Provider's message ID
+
+  // Content
+  subject  String
+  body     String @db.Text
+  toEmail  String @map("to_email")
+  fromEmail String @default("hello@capliquify.com") @map("from_email")
+
+  // Error Tracking
+  error        String? @db.Text
+  retryCount   Int     @default(0) @map("retry_count")
+  lastRetryAt  DateTime? @map("last_retry_at")
+
+  // Metadata
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([tenantId])
+  @@index([type])
+  @@index([status])
+  @@index([sentAt])
+  @@map("trial_emails")
+}
+
 // ==================== ADMIN PORTAL ====================
 
 model AdminApproval {

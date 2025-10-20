@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Only 2 Days Left - Don't Lose Access!</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f3f4f6;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+        }
+        .header {
+            background: linear-gradient(135deg, #dc2626 0%, #f97316 100%);
+            padding: 40px 20px;
+            text-align: center;
+        }
+        .logo {
+            font-size: 32px;
+            font-weight: bold;
+            color: #ffffff;
+            margin-bottom: 10px;
+        }
+        .urgent-banner {
+            background-color: #fef2f2;
+            border: 2px solid #dc2626;
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            margin: -20px 20px 20px 20px;
+        }
+        .urgent-banner h2 {
+            color: #991b1b;
+            font-size: 24px;
+            margin: 0 0 12px 0;
+        }
+        .urgent-banner .clock {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+        .content {
+            padding: 40px 30px;
+        }
+        h1 {
+            color: #111827;
+            font-size: 28px;
+            margin: 0 0 20px 0;
+        }
+        p {
+            color: #4b5563;
+            font-size: 16px;
+            line-height: 1.6;
+            margin: 0 0 16px 0;
+        }
+        .value-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 30px 0;
+        }
+        .value-card {
+            background-color: #f0fdf4;
+            border-left: 4px solid #16a34a;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .value-number {
+            font-size: 36px;
+            font-weight: bold;
+            color: #16a34a;
+            margin-bottom: 8px;
+        }
+        .value-label {
+            color: #065f46;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .cta-button {
+            display: inline-block;
+            background-color: #dc2626;
+            color: #ffffff;
+            text-decoration: none;
+            padding: 16px 40px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 18px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .pricing-card {
+            background-color: #f9fafb;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 30px 0;
+        }
+        .pricing-card h3 {
+            color: #111827;
+            font-size: 20px;
+            margin: 0 0 16px 0;
+        }
+        .price {
+            font-size: 48px;
+            font-weight: bold;
+            color: #2563eb;
+            margin-bottom: 8px;
+        }
+        .price-period {
+            color: #6b7280;
+            font-size: 18px;
+        }
+        .features-list {
+            margin: 20px 0;
+        }
+        .feature-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .feature-icon {
+            color: #16a34a;
+            margin-right: 12px;
+            font-size: 18px;
+        }
+        .guarantee-box {
+            background-color: #eff6ff;
+            border: 2px dashed #2563eb;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            margin: 30px 0;
+        }
+        .footer {
+            background-color: #f9fafb;
+            padding: 30px;
+            text-align: center;
+            color: #6b7280;
+            font-size: 14px;
+        }
+        .footer a {
+            color: #2563eb;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">CapLiquify</div>
+        </div>
+
+        <!-- Urgent Banner -->
+        <div class="urgent-banner">
+            <div class="clock">⏰</div>
+            <h2>Only 2 Days Left in Your Trial!</h2>
+            <p style="margin: 0; color: #7f1d1d; font-weight: 600;">Don't lose access to your workspace and insights</p>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <h1>Hi {{firstName}}, Your Trial Ends Soon</h1>
+
+            <p>Your 14-day CapLiquify trial expires in just <strong style="color: #dc2626;">2 days on {{trialEndDate}}</strong>. We wanted to give you a heads up so you don't lose access to your data and insights.</p>
+
+            <h2 style="color: #111827; font-size: 22px; margin: 30px 0 20px 0;">The Value You've Gained</h2>
+
+            <div class="value-grid">
+                <div class="value-card">
+                    <div class="value-number">${{cashSaved}}</div>
+                    <div class="value-label">Potential Cash Savings Identified</div>
+                </div>
+                <div class="value-card">
+                    <div class="value-number">{{daysReduced}}</div>
+                    <div class="value-label">Days Reduced in Cash Cycle</div>
+                </div>
+                <div class="value-card">
+                    <div class="value-number">{{forecasts}}</div>
+                    <div class="value-label">Demand Forecasts Generated</div>
+                </div>
+                <div class="value-card">
+                    <div class="value-number">{{inventory}}</div>
+                    <div class="value-label">Inventory Optimizations</div>
+                </div>
+            </div>
+
+            <p><strong>Don't lose this momentum!</strong> Continue optimizing your working capital and stay ahead of demand with CapLiquify.</p>
+
+            <div class="pricing-card">
+                <h3>Your {{tier}} Plan</h3>
+                <div>
+                    <span class="price">${{price}}</span>
+                    <span class="price-period">/month</span>
+                </div>
+                <div class="features-list">
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <p style="margin: 0;">All features you've been using</p>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <p style="margin: 0;">Your existing integrations stay connected</p>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <p style="margin: 0;">Historical data and insights preserved</p>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <p style="margin: 0;">Cancel anytime, no long-term contract</p>
+                    </div>
+                </div>
+
+                <a href="{{paymentUrl}}" class="cta-button">Add Payment Method Now →</a>
+            </div>
+
+            <div class="guarantee-box">
+                <h3 style="color: #1e40af; margin: 0 0 12px 0;">30-Day Money-Back Guarantee</h3>
+                <p style="margin: 0; color: #1e3a8a;">Not satisfied? Get a full refund within the first 30 days. No questions asked.</p>
+            </div>
+
+            <h2 style="color: #111827; font-size: 22px; margin: 40px 0 20px 0;">What Happens If You Don't Subscribe?</h2>
+
+            <p>Without an active subscription:</p>
+
+            <ul style="color: #6b7280; line-height: 1.8;">
+                <li>Your account will be suspended</li>
+                <li>You'll lose access to your dashboard and insights</li>
+                <li>Integrations will be disconnected</li>
+                <li>Forecasts and reports will no longer update</li>
+                <li>Data will be deleted after 30 days</li>
+            </ul>
+
+            <p style="margin-top: 30px;"><strong>Questions or want to discuss your plan?</strong> Reply to this email or schedule a 15-minute call with our team.</p>
+
+            <a href="{{paymentUrl}}" class="cta-button" style="display: block; text-align: center;">Continue with {{tier}} Plan →</a>
+
+            <p style="text-align: center; margin-top: 20px;">
+                <a href="{{pricingUrl}}" style="color: #2563eb; text-decoration: none; font-weight: 600;">View All Plans →</a>
+            </p>
+
+            <p style="margin-top: 40px;">
+                Thanks for trying CapLiquify,<br>
+                <strong>The CapLiquify Team</strong>
+            </p>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p><strong>CapLiquify</strong></p>
+            <p>Manufacturing Intelligence for Growing Businesses</p>
+            <p style="margin-top: 20px;">
+                <a href="{{dashboardUrl}}">Dashboard</a> |
+                <a href="{{pricingUrl}}">Pricing</a> |
+                <a href="{{supportUrl}}">Support</a>
+            </p>
+            <p style="margin-top: 20px; font-size: 12px;">
+                © 2025 CapLiquify. All rights reserved.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

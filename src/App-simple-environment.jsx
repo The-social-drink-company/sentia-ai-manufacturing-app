@@ -25,6 +25,7 @@ const DataImport = lazy(() => import('@/components/data/DataImportWidget'))
 const AdminPanel = lazy(() => import('@/pages/AdminPanelEnhanced'))
 const Onboarding = lazy(() => import('@/pages/Onboarding'))
 const MasterAdminDashboard = lazy(() => import('@/pages/master-admin/MasterAdminDashboard'))
+const TrialSignup = lazy(() => import('@/pages/auth/TrialSignup'))
 // const ImportWizard = lazy(() => import('@/pages/admin/ImportWizard')) // TODO: Create ImportWizard component
 // const ExportBuilder = lazy(() => import('@/pages/admin/ExportBuilder')) // TODO: Create ExportBuilder component
 const WhatIf = lazy(() => import('@/components/analytics/WhatIfAnalysis'))
@@ -272,6 +273,13 @@ const App = () => {
               {/* Authentication Routes */}
               <Route path="/sign-in" element={<SignInPage />} />
               <Route path="/sign-up" element={<SignUpPage />} />
+              <Route path="/trial-signup" element={
+                <ErrorBoundary fallbackMessage="Trial signup failed to load.">
+                  <Suspense fallback={<Loader />}>
+                    <TrialSignup />
+                  </Suspense>
+                </ErrorBoundary>
+              } />
               {/* Legacy routes for backward compatibility */}
               <Route path="/app/sign-in" element={<Navigate to="/sign-in" replace />} />
               <Route path="/app/sign-up" element={<Navigate to="/sign-up" replace />} />

@@ -21,6 +21,7 @@ import sseRouter from './server/routes/sse.js'
 import masterAdminRouter from './server/routes/master-admin.routes.js'
 import trialRouter from './server/routes/trial.routes.js'
 import onboardingRouter from './server/routes/onboarding.js'
+import subscriptionRouter from './server/api/subscription.js'
 
 // Import background jobs
 import { startTrialExpirationJob } from './server/jobs/trial-expiration.job.js'
@@ -364,6 +365,7 @@ app.use('/api/v1/sse', sseRouter)
 app.use('/api/master-admin', masterAdminRouter)
 app.use('/api/trial', trialRouter)
 app.use('/api/onboarding', onboardingRouter)
+app.use('/api/subscription', subscriptionRouter)
 
 // Health check endpoint with REAL status
 app.get('/health', async (req, res) => {

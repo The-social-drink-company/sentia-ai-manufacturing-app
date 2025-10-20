@@ -34,6 +34,8 @@ const WhatIf = lazy(() => import('@/components/analytics/WhatIfAnalysis'))
 const ScenarioPlanner = lazy(() => import('@/features/forecasting/ScenarioPlanner.jsx'))
 const AssistantPanel = lazy(() => import('@/features/ai-assistant/AssistantPanel.jsx'))
 const SettingsBilling = lazy(() => import('@/pages/SettingsBilling'))
+const UpgradePlan = lazy(() => import('@/pages/settings/UpgradePlan'))
+const DowngradePlan = lazy(() => import('@/pages/settings/DowngradePlan'))
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -505,6 +507,30 @@ const App = () => {
                     <ProtectedRoute>
                       <Suspense fallback={<Loader />}>
                         <SettingsBilling />
+                      </Suspense>
+                    </ProtectedRoute>
+                  </ErrorBoundary>
+                }
+              />
+              <Route
+                path="/settings/upgrade"
+                element={
+                  <ErrorBoundary fallbackMessage="Upgrade Plan page failed to load.">
+                    <ProtectedRoute>
+                      <Suspense fallback={<Loader />}>
+                        <UpgradePlan />
+                      </Suspense>
+                    </ProtectedRoute>
+                  </ErrorBoundary>
+                }
+              />
+              <Route
+                path="/settings/downgrade"
+                element={
+                  <ErrorBoundary fallbackMessage="Downgrade Plan page failed to load.">
+                    <ProtectedRoute>
+                      <Suspense fallback={<Loader />}>
+                        <DowngradePlan />
                       </Suspense>
                     </ProtectedRoute>
                   </ErrorBoundary>

@@ -34,6 +34,9 @@ export function useTenant() {
     ? {
         id: 'demo-tenant',
         name: 'Demo Organization',
+        subscriptionTier: 'PROFESSIONAL',
+        subscriptionCycle: 'MONTHLY',
+        currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
         tier: 'professional', // Default to professional tier for demo
         features: {
           aiForcasting: true,

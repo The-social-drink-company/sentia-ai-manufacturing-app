@@ -233,7 +233,7 @@ class APIIntegration {
       console.error('Sales metrics error:', error)
       // NO MOCK DATA FALLBACK - Throw error for proper handling
       throw new Error(
-        `Sales metrics unavailable: ${error.message}. Please ensure Sentia database and Shopify integrations are connected.`
+        `Sales metrics unavailable: ${error.message}. Please ensure tenant database and Shopify integrations are connected.`
       )
     }
   }
@@ -266,9 +266,9 @@ class APIIntegration {
       console.error(`Shopify ${region} API error:`, error)
     }
 
-    // Try to get real data from Sentia database instead of mock data
+    // Try to get real data from tenant database instead of mock data
     try {
-      console.log(`🏢 Fetching real Sentia sales data for ${region} region from database`)
+      console.log(`🏢 Fetching real tenant sales data for ${region} region from database`)
 
       // Fetch real historical sales data from our database
       const response = await fetch(
@@ -278,7 +278,7 @@ class APIIntegration {
       if (response.ok) {
         const data = await response.json()
         if (data.success && data.data) {
-          console.log(`✅ Retrieved real Sentia sales data for ${region}`)
+          console.log(`✅ Retrieved real tenant sales data for ${region}`)
           return {
             orders: data.data.orders || [],
             revenue: data.data.revenue || 0,
@@ -292,11 +292,11 @@ class APIIntegration {
       // If database also fails, throw proper error instead of mock data
       throw new Error(`No sales data available for ${region} region`)
     } catch (dbError) {
-      console.error(`Failed to retrieve Sentia database sales data for ${region}:`, dbError)
+      console.error(`Failed to retrieve tenant database sales data for ${region}:`, dbError)
 
       // NO MOCK DATA FALLBACK - throw proper error
       throw new Error(
-        `Sales data unavailable for ${region}: External API failed and database unavailable. Please ensure Shopify integration is configured or Sentia database is connected.`
+        `Sales data unavailable for ${region}: External API failed and database unavailable. Please ensure Shopify integration is configured or tenant database is connected.`
       )
     }
   }
@@ -323,7 +323,7 @@ class APIIntegration {
 
     // NO MOCK DATA FALLBACK - Throw error for proper handling
     throw new Error(
-      'Inventory metrics unavailable: External API failed and database unavailable. Please ensure Unleashed ERP integration is configured or Sentia database is connected.'
+      'Inventory metrics unavailable: External API failed and database unavailable. Please ensure Unleashed ERP integration is configured or tenant database is connected.'
     )
   }
 
@@ -428,7 +428,7 @@ class APIIntegration {
   }
 
   async getDefaultSalesData() {
-    // NO MOCK DATA - Fetch real Sentia sales data or throw error
+    // NO MOCK DATA - Fetch real tenant sales data or throw error
     try {
       const response = await fetch(`${this.baseURLs.api}/sales/product-performance`)
       if (response.ok) {
@@ -444,13 +444,13 @@ class APIIntegration {
       throw new Error('Sales data API returned error')
     } catch (error) {
       throw new Error(
-        `Sales data unavailable: ${error.message}. Please ensure Sentia database is connected.`
+        `Sales data unavailable: ${error.message}. Please ensure tenant database is connected.`
       )
     }
   }
 
   async getDefaultInventoryData() {
-    // NO MOCK DATA - Fetch real Sentia inventory data or throw error
+    // NO MOCK DATA - Fetch real tenant inventory data or throw error
     try {
       const response = await fetch(`${this.baseURLs.api}/inventory/levels`)
       if (response.ok) {
@@ -466,7 +466,7 @@ class APIIntegration {
       throw new Error('Inventory data API returned error')
     } catch (error) {
       throw new Error(
-        `Inventory data unavailable: ${error.message}. Please ensure Sentia database is connected.`
+        `Inventory data unavailable: ${error.message}. Please ensure tenant database is connected.`
       )
     }
   }
@@ -489,7 +489,7 @@ class APIIntegration {
   // Dashboard now returns proper error states when data is unavailable
 
   // generateSampleOrders method REMOVED - no mock data allowed
-  // Use real historical_sales data from Sentia database instead
+  // Use real historical_sales data from tenant database instead
 
   calculateSalesGrowth() {
     // Simulate growth calculation

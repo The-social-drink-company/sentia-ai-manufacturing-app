@@ -674,7 +674,7 @@ class DemandForecastingEngine {
       // Detect channel from SKU patterns or product IDs
       if (product.sku?.includes('Amazon') || product.id?.toString().length > 10) {
         channel = 'amazon'
-      } else if (product.sku?.includes('Shopify') || product.sku?.includes('Sentia')) {
+      } else if (product.sku?.includes('Shopify') || product.sku?.includes('GABA')) {
         channel = 'shopify'
       }
 

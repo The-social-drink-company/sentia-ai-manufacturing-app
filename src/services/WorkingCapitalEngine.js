@@ -89,7 +89,7 @@ class WorkingCapitalEngine {
     const workingCapitalVelocity =
       data.workingCapital > 0 ? data.currentAssets / data.workingCapital : 0
 
-    // Optimal CCC calculation for Sentia's business model
+    // Optimal CCC calculation for tenant's business model
     const optimalCCC = this.calculateOptimalCCC()
 
     return {
@@ -111,7 +111,7 @@ class WorkingCapitalEngine {
   }
 
   /**
-   * Calculate optimal CCC for Sentia's business model
+   * Calculate optimal CCC for tenant's business model
    */
   calculateOptimalCCC() {
     // Optimal targets for GABA supplement business
@@ -205,7 +205,7 @@ class WorkingCapitalEngine {
    * Analyze channel-specific working capital impact
    */
   async analyzeChannelImpact() {
-    // Sentia's 5 sales channels with different working capital implications
+    // Tenant's 5 sales channels with different working capital implications
     const channelProfiles = {
       'Amazon UK': {
         paymentTerms: 14, // Amazon pays bi-weekly
@@ -609,7 +609,7 @@ class WorkingCapitalEngine {
 
   estimateCashImpact(days) {
     // Estimate cash impact of CCC improvement
-    const dailyRevenue = 3500 // Estimated daily revenue for Sentia
+    const dailyRevenue = 3500 // Estimated daily revenue for tenant
     return Math.round(days * dailyRevenue)
   }
 }

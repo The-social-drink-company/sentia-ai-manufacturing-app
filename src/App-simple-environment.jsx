@@ -266,7 +266,7 @@ const App = () => {
   })
 
   return (
-    <ErrorBoundary fallbackMessage="The Sentia Manufacturing Dashboard encountered an unexpected error. Please try refreshing the page.">
+    <ErrorBoundary fallbackMessage="The CapLiquify Manufacturing Platform encountered an unexpected error. Please try refreshing the page.">
       <AuthProvider>
         <QueryClientProvider client={queryClient}>
           <BrowserRouter>

@@ -1,6 +1,6 @@
 # Render Deployment Guide - CapLiquify Manufacturing Platform
 
-**Last Updated**: October 19, 2025
+**Last Updated**: October 20, 2025
 **BMAD-METHOD v6a Compliant Documentation**
 
 ---
@@ -11,19 +11,19 @@
 
 | Service | URL | Status | Branch |
 |---------|-----|--------|--------|
-| **Frontend** | https://capliquify-frontend-prod.onrender.com | ✅ Active | development |
-| **Backend API** | https://capliquify-backend-prod.onrender.com | 🔄 Active | development |
-| **MCP Server** | https://capliquify-mcp-prod.onrender.com | 🔄 Active | development |
+| **Frontend** | https://sentia-frontend-prod.onrender.com | ✅ Active | main |
+| **Backend API** | https://sentia-backend-prod.onrender.com | 🔄 Active | main |
+| **MCP Server** | https://sentia-mcp-prod.onrender.com | 🔄 Active | main |
 | **Database** | Internal (PostgreSQL 17) | ✅ Active | N/A |
 
 ### Critical Configuration
 
 ```yaml
-# ALL services MUST deploy from development branch
+# ALL services MUST deploy from main branch
 services:
   - type: web
     name: sentia-mcp-prod
-    branch: development  # ← CRITICAL: Must be specified
+    branch: main  # ← CRITICAL: Must be specified
 ```
 
 ---
@@ -37,7 +37,7 @@ services:
 - Old features still visible after push
 - Deploys succeed but show outdated version
 
-**Root Cause**: Missing `branch: development` in render.yaml
+**Root Cause**: Missing `branch: main` in render.yaml
 
 **Solution**:
 ```yaml
@@ -45,12 +45,12 @@ services:
 services:
   - type: web
     name: your-service-name
-    branch: development  # ← ADD THIS LINE
+    branch: main  # ← ADD THIS LINE
 ```
 
 **Verification**:
 1. Check Render dashboard → Service → Settings → "Branch"
-2. Should show "development" not "main"
+2. Should show "main" (development branch consolidated October 19, 2025)
 3. Trigger manual deploy if needed
 
 ---
@@ -411,19 +411,19 @@ Test these URLs to verify service health:
 
 **MCP Server**:
 ```bash
-curl https://capliquify-mcp-prod.onrender.com/health
+curl https://sentia-mcp-prod.onrender.com/health
 # Expected: {"status":"healthy","timestamp":"2025-10-19T..."}
 ```
 
 **Backend API**:
 ```bash
-curl https://capliquify-backend-prod.onrender.com/api/health
+curl https://sentia-backend-prod.onrender.com/api/health
 # Expected: {"status":"healthy","database":"connected","timestamp":"..."}
 ```
 
 **Frontend**:
 ```bash
-curl -I https://capliquify-frontend-prod.onrender.com
+curl -I https://sentia-frontend-prod.onrender.com
 # Expected: HTTP/2 200 (HTML page loads)
 ```
 

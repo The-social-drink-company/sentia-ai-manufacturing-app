@@ -1,28 +1,39 @@
 /**
- * Import API Routes
+ * Import API Routes - Multi-Tenant
  *
  * Handles file upload, column mapping, validation, and import job management
+ * for tenant-specific data imports with entity limit enforcement.
+ * All routes are tenant-scoped using tenantContext middleware.
  *
  * @module routes/import
  */
 
-const express = require('express')
-const multer = require('multer')
-const path = require('path')
-const { PrismaClient } = require('@prisma/client')
-const { parseFile, previewFile } = require('../services/import/ImportProcessor')
-const { validateRow, getSchemaForDataType } = require('../services/import/ValidationEngine')
-const {
+import express from 'express'
+import multer from 'multer'
+import path from 'path'
+import { PrismaClient } from '@prisma/client'
+import { parseFile, previewFile } from '../services/import/ImportProcessor.js'
+import { validateRow, getSchemaForDataType } from '../services/import/ValidationEngine.js'
+import {
   addImportJob,
   getImportJobStatus,
   cancelImportJob,
   retryImportJob,
-} = require('../queues/importQueue')
-const { logAudit } = require('../services/audit/AuditLogger')
-const { IMPORT_ACTIONS, STATUS } = require('../services/audit/AuditCategories')
+} from '../queues/importQueue.js'
+import { logAudit } from '../services/audit/AuditLogger.js'
+import { IMPORT_ACTIONS, STATUS } from '../services/audit/AuditCategories.js'
+import { tenantContext, preventReadOnly, checkEntityLimit } from '../middleware/tenantContext.js'
+import { fileURLToPath } from 'url'
+import { dirname } from 'path'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
 
 const router = express.Router()
 const prisma = new PrismaClient()
+
+// Apply tenant middleware to all routes in this file
+router.use(tenantContext)
 
 // ============================================================================
 // File Upload Configuration
@@ -66,26 +77,28 @@ const upload = multer({
 
 /**
  * POST /api/import/upload
- * Upload file for import
+ * Upload file for import (tenant-scoped)
  */
-router.post('/upload', upload.single('file'), async (req, res) => {
+router.post('/upload', preventReadOnly, upload.single('file'), async (req, res) => {
   try {
     const { dataType } = req.body
+    const { tenant } = req
+    const tenantId = tenant.id
     const userId = req.user?.id || 'ANONYMOUS'
 
     if (!req.file) {
-      return res.status(400).json({ error: 'No file uploaded' })
+      return res.status(400).json({ success: false, error: 'No file uploaded' })
     }
 
     if (!dataType) {
-      return res.status(400).json({ error: 'Data type is required' })
+      return res.status(400).json({ success: false, error: 'Data type is required' })
     }
 
     // Determine file type
     const ext = path.extname(req.file.originalname).toLowerCase()
     const fileType = ext === '.csv' ? 'CSV' : 'EXCEL'
 
-    // Create File record
+    // Create File record (in public schema with tenant association)
     const file = await prisma.file.create({
       data: {
         filename: req.file.originalname,
@@ -94,6 +107,7 @@ router.post('/upload', upload.single('file'), async (req, res) => {
         fileSize: req.file.size,
         mimeType: req.file.mimetype,
         uploadedBy: userId,
+        tenantId, // Associate with tenant
       },
     })
 
@@ -102,6 +116,7 @@ router.post('/upload', upload.single('file'), async (req, res) => {
 
     // Log audit trail
     await logAudit({
+      tenantId,
       userId,
       action: IMPORT_ACTIONS.FILE_UPLOADED,
       category: 'IMPORT',
@@ -129,32 +144,42 @@ router.post('/upload', upload.single('file'), async (req, res) => {
         rows: preview.rows,
         totalRows: preview.totalRows,
       },
+      tenant: {
+        id: tenant.id,
+        name: tenant.name,
+        tier: tenant.subscriptionTier
+      }
     })
   } catch (error) {
     console.error('File upload error:', error)
-    res.status(500).json({ error: error.message })
+    res.status(500).json({ success: false, error: error.message })
   }
 })
 
 /**
  * POST /api/import/preview
- * Preview uploaded file
+ * Preview uploaded file (tenant-scoped)
  */
 router.post('/preview', async (req, res) => {
   try {
     const { fileId, limit = 10 } = req.body
+    const { tenant } = req
+    const tenantId = tenant.id
 
     if (!fileId) {
-      return res.status(400).json({ error: 'File ID is required' })
+      return res.status(400).json({ success: false, error: 'File ID is required' })
     }
 
-    // Get file record
-    const file = await prisma.file.findUnique({
-      where: { id: fileId },
+    // Get file record (tenant-scoped query)
+    const file = await prisma.file.findFirst({
+      where: {
+        id: fileId,
+        tenantId, // Ensure file belongs to tenant
+      },
     })
 
     if (!file) {
-      return res.status(404).json({ error: 'File not found' })
+      return res.status(404).json({ success: false, error: 'File not found' })
     }
 
     // Preview file
@@ -167,32 +192,42 @@ router.post('/preview', async (req, res) => {
         rows: preview.rows,
         totalRows: preview.totalRows,
       },
+      tenant: {
+        id: tenant.id,
+        name: tenant.name,
+        tier: tenant.subscriptionTier
+      }
     })
   } catch (error) {
     console.error('File preview error:', error)
-    res.status(500).json({ error: error.message })
+    res.status(500).json({ success: false, error: error.message })
   }
 })
 
 /**
  * POST /api/import/auto-map
- * Auto-generate column mapping
+ * Auto-generate column mapping (tenant-scoped)
  */
 router.post('/auto-map', async (req, res) => {
   try {
     const { fileId, dataType } = req.body
+    const { tenant } = req
+    const tenantId = tenant.id
 
     if (!fileId || !dataType) {
-      return res.status(400).json({ error: 'File ID and data type are required' })
+      return res.status(400).json({ success: false, error: 'File ID and data type are required' })
     }
 
-    // Get file record
-    const file = await prisma.file.findUnique({
-      where: { id: fileId },
+    // Get file record (tenant-scoped query)
+    const file = await prisma.file.findFirst({
+      where: {
+        id: fileId,
+        tenantId, // Ensure file belongs to tenant
+      },
     })
 
     if (!file) {
-      return res.status(404).json({ error: 'File not found' })
+      return res.status(404).json({ success: false, error: 'File not found' })
     }
 
     // Parse file to get columns
@@ -212,10 +247,15 @@ router.post('/auto-map', async (req, res) => {
       sourceColumns,
       targetColumns,
       confidence: calculateMappingConfidence(mapping),
+      tenant: {
+        id: tenant.id,
+        name: tenant.name,
+        tier: tenant.subscriptionTier
+      }
     })
   } catch (error) {
     console.error('Auto-mapping error:', error)
-    res.status(500).json({ error: error.message })
+    res.status(500).json({ success: false, error: error.message })
   }
 })
 

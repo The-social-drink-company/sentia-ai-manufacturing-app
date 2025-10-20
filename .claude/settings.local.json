@@ -153,7 +153,11 @@
       "Bash(for i in {1..3})",
       "Bash(do echo \"=== Run $i ===\")",
       "Bash(git rev-parse:*)",
-      "Bash(for file in server/routes/*.js)"
+      "Bash(for file in server/routes/*.js)",
+      "Bash(for dir in The-social*/)",
+      "Bash(do echo \"Directory: ''''$dir''''\")",
+      "Bash(ls:*)",
+      "Bash(if not exist \"tests\\utils\" mkdir \"tests\\utils\")"
     ],
     "deny": [],
     "ask": []

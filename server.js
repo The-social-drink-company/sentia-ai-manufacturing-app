@@ -292,12 +292,19 @@ app.use(
 
 // CORS configuration - Standardized with MCP server
 const allowedOrigins = [
-  // CapLiquify production domains (renamed from Sentia)
-  'https://capliquify-frontend-prod.onrender.com', // Production Frontend
-  'https://capliquify-backend-prod.onrender.com', // Production Backend
-  'https://capliquify-mcp-prod.onrender.com', // Production MCP
+  // CapLiquify custom domains (recommended for production)
+  'https://mcp.capliquify.com', // MCP custom domain
+  'https://api.capliquify.com', // Backend custom domain (if configured)
+  'https://app.capliquify.com', // Frontend custom domain (if configured)
+  'https://capliquify.com', // Main domain
+  'https://www.capliquify.com', // WWW subdomain
 
-  // Legacy Sentia domains (deprecated but kept for transition)
+  // Render production subdomains (actual working URLs - subdomains are permanent)
+  'https://sentia-frontend-prod.onrender.com', // Frontend (subdomain doesn't change when service renamed)
+  'https://sentia-backend-prod.onrender.com', // Backend (subdomain doesn't change when service renamed)
+  'https://sentia-mcp-prod.onrender.com', // MCP (subdomain doesn't change when service renamed)
+
+  // Legacy Sentia domains (kept for backward compatibility)
   'https://sentia-manufacturing-dashboard-621h.onrender.com', // Development
   'https://sentia-manufacturing-dashboard-test.onrender.com', // Testing
   'https://sentia-manufacturing-dashboard-production.onrender.com', // Production
@@ -305,6 +312,7 @@ const allowedOrigins = [
   // Local development
   'http://localhost:3000', // Local development
   'http://localhost:5173', // Vite dev server
+  'http://localhost:10000', // Local backend
   'http://localhost:3001', // Local MCP server
 ]
 

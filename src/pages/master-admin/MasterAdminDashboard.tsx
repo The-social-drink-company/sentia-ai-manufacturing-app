@@ -28,6 +28,10 @@ import {
   Trash2
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { SystemHealthPanel } from './components/SystemHealthPanel'
+import { RevenueAnalytics } from './components/RevenueAnalytics'
+import { TenantDetailModal } from './components/TenantDetailModal'
+import { AuditLogViewer } from './components/AuditLogViewer'
 
 interface Metrics {
   tenants: {
@@ -68,6 +72,7 @@ const MasterAdminDashboard = () => {
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [filterStatus, setFilterStatus] = useState<string>('all')
+  const [selectedTenantId, setSelectedTenantId] = useState<string | null>(null)
 
   useEffect(() => {
     fetchData()
@@ -166,6 +171,11 @@ const MasterAdminDashboard = () => {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 py-8">
+        {/* System Health Panel */}
+        <div className="mb-8">
+          <SystemHealthPanel />
+        </div>
+
         {/* Key Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <MetricCard
@@ -202,6 +212,11 @@ const MasterAdminDashboard = () => {
             changeType={metrics && metrics.churnRate > 5 ? 'negative' : 'positive'}
             bgColor="bg-orange-500"
           />
+        </div>
+
+        {/* Revenue Analytics */}
+        <div className="mb-8">
+          <RevenueAnalytics />
         </div>
 
         {/* Tenants Table */}
@@ -294,6 +309,7 @@ const MasterAdminDashboard = () => {
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-2">
                           <button
+                            onClick={() => setSelectedTenantId(tenant.id)}
                             className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                             title="View Details"
                           >
@@ -326,7 +342,19 @@ const MasterAdminDashboard = () => {
             </p>
           </div>
         </div>
+
+        {/* Audit Logs */}
+        <div className="mt-8">
+          <AuditLogViewer />
+        </div>
       </div>
+
+      {/* Tenant Detail Modal */}
+      <TenantDetailModal
+        tenantId={selectedTenantId}
+        isOpen={selectedTenantId !== null}
+        onClose={() => setSelectedTenantId(null)}
+      />
     </div>
   )
 }

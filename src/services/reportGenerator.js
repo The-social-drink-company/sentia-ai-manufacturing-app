@@ -26,7 +26,7 @@ const regionalPerformance = [
 export const generateReport = async (selectedSections, dateRange) => {
   const reportData = {
     metadata: {
-      title: 'Sentia Manufacturing Dashboard Report',
+      title: 'CapLiquify Manufacturing Platform Report',
       generatedAt: new Date().toISOString(),
       reportPeriod: {
         from: dateRange.from,

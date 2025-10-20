@@ -1,6 +1,6 @@
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { formatCurrency, formatNumber, formatPercentage, formatTrend } from '@/utils/formatters'
+import { formatCurrency, formatNumber, formatPercentage, formatTrend, formatCompact } from '@/utils/formatters'
 
 /**
  * KPICard Component
@@ -50,6 +50,9 @@ const KPICard = ({
     }
     if (valueFormat === 'percentage') {
       return formatPercentage(value)
+    }
+    if (valueFormat === 'compact') {
+      return formatCompact(value)
     }
 
     // Raw format - just add prefix/suffix

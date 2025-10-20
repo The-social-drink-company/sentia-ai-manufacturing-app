@@ -9,7 +9,7 @@
 - Aligned the new onboarding flow with backend expectations by preventing the wizard from persisting an out-of-range `currentStep` value and redirecting finished tenants back to the dashboard.
 - Surfaced backend errors to the UI (toast notifications) and allowed tenants to skip onboarding through the official API so state remains consistent across refreshes.
 - Re-enabled the integration data import option by wiring the saved integration list into `DataImportStep`, and added inline + toast feedback when sample-data generation fails.
-- Queued and scaffolded BMAD-QA-004 Playwright regression coverage (`tests/e2e/onboarding-wizard.spec.ts`).
+- Authored and executed BMAD-QA-004 Playwright regression coverage (`tests/e2e/onboarding-wizard.spec.ts`).
 
 ## File Updates
 

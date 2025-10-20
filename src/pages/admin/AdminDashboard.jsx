@@ -209,6 +209,75 @@ function QueueStatusCard({ queue }) {
 }
 
 /**
+ * Tenant API Card
+ */
+function TenantApiCard({ tenant }) {
+  const statusStyles = {
+    connected: 'bg-green-100 text-green-700 border-green-200',
+    warning: 'bg-yellow-100 text-yellow-700 border-yellow-200',
+    error: 'bg-red-100 text-red-700 border-red-200',
+    pending: 'bg-blue-100 text-blue-700 border-blue-200',
+  }
+
+  return (
+    <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+      <div className="flex items-start justify-between">
+        <div>
+          <h3 className="text-lg font-semibold text-gray-900">{tenant.tenantName}</h3>
+          <p className="text-sm text-gray-500">Environment: {tenant.environment}</p>
+          {tenant.slug && (
+            <p className="text-xs text-gray-400">Tenant ID: {tenant.slug}</p>
+          )}
+        </div>
+
+        <div className="text-right">
+          <span className="inline-flex items-center rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-600">
+            {tenant.plan || 'Enterprise'}
+          </span>
+          {tenant.lastDeployment && (
+            <p className="mt-1 text-xs text-gray-400">
+              Last deploy: {new Date(tenant.lastDeployment).toLocaleString()}
+            </p>
+          )}
+        </div>
+      </div>
+
+      <div className="mt-4 space-y-3">
+        {tenant.apis.map(api => {
+          const badgeStyle = statusStyles[api.status] || statusStyles.pending
+
+          return (
+            <div
+              key={api.id}
+              className="rounded-lg border border-gray-200 bg-gray-50 p-3 hover:bg-gray-100 transition-colors"
+            >
+              <div className="flex flex-col gap-1 md:flex-row md:items-center md:justify-between">
+                <div>
+                  <h4 className="text-sm font-semibold text-gray-900">{api.name}</h4>
+                  <p className="text-xs text-gray-500 break-all">{api.url}</p>
+                  {api.description && <p className="text-xs text-gray-400">{api.description}</p>}
+                </div>
+
+                <div className="flex flex-col items-start gap-1 md:items-end">
+                  <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium ${badgeStyle}`}>
+                    {api.statusLabel || api.status}
+                  </span>
+                  {api.lastSync && (
+                    <p className="text-[11px] text-gray-400">
+                      Last sync: {new Date(api.lastSync).toLocaleString()}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+/**
  * Recent Audit Log Entry
  */
 function AuditLogEntry({ log }) {
@@ -389,7 +458,53 @@ export default function AdminDashboard() {
     integrations = [],
     auditLogs = [],
     metrics = [],
+    tenantApis: tenantApisFromApi = [],
   } = data || {}
+
+  const defaultTenantApis = [
+    {
+      id: 'sentia-spirits',
+      tenantName: 'Sentia Spirits',
+      slug: 'sentia-spirits',
+      plan: 'Enterprise',
+      environment: 'Production',
+      lastDeployment: new Date().toISOString(),
+      apis: [
+        {
+          id: 'sentia-core-api',
+          name: 'CapLiquify Core API',
+          url: 'https://api.capliquify.com/tenants/sentia-spirits',
+          status: 'connected',
+          statusLabel: 'Healthy',
+          lastSync: new Date().toISOString(),
+          description: 'Primary REST API for CapLiquify tenant operations',
+        },
+        {
+          id: 'sentia-mcp',
+          name: 'MCP Orchestration API',
+          url: 'https://mcp.capliquify.com/tenants/sentia-spirits',
+          status: 'connected',
+          statusLabel: 'Operational',
+          lastSync: new Date().toISOString(),
+          description: 'Model Context Protocol endpoint powering AI workflows',
+        },
+        {
+          id: 'sentia-shopify',
+          name: 'Shopify Commerce API',
+          url: 'https://api.capliquify.com/tenants/sentia-spirits/shopify',
+          status: 'warning',
+          statusLabel: 'Sync Scheduled',
+          lastSync: new Date().toISOString(),
+          description: 'Shopify multi-region storefront integration',
+        },
+      ],
+    },
+  ]
+
+  const tenantApis =
+    Array.isArray(tenantApisFromApi) && tenantApisFromApi.length > 0
+      ? tenantApisFromApi
+      : defaultTenantApis
 
   return (
     <div className="space-y-6">
@@ -538,6 +653,30 @@ export default function AdminDashboard() {
               <QueueStatusCard key={queue.name} queue={queue} />
             ))}
           </div>
+      </div>
+    </div>
+
+      {/* Tenant API Catalog */}
+      <div className="bg-white rounded-lg shadow">
+        <div className="flex flex-col gap-2 border-b border-gray-200 p-6 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 className="text-xl font-semibold text-gray-900">Tenant API Administration</h2>
+            <p className="text-sm text-gray-500">
+              Manage CapLiquify endpoints provisioned for each tenant environment
+            </p>
+          </div>
+          <button
+            onClick={() => navigate('/admin/tenants')}
+            className="text-sm font-medium text-blue-600 hover:text-blue-700"
+          >
+            Manage Tenants →
+          </button>
+        </div>
+
+        <div className="space-y-4 p-6">
+          {tenantApis.map(tenant => (
+            <TenantApiCard key={tenant.id} tenant={tenant} />
+          ))}
         </div>
       </div>
 

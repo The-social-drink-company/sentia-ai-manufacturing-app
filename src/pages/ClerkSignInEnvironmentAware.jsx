@@ -80,7 +80,7 @@ const ClerkSignInEnvironmentAware = () => {
   return (
     <div className="flex min-h-screen flex-col bg-slate-950 text-white lg:flex-row">
       <div className="flex flex-1 flex-col justify-center space-y-6 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-10">
-        <p className="text-xs uppercase tracking-[0.4em] text-sky-400">Sentia Manufacturing</p>
+        <p className="text-xs uppercase tracking-[0.4em] text-sky-400">CapLiquify Platform</p>
         <h1 className="text-4xl font-semibold tracking-tight">Welcome back</h1>
         <p className="max-w-md text-sm text-slate-300">
           Secure access to the manufacturing command centre. Review liquidity, production, and

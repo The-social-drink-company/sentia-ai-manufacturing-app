@@ -297,11 +297,12 @@ const Sidebar = ({ isOpen, onToggle }) => {
           {!collapsed && (
             <div className="flex items-center space-x-3">
               <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-blue-800 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">S</span>
+                <span className="text-white font-bold text-sm">C</span>
               </div>
               <div>
-                <h2 className="text-sm font-semibold text-gray-900 dark:text-white">Sentia</h2>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Manufacturing</p>
+                <h2 className="text-sm font-semibold text-gray-900 dark:text-white">CapLiquify</h2>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Multi-tenant Platform</p>
+                <p className="text-[10px] text-gray-400 dark:text-gray-500">Tenant: Sentia Spirits</p>
               </div>
             </div>
           )}

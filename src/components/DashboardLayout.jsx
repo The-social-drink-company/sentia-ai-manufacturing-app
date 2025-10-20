@@ -67,10 +67,9 @@ const DashboardLayout = ({ children }) => {
 
         {/* Footer (Optional) */}
         <footer className="border-t border-slate-200 bg-white px-4 py-4 sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-7xl">
-            <p className="text-center text-xs text-slate-500">
-              © {new Date().getFullYear()} Sentia Spirits. All rights reserved.
-            </p>
+          <div className="mx-auto max-w-7xl text-center">
+            <p className="text-xs text-slate-500">© {new Date().getFullYear()} CapLiquify. All rights reserved.</p>
+            <p className="text-xs text-slate-400">Current tenant: Sentia Spirits</p>
           </div>
         </footer>
       </div>

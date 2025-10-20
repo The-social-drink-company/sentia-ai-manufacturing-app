@@ -83,7 +83,7 @@ const LandingPageMarketing = ({ onRequestSignIn, onRequestDemo, onRequestContact
             <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-400 p-2">
               <div className="h-full w-full rounded bg-white/20" />
             </div>
-            <span className="text-xl font-bold text-white">Sentia Manufacturing</span>
+            <span className="text-xl font-bold text-white">CapLiquify Platform</span>
           </div>
           <div className="flex items-center space-x-4">
             <Button

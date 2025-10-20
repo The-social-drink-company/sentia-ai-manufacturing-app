@@ -5,7 +5,7 @@
 **Priority**: HIGH (Regression Coverage)
 **Estimated Effort**: 1 day baseline → 3-4 hours with BMAD velocity
 **Dependencies**: Backend contract confirmation for `currentStep` (pending)
-**Status**: IN PROGRESS
+**Status**: READY FOR QA REVIEW
 
 ---
 
@@ -72,7 +72,15 @@ Author an end-to-end Playwright flow that validates the trial onboarding wizard 
 
 ### Test Implementation Notes
 
-- Reuse existing Playwright harness (`tests/e2e/onboarding-wizard.spec.ts`).
+- Implemented dedicated Playwright spec (`tests/e2e/onboarding-wizard.spec.ts`).
+- Utilises Playwright route mocks to capture onboarding API interactions and mutate server state.
+- Tagged with `@onboarding` for selective execution (`npx playwright test --grep @onboarding`).
+
+### Evidence
+
+- ✅ Playwright run: `npx playwright test tests/e2e/onboarding-wizard.spec.ts --project=chromium --reporter=list`
+  - Output: `3 passed (21.7s)`
+- ✅ Trace/video artefacts stored under `test-results/` for CI review.
 - Mock onboarding APIs using MSW or Playwright route handlers to capture requests/responses.
 - Use `expect.poll` for toast visibility and SSE-driven UI effects.
 - Tag scenario with `@onboarding` and `@smoke` for dashboard release gating.

@@ -93,7 +93,7 @@ const addHeader = (pdf, pageWidth, margin) => {
   pdf.setFontSize(16)
   pdf.setFont(undefined, 'bold')
   pdf.setTextColor(0, 0, 0)
-  pdf.text('Sentia Manufacturing', margin + 35, margin + 8)
+  pdf.text('CapLiquify Platform', margin + 35, margin + 8)
 
   pdf.setFontSize(12)
   pdf.setFont(undefined, 'normal')
@@ -603,7 +603,7 @@ const addFooter = (pdf, pageWidth, pageHeight, margin) => {
   // Footer text
   pdf.setFontSize(9)
   pdf.setTextColor(100, 100, 100)
-  pdf.text('Sentia Manufacturing Dashboard Report', margin, footerY)
+  pdf.text('CapLiquify Manufacturing Platform Report', margin, footerY)
 
   // Page number
   const pageNum = pdf.internal.getCurrentPageInfo().pageNumber

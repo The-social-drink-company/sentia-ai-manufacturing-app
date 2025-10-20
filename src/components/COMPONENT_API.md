@@ -4,7 +4,7 @@
 **Created**: 2025-10-19
 **Version**: 1.0
 
-This document provides API documentation for the Sentia Manufacturing Dashboard component library.
+This document provides API documentation for the CapLiquify Manufacturing Platform component library.
 
 ---
 

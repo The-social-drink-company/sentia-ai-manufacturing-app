@@ -1,7 +1,7 @@
 import SSEStatusIndicator from './SSEStatusIndicator'
 import SystemStatusBadge from './SystemStatusBadge'
 import Breadcrumb from './Breadcrumb'
-import UserProfile from '@/components/auth/UserProfile'
+import UserProfile from '@/components/UserProfile'
 import { useQuery } from '@tanstack/react-query'
 
 const Header = ({

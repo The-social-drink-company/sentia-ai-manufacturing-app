@@ -1,6 +1,6 @@
 /**
  * UI Component Library
- * Enterprise-grade reusable components for Sentia Manufacturing Dashboard
+ * Enterprise-grade reusable components for CapLiquify Manufacturing Platform
  */
 
 // Card components

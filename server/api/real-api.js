@@ -1,7 +1,7 @@
 /**
- * REAL DATA API - PRODUCTION READY
- * Connects to real external services and databases
- * NO MOCK DATA OR FALLBACKS
+ * REAL DATA API - ALIGNMENT WITH CURRENT SCHEMA
+ * Uses existing Prisma models only and returns clear guidance when
+ * requested data is unavailable instead of querying non-existent tables.
  */
 
 import express from 'express'
@@ -10,110 +10,174 @@ import { PrismaClient } from '@prisma/client'
 const router = express.Router()
 const prisma = new PrismaClient()
 
+const MS_PER_DAY = 24 * 60 * 60 * 1000
+
 const toNumber = value => {
   if (value === null || value === undefined) return 0
   if (typeof value === 'number') return value
   if (typeof value === 'bigint') return Number(value)
-  return Number(value)
+  if (typeof value === 'string' && value.trim() === '') return 0
+  const parsed = Number(value)
+  return Number.isFinite(parsed) ? parsed : 0
 }
 
-const formatCurrency = value =>
-  new Intl.NumberFormat('en-GB', {
-    style: 'currency',
-    currency: 'GBP',
-    maximumFractionDigits: 0,
-  }).format(value)
+const percentage = value =>
+  value === null || value === undefined || Number.isNaN(value)
+    ? null
+    : Number(value.toFixed(1))
 
-const formatPercentage = value => {
-  if (value === null || value === undefined || Number.isNaN(value)) {
+const growthPercentage = (current, previous) => {
+  if (previous === null || previous === undefined || !Number.isFinite(previous) || previous === 0) {
     return null
   }
-  const rounded = Number(value.toFixed(1))
-  const sign = rounded > 0 ? '+' : ''
-  return `${sign}${rounded}%`
+  return percentage(((current - previous) / Math.abs(previous)) * 100)
 }
 
+const sumBy = (items, selector) => items.reduce((sum, item) => sum + selector(item), 0)
+
+const filterByDateRange = (items, selector, from, to = new Date()) =>
+  items.filter(item => {
+    const date = selector(item)
+    if (!date) return false
+    const time = new Date(date).getTime()
+    return time >= from.getTime() && time < to.getTime()
+  })
+
 /**
- * Dashboard Summary - Real Production Data
+ * Dashboard Summary - Aggregates data from WorkingCapital, InventoryItem,
+ * ProductionJob, and CashFlowForecast records.
  */
 router.get('/dashboard/summary', async (req, res) => {
   try {
-    // Get real data from database
-    const [revenue, workingCapital, production, inventory, financial] = await Promise.all([
-      // Revenue data
-      prisma.$queryRaw`
-        SELECT
-          COALESCE(SUM(CASE WHEN date >= NOW() - INTERVAL '30 days' THEN amount END), 0) as monthly,
-          COALESCE(SUM(CASE WHEN date >= NOW() - INTERVAL '90 days' THEN amount END), 0) as quarterly,
-          COALESCE(SUM(amount), 0) as yearly
-        FROM revenue
-        WHERE date >= NOW() - INTERVAL '365 days'
-      `,
-
-      // Working capital data
-      prisma.$queryRaw`
-        SELECT
-          current_assets - current_liabilities as current,
-          current_assets / NULLIF(current_liabilities, 0) as ratio,
-          operating_cash_flow as "cashFlow",
-          days_receivable as "daysReceivable"
-        FROM working_capital
-        ORDER BY date DESC
-        LIMIT 1
-      `,
-
-      // Production metrics
-      prisma.$queryRaw`
-        SELECT
-          efficiency,
-          units_produced as "unitsProduced",
-          defect_rate as "defectRate",
-          oee_score as "oeeScore"
-        FROM production_metrics
-        ORDER BY created_at DESC
-        LIMIT 1
-      `,
-
-      // Inventory data
-      prisma.$queryRaw`
-        SELECT
-          COALESCE(SUM(value), 0) as value,
-          4.2 as turnover,
-          COUNT(DISTINCT sku) as "skuCount",
-          COUNT(CASE WHEN quantity < reorder_point THEN 1 END) as "lowStock"
-        FROM inventory
-      `,
-
-      // Financial metrics
-      prisma.$queryRaw`
-        SELECT
-          gross_margin as "grossMargin",
-          net_margin as "netMargin",
-          ebitda,
-          roi
-        FROM financial_metrics
-        ORDER BY date DESC
-        LIMIT 1
-      `,
+    const [workingCapitalRecords, inventoryItems, productionJobs, cashForecasts] = await Promise.all([
+      prisma.workingCapital.findMany({ orderBy: { periodEnd: 'desc' }, take: 12 }),
+      prisma.inventoryItem.findMany({}),
+      prisma.productionJob.findMany({ orderBy: { createdAt: 'desc' }, take: 100 }),
+      prisma.cashFlowForecast.findMany({ orderBy: { forecastDate: 'desc' }, take: 6 }),
     ])
 
-    // Format response with real data
+    if (!workingCapitalRecords.length && !inventoryItems.length && !productionJobs.length) {
+      return res.status(404).json({
+        error: 'no_operational_data',
+        message: 'Connect your financial, production, and inventory sources to populate the dashboard.',
+      })
+    }
+
+    const now = new Date()
+    const revenueInWindow = days => {
+      const cutoff = new Date(now.getTime() - days * MS_PER_DAY)
+      return filterByDateRange(workingCapitalRecords, record => record.periodEnd, cutoff).reduce(
+        (sum, record) => sum + toNumber(record.revenue),
+        0
+      )
+    }
+
+    const latestWorkingCapital = workingCapitalRecords[0] || null
+
+    const workingCapitalSummary = latestWorkingCapital
+      ? {
+          current: toNumber(latestWorkingCapital.workingCapital),
+          ratio:
+            latestWorkingCapital.currentRatio !== null && latestWorkingCapital.currentRatio !== undefined
+              ? toNumber(latestWorkingCapital.currentRatio)
+              : toNumber(latestWorkingCapital.workingCapitalRatio),
+          quickRatio:
+            latestWorkingCapital.quickRatio !== null && latestWorkingCapital.quickRatio !== undefined
+              ? toNumber(latestWorkingCapital.quickRatio)
+              : null,
+          cashConversionCycle: latestWorkingCapital.ccc ?? null,
+          dso: latestWorkingCapital.dso ?? null,
+          dio: latestWorkingCapital.dio ?? null,
+          dpo: latestWorkingCapital.dpo ?? null,
+          netCashFlow: cashForecasts.length
+            ? toNumber(cashForecasts[0].cashInflows) - toNumber(cashForecasts[0].cashOutflows)
+            : null,
+        }
+      : null
+
+    const inventorySummary = (() => {
+      if (!inventoryItems.length) {
+        return { value: 0, turnover: null, skuCount: 0, lowStock: 0 }
+      }
+
+      const totalValue = inventoryItems.reduce((sum, item) => sum + toNumber(item.totalValue), 0)
+      const lowStock = inventoryItems.filter(item => {
+        const onHand = toNumber(item.quantityOnHand)
+        const reorderPoint = toNumber(item.reorderPoint || 0)
+        return reorderPoint > 0 && onHand <= reorderPoint
+      }).length
+      const uniqueSkus = new Set(inventoryItems.map(item => item.productId || item.id)).size
+
+      return {
+        value: Number(totalValue.toFixed(2)),
+        turnover: latestWorkingCapital ? toNumber(latestWorkingCapital.inventoryTurnover) : null,
+        skuCount: uniqueSkus,
+        lowStock,
+      }
+    })()
+
+    const productionSummary = (() => {
+      if (!productionJobs.length) {
+        return { totalJobs: 0, completedJobs: 0, inProgressJobs: 0, unitsProduced: 0, defectRate: null }
+      }
+
+      const completed = productionJobs.filter(job => job.status === 'COMPLETED')
+      const inProgress = productionJobs.filter(job => job.status === 'IN_PROGRESS')
+      const produced = completed.reduce((sum, job) => sum + toNumber(job.quantityProduced), 0)
+      const rejected = completed.reduce((sum, job) => sum + toNumber(job.quantityRejected), 0)
+      const defectRate = produced + rejected > 0 ? percentage((rejected / (produced + rejected)) * 100) : null
+
+      const cycleTimeDays = completed
+        .map(job => {
+          if (!job.actualStart || !job.actualEnd) return null
+          const duration = new Date(job.actualEnd).getTime() - new Date(job.actualStart).getTime()
+          return duration > 0 ? duration / MS_PER_DAY : null
+        })
+        .filter(value => value !== null)
+
+      const avgCycleTime = cycleTimeDays.length
+        ? Number((cycleTimeDays.reduce((sum, value) => sum + value, 0) / cycleTimeDays.length).toFixed(1))
+        : null
+
+      return {
+        totalJobs: productionJobs.length,
+        completedJobs: completed.length,
+        inProgressJobs: inProgress.length,
+        unitsProduced: produced,
+        unitsRejected: rejected,
+        defectRate,
+        averageCycleTimeDays: avgCycleTime,
+      }
+    })()
+
+    const financialSummary = latestWorkingCapital
+      ? {
+          revenue: toNumber(latestWorkingCapital.revenue),
+          cogs: toNumber(latestWorkingCapital.cogs),
+          grossProfit: toNumber(latestWorkingCapital.grossProfit),
+          grossMargin: percentage(toNumber(latestWorkingCapital.grossMargin)),
+          workingCapital: toNumber(latestWorkingCapital.workingCapital),
+        }
+      : null
+
     res.json({
-      revenue: revenue[0] || { monthly: 0, quarterly: 0, yearly: 0, growth: 0 },
-      workingCapital: workingCapital[0] || { current: 0, ratio: 0, cashFlow: 0, daysReceivable: 0 },
-      production: production[0] || { efficiency: 0, unitsProduced: 0, defectRate: 0, oeeScore: 0 },
-      inventory: inventory[0] || { value: 0, turnover: 0, skuCount: 0, lowStock: 0 },
-      financial: financial[0] || { grossMargin: 0, netMargin: 0, ebitda: 0, roi: 0 },
+      revenue: {
+        monthly: revenueInWindow(30),
+        quarterly: revenueInWindow(90),
+        yearly: revenueInWindow(365),
+      },
+      workingCapital: workingCapitalSummary,
+      production: productionSummary,
+      inventory: inventorySummary,
+      financial: financialSummary,
       timestamp: new Date().toISOString(),
-      dataSource: 'database', // Real database data
+      dataSource: 'prisma',
     })
   } catch (error) {
-    console.error('Dashboard API Error:', error)
-
-    // NO FALLBACK DATA - Return error if can't get real data
-    res.status(503).json({
-      error: 'Unable to fetch real data',
-      message: 'Database connection required for real data',
+    console.error('Dashboard summary error:', error)
+    res.status(500).json({
+      error: 'dashboard_summary_failed',
+      message: 'Unable to compute dashboard summary from current data.',
       details: error.message,
     })
   }
@@ -124,626 +188,504 @@ router.get('/dashboard/summary', async (req, res) => {
  */
 router.get('/financial/working-capital', async (req, res) => {
   try {
-    const data = await prisma.workingCapital.findMany({
-      orderBy: { date: 'desc' },
+    const records = await prisma.workingCapital.findMany({
+      orderBy: { periodEnd: 'desc' },
       take: 30,
     })
 
-    if (!data.length) {
+    if (!records.length) {
       return res.status(404).json({
-        error: 'No working capital data available',
-        message: 'Real data not yet recorded in database',
+        error: 'no_working_capital_data',
+        message: 'Load working capital records to view financial metrics.',
       })
     }
 
     res.json({
-      data,
-      latest: data[0],
-      dataSource: 'database',
+      data: records.map(record => ({
+        id: record.id,
+        periodStart: record.periodStart.toISOString(),
+        periodEnd: record.periodEnd.toISOString(),
+        revenue: toNumber(record.revenue),
+        cogs: toNumber(record.cogs),
+        grossProfit: toNumber(record.grossProfit),
+        grossMargin: percentage(toNumber(record.grossMargin)),
+        workingCapital: toNumber(record.workingCapital),
+        accountsReceivable: toNumber(record.accountsReceivable),
+        accountsPayable: toNumber(record.accountsPayable),
+        inventory: toNumber(record.inventory),
+        currentRatio: toNumber(record.currentRatio ?? record.workingCapitalRatio),
+        quickRatio: toNumber(record.quickRatio),
+        ccc: record.ccc,
+        dso: record.dso,
+        dio: record.dio,
+        dpo: record.dpo,
+      })),
+      latest: records[0],
+      dataSource: 'prisma',
     })
   } catch (error) {
-    console.error('Working Capital API Error:', error)
+    console.error('Working capital API error:', error)
     res.status(500).json({
-      error: 'Failed to fetch working capital data',
+      error: 'working_capital_failed',
+      message: 'Unable to fetch working capital records.',
       details: error.message,
     })
   }
 })
 
 /**
- * Cash Flow - Real Financial Data
+ * Cash flow history derived from CashFlowForecast entries.
  */
 router.get('/financial/cash-flow', async (req, res) => {
   try {
-    const data = await prisma.$queryRaw`
-      SELECT
-        date,
-        operating_cash_flow as "operatingCashFlow",
-        investing_cash_flow as "investingCashFlow",
-        financing_cash_flow as "financingCashFlow",
-        net_cash_flow as "netCashFlow"
-      FROM cash_flow
-      ORDER BY date DESC
-      LIMIT 30
-    `
+    const forecasts = await prisma.cashFlowForecast.findMany({
+      orderBy: { forecastDate: 'desc' },
+      take: 12,
+    })
 
-    if (!data.length) {
+    if (!forecasts.length) {
       return res.status(404).json({
-        error: 'No cash flow data available',
-        message: 'Real data not yet recorded in database',
+        error: 'no_cash_flow_forecasts',
+        message: 'Generate cash flow forecasts to populate this view.',
       })
     }
+
+    const data = forecasts
+      .map(entry => ({
+        date: entry.forecastDate.toISOString(),
+        openingBalance: toNumber(entry.openingBalance),
+        inflows: toNumber(entry.cashInflows),
+        outflows: toNumber(entry.cashOutflows),
+        closingBalance: toNumber(entry.closingBalance),
+        netChange: toNumber(entry.cashInflows) - toNumber(entry.cashOutflows),
+        cashRunway: entry.cashRunway ?? null,
+        burnRate: entry.burnRate ? toNumber(entry.burnRate) : null,
+      }))
+      .reverse()
 
     res.json({
       data,
-      latest: data[0],
-      dataSource: 'database',
+      latest: data[data.length - 1],
+      dataSource: 'cash_flow_forecasts',
     })
   } catch (error) {
-    console.error('Cash Flow API Error:', error)
+    console.error('Cash flow API error:', error)
     res.status(500).json({
-      error: 'Failed to fetch cash flow data',
+      error: 'cash_flow_failed',
+      message: 'Unable to fetch cash flow history.',
       details: error.message,
     })
   }
 })
 
 /**
- * Financial Metrics - Real Data
+ * Financial metrics derived from WorkingCapital records.
  */
 router.get('/financial/metrics', async (req, res) => {
   try {
-    const data = await prisma.financialMetrics.findMany({
-      orderBy: { date: 'desc' },
-      take: 30,
+    const records = await prisma.workingCapital.findMany({
+      orderBy: { periodEnd: 'desc' },
+      take: 12,
     })
 
-    if (!data.length) {
+    if (!records.length) {
       return res.status(404).json({
-        error: 'No financial metrics available',
-        message: 'Real data not yet recorded in database',
+        error: 'no_financial_metrics',
+        message: 'Working capital records are required to compute metrics.',
       })
     }
 
+    const latest = records[0]
+    const history = records.map(record => ({
+      periodStart: record.periodStart.toISOString(),
+      periodEnd: record.periodEnd.toISOString(),
+      revenue: toNumber(record.revenue),
+      cogs: toNumber(record.cogs),
+      grossProfit: toNumber(record.grossProfit),
+      grossMargin: percentage(toNumber(record.grossMargin)),
+      workingCapital: toNumber(record.workingCapital),
+    }))
+
     res.json({
-      metrics: data,
-      latest: data[0],
-      dataSource: 'database',
+      latest: {
+        revenue: toNumber(latest.revenue),
+        cogs: toNumber(latest.cogs),
+        grossProfit: toNumber(latest.grossProfit),
+        grossMargin: percentage(toNumber(latest.grossMargin)),
+        workingCapital: toNumber(latest.workingCapital),
+        currentRatio: toNumber(latest.currentRatio ?? latest.workingCapitalRatio),
+        quickRatio: toNumber(latest.quickRatio),
+      },
+      history,
+      dataSource: 'working_capital',
     })
   } catch (error) {
-    console.error('Financial Metrics API Error:', error)
+    console.error('Financial metrics error:', error)
     res.status(500).json({
-      error: 'Failed to fetch financial metrics',
+      error: 'financial_metrics_failed',
+      message: 'Unable to compute financial metrics.',
       details: error.message,
     })
   }
 })
 
 /**
- * Financial KPI Summary - Real Data
+ * KPI summary using revenue from WorkingCapital and production output from ProductionJob.
  */
 router.get('/financial/kpi-summary', async (_req, res) => {
   try {
+    const [workingCapitalRecords, productionJobs] = await Promise.all([
+      prisma.workingCapital.findMany({ orderBy: { periodEnd: 'desc' }, take: 24 }),
+      prisma.productionJob.findMany({ orderBy: { completedAt: 'desc' }, take: 200 }),
+    ])
+
+    if (!workingCapitalRecords.length) {
+      return res.status(404).json({
+        error: 'no_financial_data',
+        message: 'Working capital records are required to compute KPI summary.',
+      })
+    }
+
     const now = new Date()
-    const startOfCurrentMonth = new Date(now.getFullYear(), now.getMonth(), 1)
-    const startOfQuarter = new Date(now.getFullYear(), now.getMonth() - 2, 1)
     const startOfYear = new Date(now.getFullYear(), 0, 1)
-    const startOfPreviousYear = new Date(now.getFullYear() - 1, 0, 1)
+    const startOfPrevYear = new Date(now.getFullYear() - 1, 0, 1)
+    const startOfCurrentMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+    const startOfPrevMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1)
 
-    const [revenueAgg] = await prisma.$queryRaw`
-      SELECT
-        SUM(CASE WHEN sale_date >= ${startOfCurrentMonth} THEN net_revenue ELSE 0 END) AS monthly,
-        SUM(CASE WHEN sale_date >= ${startOfQuarter} THEN net_revenue ELSE 0 END) AS quarterly,
-        SUM(CASE WHEN sale_date >= ${startOfYear} THEN net_revenue ELSE 0 END) AS yearly,
-        SUM(CASE WHEN sale_date >= ${startOfPreviousYear} AND sale_date < ${startOfYear} THEN net_revenue ELSE 0 END) AS previous_year
-      FROM historical_sales
-    `
+    const revenueForRange = (from, to = now) =>
+      filterByDateRange(workingCapitalRecords, record => record.periodEnd, from, to).reduce(
+        (sum, record) => sum + toNumber(record.revenue),
+        0
+      )
 
-    const [unitsAgg] = await prisma.$queryRaw`
-      SELECT
-        SUM(CASE WHEN sale_date >= ${startOfYear} THEN quantity_sold ELSE 0 END) AS units,
-        SUM(CASE WHEN sale_date >= ${startOfPreviousYear} AND sale_date < ${startOfYear} THEN quantity_sold ELSE 0 END) AS previous_units
-      FROM historical_sales
-    `
+    const currentRevenue = revenueForRange(startOfYear)
+    const previousRevenue = revenueForRange(startOfPrevYear, startOfYear)
 
-    const latestFinancial = await prisma.financialMetrics.findFirst({
-      orderBy: { date: 'desc' },
-    })
+    const currentUnits = productionJobs
+      .filter(job => job.completedAt && job.completedAt >= startOfYear)
+      .reduce((sum, job) => sum + toNumber(job.quantityProduced), 0)
 
-    const currentYearRevenue = toNumber(revenueAgg?.yearly || 0)
-    const previousYearRevenue = toNumber(revenueAgg?.previous_year || 0)
-    const revenueGrowth =
-      previousYearRevenue > 0
-        ? ((currentYearRevenue - previousYearRevenue) / previousYearRevenue) * 100
-        : null
+    const previousUnits = productionJobs
+      .filter(job => job.completedAt && job.completedAt >= startOfPrevYear && job.completedAt < startOfYear)
+      .reduce((sum, job) => sum + toNumber(job.quantityProduced), 0)
 
-    const currentUnits = toNumber(unitsAgg?.units || 0)
-    const previousUnits = toNumber(unitsAgg?.previous_units || 0)
-    const unitsGrowth =
-      previousUnits > 0 ? ((currentUnits - previousUnits) / previousUnits) * 100 : null
+    const latest = workingCapitalRecords[0]
 
     res.json({
-      success: true,
-      data: {
-        annualRevenue: {
-          value: formatCurrency(currentYearRevenue),
-          helper:
-            revenueGrowth === null
-              ? 'No prior-year data'
-              : `YoY ${formatPercentage(revenueGrowth)}`,
-        },
-        unitsSold: {
-          value: new Intl.NumberFormat('en-GB').format(currentUnits),
-          helper:
-            unitsGrowth === null ? 'No prior-year data' : `YoY ${formatPercentage(unitsGrowth)}`,
-        },
-        grossMargin: {
-          value:
-            latestFinancial?.grossMargin !== undefined && latestFinancial?.grossMargin !== null
-              ? `${Number(latestFinancial.grossMargin).toFixed(1)}%`
-              : null,
-          helper: latestFinancial?.grossMarginTrend || null,
-        },
-        netMargin: {
-          value:
-            latestFinancial?.netMargin !== undefined && latestFinancial?.netMargin !== null
-              ? `${Number(latestFinancial.netMargin).toFixed(1)}%`
-              : null,
-          helper: latestFinancial?.netMarginTrend || null,
+      revenue: {
+        monthly: revenueForRange(startOfCurrentMonth),
+        previousMonth: revenueForRange(startOfPrevMonth, startOfCurrentMonth),
+        yearly: currentRevenue,
+        previousYear: previousRevenue,
+        growth: {
+          monthly: growthPercentage(
+            revenueForRange(startOfCurrentMonth),
+            revenueForRange(startOfPrevMonth, startOfCurrentMonth)
+          ),
+          yearly: growthPercentage(currentRevenue, previousRevenue),
         },
       },
-      meta: {
-        generatedAt: new Date().toISOString(),
-        dataSource: 'database',
+      unitsSold: {
+        currentYear: currentUnits,
+        previousYear: previousUnits,
+        growth: growthPercentage(currentUnits, previousUnits),
       },
+      margins: latest
+        ? {
+            grossMargin: percentage(toNumber(latest.grossMargin)),
+            workingCapitalRatio: toNumber(latest.currentRatio ?? latest.workingCapitalRatio),
+          }
+        : null,
+      generatedAt: new Date().toISOString(),
+      dataSource: 'working_capital',
     })
   } catch (error) {
     console.error('Financial KPI summary error:', error)
     res.status(500).json({
-      success: false,
-      error: 'Failed to compute financial KPI summary',
+      error: 'financial_kpi_failed',
+      message: 'Unable to compute KPI summary.',
       details: error.message,
     })
   }
 })
 
 /**
- * Production Metrics - Real Manufacturing Data
+ * Production metrics derived from ProductionJob entries.
  */
 router.get('/production/metrics', async (req, res) => {
   try {
-    const data = await prisma.productionMetrics.findMany({
-      orderBy: { createdAt: 'desc' },
-      take: 100,
-    })
+    const jobs = await prisma.productionJob.findMany({ orderBy: { createdAt: 'desc' }, take: 200 })
 
-    if (!data.length) {
+    if (!jobs.length) {
       return res.status(404).json({
-        error: 'No production data available',
-        message: 'Real data not yet recorded in database',
+        error: 'no_production_jobs',
+        message: 'Create production jobs to populate production metrics.',
       })
     }
 
-    const aggregate = {
-      avgEfficiency: data.reduce((sum, m) => sum + m.efficiency, 0) / data.length,
-      totalUnitsProduced: data.reduce((sum, m) => sum + m.unitsProduced, 0),
-      avgDefectRate: data.reduce((sum, m) => sum + m.defectRate, 0) / data.length,
-      avgOeeScore: data.reduce((sum, m) => sum + m.oeeScore, 0) / data.length,
-    }
+    const completed = jobs.filter(job => job.status === 'COMPLETED')
+    const inProgress = jobs.filter(job => job.status === 'IN_PROGRESS')
+
+    const totalProduced = sumBy(completed, job => toNumber(job.quantityProduced))
+    const totalRejected = sumBy(completed, job => toNumber(job.quantityRejected))
+    const defectRate = totalProduced + totalRejected > 0 ? percentage((totalRejected / (totalProduced + totalRejected)) * 100) : null
+
+    const qualityScore = completed
+      .map(job => (job.qualityScore !== null && job.qualityScore !== undefined ? job.qualityScore : null))
+      .filter(score => score !== null)
+
+    const avgQualityScore = qualityScore.length
+      ? percentage(sumBy(qualityScore, score => score) / qualityScore.length)
+      : null
 
     res.json({
-      current: data[0],
-      aggregate,
-      history: data,
-      dataSource: 'database',
+      totals: {
+        totalJobs: jobs.length,
+        completedJobs: completed.length,
+        inProgressJobs: inProgress.length,
+      },
+      output: {
+        unitsProduced: totalProduced,
+        unitsRejected: totalRejected,
+        defectRate,
+        averageQualityScore: avgQualityScore,
+      },
+      dataSource: 'production_jobs',
     })
   } catch (error) {
-    console.error('Production API Error:', error)
+    console.error('Production metrics error:', error)
     res.status(500).json({
-      error: 'Failed to fetch production data',
+      error: 'production_metrics_failed',
+      message: 'Unable to compute production metrics.',
       details: error.message,
     })
   }
 })
 
 /**
- * Inventory Data - Real Stock Levels
+ * Inventory snapshot from InventoryItem records.
  */
 router.get('/inventory/current', async (req, res) => {
   try {
-    const data = await prisma.inventory.findMany({
-      orderBy: { updatedAt: 'desc' },
-      take: 100,
-    })
+    const items = await prisma.inventoryItem.findMany({ orderBy: { updatedAt: 'desc' }, take: 200 })
 
-    if (!data.length) {
+    if (!items.length) {
       return res.status(404).json({
-        error: 'No inventory data available',
-        message: 'Real data not yet recorded in database',
+        error: 'no_inventory_items',
+        message: 'No inventory items found. Import stock data to continue.',
       })
     }
 
-    const summary = {
-      totalSKUs: data.length,
-      totalValue: data.reduce((sum, item) => sum + (item.value || 0), 0),
-      lowStock: data.filter(item => item.quantity < item.reorderPoint).length,
-      outOfStock: data.filter(item => item.quantity === 0).length,
-    }
+    const totalValue = sumBy(items, item => toNumber(item.totalValue))
+    const lowStock = items.filter(item => {
+      const onHand = toNumber(item.quantityOnHand)
+      const reorderPoint = toNumber(item.reorderPoint || 0)
+      return reorderPoint > 0 && onHand <= reorderPoint
+    }).length
+    const outOfStock = items.filter(item => toNumber(item.quantityOnHand) === 0).length
 
     res.json({
-      items: data,
-      summary,
-      dataSource: 'database',
+      items: items.map(item => ({
+        id: item.id,
+        productId: item.productId,
+        warehouseId: item.warehouseId,
+        location: item.location,
+        quantityOnHand: toNumber(item.quantityOnHand),
+        quantityReserved: toNumber(item.quantityReserved),
+        quantityAvailable: toNumber(item.quantityAvailable),
+        totalValue: toNumber(item.totalValue),
+        reorderPoint: toNumber(item.reorderPoint || 0),
+        updatedAt: item.updatedAt,
+      })),
+      summary: {
+        totalItems: items.length,
+        totalValue: Number(totalValue.toFixed(2)),
+        lowStock,
+        outOfStock,
+      },
+      dataSource: 'inventory_items',
     })
   } catch (error) {
-    console.error('Inventory API Error:', error)
+    console.error('Inventory metrics error:', error)
     res.status(500).json({
-      error: 'Failed to fetch inventory data',
+      error: 'inventory_metrics_failed',
+      message: 'Unable to fetch inventory data.',
       details: error.message,
     })
   }
 })
 
 /**
- * Quality Metrics - Real Quality Control Data
+ * Quality metrics derived from QualityRecord entries.
  */
 router.get('/quality/metrics', async (req, res) => {
   try {
-    const data = await prisma.$queryRaw`
-      SELECT
-        date,
-        defect_rate as "defectRate",
-        first_pass_yield as "firstPassYield",
-        customer_complaints as "customerComplaints",
-        quality_score as "qualityScore"
-      FROM quality_metrics
-      ORDER BY date DESC
-      LIMIT 30
-    `
+    const records = await prisma.qualityRecord.findMany({ orderBy: { inspectedAt: 'desc' }, take: 100 })
 
-    if (!data.length) {
+    if (!records.length) {
       return res.status(404).json({
-        error: 'No quality data available',
-        message: 'Real data not yet recorded in database',
+        error: 'no_quality_records',
+        message: 'Capture quality inspections to view quality metrics.',
       })
     }
 
+    const totals = records.reduce(
+      (acc, record) => {
+        const passed = toNumber(record.passed)
+        const failed = toNumber(record.failed)
+        acc.passed += passed
+        acc.failed += failed
+        acc.samples += toNumber(record.sampleSize)
+        if (record.passRate !== null && record.passRate !== undefined) {
+          acc.passRates.push(record.passRate)
+        }
+        return acc
+      },
+      { passed: 0, failed: 0, samples: 0, passRates: [] }
+    )
+
+    const overallPassRate = totals.passed + totals.failed > 0
+      ? percentage((totals.passed / (totals.passed + totals.failed)) * 100)
+      : null
+
+    const averagePassRate = totals.passRates.length
+      ? percentage(totals.passRates.reduce((sum, rate) => sum + rate, 0) / totals.passRates.length)
+      : null
+
     res.json({
-      metrics: data,
-      latest: data[0],
-      dataSource: 'database',
+      totals: {
+        inspections: records.length,
+        samplesInspected: totals.samples,
+        passed: totals.passed,
+        failed: totals.failed,
+      },
+      metrics: {
+        overallPassRate,
+        averageRecordedPassRate: averagePassRate,
+      },
+      dataSource: 'quality_records',
     })
   } catch (error) {
-    console.error('Quality API Error:', error)
+    console.error('Quality metrics error:', error)
     res.status(500).json({
-      error: 'Failed to fetch quality data',
+      error: 'quality_metrics_failed',
+      message: 'Unable to compute quality metrics.',
       details: error.message,
     })
   }
 })
 
 /**
- * Product Sales Performance - Real Data
+ * Product performance summary using ProductionJob output as a proxy for shipments.
  */
 router.get('/sales/product-performance', async (req, res) => {
   try {
-    const period = (req.query.period || 'year').toString()
-    const months = period === 'quarter' ? 3 : 12
-    const since = new Date()
-    since.setMonth(since.getMonth() - months)
+    const jobs = await prisma.productionJob.findMany({ orderBy: { completedAt: 'desc' }, take: 500, include: { product: true } })
 
-    const rows = await prisma.$queryRaw`
-      SELECT
-        date_trunc('month', sale_date) AS month,
-        SUM(net_revenue) AS revenue,
-        SUM(quantity_sold) AS units
-      FROM historical_sales
-      WHERE sale_date >= ${since}
-      GROUP BY 1
-      ORDER BY 1
-    `
-
-    if (!rows.length) {
+    if (!jobs.length) {
       return res.status(404).json({
-        success: false,
-        error: 'No sales data available',
+        error: 'no_production_data',
+        message: 'Complete production jobs to analyse product performance.',
       })
     }
 
-    const data = rows.map((row, index) => {
-      const revenue = toNumber(row.revenue || 0)
-      const units = toNumber(row.units || 0)
-      const previousRevenue = index > 0 ? toNumber(rows[index - 1].revenue || 0) : null
-      const growth =
-        previousRevenue && previousRevenue !== 0
-          ? ((revenue - previousRevenue) / previousRevenue) * 100
-          : null
-
-      return {
-        month:
-          row.month instanceof Date
-            ? row.month.toISOString().slice(0, 7)
-            : String(row.month).slice(0, 7),
-        revenue,
-        units,
-        growth,
+    const grouped = jobs.reduce((acc, job) => {
+      if (!job.productId) {
+        return acc
       }
-    })
+      if (!acc.has(job.productId)) {
+        acc.set(job.productId, {
+          productId: job.productId,
+          sku: job.product?.sku || null,
+          name: job.product?.name || 'Unnamed Product',
+          unitsProduced: 0,
+          unitsRejected: 0,
+          totalCost: 0,
+        })
+      }
+      const entry = acc.get(job.productId)
+      entry.unitsProduced += toNumber(job.quantityProduced)
+      entry.unitsRejected += toNumber(job.quantityRejected)
+      entry.totalCost += toNumber(job.totalCost)
+      return acc
+    }, new Map())
+
+    const data = Array.from(grouped.values()).map(entry => ({
+      ...entry,
+      defectRate:
+        entry.unitsProduced + entry.unitsRejected > 0
+          ? percentage((entry.unitsRejected / (entry.unitsProduced + entry.unitsRejected)) * 100)
+          : null,
+    }))
 
     res.json({
-      success: true,
-      data,
-      meta: {
-        period,
-        start: since.toISOString(),
-        end: new Date().toISOString(),
-        dataSource: 'database',
-      },
+      products: data,
+      generatedAt: new Date().toISOString(),
+      dataSource: 'production_jobs',
     })
   } catch (error) {
     console.error('Product performance error:', error)
     res.status(500).json({
-      success: false,
-      error: 'Failed to compute product performance',
+      error: 'product_performance_failed',
+      message: 'Unable to compute product performance.',
       details: error.message,
     })
   }
 })
 
 /**
- * P&L Analysis - Real Data
+ * Profit & loss trend using WorkingCapital revenue and cogs values.
  */
 router.get('/financial/pl-analysis', async (req, res) => {
   try {
-    const period = (req.query.period || 'year').toString()
-    const months = period === 'quarter' ? 3 : 12
-    const since = new Date()
-    since.setMonth(since.getMonth() - months)
+    const records = await prisma.workingCapital.findMany({ orderBy: { periodEnd: 'asc' } })
 
-    const rows = await prisma.$queryRaw`
-      SELECT
-        date_trunc('month', sale_date) AS month,
-        SUM(net_revenue) AS revenue,
-        SUM(cost_of_goods_sold) AS cogs,
-        SUM(net_profit) AS net_profit
-      FROM historical_sales
-      WHERE sale_date >= ${since}
-      GROUP BY 1
-      ORDER BY 1
-    `
-
-    if (!rows.length) {
+    if (!records.length) {
       return res.status(404).json({
-        success: false,
-        error: 'No P&L data available',
+        error: 'no_pl_data',
+        message: 'Working capital records required to produce P&L analysis.',
       })
     }
 
-    const data = rows.map(row => {
-      const revenue = toNumber(row.revenue || 0)
-      const cogs = toNumber(row.cogs || 0)
-      const netIncome = toNumber(row.net_profit || 0)
-      const grossProfit = revenue - cogs
-      const operatingExpenses = revenue - grossProfit - netIncome
-
+    const timeline = records.map(record => {
+      const revenue = toNumber(record.revenue)
+      const cogs = toNumber(record.cogs)
+      const grossProfit = toNumber(record.grossProfit)
+      const grossMargin = revenue > 0 ? percentage((grossProfit / revenue) * 100) : null
       return {
-        month:
-          row.month instanceof Date
-            ? row.month.toISOString().slice(0, 7)
-            : String(row.month).slice(0, 7),
+        periodStart: record.periodStart.toISOString(),
+        periodEnd: record.periodEnd.toISOString(),
         revenue,
         cogs,
         grossProfit,
-        operatingExpenses,
-        netIncome,
+        grossMargin,
       }
     })
 
     res.json({
-      success: true,
-      data,
-      meta: {
-        period,
-        start: since.toISOString(),
-        end: new Date().toISOString(),
-        dataSource: 'database',
-      },
+      timeline,
+      latest: timeline[timeline.length - 1],
+      dataSource: 'working_capital',
     })
   } catch (error) {
     console.error('P&L analysis error:', error)
     res.status(500).json({
-      success: false,
-      error: 'Failed to compute P&L analysis',
+      error: 'pl_analysis_failed',
+      message: 'Unable to compute profit and loss analysis.',
       details: error.message,
     })
   }
 })
 
 /**
- * Regional Performance - Real Data
+ * Regional performance requires dedicated sales data which is not present in the schema.
+ * Provide guidance instead of fabricating data.
  */
 router.get('/regional/performance', async (_req, res) => {
-  try {
-    const currentPeriodStart = new Date()
-    currentPeriodStart.setMonth(currentPeriodStart.getMonth() - 3)
-    const previousPeriodStart = new Date(currentPeriodStart)
-    previousPeriodStart.setMonth(previousPeriodStart.getMonth() - 3)
-
-    const rows = await prisma.$queryRaw`
-      SELECT
-        COALESCE(region, 'Unspecified') AS region,
-        SUM(CASE WHEN sale_date >= ${currentPeriodStart} THEN net_revenue ELSE 0 END) AS current_revenue,
-        SUM(CASE WHEN sale_date >= ${previousPeriodStart} AND sale_date < ${currentPeriodStart} THEN net_revenue ELSE 0 END) AS previous_revenue
-      FROM historical_sales
-      WHERE sale_date >= ${previousPeriodStart}
-      GROUP BY 1
-      ORDER BY 1
-    `
-
-    if (!rows.length) {
-      return res.status(404).json({
-        success: false,
-        error: 'No regional sales data available',
-      })
-    }
-
-    const totalCurrentRevenue = rows.reduce(
-      (sum, row) => sum + toNumber(row.current_revenue || 0),
-      0
-    )
-
-    const data = rows.map(row => {
-      const current = toNumber(row.current_revenue || 0)
-      const previous = toNumber(row.previous_revenue || 0)
-      const growth = previous > 0 ? ((current - previous) / previous) * 100 : null
-      const marketShare = totalCurrentRevenue > 0 ? (current / totalCurrentRevenue) * 100 : null
-
-      return {
-        name: row.region,
-        revenue: current,
-        growth,
-        market_share: marketShare,
-      }
-    })
-
-    res.json({
-      success: true,
-      data,
-      meta: {
-        period: 'quarter',
-        generatedAt: new Date().toISOString(),
-        dataSource: 'database',
-      },
-    })
-  } catch (error) {
-    console.error('Regional performance error:', error)
-    res.status(500).json({
-      success: false,
-      error: 'Failed to compute regional performance',
-      details: error.message,
-    })
-  }
-})
-
-const AI_INSIGHT_BASELINE = Object.freeze([
-  {
-    id: 'insight-revenue-growth',
-    title: 'Revenue Growth Opportunity',
-    description:
-      'Optimise premium SKU pricing across EU channels to unlock an additional GBP 420K in Q4 revenue.',
-    category: 'financial',
-    type: 'prediction',
-    severity: 'high',
-    confidence: 91,
-    recommendation:
-      'Pilot a controlled 3% price increase in the UK market, coupled with weekly demand monitoring.',
-    offsetMinutes: 15,
-  },
-  {
-    id: 'insight-inventory-rebalance',
-    title: 'Inventory Rebalance Suggested',
-    description:
-      'Widget A stock levels are projected to exceed demand by 14% over the next six weeks in the Northern warehouse.',
-    category: 'inventory',
-    type: 'optimization',
-    severity: 'medium',
-    confidence: 83,
-    recommendation:
-      'Transfer 300 units to the Midlands warehouse and pause re-orders until mid-November to prevent overstock.',
-    offsetMinutes: 55,
-  },
-  {
-    id: 'insight-quality-drift',
-    title: 'Quality Drift Detected',
-    description:
-      'Line B first-pass yield dipped to 96.1% during the latest production cycle, falling outside the acceptable variance range.',
-    category: 'quality',
-    type: 'anomaly',
-    severity: 'medium',
-    confidence: 78,
-    recommendation:
-      'Schedule a preventive maintenance window and perform a root cause analysis on the filling valves.',
-    offsetMinutes: 120,
-  },
-  {
-    id: 'insight-working-capital',
-    title: 'Working Capital Watch',
-    description:
-      'Days sales outstanding increased by 3.4 days this month, elongating the cash conversion cycle.',
-    category: 'working-capital',
-    type: 'prediction',
-    severity: 'low',
-    confidence: 92,
-    recommendation:
-      'Flag overdue invoices to the collections queue and renegotiate payment terms with top debtors.',
-    offsetMinutes: 300,
-  },
-])
-
-const buildDeterministicAIInsights = () => {
-  const now = new Date()
-  const allowDevFallback = process.env.BMAD_ALLOW_DEV_AI_DATA !== 'false'
-  const insights = AI_INSIGHT_BASELINE.map(item => ({
-    id: item.id,
-    title: item.title,
-    description: item.description,
-    category: item.category,
-    type: item.type,
-    severity: item.severity,
-    confidence: item.confidence,
-    recommendation: item.recommendation,
-    timestamp: new Date(now.getTime() - item.offsetMinutes * 60 * 1000).toISOString(),
-  }))
-
-  const summary = insights.reduce(
-    (acc, insight) => {
-      acc.total += 1
-      const severityKey = `${insight.severity?.toLowerCase() || 'unknown'}Priority`
-      if (severityKey in acc) {
-        acc[severityKey] += 1
-      }
-      acc.confidenceSum += Number(insight.confidence) || 0
-      return acc
-    },
-    { total: 0, highPriority: 0, mediumPriority: 0, lowPriority: 0, confidenceSum: 0 }
-  )
-
-  const averageConfidence = summary.total > 0 ? Math.round(summary.confidenceSum / summary.total) : 0
-
-  return {
-    success: true,
-    data: {
-      summary: {
-        total: summary.total,
-        highPriority: summary.highPriority,
-        mediumPriority: summary.mediumPriority,
-        lowPriority: summary.lowPriority,
-        averageConfidence,
-      },
-      insights,
-    },
-    meta: {
-      generatedAt: now.toISOString(),
-      dataSource: allowDevFallback ? 'development-fallback' : 'ai_analysis',
-      orchestrationAvailable: false,
-    },
-  }
-}
-
-/**
- * AI Insights from MCP Server
- */
-router.post('/ai/insights', async (req, res) => {
-  try {
-    const payload = buildDeterministicAIInsights()
-    res.json(payload)
-  } catch (error) {
-    console.error('AI Insights API Error:', error)
-    res.status(500).json({
-      error: 'Failed to generate AI insights',
-      details: error.message,
-    })
-  }
+  res.status(503).json({
+    error: 'regional_data_unavailable',
+    message: 'Regional performance requires sales data with geography breakdown. Connect your commerce or ERP source to enable this view.',
+  })
 })
 
 export default router

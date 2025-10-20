@@ -120,7 +120,16 @@
       "Bash(xargs:*)",
       "Bash(gh pr merge:*)",
       "Bash(git rebase:*)",
-      "Bash(pnpm test:e2e:*)"
+      "Bash(pnpm test:e2e:*)",
+      "Bash(wc:*)",
+      "Bash(pnpm test:*)",
+      "Bash(tee:*)",
+      "Bash(if [ -f coverage/coverage-summary.json ])",
+      "Bash(then cat coverage/coverage-summary.json)",
+      "Bash(else echo \"Coverage summary not found\")",
+      "Bash(fi)",
+      "Bash(for i in 1 2 3)",
+      "Bash(do echo \"Check $i/3:\")"
     ],
     "deny": [],
     "ask": []

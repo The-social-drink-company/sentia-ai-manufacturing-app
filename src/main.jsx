@@ -1,5 +1,6 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+import { ClerkProvider } from '@clerk/clerk-react'
 import './index.css'
 import App from './App-simple-environment.jsx'
 
@@ -35,8 +36,22 @@ if (!rootElement) {
   throw new Error('Root element not found')
 }
 
+const clerkPublishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
+
+if (!clerkPublishableKey) {
+  throw new Error('Missing Clerk Publishable Key')
+}
+
 createRoot(rootElement).render(
   <StrictMode>
-    <App />
+    <ClerkProvider
+      publishableKey={clerkPublishableKey}
+      afterSignInUrl="/dashboard"
+      afterSignUpUrl="/dashboard"
+      signInUrl="/sign-in"
+      signUpUrl="/sign-up"
+    >
+      <App />
+    </ClerkProvider>
   </StrictMode>
 )

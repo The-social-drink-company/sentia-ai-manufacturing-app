@@ -9,7 +9,7 @@ const ChatWidget = () => {
   const [messages, setMessages] = useState([
     {
       sender: 'assistant',
-      text: "Hello! I'm your AI assistant for Sentia Manufacturing. I can help you with operational insights, working capital analysis, production metrics, and more. What would you like to know?",
+      text: "Hello! I'm your AI assistant for CapLiquify Platform. I can help you with operational insights, working capital analysis, production metrics, and more. What would you like to know?",
       timestamp: new Date(),
     },
   ])

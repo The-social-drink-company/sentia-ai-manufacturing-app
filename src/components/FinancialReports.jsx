@@ -377,7 +377,7 @@ const FinancialReports = () => {
                 Financial Reports
               </h1>
               <p className="text-slate-600 dark:text-slate-400">
-                Comprehensive financial analysis for Sentia Manufacturing
+                Comprehensive financial analysis for CapLiquify Platform
               </p>
             </div>
           </div>
@@ -408,7 +408,7 @@ const FinancialReports = () => {
           <div>
             <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Financial Reports</h1>
             <p className="text-slate-600 dark:text-slate-400">
-              Comprehensive financial analysis for Sentia Manufacturing
+              Comprehensive financial analysis for CapLiquify Platform
             </p>
           </div>
         </div>
@@ -446,7 +446,7 @@ const FinancialReports = () => {
           <div>
             <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Financial Reports</h1>
             <p className="text-slate-600 dark:text-slate-400">
-              Real-time financial analysis for Sentia Manufacturing
+              Real-time financial analysis for CapLiquify Platform
             </p>
           </div>
         </div>

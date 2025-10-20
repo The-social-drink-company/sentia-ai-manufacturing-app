@@ -88,7 +88,7 @@ const SignUpPage = () => {
             Create your account
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            Join Sentia Manufacturing Dashboard
+            Join CapLiquify Manufacturing Platform
           </p>
         </div>
 

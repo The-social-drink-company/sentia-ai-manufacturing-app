@@ -1,5 +1,5 @@
 /**
- * Centralized API client for Sentia Manufacturing Dashboard
+ * Centralized API client for CapLiquify Manufacturing Platform
  * Provides unified interface to all backend endpoints with MCP server support
  */
 

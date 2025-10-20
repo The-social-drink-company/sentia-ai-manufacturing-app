@@ -65,7 +65,7 @@ const LandingPage = () => {
               transition={{ delay: 0.2, duration: 0.8 }}
               className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl md:text-6xl lg:text-7xl"
             >
-              Sentia Manufacturing
+              CapLiquify Platform
               <span className="block text-blue-200">Enterprise Dashboard</span>
             </Motion.h1>
 

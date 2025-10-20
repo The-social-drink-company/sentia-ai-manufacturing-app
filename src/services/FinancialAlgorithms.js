@@ -1,6 +1,6 @@
 /**
  * Advanced Financial Algorithms for Fortune 500-Level Analytics
- * Sentia Manufacturing Dashboard - Real-time Financial Intelligence
+ * CapLiquify Manufacturing Platform - Real-time Financial Intelligence
  */
 
 class FinancialAlgorithms {

@@ -119,15 +119,14 @@ const DashboardSidebar = ({ isOpen = false, onClose = () => {} }) => {
           <div className="flex items-center gap-3">
             {/* Logo Icon */}
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600 text-xl font-bold text-white shadow-md">
-              S
+              C
             </div>
 
             {/* Brand Text */}
             <div className="flex flex-col">
-              <h1 className="text-lg font-bold leading-tight text-slate-50">
-                Sentia Manufacturing
-              </h1>
-              <p className="text-sm text-slate-400">Enterprise Dashboard</p>
+              <h1 className="text-lg font-bold leading-tight text-slate-50">CapLiquify Platform</h1>
+              <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Multi-tenant SaaS</p>
+              <p className="text-xs text-slate-300">Tenant: Sentia Spirits</p>
             </div>
           </div>
         </div>
@@ -192,8 +191,9 @@ const DashboardSidebar = ({ isOpen = false, onClose = () => {} }) => {
 
         {/* Footer Section (Optional) */}
         <div className="border-t border-slate-700 p-4">
-          <div className="rounded-lg bg-slate-900 p-3">
-            <p className="text-xs text-slate-400">© {new Date().getFullYear()} Sentia Spirits</p>
+          <div className="rounded-lg bg-slate-900 p-3 space-y-1">
+            <p className="text-xs text-slate-400">© {new Date().getFullYear()} CapLiquify</p>
+            <p className="text-xs text-slate-500">Current tenant: Sentia Spirits</p>
           </div>
         </div>
       </aside>

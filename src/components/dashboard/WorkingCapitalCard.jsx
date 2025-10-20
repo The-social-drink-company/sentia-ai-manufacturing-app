@@ -52,15 +52,27 @@ const WorkingCapitalCard = ({ data }) => {
    * @returns {string} Formatted value
    */
   const formatValue = (value, format) => {
+    if (typeof value !== 'number' || Number.isNaN(value)) {
+      return 'N/A'
+    }
+
     switch (format) {
-      case 'currency':
-        return `Â£${(value / 1000).toFixed(0)}K`
+      case 'currency': {
+        if (Math.abs(value) >= 1000000) {
+          return `£${(value / 1000000).toFixed(2)}M`
+        }
+        if (Math.abs(value) >= 1000) {
+          return `£${(value / 1000).toFixed(0)}K`
+        }
+        return `£${value.toLocaleString()}`
+      }
       case 'percentage':
         return `${value.toFixed(1)}%`
       default:
         return value.toFixed(1)
     }
   }
+
 
   return (
     <div

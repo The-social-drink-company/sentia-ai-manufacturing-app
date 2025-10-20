@@ -9,7 +9,7 @@ const ChatBot = () => {
       id: 1,
       type: 'bot',
       message:
-        "Hello! I'm your Sentia Manufacturing AI assistant. How can I help you with your working capital analysis today?",
+        "Hello! I'm your CapLiquify Platform AI assistant. How can I help you with your working capital analysis today?",
       timestamp: new Date(),
     },
   ])

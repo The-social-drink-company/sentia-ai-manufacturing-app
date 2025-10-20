@@ -83,7 +83,7 @@ const DemandForecasting = () => {
                 Demand Forecasting
               </h1>
               <p className="text-slate-600 dark:text-slate-400">
-                AI-powered demand prediction for Sentia Manufacturing
+                AI-powered demand prediction for CapLiquify Platform
               </p>
             </div>
           </div>
@@ -117,7 +117,7 @@ const DemandForecasting = () => {
               Demand Forecasting
             </h1>
             <p className="text-slate-600 dark:text-slate-400">
-              AI-powered demand prediction for Sentia Manufacturing
+              AI-powered demand prediction for CapLiquify Platform
             </p>
           </div>
         </div>

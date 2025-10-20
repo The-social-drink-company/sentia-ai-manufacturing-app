@@ -1,7 +1,7 @@
 /**
  * Demand Forecasting Engine - Statistical Models and Pattern Analysis
  *
- * Provides sophisticated demand forecasting for Sentia Manufacturing's
+ * Provides sophisticated demand forecasting for CapLiquify Platform's
  * 9-SKU, 5-channel operation with seasonal and regional analysis.
  */
 

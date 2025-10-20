@@ -2,7 +2,7 @@
  * Working Capital Engine - Advanced Analytics and Optimization
  *
  * Provides sophisticated working capital calculations and optimization
- * recommendations for Sentia Manufacturing's 9-SKU, 5-channel operation.
+ * recommendations for CapLiquify Platform's 9-SKU, 5-channel operation.
  */
 
 class WorkingCapitalEngine {

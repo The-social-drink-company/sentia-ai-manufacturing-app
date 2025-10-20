@@ -13,6 +13,9 @@ import { useAuth } from './useAuth';
 export interface Tenant {
   id: string;
   name: string;
+  subscriptionTier: 'STARTER' | 'PROFESSIONAL' | 'ENTERPRISE';
+  subscriptionCycle: 'MONTHLY' | 'ANNUAL';
+  currentPeriodEnd?: Date;
   tier: 'starter' | 'professional' | 'enterprise';
   features: Record<string, boolean | number | string>;
   limits: {

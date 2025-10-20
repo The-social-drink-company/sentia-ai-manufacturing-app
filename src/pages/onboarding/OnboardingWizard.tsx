@@ -12,6 +12,7 @@
  */
 
 import { useState, useEffect } from 'react'
+import { toast } from 'sonner'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
@@ -81,7 +82,6 @@ export default function OnboardingWizard() {
   const [completedSteps, setCompletedSteps] = useState<string[]>([])
   const [onboardingData, setOnboardingData] = useState<any>({})
   const [loading, setLoading] = useState(false)
-  const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   const step = ONBOARDING_STEPS[currentStep]
   const StepComponent = step.component
@@ -107,6 +107,7 @@ export default function OnboardingWizard() {
         }
       } catch (error) {
         console.error('Failed to load onboarding progress:', error)
+        toast.error('Unable to load onboarding progress. Please retry in a moment.')
       }
     }
 
@@ -118,7 +119,6 @@ export default function OnboardingWizard() {
     const updatedCompletedSteps = Array.from(new Set([...completedSteps, step.id]))
     const newData = { ...onboardingData, [step.id]: data }
 
-    setErrorMessage(null)
     setOnboardingData(newData)
     setCompletedSteps(updatedCompletedSteps)
 
@@ -166,12 +166,12 @@ export default function OnboardingWizard() {
       await onboardingService.saveProgress(safeStep, completed, data)
     } catch (error) {
       console.error('Failed to save progress:', error)
+      toast.error('We could not save your onboarding progress. Please try again.')
     }
   }
 
   const completeOnboarding = async (data: any) => {
     setLoading(true)
-    setErrorMessage(null)
 
     try {
       // Mark onboarding as complete
@@ -179,14 +179,17 @@ export default function OnboardingWizard() {
 
       if (response.success) {
         // Navigate to dashboard with celebration and auto-tour
+        toast.success('Onboarding complete! Redirecting to your dashboard...')
         navigate('/dashboard?onboarding=complete&tour=auto')
       } else {
         throw new Error('Failed to complete onboarding')
       }
     } catch (error) {
       console.error('Error completing onboarding:', error)
-      setErrorMessage(
-        error instanceof Error ? error.message : 'Unable to complete onboarding. Please try again.'
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : 'Unable to complete onboarding. Please try again.'
       )
     } finally {
       setLoading(false)
@@ -195,15 +198,17 @@ export default function OnboardingWizard() {
 
   const handleSkipOnboarding = async () => {
     setLoading(true)
-    setErrorMessage(null)
 
     try {
       await onboardingService.skipOnboarding()
+      toast.success('Onboarding skipped. Redirecting to dashboard...')
       navigate('/dashboard')
     } catch (error) {
       console.error('Failed to skip onboarding:', error)
-      setErrorMessage(
-        error instanceof Error ? error.message : 'Unable to skip onboarding right now. Please try again.'
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : 'Unable to skip onboarding right now. Please try again.'
       )
     } finally {
       setLoading(false)
@@ -322,12 +327,6 @@ export default function OnboardingWizard() {
               />
             </motion.div>
           </AnimatePresence>
-
-          {errorMessage && (
-            <div className="mt-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-              {errorMessage}
-            </div>
-          )}
 
           {/* Navigation */}
           <div className="mt-8 flex items-center justify-between border-t border-gray-200 pt-6">

@@ -1,9 +1,37 @@
-# BMM Module Configuration (BMAD Method Module)
-# Generated for test automation workflows
+# BMM Module Configuration
+# BMAD Method - Agile AI-Driven Development
+# Generated: 2025-10-20
+# Project: Sentia Manufacturing AI Dashboard
 # Version: 6.0.0-alpha.0
-# Date: 2025-10-19
 
-user_name: BMad
-communication_language: English
-output_folder: "{project-root}/docs"
-test_output_folder: "{project-root}/test-results"
+code: bmm
+name: "BMM: BMad Method Agile-AI Driven-Development"
+
+# Core variables inherited from core/config.yaml:
+# - user_name: BMad
+# - communication_language: English
+# - output_folder: {project-root}/docs
+
+# Project configuration
+project_name: "Sentia Manufacturing AI Dashboard"
+
+user_skill_level: "expert"
+
+tech_docs: "context"
+
+dev_story_location: "bmad/stories"
+
+# TEA Agent Configuration
+tea_use_mcp_enhancements: true
+
+# Additional project-specific settings
+project:
+  type: brownfield-fullstack
+  scale: level-4
+  domain: manufacturing-intelligence
+
+integrations:
+  - xero
+  - shopify
+  - amazon-sp-api
+  - unleashed-erp

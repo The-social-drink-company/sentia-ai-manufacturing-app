@@ -22,6 +22,7 @@ import {
   DollarSign,
 } from 'lucide-react'
 import onboardingService from '@/services/onboardingService'
+import { toast } from 'sonner'
 
 interface DataImportStepProps {
   data?: {
@@ -46,8 +47,10 @@ export default function DataImportStep({
   >(data?.method || null)
   const [generating, setGenerating] = useState(false)
   const [generated, setGenerated] = useState(false)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   const handleGenerateSample = async () => {
+    setErrorMessage(null)
     setGenerating(true)
     try {
       // Call API to generate sample data
@@ -56,13 +59,23 @@ export default function DataImportStep({
       if (response.success) {
         setGenerated(true)
         setSelectedMethod('sample')
+        toast.success('Sample data generated successfully!')
         setTimeout(() => {
           onNext({ method: 'sample', generatedData: response.data })
         }, 1500)
       }
     } catch (error) {
       console.error('Failed to generate sample data:', error)
-      // Show error toast or notification here if needed
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : 'Failed to generate sample data. Please try again.'
+      )
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : 'Something went wrong while generating sample data. Please try again.'
+      )
     } finally {
       setGenerating(false)
     }
@@ -70,6 +83,9 @@ export default function DataImportStep({
 
   const handleImportFromIntegrations = () => {
     setSelectedMethod('integration')
+    if (availableIntegrations.length) {
+      toast.success('Integration import queued. We will start syncing your data next.')
+    }
     onNext({
       method: 'integration',
       integrations: availableIntegrations,
@@ -190,6 +206,11 @@ export default function DataImportStep({
                   </>
                 )}
               </button>
+            )}
+            {errorMessage && (
+              <div className="mt-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+                {errorMessage}
+              </div>
             )}
           </div>
         </div>

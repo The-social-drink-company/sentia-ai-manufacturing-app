@@ -113,7 +113,10 @@
       "Bash(! -path \"*/backups/*\" )",
       "Bash(git -C /tmp/bmad-latest log --oneline)",
       "Bash(git -C /tmp/bmad-latest branch -a)",
-      "Bash(git -C /tmp/bmad-latest log --oneline v6-alpha)"
+      "Bash(git -C /tmp/bmad-latest log --oneline v6-alpha)",
+      "Bash(xargs -I {} bash -c \"echo -n ''''{}: '''' && find {} -type f | wc -l\")",
+      "Bash(test:*)",
+      "Bash(npm install)"
     ],
     "deny": [],
     "ask": []

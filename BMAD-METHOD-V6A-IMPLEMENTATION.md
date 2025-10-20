@@ -1,11 +1,52 @@
-# BMAD-METHOD v6a Implementation Plan
+# BMAD-METHOD v6-Alpha Implementation Plan
 
 ## Sentia Manufacturing AI Dashboard
 
-**Date**: 2025-10-17
-**Version**: v6a Alpha
-**Repository**: https://github.com/bmad-code-org/BMAD-METHOD
-**Status**: Phase 4 (Implementation) - Blocked (backend gaps + failing tests, see 2025-10-20 audit)
+**Date**: 2025-10-20 (Updated from 2025-10-17)
+**Version**: 6.0.0-alpha.0 (Official v6-alpha release)
+**Repository**: https://github.com/bmad-code-org/BMAD-METHOD (v6-alpha branch)
+**Status**: Phase 4 (Implementation) - ACTIVE (v6-alpha framework installed)
+**Previous Version**: v6a (manually imported from v4.44.0 structure)
+
+## 🔄 v6-Alpha Migration Summary (October 20, 2025)
+
+**Migration**: Manual v6a installation → Official v6-alpha (6.0.0-alpha.0)
+
+**Architecture Changes**:
+- **Old**: Monolithic structure (manually imported from v4.44.0 main branch)
+- **New**: Modular architecture with separate modules (BMM, BMB, CIS, BMD)
+- **Installation Method**: Manual structure migration (interactive installer not used)
+
+**Modules Installed**:
+1. **Core** (bmad/core/) - Minimal orchestration layer with 2 agents, XML tasks
+2. **BMM** (bmad/bmm/) - BMad Method module with all main agents (PM, DEV, SM, Architect, QA, Analyst)
+
+**Migration Process**:
+1. ✅ Backed up existing bmad/ directory (298 files, 45 directories)
+2. ✅ Cloned v6-alpha branch from official repository
+3. ✅ Installed new v6-alpha structure (core + BMM module)
+4. ✅ Preserved all project-specific work (141 files across 9 directories)
+   - epics/ (14 files)
+   - stories/ (59 files)
+   - retrospectives/ (38 files)
+   - planning/ (3 files)
+   - solutioning/ (2 files)
+   - status/, progress/, reports/, audit/ (26 files)
+   - guides/, context/ (project documentation)
+5. ✅ Created configuration files (bmad/config.yaml, bmad/bmm/config.yaml)
+6. ✅ Restored project-specific configuration (bmad/core/core-config.yaml)
+
+**Final Structure**: 453 files, 82 directories
+
+**Key Benefits**:
+- Official v6-alpha architecture (future-proof updates)
+- Modular system (easier to maintain and extend)
+- Preserved 100% of project work (no data loss)
+- Maintained all project-specific configurations
+
+**Migration Documentation**: See [BMAD-V6ALPHA-MIGRATION-GUIDE.md](bmad/BMAD-V6ALPHA-MIGRATION-GUIDE.md)
+
+---
 
 ### Quality Metrics (2025-03-14)
 

@@ -13,6 +13,7 @@ import SignUpPage from '@/pages/SignUpPage'
 import ErrorBoundary from '@/components/ErrorBoundary'
 import DebugPanel from '@/components/DebugPanel'
 import AuthError from '@/components/AuthError'
+import { Toaster } from '@/components/ui/sonner'
 import { XeroProvider } from '@/contexts/XeroContext'
 import { useRequireAuth } from '@/hooks/useRequireAuth'
 
@@ -517,6 +518,7 @@ const App = () => {
 
             {/* Development Debug Panel */}
             <DebugPanel />
+            <Toaster richColors position="top-right" closeButton />
           </BrowserRouter>
         </QueryClientProvider>
       </AuthProvider>

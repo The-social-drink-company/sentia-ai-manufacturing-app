@@ -2,13 +2,15 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## 🚀 **DEVELOPMENT METHODOLOGY: BMAD-METHOD v6a**
+## 🚀 **DEVELOPMENT METHODOLOGY: BMAD-METHOD v6-Alpha**
 
-**CRITICAL**: This project now uses **BMAD-METHOD v6a** (Agentic Agile Driven Development) framework.
+**CRITICAL**: This project now uses **BMAD-METHOD v6-alpha (6.0.0-alpha.0)** - Official alpha release with modular architecture.
 
-**Framework**: https://github.com/bmad-code-org/BMAD-METHOD
+**Framework**: https://github.com/bmad-code-org/BMAD-METHOD (v6-alpha branch)
 **Implementation Guide**: See [BMAD-METHOD-V6A-IMPLEMENTATION.md](BMAD-METHOD-V6A-IMPLEMENTATION.md)
-**Status**: Initialized - Phase 2 (Planning) in progress
+**Status**: Phase 4 (Implementation) - ACTIVE with v6-alpha framework
+**Updated**: 2025-10-20 (Migrated from manual v6a to official v6-alpha)
+**Migration Guide**: [BMAD-V6ALPHA-MIGRATION-GUIDE.md](bmad/BMAD-V6ALPHA-MIGRATION-GUIDE.md)
 
 ### BMAD Four-Phase Workflow
 

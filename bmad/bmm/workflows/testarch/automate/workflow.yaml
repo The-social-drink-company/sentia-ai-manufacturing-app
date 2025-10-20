@@ -1,58 +1,63 @@
-# TestArch Automate Workflow Configuration
+# Test Architect workflow: automate
 name: testarch-automate
-description: "Automated testing and architecture validation workflow for ensuring code quality, test coverage, and architectural compliance in the Sentia Manufacturing AI Dashboard project"
-author: "BMad Method Module"
+description: "Expand test automation coverage after implementation or analyze existing codebase to generate comprehensive test suite"
+author: "BMad"
 
 # Critical variables from config
 config_source: "{project-root}/bmad/bmm/config.yaml"
 output_folder: "{config_source}:output_folder"
-test_output_folder: "{config_source}:test_output_folder"
 user_name: "{config_source}:user_name"
 communication_language: "{config_source}:communication_language"
+document_output_language: "{config_source}:document_output_language"
 date: system-generated
 
-# Project-specific paths
-project_root: "{project-root}"
-test_directory: "{project-root}/tests"
-src_directory: "{project-root}/src"
-server_directory: "{project-root}/server"
-services_directory: "{project-root}/services"
-
-# Test configuration
-test_frameworks:
-  unit_tests: "vitest"
-  integration_tests: "vitest"
-  e2e_tests: "playwright"
-
-# Architecture validation
-architecture_rules:
-  - "No mock data in production code"
-  - "All API services must have error handling"
-  - "All components must use TypeScript/JSDoc"
-  - "External integrations must have fallback handling"
-
-# Module path and component files
+# Workflow components
 installed_path: "{project-root}/bmad/bmm/workflows/testarch/automate"
-template: false # This is an action workflow - no template needed
 instructions: "{installed_path}/instructions.md"
 validation: "{installed_path}/checklist.md"
+template: false
+
+# Variables and inputs
+variables:
+  # Execution mode and targeting
+  standalone_mode: true # Can work without BMad artifacts (true) or integrate with BMad (false)
+  coverage_target: "critical-paths" # critical-paths, comprehensive, selective
+
+  # Directory paths
+  test_dir: "{project-root}/tests" # Root test directory
+  source_dir: "{project-root}/src" # Source code directory
 
 # Output configuration
-test_report_file: "{test_output_folder}/test-report-{date}.md"
-architecture_report_file: "{test_output_folder}/architecture-validation-{date}.md"
-coverage_report_file: "{test_output_folder}/coverage-report-{date}.md"
+default_output_file: "{output_folder}/automation-summary.md"
 
-# Recommended inputs - existing project context
+# Required tools
+required_tools:
+  - read_file # Read source code, existing tests, BMad artifacts
+  - write_file # Create test files, fixtures, factories, summaries
+  - create_directory # Create test directories
+  - list_files # Discover features and existing tests
+  - search_repo # Find coverage gaps and patterns
+  - glob # Find test files and source files
+
+# Recommended inputs (optional - depends on mode)
 recommended_inputs:
-  - project_standards: "{project-root}/context/development-standards.md"
-  - security_guidelines: "{project-root}/context/security-guidelines.md"
-  - performance_testing: "{project-root}/context/performance-testing.md"
-  - bmad_implementation: "{project-root}/BMAD-METHOD-V6A-IMPLEMENTATION.md"
-  - claude_instructions: "{project-root}/CLAUDE.md"
+  - story: "Story markdown with acceptance criteria (optional - BMad mode only)"
+  - tech_spec: "Technical specification (optional - BMad mode only)"
+  - test_design: "Test design document with risk/priority (optional - BMad mode only)"
+  - source_code: "Feature implementation to analyze (required for standalone mode)"
+  - existing_tests: "Current test suite for gap analysis (always helpful)"
+  - framework_config: "Test framework configuration (playwright.config.ts, cypress.config.ts)"
 
-# Test automation modes
-automation_modes:
-  quick: "Run fast unit tests only"
-  standard: "Run unit and integration tests"
-  full: "Run all tests including E2E and architecture validation"
-  ci_cd: "Full test suite with coverage reports for CI/CD pipelines"
+tags:
+  - qa
+  - automation
+  - test-architect
+  - regression
+  - coverage
+
+execution_hints:
+  interactive: false # Minimize prompts
+  autonomous: true # Proceed without user input unless blocked
+  iterative: true
+
+web_bundle: false

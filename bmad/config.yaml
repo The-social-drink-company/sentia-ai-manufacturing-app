@@ -1,0 +1,51 @@
+# BMAD Installation Configuration
+# Version: 6.0.0-alpha.0
+# Date: 2025-10-20
+# Project: Sentia Manufacturing AI Dashboard
+
+# Installation metadata
+installation:
+  version: "6.0.0-alpha.0"
+  date: "2025-10-20"
+  method: "manual-v6alpha-migration"
+
+# Installed modules
+modules:
+  core:
+    installed: true
+    version: "6.0.0-alpha.0"
+  bmm:
+    installed: true
+    version: "6.0.0-alpha.0"
+    config: bmm/config.yaml
+
+# IDE configuration
+ides:
+  - claude-code
+
+# Project settings (inherited by modules)
+project:
+  name: "Sentia Manufacturing AI Dashboard"
+  type: "brownfield-fullstack"
+  scale: "level-4"
+  domain: "manufacturing-intelligence"
+
+# User settings
+user:
+  name: "BMad"
+  language: "English"
+  skill_level: "expert"
+
+# Paths
+paths:
+  output: "docs"
+  stories: "bmad/stories"
+  epics: "bmad/epics"
+  retrospectives: "bmad/retrospectives"
+  planning: "bmad/planning"
+  solutioning: "bmad/solutioning"
+  status: "bmad/status"
+  progress: "bmad/progress"
+  reports: "bmad/reports"
+  audit: "bmad/audit"
+  tech_docs: "context"

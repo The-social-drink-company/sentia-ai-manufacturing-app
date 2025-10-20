@@ -1,9 +1,9 @@
 # BMAD-METHOD Auto-Update Report
 
-**Date**: 2025-10-20T08:23:40.823Z
+**Date**: 2025-10-20T17:50:59.728Z
 **Status**: Updated
 **Current Version**: 6.0.0-alpha.0
-**Latest Version**: 2a6eb71
+**Latest Version**: 60475ac
 **Dry Run**: No
 
 ## Update Summary
@@ -13,7 +13,7 @@
 ## Actions Taken
 
 
-- Created backup: c:\Projects\The-social-drink-companycapliquify-ai-dashboard-app\capliquify-ai-dashboard-app\bmad-backups\bmad-backup-2025-10-20-1760948617449
+- Created backup: c:\Projects\financeflo-ai\capliquify-ai-dashboard-app\bmad-backups\bmad-backup-2025-10-20-1760982657084
 - Updated framework files (core, BMM module)
 - Preserved all project files
 - Validated update success
@@ -23,77 +23,50 @@
 ## Log
 
 ```
-[2025-10-20T08:23:36.547Z] [INFO] Starting test run...
-[2025-10-20T08:23:36.548Z] [INFO] Mode: DRY-RUN
-[2025-10-20T08:23:36.548Z] [INFO] Verbose: Yes
-[2025-10-20T08:23:36.548Z] [INFO] 
-Test 1: Checking project structure...
-[2025-10-20T08:23:36.549Z] [SUCCESS]   ✓ Found directory: bmad/
-[2025-10-20T08:23:36.549Z] [SUCCESS]   ✓ Found file: bmad/config.yaml
-[2025-10-20T08:23:36.550Z] [SUCCESS]   ✓ Found directory: bmad/core/
-[2025-10-20T08:23:36.550Z] [SUCCESS]   ✓ Found directory: bmad/bmm/
-[2025-10-20T08:23:36.550Z] [SUCCESS]   ✓ Found file: config file
-[2025-10-20T08:23:36.550Z] [SUCCESS] 
-✓ Test 1 passed: Project structure valid
-[2025-10-20T08:23:36.550Z] [INFO] 
-Test 2: Checking configuration...
-[2025-10-20T08:23:36.551Z] [SUCCESS]   ✓ Config has 'enabled'
-[2025-10-20T08:23:36.551Z] [SUCCESS]   ✓ Config has 'autoCommit'
-[2025-10-20T08:23:36.551Z] [SUCCESS]   ✓ Config has 'updateCheckURL'
-[2025-10-20T08:23:36.551Z] [SUCCESS]   ✓ Config has 'projectFiles'
-[2025-10-20T08:23:36.551Z] [INFO] 
-  Configuration details:
-[2025-10-20T08:23:36.551Z] [INFO]     Enabled: true
-[2025-10-20T08:23:36.551Z] [INFO]     Auto-commit: true
-[2025-10-20T08:23:36.551Z] [INFO]     Backup retention: 5
-[2025-10-20T08:23:36.551Z] [INFO]     Project dirs: 11
-[2025-10-20T08:23:36.551Z] [SUCCESS] 
-✓ Test 2 passed: Configuration valid
-[2025-10-20T08:23:36.551Z] [INFO] 
-Test 3: Checking current BMAD version...
-[2025-10-20T08:23:36.552Z] [SUCCESS]   ✓ Current version: 6.0.0-alpha.0
-[2025-10-20T08:23:36.552Z] [SUCCESS] 
-✓ Test 3 passed: Version detection working
-[2025-10-20T08:23:36.552Z] [INFO] 
-Test 4: Counting project files...
-[2025-10-20T08:23:36.569Z] [INFO]   Total project files: 148
-[2025-10-20T08:23:36.569Z] [INFO]     epics: 14 files
-[2025-10-20T08:23:36.569Z] [INFO]     stories: 60 files
-[2025-10-20T08:23:36.569Z] [INFO]     retrospectives: 40 files
-[2025-10-20T08:23:36.569Z] [INFO]     planning: 3 files
-[2025-10-20T08:23:36.569Z] [INFO]     solutioning: 2 files
-[2025-10-20T08:23:36.569Z] [INFO]     status: 6 files
-[2025-10-20T08:23:36.569Z] [INFO]     progress: 2 files
-[2025-10-20T08:23:36.569Z] [INFO]     reports: 3 files
-[2025-10-20T08:23:36.569Z] [INFO]     audit: 16 files
-[2025-10-20T08:23:36.570Z] [INFO]     guides: 1 files
-[2025-10-20T08:23:36.570Z] [INFO]     context: 1 files
-[2025-10-20T08:23:36.570Z] [SUCCESS] 
-✓ Test 4 passed: Project file counting working
-[2025-10-20T08:23:36.570Z] [INFO] 
-Test 5: Testing update check...
-[2025-10-20T08:23:36.570Z] [INFO] This will make a GitHub API request...
-[2025-10-20T08:23:36.570Z] [INFO] === BMAD-METHOD Auto-Update Agent ===
-[2025-10-20T08:23:36.570Z] [INFO] Mode: LIVE
-[2025-10-20T08:23:36.570Z] [INFO] Project: c:\Projects\The-social-drink-companycapliquify-ai-dashboard-app\capliquify-ai-dashboard-app
-[2025-10-20T08:23:36.570Z] [INFO] Checking for BMAD-METHOD updates...
-[2025-10-20T08:23:36.571Z] [INFO] Current BMAD version: 6.0.0-alpha.0
-[2025-10-20T08:23:36.989Z] [INFO] Latest BMAD commit: 2a6eb71
-[2025-10-20T08:23:37.449Z] [SUCCESS] ✓ Update available!
-[2025-10-20T08:23:37.449Z] [INFO]   Local:  unknown
-[2025-10-20T08:23:37.449Z] [INFO]   Remote: 2a6eb71
-[2025-10-20T08:23:37.449Z] [INFO] Creating backup: c:\Projects\The-social-drink-companycapliquify-ai-dashboard-app\capliquify-ai-dashboard-app\bmad-backups\bmad-backup-2025-10-20-1760948617449
-[2025-10-20T08:23:37.766Z] [SUCCESS] ✓ Backup created (463 files)
-[2025-10-20T08:23:37.766Z] [INFO] Performing BMAD-METHOD update...
-[2025-10-20T08:23:37.766Z] [INFO] Cloning latest BMAD-METHOD v6-alpha...
-[2025-10-20T08:23:39.277Z] [INFO] Preserving 149 project files...
-[2025-10-20T08:23:39.839Z] [INFO] Updating framework files...
-[2025-10-20T08:23:40.051Z] [INFO] Restoring project files...
-[2025-10-20T08:23:40.310Z] [SUCCESS] ✓ Update complete!
-[2025-10-20T08:23:40.310Z] [INFO] Validating update...
-[2025-10-20T08:23:40.311Z] [SUCCESS] ✓ Validation passed
-[2025-10-20T08:23:40.311Z] [INFO] Creating git commit...
-[2025-10-20T08:23:40.822Z] [SUCCESS] ✓ Git commit created
+[2025-10-20T17:50:56.386Z] [INFO] === BMAD-METHOD Auto-Update Agent ===
+[2025-10-20T17:50:56.388Z] [INFO] Mode: LIVE
+[2025-10-20T17:50:56.388Z] [INFO] Project: c:\Projects\financeflo-ai\capliquify-ai-dashboard-app
+[2025-10-20T17:50:56.388Z] [INFO] Checking for BMAD-METHOD updates...
+[2025-10-20T17:50:56.389Z] [INFO] Current BMAD version: 6.0.0-alpha.0
+[2025-10-20T17:50:56.687Z] [INFO] Latest BMAD commit: 60475ac
+[2025-10-20T17:50:57.084Z] [SUCCESS] ✓ Update available!
+[2025-10-20T17:50:57.084Z] [INFO]   Local:  2a6eb71
+[2025-10-20T17:50:57.084Z] [INFO]   Remote: 60475ac
+[2025-10-20T17:50:57.084Z] [INFO] Creating backup: c:\Projects\financeflo-ai\capliquify-ai-dashboard-app\bmad-backups\bmad-backup-2025-10-20-1760982657084
+[2025-10-20T17:50:57.325Z] [SUCCESS] ✓ Backup created (525 files)
+[2025-10-20T17:50:57.327Z] [INFO] Performing BMAD-METHOD update...
+[2025-10-20T17:50:57.327Z] [INFO] Cloning latest BMAD-METHOD v6-alpha...
+[2025-10-20T17:50:58.533Z] [INFO] Preserving 200 project files...
+[2025-10-20T17:50:58.931Z] [INFO] Updating framework files...
+[2025-10-20T17:50:59.084Z] [INFO] Restoring project files...
+[2025-10-20T17:50:59.284Z] [SUCCESS] ✓ Update complete!
+[2025-10-20T17:50:59.284Z] [INFO] Validating update...
+[2025-10-20T17:50:59.284Z] [SUCCESS] ✓ Validation passed
+[2025-10-20T17:50:59.284Z] [INFO] Creating git commit...
+[2025-10-20T17:50:59.727Z] [ERROR] Git commit failed: Command failed: git commit -m "chore: Auto-update BMAD-METHOD to v6-alpha (60475ac)
+
+Autonomous update performed by bmad-auto-update agent.
+
+Changes:
+- Updated framework files (core, BMM module)
+- Preserved all project files (epics, stories, retrospectives)
+- Updated version tracking
+
+🤖 Generated by BMAD Auto-Update Agent
+
+Co-Authored-By: Claude <noreply@anthropic.com>"
+Command failed: git commit -m "chore: Auto-update BMAD-METHOD to v6-alpha (60475ac)
+
+Autonomous update performed by bmad-auto-update agent.
+
+Changes:
+- Updated framework files (core, BMM module)
+- Preserved all project files (epics, stories, retrospectives)
+- Updated version tracking
+
+🤖 Generated by BMAD Auto-Update Agent
+
+Co-Authored-By: Claude <noreply@anthropic.com>"
 ```
 
 ---

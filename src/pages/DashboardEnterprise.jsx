@@ -144,17 +144,18 @@ const deriveTrend = (trendValue, direction, fallback) => {
   }
   return fallback ?? null
 }
-const resolveMetricLabel = (metric = '') =>
+const formatMetricLabel = (metric = '') =>
   (metric || '')
     .toString()
-    .replace(/[\\s_-]+/g, ' ')
+    .replace(/[\s_-]+/g, ' ')
     .trim()
-    .replace(/\\b\\w/g, char => char.toUpperCase())
+    .replace(/\b\w/g, char => char.toUpperCase())
 
 const mapApiDataToKpis = data => {
   if (!data) {
     return createDefaultKpis()
   }
+
   const normalizedEntries = Object.entries(data).reduce((acc, [key, value]) => {
     const normalizedKey = normalizeMetricKey(key)
     if (normalizedKey) {
@@ -162,20 +163,28 @@ const mapApiDataToKpis = data => {
     }
     return acc
   }, {})
+
   return createDefaultKpis().map(kpi => {
     const metricData = normalizedEntries[kpi.metric]
     if (!metricData) {
-      return kpi
+      return {
+        ...kpi,
+        label: kpi.label || formatMetricLabel(kpi.metric),
+      }
     }
+
     const candidateValue =
       typeof metricData === 'object' && metricData !== null
         ? metricData.value ?? metricData.amount ?? metricData.total ?? metricData.current
         : metricData
+
     const valueResult = normalizeKpiValue(candidateValue, kpi.value)
     const next = { ...kpi, value: valueResult.value }
+
     if (valueResult.valueFormat) {
       next.valueFormat = valueResult.valueFormat
     }
+
     if (typeof metricData === 'object' && metricData !== null) {
       if (metricData.valueFormat) {
         next.valueFormat = metricData.valueFormat
@@ -192,19 +201,31 @@ const mapApiDataToKpis = data => {
       if (metricData.label) {
         next.label = metricData.label
       }
+
       const trendCandidate =
-        metricData.trend ?? metricData.delta ?? metricData.change ?? metricData.percentageChange ?? metricData.trendValue
+        metricData.trend ??
+        metricData.delta ??
+        metricData.change ??
+        metricData.percentageChange ??
+        metricData.trendValue
       const trendDirection = metricData.direction ?? metricData.trendDirection
       next.trend = deriveTrend(trendCandidate, trendDirection, kpi.trend)
+
       if (metricData.status) {
         next.customFooter = `Status: ${metricData.status}`
       } else if (metricData.customFooter) {
         next.customFooter = metricData.customFooter
       }
     }
+
+    if (!next.label) {
+      next.label = formatMetricLabel(kpi.metric)
+    }
+
     return next
   })
 }
+
 const DashboardEnterprise = () => {
   const [searchParams] = useSearchParams()
   const { width, height } = useWindowSize()
@@ -247,7 +268,7 @@ const DashboardEnterprise = () => {
           if (metadata.label) {
             next.label = metadata.label
           } else if (!next.label) {
-            next.label = resolveMetricLabel(normalizedMetric)
+            next.label = formatMetricLabel(normalizedMetric)
           }
           if (value !== undefined) {
             const valueResult = normalizeKpiValue(value, kpi.value)
@@ -288,7 +309,7 @@ const DashboardEnterprise = () => {
         })
       })
     },
-    [resolveMetricLabel]
+    [formatMetricLabel]
   )
   const handleDashboardMessage = useCallback(
     event => {
@@ -325,7 +346,7 @@ const DashboardEnterprise = () => {
           setCapitalKpis(() =>
             metrics.map(item => ({
               metric: item.metric || item.label || '',
-              label: item.label || resolveMetricLabel(item.metric || ''),
+              label: item.label || formatMetricLabel(item.metric || ''),
               value: item.value ?? 'N/A',
               helper: item.helper ?? '',
             }))
@@ -957,5 +978,4 @@ const DashboardEnterprise = () => {
   )
 }
 export default DashboardEnterprise
-
 

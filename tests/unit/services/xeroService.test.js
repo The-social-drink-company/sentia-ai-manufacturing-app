@@ -100,7 +100,7 @@ describe('XeroService', () => {
     })
 
     it('should detect empty string environment variables', () => {
-      process.env.XERO_CLIENT_ID = ''
+      process.env.XERO_CLIENT_ID = '  '  // Whitespace-only
 
       const result = xeroService.validateEnvironmentVariables()
 
@@ -238,6 +238,9 @@ describe('XeroService', () => {
     })
 
     it('should calculate working capital from balance sheet', async () => {
+      // Service needs to be initialized and connected
+      xeroService.initialized = true
+
       // Mock balance sheet API
       mockXeroClient.accountingApi.getReportBalanceSheet.mockResolvedValue({
         body: {
@@ -301,6 +304,9 @@ describe('XeroService', () => {
     })
 
     it('should handle API errors gracefully', async () => {
+      // Service needs to be initialized and connected first
+      xeroService.initialized = true
+
       mockXeroClient.accountingApi.getReportBalanceSheet.mockRejectedValue(
         new Error('API Error')
       )

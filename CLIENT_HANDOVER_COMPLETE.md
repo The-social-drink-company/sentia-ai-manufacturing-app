@@ -159,7 +159,7 @@ Access at: https://dashboard.render.com
 
 ### GitHub Repository
 
-https://github.com/The-social-drink-company/sentia-manufacturing-dashboard
+https://github.com/Capliquify/sentia-manufacturing-dashboard
 
 ### Known Issues
 

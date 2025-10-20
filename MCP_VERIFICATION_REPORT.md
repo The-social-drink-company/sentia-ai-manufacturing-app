@@ -176,7 +176,7 @@ curl -X POST https://sentia-manufacturing-production.up.railway.app/api/mcp/sync
 ### ⚠️ GitHub Security Alerts
 
 - **4 vulnerabilities detected** (1 critical, 1 high, 2 moderate)
-- **Action Required**: Review at https://github.com/The-social-drink-company/sentia-manufacturing-dashboard/security/dependabot
+- **Action Required**: Review at https://github.com/Capliquify/sentia-manufacturing-dashboard/security/dependabot
 - **Recommendation**: Address critical and high vulnerabilities before production release
 
 ### Security Best Practices Implemented
@@ -243,7 +243,7 @@ curl -X POST https://sentia-manufacturing-production.up.railway.app/api/mcp/sync
 
 ### Contacts
 
-- **GitHub Issues**: https://github.com/The-social-drink-company/sentia-manufacturing-dashboard/issues
+- **GitHub Issues**: https://github.com/Capliquify/sentia-manufacturing-dashboard/issues
 - **Railway Support**: https://railway.app/help
 - **Email**: support@sentia.com
 

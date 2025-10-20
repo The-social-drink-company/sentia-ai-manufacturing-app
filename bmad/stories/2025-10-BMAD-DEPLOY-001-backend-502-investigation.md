@@ -158,7 +158,7 @@ pnpm run start:render
 3. Prisma got confused about migration state → P3018 error
 4. Server startup failed due to database inconsistency
 
-**Fix Applied** (Commit [88887779](https://github.com/The-social-drink-company/capliquify-ai-dashboard-app/commit/88887779)):
+**Fix Applied** (Commit [88887779](https://github.com/Capliquify/capliquify-ai-dashboard-app/commit/88887779)):
 ```json
 // package.json line 16 (AFTER FIX):
 "start:render": "prisma generate && node server/index.js"
@@ -192,7 +192,7 @@ app.get('/health', healthResponse)  // ❌ Wrong path!
 3. Health checks failed → deployment never marked as "live"
 4. Deployment hung indefinitely waiting for successful health check
 
-**Fix Applied** (Commit [358aa3a3](https://github.com/The-social-drink-company/capliquify-ai-dashboard-app/commit/358aa3a3)):
+**Fix Applied** (Commit [358aa3a3](https://github.com/Capliquify/capliquify-ai-dashboard-app/commit/358aa3a3)):
 ```javascript
 // server/index.js (AFTER FIX):
 const healthResponse = (req, res) => {
@@ -261,7 +261,7 @@ const isDevelopmentMode = isProductionBuild
 - If variable wasn't properly injected during build, it defaulted to `undefined`
 - `undefined !== 'false'` evaluates to `true` → development mode activated incorrectly
 
-**Fix Applied** (Commit [2025e975](https://github.com/The-social-drink-company/capliquify-ai-dashboard-app/commit/2025e975)):
+**Fix Applied** (Commit [2025e975](https://github.com/Capliquify/capliquify-ai-dashboard-app/commit/2025e975)):
 ```javascript
 // AFTER FIX (lines 51-64):
 const isProductionBuild = import.meta.env.PROD === true
@@ -315,7 +315,7 @@ buildCommand: |
 - Default behavior (`vite build`) compiles code but doesn't set production mode
 - Environment variables like `VITE_DEVELOPMENT_MODE` are irrelevant if base mode is wrong
 
-**Fix Applied** (Commit [31c8cb2b](https://github.com/The-social-drink-company/capliquify-ai-dashboard-app/commit/31c8cb2b)):
+**Fix Applied** (Commit [31c8cb2b](https://github.com/Capliquify/capliquify-ai-dashboard-app/commit/31c8cb2b)):
 ```yaml
 # render.yaml line 119 (AFTER FIX):
 buildCommand: |
@@ -706,7 +706,7 @@ export default {
 - No validation that config format matches Tailwind version
 - Build succeeded but CSS was empty (no compilation errors shown)
 
-**Fix Applied** (Commit [4a82b8a2](https://github.com/The-social-drink-company/capliquify-ai-dashboard-app/commit/4a82b8a2)):
+**Fix Applied** (Commit [4a82b8a2](https://github.com/Capliquify/capliquify-ai-dashboard-app/commit/4a82b8a2)):
 ```json
 // package.json (AFTER FIX):
 "tailwindcss": "^3.4.18",  // ✅ Downgraded to stable v3
@@ -762,7 +762,7 @@ tailwindcss: 4.1.7          # ❌ Old version
 - No local validation to ensure lockfile consistency
 - Render's strict frozen-lockfile mode caught the inconsistency
 
-**Fix Applied** (Commit [aa1473a2](https://github.com/The-social-drink-company/capliquify-ai-dashboard-app/commit/aa1473a2)):
+**Fix Applied** (Commit [aa1473a2](https://github.com/Capliquify/capliquify-ai-dashboard-app/commit/aa1473a2)):
 ```bash
 # Regenerated lockfile locally:
 pnpm install --no-frozen-lockfile

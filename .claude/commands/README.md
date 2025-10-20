@@ -428,7 +428,7 @@ For major features, create feature branches off development
 ## 📞 Support
 
 - **Render Dashboard**: https://dashboard.render.com
-- **Repository**: https://github.com/The-social-drink-company/capliquify-ai-dashboard-app
+- **Repository**: https://github.com/Capliquify/capliquify-ai-dashboard-app
 - **Documentation**: See CLAUDE.md, README.md, and docs in /context
 
 ## 🔄 Command Updates

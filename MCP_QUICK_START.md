@@ -237,7 +237,7 @@ npm run dev 2>&1 | tee debug.log
 
 ### Get Support
 
-- GitHub Issues: https://github.com/The-social-drink-company/sentia-manufacturing-dashboard/issues
+- GitHub Issues: https://github.com/Capliquify/sentia-manufacturing-dashboard/issues
 - Railway Support: https://railway.app/help
 
 ---

@@ -237,7 +237,7 @@ pnpm add -D @testing-library/react @testing-library/jest-dom
 
 ## Contact & Support
 
-**Issues**: Report test failures at https://github.com/The-social-drink-company/capliquify-ai-dashboard-app/issues
+**Issues**: Report test failures at https://github.com/Capliquify/capliquify-ai-dashboard-app/issues
 **Documentation**: See [BMAD-METHOD-V6A-IMPLEMENTATION.md](../BMAD-METHOD-V6A-IMPLEMENTATION.md) for testing strategy
 
 ---

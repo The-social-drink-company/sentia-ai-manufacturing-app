@@ -114,7 +114,7 @@
 
 ### Documentation
 
-- Repository: https://github.com/The-social-drink-company/sentia-manufacturing-dashboard
+- Repository: https://github.com/Capliquify/sentia-manufacturing-dashboard
 - API Docs: Available at `/api/docs` endpoint
 - MCP Server: Model Context Protocol v2024-11-05
 

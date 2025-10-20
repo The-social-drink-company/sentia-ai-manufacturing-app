@@ -141,7 +141,7 @@ cache-control: no-cache
 - **Development:** sentia-manufacturing-dashboard-development
 
 ### GitHub Repository:
-- **URL:** https://github.com/The-social-drink-company/sentia-manufacturing-dashboard.git
+- **URL:** https://github.com/Capliquify/sentia-manufacturing-dashboard.git
 - **Production Branch:** production
 - **Testing Branch:** test
 - **Development Branch:** development

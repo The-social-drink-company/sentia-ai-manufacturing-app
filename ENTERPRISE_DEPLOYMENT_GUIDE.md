@@ -250,7 +250,7 @@ npx prisma migrate deploy
 
 ### Pipeline Status
 
-Check at: https://github.com/The-social-drink-company/sentia-manufacturing-dashboard/actions
+Check at: https://github.com/Capliquify/sentia-manufacturing-dashboard/actions
 
 ## Team Responsibilities
 
@@ -432,7 +432,7 @@ npm start           # Start production server
 ## Additional Resources
 
 - [Render Dashboard](https://dashboard.render.com)
-- [GitHub Repository](https://github.com/The-social-drink-company/sentia-manufacturing-dashboard)
+- [GitHub Repository](https://github.com/Capliquify/sentia-manufacturing-dashboard)
 - [API Documentation](/docs/api)
 - [Database Schema](/prisma/schema.prisma)
 - [Environment Variables](/RENDER_ENVIRONMENT_VARIABLES_COMPLETE.md)

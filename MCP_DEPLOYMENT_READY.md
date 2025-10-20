@@ -218,7 +218,7 @@ curl http://localhost:5000/api/mcp/sync/status
 
 ### Contact
 
-- GitHub Issues: https://github.com/The-social-drink-company/sentia-manufacturing-dashboard/issues
+- GitHub Issues: https://github.com/Capliquify/sentia-manufacturing-dashboard/issues
 - Railway Support: https://railway.app/help
 
 ---

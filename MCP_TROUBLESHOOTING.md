@@ -455,7 +455,7 @@ railway logs --service [service-id] --since 1h > logs.txt
 
 ### Support Channels
 
-1. **GitHub Issues**: https://github.com/The-social-drink-company/sentia-manufacturing-dashboard/issues
+1. **GitHub Issues**: https://github.com/Capliquify/sentia-manufacturing-dashboard/issues
 2. **Railway Support**: https://railway.app/help
 3. **Email**: support@sentia.com
 

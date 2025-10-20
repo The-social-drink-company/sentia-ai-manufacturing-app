@@ -336,8 +336,8 @@ Backend (Node.js)
 
 ### Repositories
 
-- **Main**: https://github.com/The-social-drink-company/capliquify-ai-dashboard-app
-- **Issues**: https://github.com/The-social-drink-company/capliquify-ai-dashboard-app/issues
+- **Main**: https://github.com/Capliquify/capliquify-ai-dashboard-app
+- **Issues**: https://github.com/Capliquify/capliquify-ai-dashboard-app/issues
 
 ### Deployments
 

@@ -43,7 +43,7 @@ gh pr create --title "Deploy: Feature to test" --body "Description" --base test 
 gh pr list --state open
 ```
 
-**PR #129**: Created successfully - https://github.com/The-social-drink-company/sentia-manufacturing-dashboard/pull/129
+**PR #129**: Created successfully - https://github.com/Capliquify/sentia-manufacturing-dashboard/pull/129
 
 ### 3. Merge to Test (After Review)
 
@@ -192,7 +192,7 @@ git log --oneline -10
 ## Security Notes
 
 - 6 vulnerabilities detected (4 high, 2 low)
-- Review at: https://github.com/The-social-drink-company/sentia-manufacturing-dashboard/security/dependabot
+- Review at: https://github.com/Capliquify/sentia-manufacturing-dashboard/security/dependabot
 - Run `npm audit` regularly
 
 ## Contact & Support

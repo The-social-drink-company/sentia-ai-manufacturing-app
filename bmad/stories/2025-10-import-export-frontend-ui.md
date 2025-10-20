@@ -7,7 +7,7 @@
 - **Estimated Effort**: 3 days
 - **Actual Effort**: 2.5 days
 - **Dependencies**: BMAD Phase 2 Backend Foundations (Complete ✅)
-- **PR**: #15 - https://github.com/The-social-drink-company/capliquify-ai-dashboard-app/pull/15
+- **PR**: #15 - https://github.com/Capliquify/capliquify-ai-dashboard-app/pull/15
 - **Branch**: feature/import-export-foundation
 - **Deployment**: Ready for merge to development
 

@@ -145,7 +145,7 @@ Rationale:
 - Potential reuse across Sentia products
 
 New Repository:
-https://github.com/The-social-drink-company/sentia-financial-lakehouse
+https://github.com/Capliquify/sentia-financial-lakehouse
 
 Impact:
 - Reduced main repo complexity
@@ -168,7 +168,7 @@ git push origin development
 echo "
 ## Related Projects
 
-- **Sentia Financial Lakehouse**: https://github.com/The-social-drink-company/sentia-financial-lakehouse
+- **Sentia Financial Lakehouse**: https://github.com/Capliquify/sentia-financial-lakehouse
   - Standalone financial intelligence platform
   - DuckDB analytics engine + AI orchestration
   - Can be used independently or integrated
@@ -267,11 +267,11 @@ sentia-financial-lakehouse/
 
 **Main Repository**:
 
-- https://github.com/The-social-drink-company/capliquify-ai-dashboard-app
+- https://github.com/Capliquify/capliquify-ai-dashboard-app
 
 **New Lakehouse Repository** (to be created):
 
-- https://github.com/The-social-drink-company/sentia-financial-lakehouse
+- https://github.com/Capliquify/sentia-financial-lakehouse
 
 **BMAD Documentation**:
 

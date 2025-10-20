@@ -34,7 +34,7 @@
 ### Key Services
 
 - **Railway Project ID**: `6d1ca9b2-75e2-46c6-86a8-ed05161112fe`
-- **GitHub Repository**: https://github.com/The-social-drink-company/sentia-manufacturing-dashboard
+- **GitHub Repository**: https://github.com/Capliquify/sentia-manufacturing-dashboard
 - **Database**: Neon PostgreSQL (connection pooling enabled)
 - **External APIs**: Xero, Shopify, Amazon SP-API, Unleashed
 

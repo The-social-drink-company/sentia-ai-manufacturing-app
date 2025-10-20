@@ -759,7 +759,7 @@ const mcpTools = [
 
 #### Support Channels
 
-- GitHub: https://github.com/The-social-drink-company/sentia-manufacturing-dashboard
+- GitHub: https://github.com/Capliquify/sentia-manufacturing-dashboard
 - Documentation: /docs
 - Support Email: support@sentia.com
 

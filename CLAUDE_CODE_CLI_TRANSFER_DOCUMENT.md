@@ -520,7 +520,7 @@ deployed_architecture_analysis.md - Current deployment analysis
 
 ```bash
 # Clone the repository
-git clone https://github.com/The-social-drink-company/sentia-manufacturing-dashboard.git
+git clone https://github.com/Capliquify/sentia-manufacturing-dashboard.git
 
 # Install dependencies
 npm install
@@ -590,7 +590,7 @@ npm run dev
 
 ### **Repository Information**
 
-- **GitHub**: https://github.com/The-social-drink-company/sentia-manufacturing-dashboard
+- **GitHub**: https://github.com/Capliquify/sentia-manufacturing-dashboard
 - **Active PR**: #57 - Enterprise Transformation
 - **Branches**: development, testing, production (all synchronized)
 

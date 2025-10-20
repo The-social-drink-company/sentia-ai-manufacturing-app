@@ -101,8 +101,8 @@ const AIAnalyticsDashboard = () => {
         <div>
           <h1 className="text-3xl font-semibold tracking-tight">AI analytics console</h1>
           <p className="text-sm text-muted-foreground">
-            MCP-powered insights, anomaly detection, and autonomous actions across Sentia
-            operations.
+            MCP-powered insights, anomaly detection, and autonomous actions across CapLiquify
+            tenant operations.
           </p>
         </div>
         <Badge variant={status.tone}>{status.label}</Badge>
@@ -119,7 +119,7 @@ const AIAnalyticsDashboard = () => {
           <Metric label="Average latency" value={status.latency} helper="p95 within SLA" />
           <Metric label="Requests served" value={status.requests} helper="Last 24h window" />
           <Metric label="Error rate" value={status.errors} helper="Model + integration errors" />
-          <Metric label="Active models" value="4" helper="GPT-4 + Claude + Sentia ensembles" />
+          <Metric label="Active models" value="4" helper="GPT-4 + Claude + CapLiquify ensembles" />
         </CardContent>
       </Card>
 

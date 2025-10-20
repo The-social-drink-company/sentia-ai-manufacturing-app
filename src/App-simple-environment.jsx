@@ -54,7 +54,7 @@ function App() {
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
-          <Suspense fallback={<LoadingScreen message="Loading Sentia experience..." />}>
+          <Suspense fallback={<LoadingScreen message="Loading CapLiquify experience..." />}>
             <Routes>
               <Route
                 path="/"

@@ -86,7 +86,7 @@ const ChatWidget = () => {
         <div className="fixed bottom-28 right-6 z-40 w-80 rounded-2xl border border-white/10 bg-slate-900/95 p-4 text-sm text-slate-100 shadow-2xl backdrop-blur">
           <header className="mb-3 flex items-center justify-between">
             <div>
-              <p className="text-xs uppercase tracking-wide text-slate-400">Sentia assistant</p>
+              <p className="text-xs uppercase tracking-wide text-slate-400">CapLiquify assistant</p>
               <p className="text-sm font-semibold">Operational insights</p>
             </div>
             <button

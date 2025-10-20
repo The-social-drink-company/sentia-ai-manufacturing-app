@@ -89,3 +89,123 @@ export function mapClerkRoleToTenantRole(clerkRole: string): 'owner' | 'admin' |
       return 'member'
   }
 }
+
+/**
+ * Get all members of an organization
+ *
+ * @param organizationId - Clerk organization ID
+ * @param options - Pagination options
+ * @returns Array of organization memberships
+ */
+export async function getOrganizationMembers(
+  organizationId: string,
+  options?: {
+    limit?: number
+    offset?: number
+  }
+) {
+  try {
+    const response = await clerkClient.organizations.getOrganizationMembershipList({
+      organizationId,
+      limit: options?.limit || 50,
+      offset: options?.offset || 0
+    })
+
+    return response.data || []
+  } catch (error) {
+    console.error('[Clerk] Error fetching organization members:', error)
+    return []
+  }
+}
+
+/**
+ * Get user by email address
+ *
+ * @param email - User's email address
+ * @returns User object or null
+ */
+export async function getUserByEmail(email: string) {
+  try {
+    const users = await clerkClient.users.getUserList({
+      emailAddress: [email]
+    })
+
+    return users.data[0] || null
+  } catch (error) {
+    console.error('[Clerk] Error fetching user by email:', error)
+    return null
+  }
+}
+
+/**
+ * Check if a user is a member of an organization
+ *
+ * @param userId - Clerk user ID
+ * @param organizationId - Clerk organization ID
+ * @returns True if user is a member, false otherwise
+ */
+export async function isUserMemberOfOrganization(
+  userId: string,
+  organizationId: string
+): Promise<boolean> {
+  try {
+    const memberships = await getUserOrganizations(userId)
+    return memberships.some(
+      (membership) => membership.organization.id === organizationId
+    )
+  } catch (error) {
+    console.error('[Clerk] Error checking organization membership:', error)
+    return false
+  }
+}
+
+/**
+ * Get user's role in an organization
+ *
+ * @param userId - Clerk user ID
+ * @param organizationId - Clerk organization ID
+ * @returns Role string or null
+ */
+export async function getUserOrganizationRole(
+  userId: string,
+  organizationId: string
+): Promise<string | null> {
+  try {
+    const memberships = await getUserOrganizations(userId)
+    const membership = memberships.find(
+      (m) => m.organization.id === organizationId
+    )
+
+    return membership?.role || null
+  } catch (error) {
+    console.error('[Clerk] Error fetching user organization role:', error)
+    return null
+  }
+}
+
+/**
+ * Invite a user to an organization
+ *
+ * @param organizationId - Clerk organization ID
+ * @param emailAddress - Email address to invite
+ * @param role - Role to assign
+ * @returns Invitation object or null
+ */
+export async function inviteUserToOrganization(
+  organizationId: string,
+  emailAddress: string,
+  role: string = 'org:member'
+) {
+  try {
+    const invitation = await clerkClient.organizations.createOrganizationInvitation({
+      organizationId,
+      emailAddress,
+      role
+    })
+
+    return invitation
+  } catch (error) {
+    console.error('[Clerk] Error inviting user to organization:', error)
+    return null
+  }
+}

@@ -461,7 +461,7 @@ const DemandForecasting = () => {
           </div>
           <div className="mt-2 text-xs text-green-700 dark:text-green-300">
             Incorporates seasonal trends, channel behaviors, and regional market dynamics for
-            Sentia's 9-SKU operation
+            Tenant's 9-SKU operation
           </div>
         </CardContent>
       </Card>

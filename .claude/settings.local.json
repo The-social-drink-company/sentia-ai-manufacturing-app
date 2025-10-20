@@ -131,7 +131,17 @@
       "Bash(for i in 1 2 3)",
       "Bash(do echo \"Check $i/3:\")",
       "Bash(awk:*)",
-      "Bash(xargs -I {} sh -c 'echo \"\"\"\"=== {} ===\"\"\"\" && grep -E \"\"\"\"^(#|Status:|Epic:)\"\"\"\" {} | head -5')"
+      "Bash(xargs -I {} sh -c 'echo \"\"\"\"=== {} ===\"\"\"\" && grep -E \"\"\"\"^(#|Status:|Epic:)\"\"\"\" {} | head -5')",
+      "Bash(src/components/WorkingCapital/RealWorkingCapital.jsx )",
+      "Bash(src/components/FinancialReports.jsx)",
+      "Bash(src/components/dashboard/FinancialAnalysisSection.jsx )",
+      "Bash(src/components/dashboard/PLAnalysisChartEnhanced.jsx )",
+      "Bash(src/components/dashboard/MarketDistributionChart.jsx )",
+      "Bash(src/components/dashboard/StockLevelsChartEnhanced.jsx )",
+      "Bash(src/components/dashboard/SalesPerformanceChart.jsx)",
+      "Bash(src/components/DemandForecasting.jsx )",
+      "Bash(src/pages/SignInPage.jsx )",
+      "Bash(src/pages/SignUpPage.jsx)"
     ],
     "deny": [],
     "ask": []

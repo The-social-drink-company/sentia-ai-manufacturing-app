@@ -14,9 +14,8 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
-import SystemHealthService from '../../../../server/services/admin/SystemHealthService.js'
+import { SystemHealthService } from '../../../../server/services/admin/SystemHealthService.js'
 import prisma from '../../../../server/lib/prisma.js'
-import * as os from 'os'
 
 const mockGetRedisClient = vi.fn()
 
@@ -42,22 +41,10 @@ vi.mock('../../../../server/utils/logger.js', () => ({
   },
 }))
 
-// Mock os module
-vi.mock('os', async () => {
-  const actual = await vi.importActual('os')
-  return {
-    ...actual,
-    totalmem: vi.fn(),
-    freemem: vi.fn(),
-    cpus: vi.fn(),
-    loadavg: vi.fn(),
-    platform: vi.fn(),
-    release: vi.fn(),
-  }
-})
-
 describe('SystemHealthService', () => {
   let mockRedisClient
+  let mockOs
+  let systemHealthService
 
 beforeEach(async () => {
     vi.clearAllMocks()
@@ -77,13 +64,20 @@ used_memory_peak_human:3.00M
 
     mockGetRedisClient.mockResolvedValue(mockRedisClient)
 
-    // Mock os module functions with LOW memory usage by default (to avoid HIGH_MEMORY_USAGE alerts)
-    os.totalmem.mockReturnValue(16 * 1024 * 1024 * 1024)  // 16GB total
-    os.freemem.mockReturnValue(13 * 1024 * 1024 * 1024)    // 13GB free = 18.75% used (well below 85% threshold)
-    os.cpus.mockReturnValue(new Array(8).fill({ model: 'CPU' }))
-    os.loadavg.mockReturnValue([1.5, 1.2, 1.0])
-    os.platform.mockReturnValue('linux')
-    os.release.mockReturnValue('5.15.0')
+    // Create mocked OS module with LOW memory usage by default (to avoid HIGH_MEMORY_USAGE alerts)
+    mockOs = {
+      totalmem: vi.fn().mockReturnValue(16 * 1024 * 1024 * 1024),  // 16GB total
+      freemem: vi.fn().mockReturnValue(13 * 1024 * 1024 * 1024),    // 13GB free = 18.75% used (well below 85% threshold)
+      cpus: vi.fn().mockReturnValue(new Array(8).fill({ model: 'CPU' })),
+      loadavg: vi.fn().mockReturnValue([1.5, 1.2, 1.0]),
+      type: vi.fn().mockReturnValue('Linux'),
+      release: vi.fn().mockReturnValue('5.15.0'),
+      arch: vi.fn().mockReturnValue('x64'),
+      hostname: vi.fn().mockReturnValue('test-host'),
+    }
+
+    // Create SystemHealthService instance with mocked dependencies
+    systemHealthService = new SystemHealthService({ os: mockOs })
   })
 
   afterEach(() => {
@@ -101,7 +95,7 @@ used_memory_peak_human:3.00M
       ]
       prisma.adminIntegration.findMany.mockResolvedValue(mockIntegrations)
 
-      const result = await SystemHealthService.getSystemHealth()
+      const result = await systemHealthService.getSystemHealth()
 
       // Status depends on real system metrics (may be HEALTHY or DEGRADED)
       expect(['HEALTHY', 'DEGRADED']).toContain(result.status)
@@ -130,7 +124,7 @@ used_memory_peak_human:3.00M
       ]
       prisma.adminIntegration.findMany.mockResolvedValue(mockIntegrations)
 
-      const result = await SystemHealthService.getSystemHealth()
+      const result = await systemHealthService.getSystemHealth()
 
       expect(result.status).toBe('DEGRADED')
       expect(result.healthScore).toBeGreaterThanOrEqual(60)
@@ -147,7 +141,7 @@ used_memory_peak_human:3.00M
       ]
       prisma.adminIntegration.findMany.mockResolvedValue(mockIntegrations)
 
-      const result = await SystemHealthService.getSystemHealth()
+      const result = await systemHealthService.getSystemHealth()
 
       expect(result.status).toBe('UNHEALTHY')
       expect(result.healthScore).toBeLessThan(60)
@@ -159,7 +153,7 @@ used_memory_peak_human:3.00M
       prisma.adminIntegration.findMany.mockResolvedValue([])
 
       const beforeTime = Date.now()
-      const result = await SystemHealthService.getSystemHealth()
+      const result = await systemHealthService.getSystemHealth()
       const afterTime = Date.now()
 
       expect(result.timestamp).toBeDefined()
@@ -171,7 +165,7 @@ used_memory_peak_human:3.00M
 
   describe('getProcessMetrics', () => {
     it('should return Node.js process metrics', async () => {
-      const result = await SystemHealthService.getProcessMetrics()
+      const result = await systemHealthService.getProcessMetrics()
 
       expect(result).toHaveProperty('status')
       expect(result).toHaveProperty('cpu')
@@ -222,7 +216,7 @@ used_memory_peak_human:3.00M
     })
 
     it('should calculate memory percentage correctly', async () => {
-      const result = await SystemHealthService.getProcessMetrics()
+      const result = await systemHealthService.getProcessMetrics()
 
       // Memory percentage should be valid (0-100%)
       expect(result.memory.percentage).toBeGreaterThanOrEqual(0)
@@ -236,7 +230,7 @@ used_memory_peak_human:3.00M
       const mockUptime = 3661 // 1 hour, 1 minute, 1 second
       vi.spyOn(process, 'uptime').mockReturnValue(mockUptime)
 
-      const result = await SystemHealthService.getProcessMetrics()
+      const result = await systemHealthService.getProcessMetrics()
 
       expect(result.uptime.seconds).toBe(3661)
       expect(result.uptime.formatted).toMatch(/1h 1m 1s/)
@@ -253,7 +247,7 @@ used_memory_peak_human:3.00M
         system: 100000000,
       })
 
-      const result = await SystemHealthService.getProcessMetrics()
+      const result = await systemHealthService.getProcessMetrics()
 
       if (result.cpu.percentage !== null && result.cpu.percentage > 80) {
         expect(result.status).toBe('DEGRADED')
@@ -265,7 +259,7 @@ used_memory_peak_human:3.00M
       os.totalmem.mockReturnValue(16 * 1024 * 1024 * 1024)
       os.freemem.mockReturnValue(1 * 1024 * 1024 * 1024)
 
-      const result = await SystemHealthService.getProcessMetrics()
+      const result = await systemHealthService.getProcessMetrics()
 
       expect(result.memory.percentage).toBeGreaterThan(85)
       expect(result.status).toBe('DEGRADED')
@@ -276,7 +270,7 @@ used_memory_peak_human:3.00M
     it('should return healthy status for fast database response', async () => {
       prisma.$queryRaw.mockResolvedValue([{ health_check: 1 }])
 
-      const result = await SystemHealthService.getDatabaseHealth()
+      const result = await systemHealthService.getDatabaseHealth()
 
       expect(result.status).toBe('HEALTHY')
       expect(result.connected).toBe(true)
@@ -292,7 +286,7 @@ used_memory_peak_human:3.00M
         })
       })
 
-      const result = await SystemHealthService.getDatabaseHealth()
+      const result = await systemHealthService.getDatabaseHealth()
 
       expect(result.status).toBe('DEGRADED')
       expect(result.connected).toBe(true)
@@ -302,7 +296,7 @@ used_memory_peak_human:3.00M
     it('should return unhealthy status when database disconnected', async () => {
       prisma.$queryRaw.mockRejectedValue(new Error('Connection refused'))
 
-      const result = await SystemHealthService.getDatabaseHealth()
+      const result = await systemHealthService.getDatabaseHealth()
 
       expect(result.status).toBe('UNHEALTHY')
       expect(result.connected).toBe(false)
@@ -312,7 +306,7 @@ used_memory_peak_human:3.00M
 
   describe('getRedisHealth', () => {
     it('should return healthy status for fast Redis response', async () => {
-      const result = await SystemHealthService.getRedisHealth()
+      const result = await systemHealthService.getRedisHealth()
 
       expect(result.status).toBe('HEALTHY')
       expect(result.connected).toBe(true)
@@ -331,7 +325,7 @@ used_memory_peak_human:3.00M
         })
       })
 
-      const result = await SystemHealthService.getRedisHealth()
+      const result = await systemHealthService.getRedisHealth()
 
       expect(result.status).toBe('DEGRADED')
       expect(result.connected).toBe(true)
@@ -341,7 +335,7 @@ used_memory_peak_human:3.00M
     it('should return unhealthy status when Redis disconnected', async () => {
       mockRedisClient.ping.mockRejectedValue(new Error('Redis connection lost'))
 
-      const result = await SystemHealthService.getRedisHealth()
+      const result = await systemHealthService.getRedisHealth()
 
       expect(result.status).toBe('UNHEALTHY')
       expect(result.connected).toBe(false)
@@ -349,7 +343,7 @@ used_memory_peak_human:3.00M
     })
 
     it('should parse Redis memory info correctly', async () => {
-      const result = await SystemHealthService.getRedisHealth()
+      const result = await systemHealthService.getRedisHealth()
 
       expect(result.memory).toHaveProperty('used')
       expect(result.memory).toHaveProperty('max')
@@ -370,7 +364,7 @@ used_memory_peak_human:3.00M
 
       prisma.adminIntegration.findMany.mockResolvedValue(mockIntegrations)
 
-      const result = await SystemHealthService.getIntegrationHealth()
+      const result = await systemHealthService.getIntegrationHealth()
 
       expect(result.status).toBe('HEALTHY')
       expect(result.total).toBe(2)
@@ -389,7 +383,7 @@ used_memory_peak_human:3.00M
 
       prisma.adminIntegration.findMany.mockResolvedValue(mockIntegrations)
 
-      const result = await SystemHealthService.getIntegrationHealth()
+      const result = await systemHealthService.getIntegrationHealth()
 
       expect(result.status).toBe('DEGRADED')
       expect(result.total).toBe(3)
@@ -406,7 +400,7 @@ used_memory_peak_human:3.00M
 
       prisma.adminIntegration.findMany.mockResolvedValue(mockIntegrations)
 
-      const result = await SystemHealthService.getIntegrationHealth()
+      const result = await systemHealthService.getIntegrationHealth()
 
       expect(result.status).toBe('UNHEALTHY')
       expect(result.total).toBe(2)
@@ -418,7 +412,7 @@ used_memory_peak_human:3.00M
     it('should handle case with no integrations', async () => {
       prisma.adminIntegration.findMany.mockResolvedValue([])
 
-      const result = await SystemHealthService.getIntegrationHealth()
+      const result = await systemHealthService.getIntegrationHealth()
 
       expect(result.status).toBe('HEALTHY')
       expect(result.total).toBe(0)

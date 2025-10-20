@@ -415,7 +415,7 @@ self.addEventListener(_'push', (event) => {
   }
   
   event.waitUntil(
-    self.registration.showNotification('Sentia Manufacturing', options)
+    self.registration.showNotification('CapLiquify Platform', options)
   );
 });
 

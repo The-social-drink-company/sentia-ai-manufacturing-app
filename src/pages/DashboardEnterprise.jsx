@@ -228,7 +228,8 @@ const DashboardEnterprise = () => {
   const [capitalLoading, setCapitalLoading] = useState(true)
   const [capitalError, setCapitalError] = useState(null)
   // TODO: Re-enable if Xero connection banner is needed
-  const [, setRequiresXeroConnection] = useState(false)const updatePerformanceKpis = useCallback(
+  const [, setRequiresXeroConnection] = useState(false)
+  const updatePerformanceKpis = useCallback(
     (metric, value, metadata = {}) => {
       const normalizedMetric = normalizeMetricKey(metric)
       if (!normalizedMetric) {
@@ -977,4 +978,3 @@ const DashboardEnterprise = () => {
   )
 }
 export default DashboardEnterprise
-

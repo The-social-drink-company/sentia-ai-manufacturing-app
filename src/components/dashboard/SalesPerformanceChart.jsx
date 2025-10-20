@@ -11,7 +11,7 @@ import {
 import ChartCard from '@/components/charts/ChartCard'
 import { chartColors, chartTheme } from '@/utils/chartColors'
 
-// Real Sentia Spirits product data
+// Real tenant Spirits product data
 const data = [
   {
     product: 'GABA Red',
@@ -32,7 +32,7 @@ const data = [
 
 /**
  * SalesPerformanceChart - Dual-axis bar chart comparing units sold vs revenue
- * Shows sales performance across Sentia product lines
+ * Shows sales performance across tenant product lines
  */
 const SalesPerformanceChart = () => {
   return (

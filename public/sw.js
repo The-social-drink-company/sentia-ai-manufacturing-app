@@ -408,5 +408,6 @@ self.addEventListener('notificationclick', event => {
   );
 });
 
-console.log('[SW] Sentia Manufacturing Service Worker loaded successfully');
+console.log('[SW] CapLiquify Platform Service Worker loaded successfully');
+
 

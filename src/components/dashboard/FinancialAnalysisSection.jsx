@@ -20,7 +20,7 @@ const FinancialAnalysisSection = () => {
           Comprehensive Financial Analysis
         </h2>
         <p className="text-gray-600 mt-2 leading-relaxed">
-          Integrated Sales, Stock, and P&L visualizations with real Sentia Spirits data
+          Integrated Sales, Stock, and P&L visualizations with real tenant Spirits data
         </p>
       </div>
 

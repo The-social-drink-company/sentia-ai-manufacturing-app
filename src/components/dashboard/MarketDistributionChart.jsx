@@ -2,7 +2,7 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recha
 import ChartCard from '@/components/charts/ChartCard'
 import { chartColors } from '@/utils/chartColors'
 
-// Real Sentia market distribution data
+// Real tenant market distribution data
 const data = [
   { name: 'UK Market', value: 65 },
   { name: 'USA Market', value: 35 },

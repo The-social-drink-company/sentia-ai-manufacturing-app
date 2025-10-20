@@ -33,7 +33,7 @@ $databases = @(
         User = "sentia_dev_user"
         Plan = "free"
         Region = "oregon"
-        Description = "Development database for Sentia Manufacturing"
+        Description = "Development database for CapLiquify Platform"
     },
     @{
         Name = "sentia-db-testing"
@@ -41,7 +41,7 @@ $databases = @(
         User = "sentia_test_user"
         Plan = "free"
         Region = "oregon"
-        Description = "Testing/UAT database for Sentia Manufacturing"
+        Description = "Testing/UAT database for CapLiquify Platform"
     },
     @{
         Name = "sentia-db-production"

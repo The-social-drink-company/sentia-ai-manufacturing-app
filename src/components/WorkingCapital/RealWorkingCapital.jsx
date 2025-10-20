@@ -175,7 +175,7 @@ const RealWorkingCapital = () => {
           value={currency(displayData.workingCapital)}
           helper="Assets − Liabilities"
           tone="primary"
-          dataSource="Sentia Database"
+          dataSource="Manufacturing Database"
           trend={displayData.advanced?.efficiency?.workingCapitalTurnover}
         />
         <MetricCard
@@ -183,7 +183,7 @@ const RealWorkingCapital = () => {
           value={displayData.currentRatio?.toFixed(2) || 'N/A'}
           helper="Target ≥ 2.0"
           tone={displayData.currentRatio >= 2 ? 'success' : 'warning'}
-          dataSource="Sentia Database"
+          dataSource="Manufacturing Database"
         />
         <MetricCard
           label="Cash Conversion Cycle"
@@ -198,7 +198,7 @@ const RealWorkingCapital = () => {
               ? 'success'
               : 'warning'
           }
-          dataSource="Sentia Database"
+          dataSource="Manufacturing Database"
         />
         <MetricCard
           label="WC Efficiency"
@@ -359,28 +359,28 @@ const RealWorkingCapital = () => {
 
       <Card>
         <CardHeader>
-          <CardTitle>Balance Summary (Live from Sentia Database)</CardTitle>
+          <CardTitle>Balance Summary (Live from Manufacturing Database)</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-3 md:grid-cols-2">
           <LineItem
             label="Receivables"
             value={currency(displayData.accountsReceivable || 0)}
-            dataSource="Sentia Database"
+            dataSource="Manufacturing Database"
           />
           <LineItem
             label="Payables"
             value={currency(displayData.accountsPayable || 0)}
-            dataSource="Sentia Database"
+            dataSource="Manufacturing Database"
           />
           <LineItem
             label="Inventory"
             value={currency(displayData.inventory || 0)}
-            dataSource="Sentia Database"
+            dataSource="Manufacturing Database"
           />
           <LineItem
             label="Cash Position"
             value={currency(displayData.cash || 0)}
-            dataSource="Sentia Database"
+            dataSource="Manufacturing Database"
           />
         </CardContent>
       </Card>

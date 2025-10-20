@@ -564,7 +564,7 @@ const FinancialReports = () => {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between text-sm gap-2">
             <div className="flex items-center space-x-2 text-blue-800 dark:text-blue-200">
               <CalendarIcon className="w-4 h-4" />
-              <span>Data sourced from Sentia manufacturing finance services</span>
+              <span>Data sourced from manufacturing finance services</span>
             </div>
             {lastUpdated && (
               <span className="text-blue-600 dark:text-blue-400">

@@ -35,13 +35,13 @@ const loginHTML = `
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sentia Manufacturing - Sign In</title>
+    <title>CapLiquify Platform - Sign In</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-50 min-h-screen flex items-center justify-center">
     <div class="max-w-md w-full space-y-8">
         <div class="text-center">
-            <h1 class="text-3xl font-bold text-gray-900 mb-2">Sentia Manufacturing</h1>
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">CapLiquify Platform</h1>
             <p class="text-gray-600">Manufacturing Intelligence Platform</p>
         </div>
         
@@ -355,4 +355,5 @@ app.listen(PORT, '0.0.0.0', () => {
 })
 
 module.exports = app
+
 

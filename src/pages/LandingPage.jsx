@@ -92,7 +92,7 @@ const LandingPage = () => {
                 <button
                   onClick={handlePrimaryCTA}
                   className="group inline-flex items-center gap-2 rounded-xl bg-white px-8 py-4 text-base font-semibold text-blue-700 shadow-xl transition-all hover:scale-105 hover:shadow-2xl focus:outline-none focus:ring-4 focus:ring-blue-300 sm:text-lg"
-                  aria-label="Sign in to Capliquify Dashboard"
+                  aria-label="Sign in to CapLiquify Dashboard"
                 >
                   Sign In
                   <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
@@ -181,7 +181,7 @@ const LandingPage = () => {
                 <SignInButton mode="modal" redirectUrl="/app/dashboard">
                   <button
                     className="group inline-flex items-center gap-2 rounded-xl bg-white px-10 py-5 text-lg font-semibold text-purple-700 shadow-2xl transition-all hover:scale-105 hover:shadow-purple-900/50 focus:outline-none focus:ring-4 focus:ring-purple-300 sm:text-xl"
-                    aria-label="Get started with Capliquify Dashboard"
+                    aria-label="Get started with CapLiquify Dashboard"
                   >
                     Get Started
                     <ArrowRight className="h-6 w-6 transition-transform group-hover:translate-x-1" />
@@ -199,9 +199,9 @@ const LandingPage = () => {
           <div className="flex flex-col items-center justify-between gap-6 sm:flex-row">
             {/* Company Name */}
             <div className="text-center sm:text-left">
-              <h3 className="text-xl font-bold text-white">Capliquify</h3>
+              <h3 className="text-xl font-bold text-white">CapLiquify</h3>
               <p className="mt-1 text-sm text-slate-400">
-                &copy; {new Date().getFullYear()} Capliquify. All rights reserved.
+                &copy; {new Date().getFullYear()} CapLiquify. All rights reserved.
               </p>
             </div>
 

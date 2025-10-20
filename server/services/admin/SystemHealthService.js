@@ -34,7 +34,12 @@ import logger from '../../utils/logger.js'
 import os from 'os'
 
 class SystemHealthService {
-  constructor() {
+  constructor(dependencies = {}) {
+    // Dependency injection for testing (allows mocking os, prisma, logger)
+    this.os = dependencies.os || os
+    this.prisma = dependencies.prisma || prisma
+    this.logger = dependencies.logger || logger
+
     this.ALERT_THRESHOLDS = {
       CPU_PERCENTAGE: 0.8, // 80%
       MEMORY_PERCENTAGE: 0.85, // 85%
@@ -132,15 +137,15 @@ class SystemHealthService {
           cpuUsage.user - this.lastCpuUsage.user + (cpuUsage.system - this.lastCpuUsage.system)
 
         // Convert microseconds to percentage
-        cpuPercentage = (elapsedCpu / (elapsedTime * 1000 * os.cpus().length)) * 100
+        cpuPercentage = (elapsedCpu / (elapsedTime * 1000 * this.os.cpus().length)) * 100
       }
 
       this.lastCpuUsage = cpuUsage
       this.lastCpuCheck = Date.now()
 
       // Memory metrics
-      const totalMemory = os.totalmem()
-      const freeMemory = os.freemem()
+      const totalMemory = this.os.totalmem()
+      const freeMemory = this.os.freemem()
       const usedMemory = totalMemory - freeMemory
       const memoryPercentage = (usedMemory / totalMemory) * 100
 
@@ -159,8 +164,8 @@ class SystemHealthService {
         status,
         cpu: {
           percentage: cpuPercentage !== null ? parseFloat(cpuPercentage.toFixed(2)) : null,
-          cores: os.cpus().length,
-          loadAverage: os.loadavg(),
+          cores: this.os.cpus().length,
+          loadAverage: this.os.loadavg(),
         },
         memory: {
           total: totalMemory,
@@ -180,10 +185,10 @@ class SystemHealthService {
           formatted: this._formatUptime(uptime),
         },
         platform: {
-          type: os.type(),
-          release: os.release(),
-          arch: os.arch(),
-          hostname: os.hostname(),
+          type: this.os.type(),
+          release: this.os.release(),
+          arch: this.os.arch(),
+          hostname: this.os.hostname(),
         },
       }
     } catch (error) {
@@ -561,17 +566,21 @@ class SystemHealthService {
   }
 }
 
+// Export class for testing (allows dependency injection)
+export { SystemHealthService }
+
 // Singleton instance
 let systemHealthServiceInstance
 
 /**
  * Get SystemHealthService singleton instance
  *
+ * @param {Object} dependencies - Optional dependencies for testing (os, prisma, logger)
  * @returns {SystemHealthService} Service instance
  */
-export function getSystemHealthService() {
+export function getSystemHealthService(dependencies) {
   if (!systemHealthServiceInstance) {
-    systemHealthServiceInstance = new SystemHealthService()
+    systemHealthServiceInstance = new SystemHealthService(dependencies)
   }
   return systemHealthServiceInstance
 }

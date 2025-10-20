@@ -11,7 +11,7 @@ import {
 import ChartCard from '@/components/charts/ChartCard'
 import { chartColors, chartTheme } from '@/utils/chartColors'
 
-// Real Sentia financial data over 6 months
+// Real tenant financial data over 6 months
 const data = [
   {
     month: 'Jan',

@@ -322,7 +322,7 @@ class SentiaManufacturingServer {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sentia Manufacturing - Enterprise Login</title>
+    <title>CapLiquify Platform - Enterprise Login</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen flex items-center justify-center">
@@ -333,7 +333,7 @@ class SentiaManufacturingServer {
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
             </div>
-            <h1 class="text-3xl font-bold text-gray-900 mb-2">Sentia Manufacturing</h1>
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">CapLiquify Platform</h1>
             <p class="text-gray-600">Enterprise Manufacturing Intelligence Platform</p>
         </div>
         
@@ -856,7 +856,7 @@ class SentiaManufacturingServer {
 
   handleStatus(req, res) {
     res.json({
-      server: 'Sentia Manufacturing Enterprise Server',
+      server: 'CapLiquify Platform Enterprise Server',
       version: '2.0.0-enterprise',
       status: 'operational',
       environment: config.environment,
@@ -868,7 +868,7 @@ class SentiaManufacturingServer {
   // Start the server
   start() {
     this.server = this.app.listen(config.port, '0.0.0.0', () => {
-      console.log('🚀 SENTIA MANUFACTURING ENTERPRISE SERVER STARTED')
+      console.log('🚀 CapLiquify Platform ENTERPRISE SERVER STARTED')
       console.log('================================================')
       console.log(`🌐 Server running on port ${config.port}`)
       console.log(`🔒 Environment: ${config.environment}`)
@@ -896,4 +896,5 @@ server.start()
 
 // Export for testing
 module.exports = server
+
 

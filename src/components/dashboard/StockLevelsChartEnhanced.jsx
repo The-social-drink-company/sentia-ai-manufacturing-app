@@ -11,7 +11,7 @@ import {
 import ChartCard from '@/components/charts/ChartCard'
 import { chartColors, chartTheme } from '@/utils/chartColors'
 
-// Real Sentia inventory data
+// Real tenant inventory data
 const data = [
   {
     product: 'GABA Red',

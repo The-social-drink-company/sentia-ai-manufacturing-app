@@ -7,9 +7,9 @@ const SignUpPage = () => {
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-xl bg-white shadow-lg">
-            <span className="text-3xl font-bold text-blue-600">S</span>
+            <span className="text-3xl font-bold text-blue-600">C</span>
           </div>
-          <h1 className="text-3xl font-bold text-white">Sentia Manufacturing</h1>
+          <h1 className="text-3xl font-bold text-white">CapLiquify Manufacturing</h1>
           <p className="mt-2 text-purple-100">Enterprise Dashboard</p>
         </div>
 
@@ -38,3 +38,4 @@ const SignUpPage = () => {
 }
 
 export default SignUpPage
+

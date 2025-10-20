@@ -70,7 +70,7 @@ Running build command: npm ci --legacy-peer-deps && npm run build...
 ==> Running 'node server.js'
 [ROOT PRIORITY] Handling root request
 [ROOT PRIORITY] Port: 3000
-✅ Sentia Manufacturing Dashboard started
+✅ CapLiquify Manufacturing Platform started
 ```
 
 ### In Browser:
@@ -100,3 +100,4 @@ Once deployed, check:
 ---
 
 **The old "Railway" message is cached - clearing cache is essential!**
+

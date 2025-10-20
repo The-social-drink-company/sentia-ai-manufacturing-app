@@ -1,6 +1,6 @@
 import express from 'express';
 
-// Enterprise admin routes for Sentia Manufacturing Dashboard
+// Enterprise admin routes for CapLiquify Manufacturing Platform
 // Temporary implementation without direct Clerk integration for Railway deployment
 const router = express.Router();
 
@@ -37,7 +37,7 @@ router.get(_'/users', adminMiddleware, async _(req, res) => {
   try {
     const { limit = 50, offset = 0 } = req.query;
     
-    // Complete Sentia Manufacturing Dashboard users aligned with production system
+    // Complete CapLiquify Manufacturing Platform users aligned with production system
     const sentiaUsers = [
       {
         id: 'user_001',

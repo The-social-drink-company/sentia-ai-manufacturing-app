@@ -22,7 +22,7 @@ echo "--------------------------------------------------------------------------
 
 # Check source code for platform branding (exclude tenant name)
 echo "Checking src/ directory..."
-PLATFORM_MATCHES=$(grep -r "Sentia Manufacturing\|Sentia AI\|Sentia Dashboard\|Sentia branding\|real Sentia data\|Sentia database" \
+PLATFORM_MATCHES=$(grep -r "CapLiquify Platform\|Sentia AI\|Sentia Dashboard\|Sentia branding\|real Sentia data\|Sentia database" \
   src/ \
   --exclude-dir=node_modules \
   --exclude="*.test.js" \
@@ -30,7 +30,7 @@ PLATFORM_MATCHES=$(grep -r "Sentia Manufacturing\|Sentia AI\|Sentia Dashboard\|S
 
 if [ "$PLATFORM_MATCHES" -gt 0 ]; then
   echo -e "${RED}❌ Found $PLATFORM_MATCHES platform 'Sentia' references in src/${NC}"
-  grep -rn "Sentia Manufacturing\|Sentia AI\|Sentia Dashboard\|Sentia branding\|real Sentia data\|Sentia database" \
+  grep -rn "CapLiquify Platform\|Sentia AI\|Sentia Dashboard\|Sentia branding\|real Sentia data\|Sentia database" \
     src/ \
     --exclude-dir=node_modules \
     --exclude="*.test.js" \
@@ -43,13 +43,13 @@ fi
 
 echo ""
 echo "Checking services/ directory..."
-SERVICE_MATCHES=$(grep -r "Sentia Manufacturing\|Sentia AI\|real Sentia data\|Sentia database" \
+SERVICE_MATCHES=$(grep -r "CapLiquify Platform\|Sentia AI\|real Sentia data\|Sentia database" \
   services/ \
   --exclude-dir=node_modules 2>/dev/null | wc -l)
 
 if [ "$SERVICE_MATCHES" -gt 0 ]; then
   echo -e "${RED}❌ Found $SERVICE_MATCHES platform 'Sentia' references in services/${NC}"
-  grep -rn "Sentia Manufacturing\|Sentia AI\|real Sentia data\|Sentia database" \
+  grep -rn "CapLiquify Platform\|Sentia AI\|real Sentia data\|Sentia database" \
     services/ \
     --exclude-dir=node_modules 2>/dev/null | head -10
   PLATFORM_REFS=$((PLATFORM_REFS + SERVICE_MATCHES))
@@ -103,15 +103,15 @@ else
 fi
 
 # Check main sidebar
-if grep -q "Capliquify" "src/components/layout/Sidebar.jsx" 2>/dev/null; then
-  echo -e "${GREEN}✅ Main sidebar shows 'Capliquify'${NC}"
+if grep -q "CapLiquify" "src/components/layout/Sidebar.jsx" 2>/dev/null; then
+  echo -e "${GREEN}✅ Main sidebar shows 'CapLiquify'${NC}"
 else
-  echo -e "${RED}❌ Main sidebar missing 'Capliquify' branding${NC}"
+  echo -e "${RED}❌ Main sidebar missing 'CapLiquify' branding${NC}"
   ERRORS=$((ERRORS + 1))
 fi
 
 # Check landing page
-if grep -q "CapLiquify\|Capliquify" "src/pages/LandingPage.jsx" 2>/dev/null; then
+if grep -q "CapLiquify\|CapLiquify" "src/pages/LandingPage.jsx" 2>/dev/null; then
   echo -e "${GREEN}✅ Landing page shows 'CapLiquify' branding${NC}"
 else
   echo -e "${RED}❌ Landing page missing 'CapLiquify' branding${NC}"

@@ -1,4 +1,4 @@
-# Authentication Testing Checklist for Sentia Manufacturing Dashboard
+# Authentication Testing Checklist for CapLiquify Manufacturing Platform
 
 ## Pre-Deployment Verification
 
@@ -292,3 +292,4 @@ done
 **Testing Completed**: **\*\***\_\_\_**\*\***  
 **Tested By**: **\*\***\_\_\_**\*\***  
 **Approved By**: **\*\***\_\_\_**\*\***
+

@@ -1,5 +1,5 @@
 
--- Database Optimization Queries for Sentia Manufacturing Dashboard
+-- Database Optimization Queries for CapLiquify Manufacturing Platform
 -- Performance enhancements for production scale
 
 -- Index optimization for common queries
@@ -35,3 +35,4 @@ ORDER BY date DESC;
 
 -- Refresh materialized view (run via cron job)
 -- REFRESH MATERIALIZED VIEW CONCURRENTLY mv_daily_kpis;
+

@@ -10,7 +10,7 @@
 ## 📊 Project State
 
 ### Application Status
-- **Name**: CapLiquify (formerly Sentia Manufacturing Dashboard)
+- **Name**: CapLiquify (formerly CapLiquify Manufacturing Platform)
 - **Architecture**: Multi-tenant SaaS (Phases 1-2 complete)
 - **Database**: PostgreSQL with multi-tenant schema design
 - **Authentication**: Clerk with correct publishable key configured
@@ -368,3 +368,4 @@ ls -lh backups/post-deployment-crisis-20251019-212523/
 **Restoration Priority**: CRITICAL
 **Expiration**: Never (keep as stable baseline)
 **Next Backup Recommended**: After CapLiquify Phase 3 completion
+

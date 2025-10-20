@@ -1,8 +1,8 @@
-# Sentia Manufacturing Dashboard - Complete Deployment Guide
+# CapLiquify Manufacturing Platform - Complete Deployment Guide
 
 ## Overview
 
-This guide provides step-by-step instructions for deploying the complete Sentia Manufacturing Dashboard with all enterprise-level features, AI/ML capabilities, and MCP server integration.
+This guide provides step-by-step instructions for deploying the complete CapLiquify Manufacturing Platform with all enterprise-level features, AI/ML capabilities, and MCP server integration.
 
 ## Architecture
 
@@ -326,4 +326,5 @@ render logs --service sentia-manufacturing-production
 render logs --service sentia-mcp-server
 ```
 
-This deployment guide ensures your Sentia Manufacturing Dashboard is deployed with all enterprise-level features, AI/ML capabilities, and proper security configurations.
+This deployment guide ensures your CapLiquify Manufacturing Platform is deployed with all enterprise-level features, AI/ML capabilities, and proper security configurations.
+

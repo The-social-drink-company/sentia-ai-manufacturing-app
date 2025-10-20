@@ -1,4 +1,4 @@
-# Sentia Manufacturing Dashboard - Production Deployment Guide
+# CapLiquify Manufacturing Platform - Production Deployment Guide
 
 ## Overview
 
@@ -415,3 +415,4 @@ curl -s https://sentia-manufacturing.railway.app/metrics | jq
 # Deploy to production
 git push origin production
 ```
+

@@ -12,7 +12,7 @@
 
 ## User Story
 
-**As a** DevOps engineer supporting the Sentia Manufacturing Dashboard deployments,
+**As a** DevOps engineer supporting the CapLiquify Manufacturing Platform deployments,
 **I want** Prisma migrations to succeed against the Render production database without pgvector version conflicts,
 **So that** deployment pipelines run uninterrupted and AI features depending on embeddings remain operational.
 
@@ -93,3 +93,4 @@ _Note: Mark staging/production verification as pending if database access is res
 
 - **2025-10-19 16:30 UTC** – Story created, logs captured, remediation plan drafted.
 - _Next_: Implement schema adjustment and documentation update.- **2025-10-19 17:05 UTC** – Removed pgvector version pin, refreshed Render deployment guide, added migration README tip, and ran  `pnpm exec prisma format`. Render prod validation pending once deployment reruns. 
+

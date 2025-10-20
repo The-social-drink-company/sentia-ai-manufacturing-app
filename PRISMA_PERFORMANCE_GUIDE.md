@@ -2,7 +2,7 @@
 
 ## Overview
 
-This guide documents the comprehensive performance optimizations implemented for the Sentia Manufacturing Dashboard database layer using Prisma, multi-tier caching, and query optimization strategies.
+This guide documents the comprehensive performance optimizations implemented for the CapLiquify Manufacturing Platform database layer using Prisma, multi-tier caching, and query optimization strategies.
 
 ## Key Features Implemented
 
@@ -300,3 +300,4 @@ For issues or questions about performance optimization:
 2. Review slow query logs
 3. Analyze cache hit rates
 4. Contact the development team with performance reports
+

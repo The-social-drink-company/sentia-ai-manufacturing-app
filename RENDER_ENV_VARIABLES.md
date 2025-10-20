@@ -274,4 +274,5 @@ For issues with specific integrations:
 ---
 
 Last Updated: September 2025
-Prepared for: Sentia Manufacturing Dashboard on Render
+Prepared for: CapLiquify Manufacturing Platform on Render
+

@@ -1,6 +1,6 @@
 # DISASTER RECOVERY & BUSINESS CONTINUITY PLAN
 
-## Sentia Manufacturing Dashboard
+## CapLiquify Manufacturing Platform
 
 Version: 1.0.0
 Date: 2025-09-14
@@ -12,7 +12,7 @@ Classification: **CRITICAL**
 
 ### Purpose
 
-This Disaster Recovery (DR) and Business Continuity Plan (BCP) ensures the Sentia Manufacturing Dashboard can recover from catastrophic events and maintain critical business operations within defined time objectives.
+This Disaster Recovery (DR) and Business Continuity Plan (BCP) ensures the CapLiquify Manufacturing Platform can recover from catastrophic events and maintain critical business operations within defined time objectives.
 
 ### Key Objectives
 
@@ -277,7 +277,7 @@ railway scale --replicas 2 --environment dr
 #### Initial Incident Notification
 
 ```
-SUBJECT: [CRITICAL] System Incident - Sentia Manufacturing Dashboard
+SUBJECT: [CRITICAL] System Incident - CapLiquify Manufacturing Platform
 
 STATUS: Investigating
 TIME: [Timestamp]
@@ -726,3 +726,4 @@ This DR plan complies with:
 ---
 
 _This Disaster Recovery Plan is a living document and will be updated based on lessons learned from incidents and testing._
+

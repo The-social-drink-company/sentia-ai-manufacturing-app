@@ -103,7 +103,7 @@ JWT_SECRET=sentia-jwt-secret-2025
 
 # Application (REQUIRED)
 VITE_API_BASE_URL=https://[service-name].onrender.com/api
-VITE_APP_TITLE=Sentia Manufacturing Dashboard
+VITE_APP_TITLE=CapLiquify Manufacturing Platform
 
 # AI Services (REQUIRED for AI features)
 ANTHROPIC_API_KEY=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
@@ -203,3 +203,4 @@ For each environment, verify:
 ---
 
 **IMPORTANT**: Render provides PORT automatically (usually 10000). Don't hardcode it!
+

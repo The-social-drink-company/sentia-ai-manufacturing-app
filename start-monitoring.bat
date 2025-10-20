@@ -3,7 +3,7 @@ REM Comprehensive Monitoring System Startup Script for Windows
 REM This script starts the monitoring agent and ensures all dependencies are ready
 
 echo ========================================
-echo Sentia Manufacturing Dashboard
+echo CapLiquify Manufacturing Platform
 echo Comprehensive Monitoring ^& Self-Correction System
 echo ========================================
 echo.
@@ -99,7 +99,7 @@ if "%1"=="stop" (
 )
 
 if "%1"=="help" (
-    echo Sentia Manufacturing Dashboard - Monitoring System
+    echo CapLiquify Manufacturing Platform - Monitoring System
     echo.
     echo Usage: %~nx0 [command]
     echo.

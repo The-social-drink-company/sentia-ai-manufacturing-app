@@ -2,7 +2,7 @@
 
 ## Using Claude Code in VSCode
 
-**Complete step-by-step guide for deploying and managing the Sentia Manufacturing Dashboard**
+**Complete step-by-step guide for deploying and managing the CapLiquify Manufacturing Platform**
 
 ---
 
@@ -23,7 +23,7 @@
 
 ### What This Guide Covers
 
-This guide provides complete instructions for deploying the Sentia Manufacturing Dashboard using Claude Code slash commands in VSCode. It's designed for both new developers and ongoing maintenance.
+This guide provides complete instructions for deploying the CapLiquify Manufacturing Platform using Claude Code slash commands in VSCode. It's designed for both new developers and ongoing maintenance.
 
 ### Architecture Overview
 
@@ -710,3 +710,4 @@ For updates to this guide or commands, check:
 **Remember**: When in doubt, ask Claude Code! The assistant is here to help guide you through any deployment scenarios.
 
 Happy deploying! 🚀
+

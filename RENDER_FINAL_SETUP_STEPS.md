@@ -54,7 +54,7 @@ JWT_SECRET=sentia-jwt-secret-dev-2025
 
 # Application URLs (Required)
 VITE_API_BASE_URL=https://sentia-manufacturing-development.onrender.com/api
-VITE_APP_TITLE=Sentia Manufacturing Dashboard
+VITE_APP_TITLE=CapLiquify Manufacturing Platform
 ```
 
 ### Step 3: Trigger New Deployment
@@ -195,3 +195,4 @@ Your Render Services:
 - Service Logs: Dashboard → Service → Logs
 - Build Logs: Dashboard → Service → Events
 - Health Status: https://[service-name].onrender.com/health
+

@@ -33,7 +33,7 @@ const server = http.createServer((req, res) => {
     res.writeHead(200, { 'Content-Type': 'application/json' })
     res.end(
       JSON.stringify({
-        message: 'Sentia Manufacturing Dashboard API is running',
+        message: 'CapLiquify Manufacturing Platform API is running',
         version: '1.0.5',
         timestamp: new Date().toISOString(),
       })
@@ -56,7 +56,7 @@ const server = http.createServer((req, res) => {
         <head>
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Sentia Manufacturing Dashboard</title>
+          <title>CapLiquify Manufacturing Platform</title>
           <style>
             body { 
               font-family: Arial, sans-serif; 
@@ -116,7 +116,7 @@ const server = http.createServer((req, res) => {
         </head>
         <body>
           <div class="container">
-            <h1>🏭 Sentia Manufacturing Dashboard</h1>
+            <h1>🏭 CapLiquify Manufacturing Platform</h1>
             <p>Server is running successfully!</p>
             
             <div class="status">
@@ -167,7 +167,7 @@ const server = http.createServer((req, res) => {
 })
 
 server.listen(PORT, '0.0.0.0', () => {
-  console.log(`🚀 Sentia Manufacturing Dashboard server running on port ${PORT}`)
+  console.log(`🚀 CapLiquify Manufacturing Platform server running on port ${PORT}`)
   console.log(`📊 Health check: http://localhost:${PORT}/health`)
   console.log(`🔧 API status: http://localhost:${PORT}/api/status`)
   console.log(`🌐 Main app: http://localhost:${PORT}`)
@@ -187,3 +187,4 @@ process.on('SIGINT', () => {
     process.exit(0)
   })
 })
+

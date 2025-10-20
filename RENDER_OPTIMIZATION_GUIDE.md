@@ -2,7 +2,7 @@
 
 ## Overview
 
-This guide documents the comprehensive optimizations implemented to reduce bundle sizes and improve performance for Render deployments of the Sentia Manufacturing Dashboard.
+This guide documents the comprehensive optimizations implemented to reduce bundle sizes and improve performance for Render deployments of the CapLiquify Manufacturing Platform.
 
 ## Problem Addressed
 
@@ -256,3 +256,4 @@ These optimizations have significantly improved the application's performance on
 - **Improved user experience** with lazy loading
 
 Continue monitoring bundle sizes and implementing optimizations as the application grows.
+

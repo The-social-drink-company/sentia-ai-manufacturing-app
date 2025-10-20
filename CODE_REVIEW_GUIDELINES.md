@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This document establishes enterprise-level code review standards for the Sentia Manufacturing Dashboard to ensure code quality, security, and maintainability.
+This document establishes enterprise-level code review standards for the CapLiquify Manufacturing Platform to ensure code quality, security, and maintainability.
 
 ## Review Process
 
@@ -327,3 +327,4 @@ Track and review monthly:
 ---
 
 **Remember**: Code reviews are about improving code quality and sharing knowledge, not about finding fault. Be kind, be thorough, and be constructive.
+

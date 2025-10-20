@@ -1,4 +1,4 @@
-# Sentia Manufacturing Dashboard - Comprehensive Deployment Script
+# CapLiquify Manufacturing Platform - Comprehensive Deployment Script
 # Deploys version 1.0.7 with full Clerk configuration to all environments
 
 Write-Host "🚀 COMPREHENSIVE DEPLOYMENT SCRIPT" -ForegroundColor Green
@@ -95,5 +95,6 @@ Write-Host "Next steps:" -ForegroundColor Yellow
 Write-Host "1. Update environment variables in deployment dashboards" -ForegroundColor White
 Write-Host "2. Redeploy all services" -ForegroundColor White
 Write-Host "3. Verify all deployments are working correctly" -ForegroundColor White
+
 
 

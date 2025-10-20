@@ -289,4 +289,5 @@ Viewer User: viewer@sentiaspirits.com
 **STATUS: PRODUCTION READY**
 **QUALITY: ENTERPRISE GRADE**
 
-The Sentia Manufacturing Dashboard is now fully operational and ready for immediate client use with 100% real data, perfect rendering, and complete functionality.
+The CapLiquify Manufacturing Platform is now fully operational and ready for immediate client use with 100% real data, perfect rendering, and complete functionality.
+

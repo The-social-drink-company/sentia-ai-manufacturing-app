@@ -1,4 +1,4 @@
-# Sentia Manufacturing Dashboard - Simple Deployment Script
+# CapLiquify Manufacturing Platform - Simple Deployment Script
 Write-Host "🚀 DEPLOYING VERSION 1.0.7 WITH FULL CLERK CONFIGURATION" -ForegroundColor Green
 Write-Host ""
 
@@ -21,3 +21,4 @@ Write-Host "3. Verify deployments are working" -ForegroundColor White
 
 Write-Host ""
 Write-Host "🎉 DEPLOYMENT READY!" -ForegroundColor Green
+

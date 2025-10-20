@@ -1,7 +1,7 @@
 /**
  * MCP (Model Context Protocol) Server Implementation
  * Version: 2.0.0 - September 2025
- * Purpose: AI orchestration system for Sentia Manufacturing Dashboard
+ * Purpose: AI orchestration system for CapLiquify Manufacturing Platform
  * Port: 3001 (configurable via MCP_SERVER_PORT)
  */
 
@@ -1277,3 +1277,4 @@ const httpServer = app.listen(PORT + 1, () => {
 
 // Export for testing
 export { app, wss, tools }
+

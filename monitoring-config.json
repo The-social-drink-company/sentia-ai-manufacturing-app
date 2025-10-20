@@ -1,8 +1,8 @@
 {
   "monitoring": {
-    "name": "Sentia Manufacturing Dashboard Monitoring System",
+    "name": "CapLiquify Manufacturing Platform Monitoring System",
     "version": "1.0.0",
-    "description": "Comprehensive monitoring and self-correction system for Sentia Manufacturing Dashboard deployments",
+    "description": "Comprehensive monitoring and self-correction system for CapLiquify Manufacturing Platform deployments",
 
     "urls": [
       {
@@ -211,3 +211,4 @@
     "authentication": false
   }
 }
+

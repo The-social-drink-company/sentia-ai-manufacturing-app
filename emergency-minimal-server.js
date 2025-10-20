@@ -120,7 +120,7 @@ const dashboardHTML = `
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sentia Manufacturing Dashboard</title>
+    <title>CapLiquify Manufacturing Platform</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -130,7 +130,7 @@ const dashboardHTML = `
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <div class="flex items-center">
-                    <h1 class="text-xl font-semibold text-gray-900">Sentia Manufacturing Dashboard</h1>
+                    <h1 class="text-xl font-semibold text-gray-900">CapLiquify Manufacturing Platform</h1>
                 </div>
                 <div class="flex items-center space-x-4">
                     <span class="text-sm text-gray-600" id="userEmail">Welcome, User</span>
@@ -355,3 +355,4 @@ app.listen(PORT, '0.0.0.0', () => {
 })
 
 module.exports = app
+

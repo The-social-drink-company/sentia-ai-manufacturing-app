@@ -1,6 +1,6 @@
 # PERFORMANCE BASELINE DOCUMENTATION
 
-## Sentia Manufacturing Dashboard - Enterprise Performance Standards
+## CapLiquify Manufacturing Platform - Enterprise Performance Standards
 
 Version: 1.0.0
 Date: 2025-09-14
@@ -720,3 +720,4 @@ const SLAMonitor = {
 ---
 
 _This performance baseline documentation establishes the foundation for continuous performance monitoring and optimization._
+

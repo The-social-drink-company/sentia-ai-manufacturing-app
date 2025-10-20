@@ -1,4 +1,4 @@
--- SENTIA MANUFACTURING DASHBOARD - ENTERPRISE DATABASE SCHEMA
+-- CapLiquify Manufacturing Platform - ENTERPRISE DATABASE SCHEMA
 -- Real production database schema for world-class enterprise features
 
 -- Enable required extensions
@@ -376,7 +376,7 @@ CREATE POLICY user_dashboard_policy ON user_dashboards
     FOR ALL TO authenticated
     USING (user_id = current_setting('app.user_id')::INTEGER);
 
-COMMENT ON DATABASE postgres IS 'Sentia Manufacturing Dashboard - Enterprise Database';
+COMMENT ON DATABASE postgres IS 'CapLiquify Manufacturing Platform - Enterprise Database';
 COMMENT ON TABLE users IS 'User authentication and authorization with Clerk integration';
 COMMENT ON TABLE amazon_inventory IS 'Real-time Amazon SP-API inventory data';
 COMMENT ON TABLE amazon_orders IS 'Amazon order data with full order details';

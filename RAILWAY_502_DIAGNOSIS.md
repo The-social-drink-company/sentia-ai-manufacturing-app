@@ -48,7 +48,7 @@ Railway may be timing out the health check. Add to server.js:
 ```javascript
 // Add before httpServer.listen
 app.get('/', (req, res) => {
-  res.send('Sentia Manufacturing Dashboard API Server')
+  res.send('CapLiquify Manufacturing Platform API Server')
 })
 ```
 
@@ -98,3 +98,4 @@ Based on the logs, the server is starting but not completing its initialization.
 2. Ensure PORT environment variable is properly set
 3. Add more verbose logging around the listen() call
 4. Consider adding a simple root route handler for Railway's health checks
+

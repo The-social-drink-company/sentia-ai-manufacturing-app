@@ -10,7 +10,7 @@ Write-Host ""
 $missingVars = @{
     # API URLs
     "VITE_API_BASE_URL" = "https://sentia-manufacturing-dashboard-test.onrender.com/api"
-    "VITE_APP_TITLE" = "Sentia Manufacturing Dashboard"
+    "VITE_APP_TITLE" = "CapLiquify Manufacturing Platform"
     "VITE_APP_VERSION" = "1.0.0"
 
     # Authentication fallback settings

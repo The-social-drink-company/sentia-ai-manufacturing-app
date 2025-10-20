@@ -12,7 +12,7 @@
 
 ## Story Summary
 
-**Goal**: Build professional UI foundation components for the Sentia Manufacturing Dashboard including landing page, navigation, header, and KPI display system.
+**Goal**: Build professional UI foundation components for the CapLiquify Manufacturing Platform including landing page, navigation, header, and KPI display system.
 
 **Business Value**: Transform application from basic demo to professional enterprise dashboard with modern UX patterns matching industry-leading manufacturing platforms.
 
@@ -597,3 +597,4 @@ This story followed **Phase 3: SOLUTIONING** of BMAD-METHOD v6a:
 **Completed**: 2025-10-19
 **Framework**: BMAD-METHOD v6a Phase 3 (SOLUTIONING)
 **Next Steps**: Phase 4 integration work, KPI card dashboard integration, real data connections
+

@@ -111,7 +111,7 @@ AUTO_FIX_ENABLED: true
 NODE_ENV: test
 CORS_ORIGINS: https://sentia-manufacturing-testing.onrender.com
 VITE_API_BASE_URL: https://sentia-manufacturing-testing.onrender.com/api
-VITE_APP_TITLE: Sentia Manufacturing Dashboard (UAT)
+VITE_APP_TITLE: CapLiquify Manufacturing Platform (UAT)
 ENABLE_AUTONOMOUS_TESTING: true
 AUTO_FIX_ENABLED: false
 
@@ -119,7 +119,7 @@ AUTO_FIX_ENABLED: false
 NODE_ENV: production
 CORS_ORIGINS: https://sentia-manufacturing-production.onrender.com
 VITE_API_BASE_URL: https://sentia-manufacturing-production.onrender.com/api
-VITE_APP_TITLE: Sentia Manufacturing Dashboard
+VITE_APP_TITLE: CapLiquify Manufacturing Platform
 ENABLE_AUTONOMOUS_TESTING: false
 AUTO_FIX_ENABLED: false
 LOG_LEVEL: error
@@ -225,3 +225,4 @@ curl https://sentia-manufacturing-production.onrender.com/api/health
 **Configuration completed by:** Claude Code Assistant
 **Review recommended by:** System Administrator
 **Production deployment ETA:** 5-10 minutes
+

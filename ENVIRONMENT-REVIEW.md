@@ -111,7 +111,7 @@ SESSION_SECRET=JtjquFaltrbuQ+8YAwUEJ5kKEvn6LElVPKuBvQ0imKE=
 
 # Frontend Configuration
 VITE_API_BASE_URL=https://sentia-manufacturing-development.onrender.com/api
-VITE_APP_TITLE=Sentia Manufacturing Dashboard
+VITE_APP_TITLE=CapLiquify Manufacturing Platform
 VITE_APP_VERSION=1.0.0
 
 # MCP Server (REMOVE MCP_SERVER_PORT)
@@ -197,7 +197,7 @@ SESSION_SECRET=JtjquFaltrbuQ+8YAwUEJ5kKEvn6LElVPKuBvQ0imKE=
 
 # Frontend Configuration
 VITE_API_BASE_URL=https://sentia-manufacturing-testing.onrender.com/api
-VITE_APP_TITLE=Sentia Manufacturing Dashboard
+VITE_APP_TITLE=CapLiquify Manufacturing Platform
 VITE_APP_VERSION=1.0.0
 
 # MCP Server
@@ -270,3 +270,4 @@ DATABASE_SYNC_INTERVAL=0 */6 * * *
 - All API keys and secrets are the same across environments (this is OK for dev/test)
 - Production should have different keys when deployed
 - Clerk is using production keys even in dev/test (this is intentional for real auth)
+

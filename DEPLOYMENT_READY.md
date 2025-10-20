@@ -2,7 +2,7 @@
 
 ## Build Status: **SUCCESSFUL**
 
-The Sentia Manufacturing Dashboard enterprise transformation is complete and ready for deployment!
+The CapLiquify Manufacturing Platform enterprise transformation is complete and ready for deployment!
 
 ---
 
@@ -224,7 +224,7 @@ dist/
 
 ## Conclusion
 
-The Sentia Manufacturing Dashboard has been successfully transformed into a **world-class enterprise manufacturing intelligence platform**. The application is:
+The CapLiquify Manufacturing Platform has been successfully transformed into a **world-class enterprise manufacturing intelligence platform**. The application is:
 
 - **Built and tested**
 - **Feature complete**
@@ -244,3 +244,4 @@ The Sentia Manufacturing Dashboard has been successfully transformed into a **wo
 ---
 
 _The future of manufacturing intelligence is here. Deploy with confidence!_
+

@@ -28,7 +28,7 @@ PORT=10000
 DATABASE_URL=[GET FROM sentia-db-development]
 CORS_ORIGINS=https://sentia-manufacturing-development.onrender.com
 VITE_API_BASE_URL=https://sentia-manufacturing-development.onrender.com/api
-VITE_APP_TITLE=Sentia Manufacturing Dashboard
+VITE_APP_TITLE=CapLiquify Manufacturing Platform
 VITE_APP_VERSION=1.0.0
 
 # Authentication
@@ -198,3 +198,4 @@ curl https://sentia-manufacturing-production.onrender.com/health
 2. All required variables are set
 3. Service has been deployed after changes
 4. Check logs for specific error messages
+

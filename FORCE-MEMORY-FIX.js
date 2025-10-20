@@ -36,7 +36,7 @@ app.get('/health', (req, res) => {
 
 app.get('*', (req, res) => {
   res.send(`
-    <h1>Sentia Manufacturing Dashboard</h1>
+    <h1>CapLiquify Manufacturing Platform</h1>
     <p>Emergency memory-safe mode active</p>
     <p>Memory usage: ${Math.round(process.memoryUsage().rss / 1024 / 1024)}MB / 1024MB</p>
   `)
@@ -58,3 +58,4 @@ setInterval(() => {
     if (global.gc) global.gc()
   }
 }, 10000)
+

@@ -38,7 +38,7 @@ JWT_SECRET=sentia-jwt-secret-[env]-2025
 ```bash
 CORS_ORIGINS=https://sentia-manufacturing-[env].onrender.com
 VITE_API_BASE_URL=https://sentia-manufacturing-[env].onrender.com/api
-VITE_APP_TITLE=Sentia Manufacturing Dashboard
+VITE_APP_TITLE=CapLiquify Manufacturing Platform
 VITE_APP_VERSION=1.0.0
 ```
 
@@ -408,3 +408,4 @@ Test these after setting variables:
 
 **Last Updated**: September 2025
 **Total Variables**: 100+ (40 required, 60+ optional)
+

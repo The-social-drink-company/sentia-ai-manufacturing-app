@@ -218,7 +218,7 @@ curl https://mcp-server-tkyu.onrender.com/health
 
 ## 🎯 CLIENT HANDOVER STATEMENT
 
-I confirm that the Sentia Manufacturing Dashboard is:
+I confirm that the CapLiquify Manufacturing Platform is:
 
 - ✅ 100% deployed on Render
 - ✅ Using real data only (no mock data)
@@ -252,3 +252,4 @@ I confirm that the Sentia Manufacturing Dashboard is:
 ---
 
 **FINAL STATUS: READY FOR GO-LIVE** ✅
+

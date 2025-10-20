@@ -1286,7 +1286,7 @@ npm run test:integration -- shopify
 
 ## Overview
 
-This guide walks you through connecting your Shopify UK/EU and USA stores to the Sentia Manufacturing Dashboard for real-time sales data integration.
+This guide walks you through connecting your Shopify UK/EU and USA stores to the CapLiquify Manufacturing Platform for real-time sales data integration.
 
 ## Prerequisites
 
@@ -1301,7 +1301,7 @@ This guide walks you through connecting your Shopify UK/EU and USA stores to the
 1. Log in to your Shopify admin: `https://sentia-uk-eu.myshopify.com/admin`
 2. Navigate to **Settings** → **Apps and sales channels** → **Develop apps**
 3. Click **Create an app**
-4. Name: `Sentia Manufacturing Dashboard - UK/EU`
+4. Name: `CapLiquify Manufacturing Platform - UK/EU`
 5. Click **Configure Admin API scopes**
 6. Enable the following scopes:
    - `read_orders` - Read order data
@@ -1638,3 +1638,4 @@ git push origin development
 **Story Status**: ✅ Ready for Implementation
 **Next Step**: Begin Phase 1 - Environment & Connection Setup
 **Estimated Completion**: 2.5 days from start
+

@@ -1,7 +1,7 @@
 @echo off
 echo ========================================
 echo 24/7 Self-Healing Agent Launcher
-echo Sentia Manufacturing Dashboard
+echo CapLiquify Manufacturing Platform
 echo ========================================
 echo.
 

@@ -1,6 +1,6 @@
 
 // Enterprise Service Worker - Advanced Caching and Offline Strategy
-// Sentia Manufacturing Dashboard
+// CapLiquify Manufacturing Platform
 
 const CACHE_NAME = 'sentia-manufacturing-v1.0.3';
 const STATIC_CACHE = 'sentia-static-v1.0.3';
@@ -409,3 +409,4 @@ self.addEventListener('notificationclick', event => {
 });
 
 console.log('[SW] Sentia Manufacturing Service Worker loaded successfully');
+

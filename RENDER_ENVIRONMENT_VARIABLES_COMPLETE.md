@@ -160,7 +160,7 @@ LOG_LEVEL: info
 
 ```yaml
 VITE_API_BASE_URL: https://sentia-manufacturing-[environment].onrender.com/api
-VITE_APP_TITLE: Sentia Manufacturing Dashboard
+VITE_APP_TITLE: CapLiquify Manufacturing Platform
 VITE_APP_VERSION: 1.0.0
 ```
 
@@ -254,3 +254,4 @@ To migrate your data from Neon to Render PostgreSQL:
 ---
 
 **STATUS**: All environment variables configured for Render PostgreSQL. Ready for deployment!
+

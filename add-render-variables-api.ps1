@@ -126,7 +126,7 @@ $allVariables = @{
     
     # Application
     "VITE_API_BASE_URL" = "/api"
-    "VITE_APP_TITLE" = "Sentia Manufacturing Dashboard"
+    "VITE_APP_TITLE" = "CapLiquify Manufacturing Platform"
     "VITE_APP_VERSION" = "1.0.0"
 }
 

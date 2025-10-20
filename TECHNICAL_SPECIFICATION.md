@@ -1,4 +1,4 @@
-# SENTIA MANUFACTURING DASHBOARD - TECHNICAL SPECIFICATION
+# CapLiquify Manufacturing Platform - TECHNICAL SPECIFICATION
 
 ## Complete System Architecture & Implementation Details
 
@@ -803,7 +803,7 @@ MCP_JWT_SECRET=xxx
 # Frontend Configuration
 VITE_API_BASE_URL=/api
 VITE_MCP_SERVER_URL=https://mcp-server-tkyu.onrender.com
-VITE_APP_TITLE=Sentia Manufacturing Dashboard
+VITE_APP_TITLE=CapLiquify Manufacturing Platform
 VITE_APP_VERSION=1.0.10
 
 # Monitoring
@@ -917,3 +917,4 @@ MCP Server:
 **Document Generated**: September 24, 2025
 **Version**: 1.0.0
 **Status**: Complete Handover Package
+

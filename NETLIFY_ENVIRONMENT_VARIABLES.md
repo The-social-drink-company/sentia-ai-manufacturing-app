@@ -14,7 +14,7 @@ Configure these environment variables in your Netlify dashboard under:
 ```bash
 NODE_ENV=production
 VITE_APP_ENV=production
-VITE_APP_NAME=Sentia Manufacturing Dashboard
+VITE_APP_NAME=CapLiquify Manufacturing Platform
 VITE_APP_VERSION=1.0.5
 ```
 
@@ -320,3 +320,4 @@ After adding all variables, trigger a new deployment:
 12. Monitoring and analytics
 
 **Start with Essential variables and add others as needed for specific features!** 🌟
+

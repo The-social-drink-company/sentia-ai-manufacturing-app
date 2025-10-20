@@ -1,7 +1,7 @@
 /**
  * Integration Test Suite
  * 
- * Comprehensive testing framework for the Sentia Manufacturing Dashboard
+ * Comprehensive testing framework for the CapLiquify Manufacturing Platform
  * data integration system. Tests all components working together including
  * database connections, API integrations, MCP server communication,
  * security systems, and data synchronization.

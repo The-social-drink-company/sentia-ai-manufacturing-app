@@ -1,8 +1,8 @@
-# Sentia Manufacturing Dashboard - Comprehensive Codebase Index
+# CapLiquify Manufacturing Platform - Comprehensive Codebase Index
 
 ## Overview
 
-This is a comprehensive index of the Sentia Manufacturing Dashboard codebase, documenting all directories, key files, component hierarchy, API endpoints, services, and dependencies.
+This is a comprehensive index of the CapLiquify Manufacturing Platform codebase, documenting all directories, key files, component hierarchy, API endpoints, services, and dependencies.
 
 **Project Type**: Full-Stack Node.js Application with AI Integration
 **Frontend**: React 18 + Vite 4 + Tailwind CSS
@@ -34,7 +34,7 @@ This is a comprehensive index of the Sentia Manufacturing Dashboard codebase, do
 
 ## 🏢 Project Overview
 
-**Sentia Manufacturing Dashboard** is an enterprise-grade full-stack manufacturing management system built with React/Vite frontend and Node.js/Express backend, featuring:
+**CapLiquify Manufacturing Platform** is an enterprise-grade full-stack manufacturing management system built with React/Vite frontend and Node.js/Express backend, featuring:
 
 - **AI-Powered Forecasting** with multiple ML models
 - **Working Capital Management** with optimization algorithms
@@ -86,7 +86,7 @@ This is a comprehensive index of the Sentia Manufacturing Dashboard codebase, do
 ## 📁 Directory Structure
 
 ```
-C:\Projects\Sentia Manufacturing Dashboard\sentia-manufacturing-dashboard\
+C:\Projects\CapLiquify Manufacturing Platform\sentia-manufacturing-dashboard\
 ├── 📁 api/                           # API modules & integrations
 │   ├── 📄 forecasting.js              # Forecasting API endpoints
 │   ├── 📄 optimization.js             # Optimization algorithms
@@ -973,7 +973,7 @@ Test → Production:
 
 ---
 
-_This comprehensive codebase index reflects the state of the Sentia Manufacturing Dashboard as of September 18, 2025, including complete analysis of 180+ React components, 25+ API endpoints, 47+ database models, and 7 external integrations. For the most current information, refer to the git commit history and deployment logs._
+_This comprehensive codebase index reflects the state of the CapLiquify Manufacturing Platform as of September 18, 2025, including complete analysis of 180+ React components, 25+ API endpoints, 47+ database models, and 7 external integrations. For the most current information, refer to the git commit history and deployment logs._
 
 **Key Statistics:**
 
@@ -986,3 +986,4 @@ _This comprehensive codebase index reflects the state of the Sentia Manufacturin
 - **305 NPM Scripts** for comprehensive development workflow
 
 This codebase represents a world-class enterprise manufacturing dashboard with complete AI integration, real-time analytics, and comprehensive business intelligence capabilities.
+

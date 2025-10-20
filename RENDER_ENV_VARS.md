@@ -23,7 +23,7 @@ VITE_FORCE_MOCK_AUTH=false
 ```env
 NODE_ENV=development
 VITE_API_BASE_URL=https://sentia-manufacturing-development.onrender.com/api
-VITE_APP_TITLE=Sentia Manufacturing Dashboard
+VITE_APP_TITLE=CapLiquify Manufacturing Platform
 VITE_APP_VERSION=2.0.0
 ```
 
@@ -67,3 +67,4 @@ After deployment, verify at: https://sentia-manufacturing-development.onrender.c
 2. Clicking buttons should redirect to Clerk (clerk.financeflo.ai)
 3. After authentication, should redirect to /dashboard
 4. NO MOCK AUTH - Real users only
+

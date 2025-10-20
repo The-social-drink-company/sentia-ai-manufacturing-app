@@ -1,8 +1,8 @@
-# 🚀 Netlify Deployment Guide for Sentia Manufacturing Dashboard
+# 🚀 Netlify Deployment Guide for CapLiquify Manufacturing Platform
 
 ## 📋 **DEPLOYMENT PACKAGE READY**
 
-I've prepared your Sentia Manufacturing Dashboard for Netlify deployment with all enterprise features and optimizations.
+I've prepared your CapLiquify Manufacturing Platform for Netlify deployment with all enterprise features and optimizations.
 
 ## 🎯 **DEPLOYMENT OPTIONS**
 
@@ -166,4 +166,5 @@ If you encounter any issues:
 3. Ensure all environment variables are set
 4. Test locally with `npm run build && npm run preview`
 
-**Your Sentia Manufacturing Dashboard is ready for world-class Netlify deployment!** 🌟
+**Your CapLiquify Manufacturing Platform is ready for world-class Netlify deployment!** 🌟
+

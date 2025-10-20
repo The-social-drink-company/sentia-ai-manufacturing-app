@@ -1,4 +1,4 @@
-# Test User Scenarios for Sentia Manufacturing Dashboard
+# Test User Scenarios for CapLiquify Manufacturing Platform
 
 ## Test User Accounts
 
@@ -428,3 +428,4 @@
 **Document Version**: 1.0  
 **Last Updated**: September 2025  
 **Next Review**: October 2025
+

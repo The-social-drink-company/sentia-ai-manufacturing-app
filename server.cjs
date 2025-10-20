@@ -13,5 +13,6 @@ app.get('*', (req, res) => {
 });
 
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`🚀 Sentia Manufacturing Dashboard running on port ${PORT}`);
+  console.log(`🚀 CapLiquify Manufacturing Platform running on port ${PORT}`);
 });
+

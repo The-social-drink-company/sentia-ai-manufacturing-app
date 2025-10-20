@@ -2,7 +2,7 @@
 
 ## New Admin Users Added to System
 
-The following admin users have been added to the Sentia Manufacturing Dashboard system:
+The following admin users have been added to the CapLiquify Manufacturing Platform system:
 
 ### 1. Daniel Kenny
 
@@ -91,3 +91,4 @@ After setup, test each user can:
 ---
 
 **Note**: This setup provides immediate admin access for the FinanceFlo project stakeholders while maintaining enterprise security standards.
+

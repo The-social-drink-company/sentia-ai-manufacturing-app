@@ -30,7 +30,7 @@
 
 ## Epic Summary
 
-**Goal**: Transform the Sentia Manufacturing Dashboard from a functional prototype into a production-ready application with polished UX, comprehensive error handling, and modern UI design.
+**Goal**: Transform the CapLiquify Manufacturing Platform from a functional prototype into a production-ready application with polished UX, comprehensive error handling, and modern UI design.
 
 **Business Value**: Deliver a professional, production-ready manufacturing intelligence platform that users trust and enjoy using.
 
@@ -51,7 +51,7 @@
 
 ### Problem Statement
 
-After EPIC-002 completion, the Sentia Manufacturing Dashboard has:
+After EPIC-002 completion, the CapLiquify Manufacturing Platform has:
 - ✅ Real data from 4 external APIs (Xero, Shopify, Amazon, Unleashed)
 - ✅ Zero mock data violations
 - ✅ Production-ready backend infrastructure
@@ -832,3 +832,4 @@ NEXT EPIC
 **Framework**: BMAD-METHOD v6a Phase 4
 **Estimated Duration**: 3 weeks (15 days)
 **Projected Duration**: ~4 days (if EPIC-002 velocity holds)
+

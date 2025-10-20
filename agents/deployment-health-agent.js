@@ -238,7 +238,7 @@ router.get('/health', (req, res) => {
 
   async createEnvTemplate(issue) {
     try {
-      const envTemplate = `# Sentia Manufacturing Dashboard Environment Variables
+      const envTemplate = `# CapLiquify Manufacturing Platform Environment Variables
 
 # Authentication
 VITE_CLERK_PUBLISHABLE_KEY=pk_test_Y2hhbXBpb24tYnVsbGRvZy05Mi5jbGVyay5hY2NvdW50cy5kZXYk

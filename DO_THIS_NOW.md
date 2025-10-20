@@ -36,7 +36,7 @@ VITE_FORCE_CLERK_AUTH=true
 VITE_DISABLE_AUTH_FALLBACK=true
 VITE_API_BASE_URL=/api
 API_BASE_URL=/api
-VITE_APP_TITLE=Sentia Manufacturing Dashboard
+VITE_APP_TITLE=CapLiquify Manufacturing Platform
 VITE_APP_VERSION=1.0.5
 CORS_ORIGINS=https://sentia-manufacturing-production.onrender.com
 MCP_SERVER_URL=https://mcp-server-tkyu.onrender.com
@@ -150,3 +150,4 @@ If still getting 502 after adding variables:
 
 **TIME IS CRITICAL - PRODUCTION IS DOWN**
 **Follow Step 1-5 above to restore service immediately!**
+

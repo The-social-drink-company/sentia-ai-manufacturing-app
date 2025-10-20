@@ -14,7 +14,7 @@
 
 ## Overview
 
-The MCP (Model Context Protocol) Server integration provides centralized AI orchestration and API management for the Sentia Manufacturing Dashboard. It connects all external services (Xero, Shopify, Amazon) through a unified interface and provides AI-powered manufacturing intelligence.
+The MCP (Model Context Protocol) Server integration provides centralized AI orchestration and API management for the CapLiquify Manufacturing Platform. It connects all external services (Xero, Shopify, Amazon) through a unified interface and provides AI-powered manufacturing intelligence.
 
 ### Key Benefits
 
@@ -505,3 +505,4 @@ fetch('/api/mcp/ai/analyze-quality', {
 **Last Updated**: December 2024
 **Version**: 1.0.0
 **Support**: support@sentia.com
+

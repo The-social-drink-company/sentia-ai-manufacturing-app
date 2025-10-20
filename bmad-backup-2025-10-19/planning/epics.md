@@ -523,7 +523,7 @@ Mock data undermines user trust and prevents production deployment. Real data in
 
 ### Epic Goal
 
-Transform the Sentia Manufacturing Dashboard to match the professional mockup design at https://manufacture-ng7zmx.manus.space/, achieving ≥90% visual consistency with the target design while maintaining all current functionality and improving user experience.
+Transform the CapLiquify Manufacturing Platform to match the professional mockup design at https://manufacture-ng7zmx.manus.space/, achieving ≥90% visual consistency with the target design while maintaining all current functionality and improving user experience.
 
 ### Business Value
 
@@ -1218,3 +1218,4 @@ Production deployment without proper preparation risks downtime, data loss, and 
 **Framework**: BMAD-METHOD v6a Phase 2 (Planning)
 **Generated**: 2025-10-19
 **Maintained By**: Development Team
+

@@ -10,7 +10,7 @@
 ## 📊 Project State
 
 ### Application Information
-- **Name**: Sentia Manufacturing Dashboard
+- **Name**: CapLiquify Manufacturing Platform
 - **Architecture**: Single-tenant React + Node.js application
 - **Database**: PostgreSQL with Prisma ORM (single schema)
 - **Authentication**: Clerk (development bypass mode)
@@ -281,3 +281,4 @@ If issues arise during transformation:
 **Backup Type**: Pre-transformation baseline
 **Restoration Priority**: CRITICAL (required for rollback)
 **Expiration**: Never (keep indefinitely as baseline reference)
+

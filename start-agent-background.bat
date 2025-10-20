@@ -2,7 +2,7 @@
 title Sentia 24/7 Self-Healing Agent - Starting...
 echo ========================================
 echo 24/7 Self-Healing Agent - Background Mode
-echo Sentia Manufacturing Dashboard  
+echo CapLiquify Manufacturing Platform  
 echo ========================================
 echo.
 

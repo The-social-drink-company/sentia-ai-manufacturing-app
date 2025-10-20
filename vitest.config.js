@@ -11,6 +11,8 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+      // Mock optional dependencies that may not be installed
+      'exceljs': path.resolve(__dirname, 'tests/__mocks__/exceljs.js'),
     },
   },
   test: {

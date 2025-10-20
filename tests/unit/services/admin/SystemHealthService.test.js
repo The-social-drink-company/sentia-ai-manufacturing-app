@@ -77,9 +77,9 @@ used_memory_peak_human:3.00M
 
     mockGetRedisClient.mockResolvedValue(mockRedisClient)
 
-    // Mock os module functions
-    os.totalmem.mockReturnValue(16 * 1024 * 1024 * 1024)
-    os.freemem.mockReturnValue(8 * 1024 * 1024 * 1024)
+    // Mock os module functions with LOW memory usage by default (to avoid HIGH_MEMORY_USAGE alerts)
+    os.totalmem.mockReturnValue(16 * 1024 * 1024 * 1024)  // 16GB total
+    os.freemem.mockReturnValue(13 * 1024 * 1024 * 1024)    // 13GB free = 18.75% used (well below 85% threshold)
     os.cpus.mockReturnValue(new Array(8).fill({ model: 'CPU' }))
     os.loadavg.mockReturnValue([1.5, 1.2, 1.0])
     os.platform.mockReturnValue('linux')
@@ -530,10 +530,7 @@ used_memory_peak_human:3.00M
     })
 
     it('should return empty array when all metrics healthy', async () => {
-      // Mock healthy memory (not triggering HIGH_MEMORY_USAGE alert)
-      os.totalmem.mockReturnValue(16 * 1024 * 1024 * 1024) // 16GB total
-      os.freemem.mockReturnValue(10 * 1024 * 1024 * 1024)   // 10GB free = 37.5% used (below 85% threshold)
-
+      // beforeEach already mocks low memory usage (18.75%), so no alerts expected
       prisma.$queryRaw.mockResolvedValue([{ health_check: 1 }])
       prisma.adminIntegration.findMany.mockResolvedValue([
         { id: 'int-1', name: 'Xero', healthStatus: 'HEALTHY' },
@@ -541,11 +538,7 @@ used_memory_peak_human:3.00M
 
       const result = await SystemHealthService.getHealthAlerts()
 
-      // May have HIGH_MEMORY_USAGE alert if real system memory > 85%
-      expect(Array.isArray(result)).toBe(true)
-      // Check that critical alerts are not present
-      const criticalAlerts = result.filter(a => a.severity === 'CRITICAL')
-      expect(criticalAlerts).toHaveLength(0)
+      expect(result).toEqual([])
     })
   })
 

@@ -1,4 +1,4 @@
-# Sentia Manufacturing Dashboard - Operational Runbook
+# CapLiquify Manufacturing Platform - Operational Runbook
 
 ## Table of Contents
 
@@ -601,3 +601,4 @@ railway restart --service [service-id] --environment [env]
 **Document Version**: 1.0.0
 **Last Updated**: December 15, 2024
 **Next Review**: January 15, 2025
+

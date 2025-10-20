@@ -1,5 +1,5 @@
 # EPIC-UI-001: UI/UX Transformation
-## Sentia Manufacturing Dashboard
+## CapLiquify Manufacturing Platform
 
 **Epic ID**: EPIC-UI-001
 **Status**: ⏳ PENDING
@@ -14,7 +14,7 @@
 
 ## Epic Goal
 
-Transform the Sentia Manufacturing Dashboard UI/UX from its current functional state to a professional, enterprise-grade interface matching the mockup design at https://manufacture-ng7zmx.manus.space/.
+Transform the CapLiquify Manufacturing Platform UI/UX from its current functional state to a professional, enterprise-grade interface matching the mockup design at https://manufacture-ng7zmx.manus.space/.
 
 **Transformation Scope**:
 1. Redesigned landing page with professional marketing experience
@@ -791,3 +791,4 @@ Week 6:
 **Epic Owner**: Developer Agent
 **Created By**: Claude (BMAD PM Agent)
 **Last Updated**: 2025-10-19
+

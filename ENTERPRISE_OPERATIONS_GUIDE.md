@@ -2,7 +2,7 @@
 
 ## System Overview
 
-The Sentia Manufacturing Dashboard is a comprehensive enterprise-grade manufacturing intelligence platform that provides real-time monitoring, predictive analytics, and automated workflows for modern manufacturing operations.
+The CapLiquify Manufacturing Platform is a comprehensive enterprise-grade manufacturing intelligence platform that provides real-time monitoring, predictive analytics, and automated workflows for modern manufacturing operations.
 
 ### Architecture Components
 
@@ -453,3 +453,4 @@ URL: https://your-domain.com/monitoring/dashboard.html
 **Next Review**: October 10, 2025
 
 _This guide should be reviewed and updated quarterly or after major system changes._
+

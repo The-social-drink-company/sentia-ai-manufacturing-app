@@ -233,7 +233,7 @@ export { default as WidgetContainer } from './WidgetContainer';
 ```javascript
 /**
  * UI Component Library
- * Enterprise-grade reusable components for Sentia Manufacturing Dashboard
+ * Enterprise-grade reusable components for CapLiquify Manufacturing Platform
  *
  * BMAD-UI-002: Component Library Structure
  */
@@ -898,3 +898,4 @@ BMAD-UI-002 | 16 hours | 1 hour | 🔥 92% savings
 **Framework**: BMAD-METHOD v6a Phase 4 (Implementation)
 **Next Story**: BMAD-UI-003 (Authentication Flow Verification)
 **Maintained By**: BMAD Dev Team
+

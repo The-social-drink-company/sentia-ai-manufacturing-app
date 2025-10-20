@@ -107,7 +107,7 @@ CLERK_SECRET_KEY=sk_test_EP6iF7prGbq73CscUPCOW8PAKol4pPaBG5iYdsDodq
 
 # Application
 VITE_API_BASE_URL=https://sentia-manufacturing-development.onrender.com/api
-VITE_APP_TITLE=Sentia Manufacturing Dashboard
+VITE_APP_TITLE=CapLiquify Manufacturing Platform
 
 # Session
 SESSION_SECRET=sentia-session-secret-dev-2025
@@ -234,3 +234,4 @@ Keep this secure and don't commit to public repositories.
 **Migration Status**: ✅ COMPLETE
 
 All Railway dependencies have been removed. Your application is now fully configured for Render deployment.
+

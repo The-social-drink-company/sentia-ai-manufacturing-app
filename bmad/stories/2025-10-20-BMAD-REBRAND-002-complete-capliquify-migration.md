@@ -39,7 +39,7 @@ So that users clearly understand CapLiquify is the SaaS platform name, and "Sent
 
 ### Classification
 **CHANGE** (Platform branding):
-- "Sentia Manufacturing" → "CapLiquify Manufacturing"
+- "CapLiquify Platform" → "CapLiquify Manufacturing"
 - "Sentia AI" → "CapLiquify AI"
 - "real Sentia data" → "real tenant data"
 - "Sentia database" → "tenant database" or "manufacturing database"
@@ -62,26 +62,26 @@ So that users clearly understand CapLiquify is the SaaS platform name, and "Sent
 
 #### Files Modified
 1. `src/pages/LandingPage.jsx` (3 changes)
-   - Line 95: aria-label "Capliquify Dashboard"
-   - Line 184: aria-label "Capliquify Dashboard"
-   - Lines 202-204: Footer "Capliquify" (was "Sentia Spirits")
+   - Line 95: aria-label "CapLiquify Dashboard"
+   - Line 184: aria-label "CapLiquify Dashboard"
+   - Lines 202-204: Footer "CapLiquify" (was "Sentia Spirits")
 
 2. `src/pages/SignInPage.jsx` (2 changes)
    - Line 10: Logo icon "C" (was "S")
-   - Line 12: Title "Capliquify Manufacturing"
+   - Line 12: Title "CapLiquify Manufacturing"
 
 3. `src/pages/SignUpPage.jsx` (2 changes)
    - Line 10: Logo icon "C" (was "S")
-   - Line 12: Title "Capliquify Manufacturing"
+   - Line 12: Title "CapLiquify Manufacturing"
 
 4. `src/components/LoadingScreen.jsx` (1 change - completed earlier)
-   - Line 2: Comment "Capliquify branding"
+   - Line 2: Comment "CapLiquify branding"
 
 5. `src/components/layout/Sidebar.jsx` (2 changes - completed earlier)
    - Line 300: Logo icon "C" (was "S")
-   - Line 303: Brand name "Capliquify"
+   - Line 303: Brand name "CapLiquify"
 
-**Business Value**: Users now see correct "Capliquify" branding during authentication and landing experience.
+**Business Value**: Users now see correct "CapLiquify" branding during authentication and landing experience.
 
 ---
 
@@ -153,7 +153,7 @@ So that users clearly understand CapLiquify is the SaaS platform name, and "Sent
 1. **User Documentation** (10 files)
    - User manuals, getting started guides, FAQ
    - Training materials, glossaries
-   - **Action**: Replace "Sentia Manufacturing" → "CapLiquify Manufacturing"
+   - **Action**: Replace "CapLiquify Platform" → "CapLiquify Manufacturing"
 
 2. **Technical Documentation** (15 files)
    - Architecture docs, API docs, component docs
@@ -205,7 +205,7 @@ echo "🔍 Verifying CapLiquify branding..."
 
 # Check for platform "Sentia" references (exclude tenant name)
 echo "❌ Platform 'Sentia' references found:"
-grep -r "Sentia Manufacturing\|Sentia AI\|Sentia Dashboard" src/ docs/ \
+grep -r "CapLiquify Platform\|Sentia AI\|Sentia Dashboard" src/ docs/ \
   --exclude-dir=node_modules \
   --exclude-dir=bmad-backup* \
   --exclude="seed-tenant-sentia-spirits.js" \
@@ -287,12 +287,12 @@ echo "✅ Verification complete!"
 
 ### Risk: Incomplete Migration
 - **Mitigation**: Verification script catches missed references
-- **Example**: grep -r "Sentia Manufacturing" src/
+- **Example**: grep -r "CapLiquify Platform" src/
 
 ---
 
 ## Related Stories
-- BMAD-DEPLOY-001: Initial Capliquify renaming (Render services)
+- BMAD-DEPLOY-001: Initial CapLiquify renaming (Render services)
 - BMAD-REBRAND-001: Phase 1 critical pages (this story's Phase 1)
 - EPIC-007: Authentication enhancement with branded pages
 

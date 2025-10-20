@@ -1,6 +1,6 @@
 # 👨‍💻 Developer Onboarding Checklist
 
-Welcome to the Sentia Manufacturing Dashboard development team! This guide will help you get set up and familiar with our enterprise development workflow.
+Welcome to the CapLiquify Manufacturing Platform development team! This guide will help you get set up and familiar with our enterprise development workflow.
 
 ## Day 1: Environment Setup
 
@@ -324,6 +324,7 @@ Submit feedback to: [DevOps Lead Email]
 
 ---
 
-**Welcome to the team! We're excited to have you contribute to the Sentia Manufacturing Dashboard.**
+**Welcome to the team! We're excited to have you contribute to the CapLiquify Manufacturing Platform.**
 
 _Remember: Don't hesitate to ask questions. We're here to help you succeed!_
+

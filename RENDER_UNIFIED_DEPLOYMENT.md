@@ -2,7 +2,7 @@
 
 ## Single Application with Integrated PostgreSQL & MCP Server
 
-This guide provides complete instructions for deploying the Sentia Manufacturing Dashboard as a single, unified application on Render with integrated PostgreSQL database and MCP AI server.
+This guide provides complete instructions for deploying the CapLiquify Manufacturing Platform as a single, unified application on Render with integrated PostgreSQL database and MCP AI server.
 
 ---
 
@@ -346,3 +346,4 @@ Your deployment is successful when:
 _Last Updated: December 2024_
 _Version: 1.0.0_
 _Status: Ready for Deployment_
+

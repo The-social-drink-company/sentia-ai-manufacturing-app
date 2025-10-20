@@ -1,5 +1,5 @@
 /**
- * Playwright Configuration for Sentia Manufacturing Dashboard
+ * Playwright Configuration for CapLiquify Manufacturing Platform
  * End-to-End Testing Configuration
  */
 
@@ -155,8 +155,9 @@ export default defineConfig({
   // Metadata
   metadata: {
     'test-environment': process.env.NODE_ENV || 'test',
-    application: 'Sentia Manufacturing Dashboard',
+    application: 'CapLiquify Manufacturing Platform',
     version: process.env.npm_package_version || '1.0.0',
     'test-runner': 'Playwright',
   },
 })
+

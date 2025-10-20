@@ -119,7 +119,7 @@ powershell -ExecutionPolicy Bypass -File scripts/setup-task-scheduler.ps1
 
 ### Transformation Overview
 
-**CapLiquify** is the multi-tenant SaaS evolution of the Sentia Manufacturing Dashboard. The transformation converts a single-tenant application into a scalable, enterprise-grade platform supporting 100+ tenants with schema-per-tenant isolation.
+**CapLiquify** is the multi-tenant SaaS evolution of the CapLiquify Manufacturing Platform. The transformation converts a single-tenant application into a scalable, enterprise-grade platform supporting 100+ tenants with schema-per-tenant isolation.
 
 ### Completed Phases ✅
 
@@ -1021,3 +1021,4 @@ This is a **production-ready manufacturing intelligence platform** with enterpri
 - Production hardening pending (EPIC-005) ⏳
 
 **Recommendation**: **95% production-ready** (EPIC-002 & EPIC-003 complete). After 2 manual Render actions (15-20 min), application fully functional. Remaining work: test coverage (2 weeks), production hardening (1.5 weeks) = **3.5 weeks to production**.
+

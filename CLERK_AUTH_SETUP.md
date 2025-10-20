@@ -2,7 +2,7 @@
 
 ## Overview
 
-This guide explains how to configure Clerk for the Sentia Manufacturing Dashboard in both local and Render environments without checking secrets into source control.
+This guide explains how to configure Clerk for the CapLiquify Manufacturing Platform in both local and Render environments without checking secrets into source control.
 
 ## Environment Variables
 
@@ -38,3 +38,4 @@ Set the same variables in Render's dashboard or via `render.yaml` secrets (see `
 - [ ] Run `npm run lint`, `npm run typecheck`, and relevant tests before shipping changes.
 
 Last updated: 2025-09-26
+

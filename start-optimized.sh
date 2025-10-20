@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Optimized startup script for production deployment
-echo "Starting Sentia Manufacturing Dashboard with memory optimization..."
+echo "Starting CapLiquify Manufacturing Platform with memory optimization..."
 
 # Set production environment
 export NODE_ENV=production

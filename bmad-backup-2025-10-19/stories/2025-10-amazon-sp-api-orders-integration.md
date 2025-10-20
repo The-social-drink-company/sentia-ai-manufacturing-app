@@ -160,7 +160,7 @@ class AmazonSPAPIService {
    - Navigate to: https://sellercentral.amazon.com/apps/authorize/consent
    - Go to: **Apps & Services** → **Develop Apps**
    - Click **Add new app client**
-   - App name: `Sentia Manufacturing Dashboard`
+   - App name: `CapLiquify Manufacturing Platform`
    - OAuth redirect URI: `https://capliquify-frontend-prod.onrender.com/amazon/callback`
    - Select roles:
      - View and manage orders
@@ -1187,7 +1187,7 @@ describe('Amazon Error Handling', () => {
 
 ## Overview
 
-Connect your Amazon Seller Central account to the Sentia Manufacturing Dashboard for real-time FBA inventory and order data.
+Connect your Amazon Seller Central account to the CapLiquify Manufacturing Platform for real-time FBA inventory and order data.
 
 ## Prerequisites
 
@@ -1200,7 +1200,7 @@ Connect your Amazon Seller Central account to the Sentia Manufacturing Dashboard
 1. Navigate to: https://sellercentral.amazon.com/apps/manage
 2. Click **Develop Apps** → **Add new app client**
 3. Configure app:
-   - App name: `Sentia Manufacturing Dashboard`
+   - App name: `CapLiquify Manufacturing Platform`
    - OAuth redirect URI: `https://capliquify-frontend-prod.onrender.com/amazon/callback`
 4. Select API roles:
    - **Orders API**: View and manage orders
@@ -1404,3 +1404,4 @@ git push origin development
 **Story Status**: ✅ Ready for Implementation
 **Next Step**: Begin Phase 1 - Amazon SP-API Credential Setup
 **Estimated Completion**: 3 days from start
+

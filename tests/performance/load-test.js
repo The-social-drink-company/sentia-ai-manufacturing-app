@@ -1,5 +1,5 @@
 /**
- * K6 Load Testing Script for Sentia Manufacturing Dashboard
+ * K6 Load Testing Script for CapLiquify Manufacturing Platform
  * Comprehensive load testing with realistic user scenarios
  */
 

@@ -2,7 +2,7 @@
 
 ## Overview
 
-This guide walks through setting up custom domains for your Sentia Manufacturing Dashboard on Render.
+This guide walks through setting up custom domains for your CapLiquify Manufacturing Platform on Render.
 
 ## Prerequisites
 
@@ -368,3 +368,4 @@ When migrating from old domain:
 ---
 
 **Note**: DNS changes can take up to 48 hours to propagate globally, though most changes are visible within 1-2 hours.
+

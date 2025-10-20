@@ -12,7 +12,7 @@ import { fileURLToPath } from 'url'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-console.log('🔧 Sentia Manufacturing Dashboard - Production Deployment Fix')
+console.log('🔧 CapLiquify Manufacturing Platform - Production Deployment Fix')
 console.log('='.repeat(60))
 
 async function runDeploymentFixes() {
@@ -263,3 +263,4 @@ runDeploymentFixes().catch(error => {
   console.error('❌ Deployment fix failed:', error.message)
   process.exit(1)
 })
+

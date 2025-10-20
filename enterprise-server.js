@@ -1,5 +1,5 @@
 /**
- * SENTIA MANUFACTURING DASHBOARD - ENTERPRISE SERVER
+ * CapLiquify Manufacturing Platform - ENTERPRISE SERVER
  *
  * Permanent, bulletproof enterprise-grade server architecture
  * Designed for 99.99% uptime with zero deployment failures
@@ -427,7 +427,7 @@ class SentiaManufacturingServer {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sentia Manufacturing Dashboard</title>
+    <title>CapLiquify Manufacturing Platform</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -442,7 +442,7 @@ class SentiaManufacturingServer {
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                     </div>
-                    <h1 class="text-xl font-semibold text-gray-900">Sentia Manufacturing Dashboard</h1>
+                    <h1 class="text-xl font-semibold text-gray-900">CapLiquify Manufacturing Platform</h1>
                 </div>
                 <div class="flex items-center space-x-4">
                     <div class="flex items-center space-x-2">
@@ -896,3 +896,4 @@ server.start()
 
 // Export for testing
 module.exports = server
+

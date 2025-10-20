@@ -1,4 +1,4 @@
-# Sentia Manufacturing Dashboard: Full-Stack Assessment Report
+# CapLiquify Manufacturing Platform: Full-Stack Assessment Report
 
 ## 1. Project Structure and Organization
 
@@ -52,3 +52,4 @@ The project demonstrates a good understanding of many full-stack best practices.
 - **Performance:** The project has some performance optimizations in place, such as code splitting and asset optimization. However, there are still opportunities for improvement. Consider implementing server-side rendering (SSR) or static site generation (SSG) for better performance and SEO. Also, consider using a content delivery network (CDN) to serve static assets.
 - **Accessibility:** The project does not seem to have a strong focus on accessibility. It's crucial to ensure that the application is accessible to all users, including those with disabilities. Consider using a library like `react-aria` or `downshift` to build accessible components and follow the WCAG guidelines.
 - **Documentation:** The project has a good README file, but it lacks detailed documentation for the codebase, API, and architecture. Good documentation is essential for onboarding new developers and for maintaining the project in the long run. Consider using a tool like JSDoc or TypeDoc to generate documentation from the codebase.
+

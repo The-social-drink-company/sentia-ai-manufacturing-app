@@ -68,7 +68,7 @@ The production service is failing to start because critical environment variable
 **Option B: PowerShell Script**
 
 ```powershell
-cd "C:\Projects\Sentia Manufacturing Dashboard\sentia-manufacturing-dashboard"
+cd "C:\Projects\CapLiquify Manufacturing Platform\sentia-manufacturing-dashboard"
 .\update-render-env-vars.ps1
 # Enter your Render API key when prompted
 ```
@@ -142,3 +142,4 @@ If problems persist after adding environment variables:
 2. Verify all critical variables are set correctly
 3. Ensure latest code from production branch is deployed
 4. Check that build/start commands match configuration
+

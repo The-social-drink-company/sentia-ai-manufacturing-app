@@ -310,4 +310,5 @@ That's it! Your Clerk webhooks will now be configured and verified.
 ---
 
 **Last Updated**: December 2024
-**For**: Sentia Manufacturing Dashboard
+**For**: CapLiquify Manufacturing Platform
+

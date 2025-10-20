@@ -1,9 +1,9 @@
-# Manus Custom API Configuration for Sentia Manufacturing Dashboard
+# Manus Custom API Configuration for CapLiquify Manufacturing Platform
 
 ## 1. RENDER API CONFIGURATION
 
 **Name:** Render Dashboard Management
-**Description:** Complete Render API access for managing Sentia Manufacturing Dashboard deployments, environment variables, service monitoring, and deployment triggers across development, testing, and production environments.
+**Description:** Complete Render API access for managing CapLiquify Manufacturing Platform deployments, environment variables, service monitoring, and deployment triggers across development, testing, and production environments.
 
 ### Required Secrets (Environment Variables):
 
@@ -61,7 +61,7 @@ endpoints:
 ## 2. GITHUB API CONFIGURATION
 
 **Name:** GitHub Repository Management
-**Description:** Full GitHub API access for managing code, branches, pull requests, issues, and deployments for the Sentia Manufacturing Dashboard repository.
+**Description:** Full GitHub API access for managing code, branches, pull requests, issues, and deployments for the CapLiquify Manufacturing Platform repository.
 
 ### Required Secrets:
 
@@ -323,7 +323,7 @@ DATADOG_SITE: 'datadoghq.com'
 
 # New Relic (NEED TO OBTAIN)
 NEW_RELIC_LICENSE_KEY: '[NEED_TO_OBTAIN_FROM_NEWRELIC]'
-NEW_RELIC_APP_NAME: 'Sentia Manufacturing Dashboard'
+NEW_RELIC_APP_NAME: 'CapLiquify Manufacturing Platform'
 
 # Sentry Error Tracking (NEED TO OBTAIN)
 SENTRY_DSN: '[NEED_TO_OBTAIN_FROM_SENTRY]'
@@ -692,3 +692,4 @@ ANTHROPIC_API_KEY: 'sk-ant-api03-_lQzRhrFvw2JeSPoZzlA34DxZvbmrM8H5uC7yya6zsD_86y
 **Configuration Version:** 2.0.0
 **Contact:** admin@financeflo.ai
 **Security Review Required:** YES - API keys may be exposed
+

@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Sentia Manufacturing Dashboard now supports dual authentication methods:
+The CapLiquify Manufacturing Platform now supports dual authentication methods:
 
 1. **Email/Password**: Traditional username and password authentication
 2. **Microsoft OAuth**: Single Sign-On through Azure Active Directory
@@ -23,7 +23,7 @@ The Sentia Manufacturing Dashboard now supports dual authentication methods:
 2. Navigate to **Azure Active Directory** → **App registrations**
 3. Click **New registration**
 4. Configure:
-   - **Name**: `Sentia Manufacturing Dashboard`
+   - **Name**: `CapLiquify Manufacturing Platform`
    - **Supported account types**: `Accounts in any organizational directory and personal Microsoft accounts`
    - **Redirect URI**:
      - Development: `http://localhost:3000/auth/microsoft/callback`
@@ -44,7 +44,7 @@ In your Azure AD app registration:
 
 1. Go to **Certificates & secrets**
 2. Click **New client secret**
-3. Add description: `Sentia Manufacturing Dashboard Secret`
+3. Add description: `CapLiquify Manufacturing Platform Secret`
 4. Set expiration as needed
 5. Copy the secret value immediately (it won't be shown again)
 
@@ -193,3 +193,4 @@ For Microsoft OAuth setup assistance:
 - Verify environment variable configuration
 - Review server logs for authentication errors
 - Test OAuth flow in development first
+

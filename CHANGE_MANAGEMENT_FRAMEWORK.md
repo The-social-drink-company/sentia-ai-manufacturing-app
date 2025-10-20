@@ -1,6 +1,6 @@
 # ENTERPRISE CHANGE MANAGEMENT FRAMEWORK
 
-## Sentia Manufacturing Dashboard
+## CapLiquify Manufacturing Platform
 
 Version: 1.0.0
 Date: 2025-09-14
@@ -12,7 +12,7 @@ Status: **ACTIVE**
 
 ### Purpose
 
-This framework establishes standardized procedures for managing changes to the Sentia Manufacturing Dashboard, ensuring all modifications are properly assessed, approved, tested, and documented according to Fortune 500 enterprise standards.
+This framework establishes standardized procedures for managing changes to the CapLiquify Manufacturing Platform, ensuring all modifications are properly assessed, approved, tested, and documented according to Fortune 500 enterprise standards.
 
 ### Scope
 
@@ -478,3 +478,4 @@ All changes must maintain:
 ---
 
 _This framework is aligned with ITIL v4, ISO 20000, and enterprise best practices for change management._
+

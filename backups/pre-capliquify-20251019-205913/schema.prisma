@@ -1,4 +1,4 @@
-// Sentia Manufacturing Dashboard - Complete Prisma Schema
+// CapLiquify Manufacturing Platform - Complete Prisma Schema
 // Version: 3.0.0 - September 2025 Enterprise Edition
 // Database: PostgreSQL with pgvector extension
 // Features: AI/ML embeddings, MCP integration, real-time analytics
@@ -1115,3 +1115,4 @@ model AdminDeployment {
   @@index([createdAt])
   @@map("admin_deployments")
 }
+

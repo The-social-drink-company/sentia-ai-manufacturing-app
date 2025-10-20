@@ -29,7 +29,7 @@ NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_REDACTED
 
 ```
 VITE_API_BASE_URL=https://sentia-manufacturing-testing.onrender.com/api
-VITE_APP_TITLE=Sentia Manufacturing Dashboard
+VITE_APP_TITLE=CapLiquify Manufacturing Platform
 VITE_APP_VERSION=1.0.0
 VITE_CLERK_PUBLISHABLE_KEY=pk_live_REDACTED
 VITE_CLERK_DOMAIN=clerk.financeflo.ai
@@ -148,3 +148,4 @@ DATABASE_SYNC_INTERVAL=0 */6 * * *
 - **DATABASE_URL**: Use your testing database URL from Render
 
 After you've added these to Render, please share the complete list of environment variables from your testing environment so I can create the proper context documentation.
+

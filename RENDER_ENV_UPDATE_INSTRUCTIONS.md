@@ -41,7 +41,7 @@ The production deployment is failing because critical environment variables are 
 2. **Run the PowerShell Script**
 
    ```powershell
-   cd "C:\Projects\Sentia Manufacturing Dashboard\sentia-manufacturing-dashboard"
+   cd "C:\Projects\CapLiquify Manufacturing Platform\sentia-manufacturing-dashboard"
    .\update-render-env-vars.ps1
    ```
 
@@ -121,3 +121,4 @@ If you encounter issues:
 2. Verify all critical environment variables are set
 3. Ensure the latest code from production branch is deployed
 4. Check that the build command and start command are correct
+

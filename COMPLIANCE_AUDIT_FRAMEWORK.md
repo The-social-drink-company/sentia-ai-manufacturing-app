@@ -1,6 +1,6 @@
 # COMPLIANCE AUDIT FRAMEWORK
 
-## Sentia Manufacturing Dashboard - Enterprise Compliance Standards
+## CapLiquify Manufacturing Platform - Enterprise Compliance Standards
 
 Version: 1.0.0
 Date: 2025-09-14
@@ -12,7 +12,7 @@ Classification: **CONFIDENTIAL**
 
 ### Regulatory Requirements
 
-The Sentia Manufacturing Dashboard complies with:
+The CapLiquify Manufacturing Platform complies with:
 
 - **GDPR** (General Data Protection Regulation) - EU Privacy Law
 - **SOX** (Sarbanes-Oxley Act) - Financial Reporting
@@ -108,7 +108,7 @@ export const GDPRCompliance = {
 # Data Processing Agreement
 
 **Controller**: [Company Name]
-**Processor**: Sentia Manufacturing Dashboard
+**Processor**: CapLiquify Manufacturing Platform
 
 ## Processing Details
 
@@ -1036,3 +1036,4 @@ export const ComplianceTrainingProgram = {
 ---
 
 _This Compliance Audit Framework ensures comprehensive regulatory compliance and continuous improvement of compliance posture._
+

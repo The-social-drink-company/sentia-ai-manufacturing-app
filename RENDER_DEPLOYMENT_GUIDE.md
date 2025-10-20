@@ -1,4 +1,4 @@
-# Render Deployment Guide for Sentia Manufacturing Dashboard
+# Render Deployment Guide for CapLiquify Manufacturing Platform
 
 ## Overview
 
@@ -261,3 +261,4 @@ If issues occur, you can:
 ---
 
 **Note**: Render provides better stability than Railway with automatic SSL, DDoS protection, and global CDN. The migration should resolve your 502 errors and environment variable issues.
+

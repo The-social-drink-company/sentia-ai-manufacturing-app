@@ -19,7 +19,7 @@ def apply_replacements(root: Path, replacements):
 
 replacements = [
     ('Sentia Manufacturing MCP Server', 'CapLiquify MCP Server'),
-    ('Sentia Manufacturing Dashboard', 'CapLiquify Manufacturing Platform'),
+    ('CapLiquify Manufacturing Platform', 'CapLiquify Manufacturing Platform'),
     ('Sentia Manufacturing', 'CapLiquify Platform'),
 ]
 
@@ -38,3 +38,4 @@ dirs = [
 
 for directory in dirs:
     apply_replacements(directory, replacements)
+

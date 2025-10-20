@@ -23,7 +23,7 @@ Use this checklist to verify that each environment has ALL required variables fo
 - [ ] `JWT_SECRET` = `sentia-jwt-secret-development-2025`
 - [ ] `CORS_ORIGINS` = `https://sentia-manufacturing-development.onrender.com`
 - [ ] `VITE_API_BASE_URL` = `https://sentia-manufacturing-development.onrender.com/api`
-- [ ] `VITE_APP_TITLE` = `Sentia Manufacturing Dashboard`
+- [ ] `VITE_APP_TITLE` = `CapLiquify Manufacturing Platform`
 
 ### ✅ API Integrations (Required for Full Features)
 
@@ -78,7 +78,7 @@ Use this checklist to verify that each environment has ALL required variables fo
 - [ ] `JWT_SECRET` = `sentia-jwt-secret-testing-2025`
 - [ ] `CORS_ORIGINS` = `https://sentia-manufacturing-testing.onrender.com`
 - [ ] `VITE_API_BASE_URL` = `https://sentia-manufacturing-testing.onrender.com/api`
-- [ ] `VITE_APP_TITLE` = `Sentia Manufacturing Dashboard`
+- [ ] `VITE_APP_TITLE` = `CapLiquify Manufacturing Platform`
 
 ### ✅ API Integrations
 
@@ -114,7 +114,7 @@ Use this checklist to verify that each environment has ALL required variables fo
 - [ ] `JWT_SECRET` = `sentia-jwt-secret-production-2025` (or generate new)
 - [ ] `CORS_ORIGINS` = `https://sentia-manufacturing-production.onrender.com`
 - [ ] `VITE_API_BASE_URL` = `https://sentia-manufacturing-production.onrender.com/api`
-- [ ] `VITE_APP_TITLE` = `Sentia Manufacturing Dashboard`
+- [ ] `VITE_APP_TITLE` = `CapLiquify Manufacturing Platform`
 
 ### ✅ Production-Specific Settings
 
@@ -267,3 +267,4 @@ node scripts/render-verify.js production
 
 **Last Updated**: September 2025
 **Total Checkpoints**: 150+ across all environments
+

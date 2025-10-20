@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "Starting Sentia Manufacturing Dashboard with migration resolution..."
+echo "Starting CapLiquify Manufacturing Platform with migration resolution..."
 
 # Resolve any failed migrations first
 echo "Resolving failed migration 20250909_api_keys_management..."

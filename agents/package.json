@@ -1,7 +1,7 @@
 {
   "name": "sentia-autonomous-agents",
   "version": "3.0.0",
-  "description": "24/7 Autonomous Agent System for Sentia Manufacturing Dashboard",
+  "description": "24/7 Autonomous Agent System for CapLiquify Manufacturing Platform",
   "type": "module",
   "main": "autonomous-orchestrator.js",
   "scripts": {

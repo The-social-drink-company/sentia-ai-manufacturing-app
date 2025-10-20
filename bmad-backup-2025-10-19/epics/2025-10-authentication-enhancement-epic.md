@@ -149,7 +149,7 @@ export default ProtectedRoute
 **Estimated**: 4 hours (baseline) → 1 hour (projected with 4.1x velocity)
 **Dependencies**: BMAD-AUTH-002 (Protected Routes)
 
-**User Story**: As a user signing in to the Sentia Manufacturing Dashboard, I need a professionally branded authentication experience that matches the application design system, so that I trust the platform and feel confident in the security of the login process.
+**User Story**: As a user signing in to the CapLiquify Manufacturing Platform, I need a professionally branded authentication experience that matches the application design system, so that I trust the platform and feel confident in the security of the login process.
 
 **Acceptance Criteria**:
 - [ ] `SignInPage.jsx` created in `src/pages/`
@@ -820,3 +820,4 @@ VITE_DEVELOPMENT_MODE=false
 **Framework**: BMAD-METHOD v6a Phase 3 (Solutioning) → Phase 4 (Implementation)
 **Generated**: 2025-10-19
 **Maintained By**: Development Team
+

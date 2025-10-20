@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-This runbook provides step-by-step instructions for migrating Sentia Manufacturing Dashboard from Railway to Render with zero downtime.
+This runbook provides step-by-step instructions for migrating CapLiquify Manufacturing Platform from Railway to Render with zero downtime.
 
 **Target Date**: **\*\***\_**\*\***
 **Maintenance Window**: **\*\***\_**\*\***
@@ -380,3 +380,4 @@ Thank you for your patience.
 ---
 
 **Remember:** Stay calm, follow the runbook, and communicate frequently. You've got this! 🚀
+

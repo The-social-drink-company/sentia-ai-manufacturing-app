@@ -1,4 +1,4 @@
-# 🚀 Enterprise Deployment Guide - Sentia Manufacturing Dashboard
+# 🚀 Enterprise Deployment Guide - CapLiquify Manufacturing Platform
 
 ## Quick Start Commands
 
@@ -445,4 +445,5 @@ npm start           # Start production server
 **Version**: 1.0.0
 **Platform**: Render with PostgreSQL
 
-_This guide ensures world-class enterprise deployment practices for the Sentia Manufacturing Dashboard._
+_This guide ensures world-class enterprise deployment practices for the CapLiquify Manufacturing Platform._
+

@@ -1,4 +1,4 @@
--- Complete Database Schema for Sentia Manufacturing Dashboard
+-- Complete Database Schema for CapLiquify Manufacturing Platform
 -- This migration adds all missing tables for production management
 
 -- Enable pgvector extension for AI embeddings

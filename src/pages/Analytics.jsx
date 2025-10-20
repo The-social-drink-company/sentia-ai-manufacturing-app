@@ -12,6 +12,7 @@ import { useIntegrationStatus } from '@/hooks/useIntegrationStatus'
 import AmazonSetupPrompt from '@/components/integrations/AmazonSetupPrompt'
 import ShopifySetupPrompt from '@/components/integrations/ShopifySetupPrompt'
 import { DashboardSkeleton } from '@/components/ui/skeletons/DashboardSkeleton'
+import { FeatureGate } from '@/components/features'
 import {
   ResponsiveContainer,
   LineChart,
@@ -189,66 +190,70 @@ const Analytics = () => {
       </Card>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Pipeline velocity</CardTitle>
-            <CardDescription>Current quarter pipeline value by stage.</CardDescription>
-          </CardHeader>
-          <CardContent className="h-72">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={PIPELINE_SERIES}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="stage" tickLine={false} axisLine={false} />
-                <YAxis tickFormatter={value => `$${Math.round(value / 1000)}k`} />
-                <Tooltip formatter={value => `$${value.toLocaleString()}`} />
-                <Bar dataKey="value" fill="#9333ea" radius={[6, 6, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
+        <FeatureGate feature="advancedAnalytics" mode="overlay">
+          <Card>
+            <CardHeader>
+              <CardTitle>Pipeline velocity</CardTitle>
+              <CardDescription>Current quarter pipeline value by stage.</CardDescription>
+            </CardHeader>
+            <CardContent className="h-72">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={PIPELINE_SERIES}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                  <XAxis dataKey="stage" tickLine={false} axisLine={false} />
+                  <YAxis tickFormatter={value => `$${Math.round(value / 1000)}k`} />
+                  <Tooltip formatter={value => `$${value.toLocaleString()}`} />
+                  <Bar dataKey="value" fill="#9333ea" radius={[6, 6, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        </FeatureGate>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Cohort retention</CardTitle>
-            <CardDescription>Revenue retained and expansion per customer cohort.</CardDescription>
-          </CardHeader>
-          <CardContent className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-border text-sm">
-              <thead className="bg-muted/40 text-left text-xs uppercase tracking-wide text-muted-foreground">
-                <tr>
-                  <th className="px-4 py-2 font-medium">Cohort</th>
-                  <th className="px-4 py-2 font-medium">Customers</th>
-                  <th className="px-4 py-2 font-medium">Revenue retained</th>
-                  <th className="px-4 py-2 font-medium">Expansion</th>
-                  <th className="px-4 py-2 font-medium">Health</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {RETENTION_ROWS.map(row => (
-                  <tr key={row.cohort}>
-                    <td className="px-4 py-3 font-medium text-foreground">{row.cohort}</td>
-                    <td className="px-4 py-3">{row.customers.toLocaleString()}</td>
-                    <td className="px-4 py-3">{row.revenueRetained}</td>
-                    <td className="px-4 py-3">{row.expansion}</td>
-                    <td className="px-4 py-3">
-                      <Badge
-                        variant={
-                          row.health === 'Strong'
-                            ? 'secondary'
-                            : row.health === 'Stable'
-                              ? 'outline'
-                              : 'destructive'
-                        }
-                      >
-                        {row.health}
-                      </Badge>
-                    </td>
+        <FeatureGate feature="advancedAnalytics" mode="overlay">
+          <Card>
+            <CardHeader>
+              <CardTitle>Cohort retention</CardTitle>
+              <CardDescription>Revenue retained and expansion per customer cohort.</CardDescription>
+            </CardHeader>
+            <CardContent className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-border text-sm">
+                <thead className="bg-muted/40 text-left text-xs uppercase tracking-wide text-muted-foreground">
+                  <tr>
+                    <th className="px-4 py-2 font-medium">Cohort</th>
+                    <th className="px-4 py-2 font-medium">Customers</th>
+                    <th className="px-4 py-2 font-medium">Revenue retained</th>
+                    <th className="px-4 py-2 font-medium">Expansion</th>
+                    <th className="px-4 py-2 font-medium">Health</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </CardContent>
-        </Card>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {RETENTION_ROWS.map(row => (
+                    <tr key={row.cohort}>
+                      <td className="px-4 py-3 font-medium text-foreground">{row.cohort}</td>
+                      <td className="px-4 py-3">{row.customers.toLocaleString()}</td>
+                      <td className="px-4 py-3">{row.revenueRetained}</td>
+                      <td className="px-4 py-3">{row.expansion}</td>
+                      <td className="px-4 py-3">
+                        <Badge
+                          variant={
+                            row.health === 'Strong'
+                              ? 'secondary'
+                              : row.health === 'Stable'
+                                ? 'outline'
+                                : 'destructive'
+                          }
+                        >
+                          {row.health}
+                        </Badge>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </CardContent>
+          </Card>
+        </FeatureGate>
       </div>
     </section>
   )

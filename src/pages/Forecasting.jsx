@@ -18,6 +18,7 @@ import {
   Tooltip,
 } from 'recharts'
 import { AlertTriangle, TrendingUp, Database, CheckCircle } from 'lucide-react'
+import { FeatureGate } from '@/components/features'
 
 const Forecasting = () => {
   const [modelKey, setModelKey] = useState('arima')
@@ -185,7 +186,8 @@ const Forecasting = () => {
   }
 
   return (
-    <section className="space-y-6">
+    <FeatureGate feature="aiForcasting" mode="overlay">
+      <section className="space-y-6">
       <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-3xl font-semibold tracking-tight">Demand Forecasting</h1>
@@ -515,6 +517,7 @@ const Forecasting = () => {
         </Card>
       )}
     </section>
+    </FeatureGate>
   )
 }
 

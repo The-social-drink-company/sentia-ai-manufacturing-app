@@ -32,6 +32,7 @@ const TrialSignup = lazy(() => import('@/pages/auth/TrialSignup'))
 const WhatIf = lazy(() => import('@/components/analytics/WhatIfAnalysis'))
 const ScenarioPlanner = lazy(() => import('@/features/forecasting/ScenarioPlanner.jsx'))
 const AssistantPanel = lazy(() => import('@/features/ai-assistant/AssistantPanel.jsx'))
+const SettingsBilling = lazy(() => import('@/pages/SettingsBilling'))
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -489,6 +490,20 @@ const App = () => {
                     <ProtectedRoute>
                       <Suspense fallback={<Loader />}>
                         <AssistantPanel />
+                      </Suspense>
+                    </ProtectedRoute>
+                  </ErrorBoundary>
+                }
+              />
+
+              {/* Settings Routes */}
+              <Route
+                path="/settings/billing"
+                element={
+                  <ErrorBoundary fallbackMessage="Settings Billing page failed to load.">
+                    <ProtectedRoute>
+                      <Suspense fallback={<Loader />}>
+                        <SettingsBilling />
                       </Suspense>
                     </ProtectedRoute>
                   </ErrorBoundary>

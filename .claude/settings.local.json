@@ -110,7 +110,10 @@
       "Bash(! -path \"*/.git/*\" )",
       "Bash(! -path \"*/dist/*\" )",
       "Bash(! -path \"*/build/*\" )",
-      "Bash(! -path \"*/backups/*\" )"
+      "Bash(! -path \"*/backups/*\" )",
+      "Bash(git -C /tmp/bmad-latest log --oneline)",
+      "Bash(git -C /tmp/bmad-latest branch -a)",
+      "Bash(git -C /tmp/bmad-latest log --oneline v6-alpha)"
     ],
     "deny": [],
     "ask": []

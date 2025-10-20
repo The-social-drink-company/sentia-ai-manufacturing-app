@@ -69,6 +69,7 @@ import {
   Copy,
   ExternalLink,
 } from 'lucide-react'
+import { FeatureGate } from '@/components/features'
 
 const WhatIfAnalysisComprehensive = () => {
   const [scenarios, setScenarios] = useState({
@@ -355,7 +356,8 @@ const WhatIfAnalysisComprehensive = () => {
   const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#06B6D4']
 
   return (
-    <div className="space-y-6 p-6 bg-gray-50 min-h-screen">
+    <FeatureGate feature="whatIfAnalysis" mode="overlay">
+      <div className="space-y-6 p-6 bg-gray-50 min-h-screen">
       {/* Header */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <div className="flex items-center justify-between">
@@ -1126,6 +1128,7 @@ const WhatIfAnalysisComprehensive = () => {
         </div>
       )}
     </div>
+    </FeatureGate>
   )
 }
 

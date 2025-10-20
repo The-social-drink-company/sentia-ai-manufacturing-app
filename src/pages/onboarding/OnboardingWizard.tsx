@@ -81,49 +81,56 @@ export default function OnboardingWizard() {
   const [completedSteps, setCompletedSteps] = useState<string[]>([])
   const [onboardingData, setOnboardingData] = useState<any>({})
   const [loading, setLoading] = useState(false)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   const step = ONBOARDING_STEPS[currentStep]
   const StepComponent = step.component
 
   useEffect(() => {
-    // Load any existing onboarding progress
-    loadProgress()
-  }, [])
-
-  const loadProgress = async () => {
-    try {
-      const response = await onboardingService.fetchProgress()
-      if (response.success) {
-        if (response.currentStep !== undefined) {
-          setCurrentStep(response.currentStep)
+    const fetchProgress = async () => {
+      try {
+        const response = await onboardingService.fetchProgress()
+        if (response.success) {
+          if (response.isComplete) {
+            navigate('/dashboard?onboarding=complete&tour=auto')
+            return
+          }
+          if (response.currentStep !== undefined) {
+            setCurrentStep(Math.min(response.currentStep, ONBOARDING_STEPS.length - 1))
+          }
+          if (response.completedSteps) {
+            setCompletedSteps(response.completedSteps)
+          }
+          if (response.data) {
+            setOnboardingData(response.data)
+          }
         }
-        if (response.completedSteps) {
-          setCompletedSteps(response.completedSteps)
-        }
-        if (response.data) {
-          setOnboardingData(response.data)
-        }
+      } catch (error) {
+        console.error('Failed to load onboarding progress:', error)
       }
-    } catch (error) {
-      console.error('Failed to load onboarding progress:', error)
     }
-  }
+
+    fetchProgress()
+  }, [navigate])
 
   const handleNext = async (data: any) => {
     // Save step data
+    const updatedCompletedSteps = Array.from(new Set([...completedSteps, step.id]))
     const newData = { ...onboardingData, [step.id]: data }
+
+    setErrorMessage(null)
     setOnboardingData(newData)
-    setCompletedSteps([...completedSteps, step.id])
+    setCompletedSteps(updatedCompletedSteps)
 
-    // Save progress to API
-    await saveProgress(currentStep + 1, [...completedSteps, step.id], newData)
+    const nextStepIndex = currentStep + 1
 
-    // Move to next step or complete
-    if (currentStep < ONBOARDING_STEPS.length - 1) {
-      setCurrentStep(currentStep + 1)
-    } else {
-      await completeOnboarding(newData)
+    if (nextStepIndex < ONBOARDING_STEPS.length) {
+      await saveProgress(nextStepIndex, updatedCompletedSteps, newData)
+      setCurrentStep(nextStepIndex)
+      return
     }
+
+    await completeOnboarding(newData)
   }
 
   const handleSkip = async () => {
@@ -132,13 +139,15 @@ export default function OnboardingWizard() {
     setOnboardingData(newData)
 
     // Save progress
-    await saveProgress(currentStep + 1, completedSteps, newData)
+    const nextStepIndex = currentStep + 1
 
-    if (currentStep < ONBOARDING_STEPS.length - 1) {
-      setCurrentStep(currentStep + 1)
-    } else {
-      await completeOnboarding(newData)
+    if (nextStepIndex < ONBOARDING_STEPS.length) {
+      await saveProgress(nextStepIndex, completedSteps, newData)
+      setCurrentStep(nextStepIndex)
+      return
     }
+
+    await completeOnboarding(newData)
   }
 
   const handleBack = () => {
@@ -153,7 +162,8 @@ export default function OnboardingWizard() {
     data: any
   ) => {
     try {
-      await onboardingService.saveProgress(nextStep, completed, data)
+      const safeStep = Math.min(nextStep, ONBOARDING_STEPS.length - 1)
+      await onboardingService.saveProgress(safeStep, completed, data)
     } catch (error) {
       console.error('Failed to save progress:', error)
     }
@@ -161,6 +171,7 @@ export default function OnboardingWizard() {
 
   const completeOnboarding = async (data: any) => {
     setLoading(true)
+    setErrorMessage(null)
 
     try {
       // Mark onboarding as complete
@@ -174,6 +185,26 @@ export default function OnboardingWizard() {
       }
     } catch (error) {
       console.error('Error completing onboarding:', error)
+      setErrorMessage(
+        error instanceof Error ? error.message : 'Unable to complete onboarding. Please try again.'
+      )
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleSkipOnboarding = async () => {
+    setLoading(true)
+    setErrorMessage(null)
+
+    try {
+      await onboardingService.skipOnboarding()
+      navigate('/dashboard')
+    } catch (error) {
+      console.error('Failed to skip onboarding:', error)
+      setErrorMessage(
+        error instanceof Error ? error.message : 'Unable to skip onboarding right now. Please try again.'
+      )
     } finally {
       setLoading(false)
     }
@@ -283,9 +314,20 @@ export default function OnboardingWizard() {
                 onNext={handleNext}
                 onSkip={step.optional ? handleSkip : undefined}
                 loading={loading}
+                availableIntegrations={
+                  step.id === 'import' && Array.isArray(onboardingData.integrations)
+                    ? onboardingData.integrations
+                    : []
+                }
               />
             </motion.div>
           </AnimatePresence>
+
+          {errorMessage && (
+            <div className="mt-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              {errorMessage}
+            </div>
+          )}
 
           {/* Navigation */}
           <div className="mt-8 flex items-center justify-between border-t border-gray-200 pt-6">
@@ -313,8 +355,9 @@ export default function OnboardingWizard() {
             </button>
           </p>
           <button
-            onClick={() => navigate('/dashboard')}
-            className="text-sm text-gray-500 hover:text-gray-700"
+            onClick={handleSkipOnboarding}
+            disabled={loading}
+            className="text-sm text-gray-500 hover:text-gray-700 disabled:cursor-not-allowed disabled:opacity-60"
           >
             Skip onboarding and explore on your own →
           </button>

@@ -833,7 +833,7 @@ model Tenant {
 
   // Subscription
   subscriptionId     String?   @map("subscription_id")
-  subscription       Subscription? @relation(fields: [subscriptionId], references: [id])
+  subscription       Subscription? @relation("ActiveSubscription", fields: [subscriptionId], references: [id])
   subscriptionTier   String    @default("starter") @map("subscription_tier") // starter, professional, enterprise
   subscriptionStatus String    @default("TRIAL") @map("subscription_status") // TRIAL, ACTIVE, SUSPENDED, CANCELLED
 
@@ -865,7 +865,7 @@ model Tenant {
   deletedAt DateTime? @map("deleted_at") // Soft delete
 
   // Relations
-  subscriptions      Subscription[]
+  subscriptions      Subscription[] @relation("SubscriptionHistory")
   onboardingProgress OnboardingProgress[]
 
   @@index([slug])
@@ -936,7 +936,8 @@ model Subscription {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   // Relations
-  tenant   Tenant? @relation(fields: [tenantId], references: [id])
+  tenants  Tenant[] @relation("ActiveSubscription")
+  tenant   Tenant? @relation("SubscriptionHistory", fields: [tenantId], references: [id])
   tenantId String? @map("tenant_id")
 
   @@index([status])

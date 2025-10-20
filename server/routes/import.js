@@ -261,24 +261,29 @@ router.post('/auto-map', async (req, res) => {
 
 /**
  * POST /api/import/validate
- * Validate import data
+ * Validate import data (tenant-scoped)
  */
 router.post('/validate', async (req, res) => {
   try {
     const { fileId, dataType, mapping, limit = 100 } = req.body
+    const { tenant } = req
+    const tenantId = tenant.id
     const userId = req.user?.id || 'ANONYMOUS'
 
     if (!fileId || !dataType || !mapping) {
-      return res.status(400).json({ error: 'File ID, data type, and mapping are required' })
+      return res.status(400).json({ success: false, error: 'File ID, data type, and mapping are required' })
     }
 
-    // Get file record
-    const file = await prisma.file.findUnique({
-      where: { id: fileId },
+    // Get file record (tenant-scoped query)
+    const file = await prisma.file.findFirst({
+      where: {
+        id: fileId,
+        tenantId, // Ensure file belongs to tenant
+      },
     })
 
     if (!file) {
-      return res.status(404).json({ error: 'File not found' })
+      return res.status(404).json({ success: false, error: 'File not found' })
     }
 
     // Parse file
@@ -329,6 +334,7 @@ router.post('/validate', async (req, res) => {
 
     // Log audit trail
     await logAudit({
+      tenantId,
       userId,
       action: IMPORT_ACTIONS.VALIDATION_COMPLETED,
       category: 'IMPORT',
@@ -345,27 +351,79 @@ router.post('/validate', async (req, res) => {
     res.json({
       success: true,
       validation: validationResults,
+      tenant: {
+        id: tenant.id,
+        name: tenant.name,
+        tier: tenant.subscriptionTier
+      }
     })
   } catch (error) {
     console.error('Validation error:', error)
-    res.status(500).json({ error: error.message })
+    res.status(500).json({ success: false, error: error.message })
   }
 })
 
 /**
  * POST /api/import/start
- * Start import job
+ * Start import job (tenant-scoped with entity limit check)
  */
-router.post('/start', async (req, res) => {
+router.post('/start', preventReadOnly, async (req, res) => {
   try {
     const { fileId, dataType, mapping, transformations, options } = req.body
+    const { tenant } = req
+    const tenantId = tenant.id
     const userId = req.user?.id || 'ANONYMOUS'
 
     if (!fileId || !dataType || !mapping) {
-      return res.status(400).json({ error: 'File ID, data type, and mapping are required' })
+      return res.status(400).json({ success: false, error: 'File ID, data type, and mapping are required' })
     }
 
-    // Create ImportJob record
+    // Get file to check row count
+    const file = await prisma.file.findFirst({
+      where: {
+        id: fileId,
+        tenantId,
+      },
+    })
+
+    if (!file) {
+      return res.status(404).json({ success: false, error: 'File not found' })
+    }
+
+    // Parse file to get total row count
+    const rows = await parseFile(file.filePath, file.fileType)
+    const importCount = rows.length
+
+    // Check entity limits for bulk import
+    // Note: This will check against tenant's subscription tier limits
+    try {
+      await checkEntityLimit(tenantId, dataType, importCount)
+    } catch (limitError) {
+      await logAudit({
+        tenantId,
+        userId,
+        action: IMPORT_ACTIONS.IMPORT_STARTED,
+        category: 'IMPORT',
+        resourceType: 'IMPORT_JOB',
+        status: STATUS.FAILED,
+        metadata: {
+          fileId,
+          dataType,
+          importCount,
+          reason: 'entity_limit_exceeded',
+          error: limitError.message,
+        },
+      })
+
+      return res.status(403).json({
+        success: false,
+        error: 'Entity limit exceeded',
+        message: limitError.message,
+        importCount,
+      })
+    }
+
+    // Create ImportJob record (with tenant association)
     const importJob = await prisma.importJob.create({
       data: {
         fileId,
@@ -375,11 +433,29 @@ router.post('/start', async (req, res) => {
         options: options || {},
         status: 'PENDING',
         userId,
+        tenantId, // Associate with tenant
+        totalRows: importCount,
       },
     })
 
     // Add to queue
-    await addImportJob(importJob.id, userId, options)
+    await addImportJob(importJob.id, userId, { ...options, tenantId })
+
+    // Log audit trail
+    await logAudit({
+      tenantId,
+      userId,
+      action: IMPORT_ACTIONS.IMPORT_STARTED,
+      category: 'IMPORT',
+      resourceType: 'IMPORT_JOB',
+      resourceId: importJob.id,
+      status: STATUS.SUCCESS,
+      metadata: {
+        fileId,
+        dataType,
+        importCount,
+      },
+    })
 
     res.json({
       success: true,
@@ -387,33 +463,44 @@ router.post('/start', async (req, res) => {
         id: importJob.id,
         status: importJob.status,
         dataType: importJob.dataType,
+        totalRows: importJob.totalRows,
         createdAt: importJob.createdAt,
       },
+      tenant: {
+        id: tenant.id,
+        name: tenant.name,
+        tier: tenant.subscriptionTier
+      }
     })
   } catch (error) {
     console.error('Start import error:', error)
-    res.status(500).json({ error: error.message })
+    res.status(500).json({ success: false, error: error.message })
   }
 })
 
 /**
  * GET /api/import/status/:jobId
- * Get import job status
+ * Get import job status (tenant-scoped)
  */
 router.get('/status/:jobId', async (req, res) => {
   try {
     const { jobId } = req.params
+    const { tenant } = req
+    const tenantId = tenant.id
 
-    // Get database record
-    const importJob = await prisma.importJob.findUnique({
-      where: { id: jobId },
+    // Get database record (tenant-scoped query)
+    const importJob = await prisma.importJob.findFirst({
+      where: {
+        id: jobId,
+        tenantId, // Ensure job belongs to tenant
+      },
       include: {
         file: true,
       },
     })
 
     if (!importJob) {
-      return res.status(404).json({ error: 'Import job not found' })
+      return res.status(404).json({ success: false, error: 'Import job not found' })
     }
 
     // Get queue status
@@ -438,67 +525,136 @@ router.get('/status/:jobId', async (req, res) => {
         },
       },
       queueStatus,
+      tenant: {
+        id: tenant.id,
+        name: tenant.name,
+        tier: tenant.subscriptionTier
+      }
     })
   } catch (error) {
     console.error('Get import status error:', error)
-    res.status(500).json({ error: error.message })
+    res.status(500).json({ success: false, error: error.message })
   }
 })
 
 /**
  * POST /api/import/cancel/:jobId
- * Cancel import job
+ * Cancel import job (tenant-scoped)
  */
-router.post('/cancel/:jobId', async (req, res) => {
+router.post('/cancel/:jobId', preventReadOnly, async (req, res) => {
   try {
     const { jobId } = req.params
+    const { tenant } = req
+    const tenantId = tenant.id
     const userId = req.user?.id || 'ANONYMOUS'
 
+    // Verify job belongs to tenant before cancelling
+    const importJob = await prisma.importJob.findFirst({
+      where: {
+        id: jobId,
+        tenantId,
+      },
+    })
+
+    if (!importJob) {
+      return res.status(404).json({ success: false, error: 'Import job not found' })
+    }
+
     await cancelImportJob(jobId, userId)
+
+    // Log audit trail
+    await logAudit({
+      tenantId,
+      userId,
+      action: IMPORT_ACTIONS.IMPORT_CANCELLED,
+      category: 'IMPORT',
+      resourceType: 'IMPORT_JOB',
+      resourceId: jobId,
+      status: STATUS.SUCCESS,
+    })
 
     res.json({
       success: true,
       message: 'Import job cancelled',
+      tenant: {
+        id: tenant.id,
+        name: tenant.name,
+        tier: tenant.subscriptionTier
+      }
     })
   } catch (error) {
     console.error('Cancel import error:', error)
-    res.status(500).json({ error: error.message })
+    res.status(500).json({ success: false, error: error.message })
   }
 })
 
 /**
  * POST /api/import/retry/:jobId
- * Retry failed import job
+ * Retry failed import job (tenant-scoped)
  */
-router.post('/retry/:jobId', async (req, res) => {
+router.post('/retry/:jobId', preventReadOnly, async (req, res) => {
   try {
     const { jobId } = req.params
+    const { tenant } = req
+    const tenantId = tenant.id
     const userId = req.user?.id || 'ANONYMOUS'
 
+    // Verify job belongs to tenant before retrying
+    const importJob = await prisma.importJob.findFirst({
+      where: {
+        id: jobId,
+        tenantId,
+      },
+    })
+
+    if (!importJob) {
+      return res.status(404).json({ success: false, error: 'Import job not found' })
+    }
+
     await retryImportJob(jobId, userId)
+
+    // Log audit trail
+    await logAudit({
+      tenantId,
+      userId,
+      action: IMPORT_ACTIONS.IMPORT_RETRIED,
+      category: 'IMPORT',
+      resourceType: 'IMPORT_JOB',
+      resourceId: jobId,
+      status: STATUS.SUCCESS,
+    })
 
     res.json({
       success: true,
       message: 'Import job retried',
+      tenant: {
+        id: tenant.id,
+        name: tenant.name,
+        tier: tenant.subscriptionTier
+      }
     })
   } catch (error) {
     console.error('Retry import error:', error)
-    res.status(500).json({ error: error.message })
+    res.status(500).json({ success: false, error: error.message })
   }
 })
 
 /**
  * GET /api/import/jobs
- * List import jobs
+ * List import jobs (tenant-scoped)
  */
 router.get('/jobs', async (req, res) => {
   try {
     const { status, dataType, limit = 50, offset = 0 } = req.query
+    const { tenant } = req
+    const tenantId = tenant.id
     const userId = req.user?.id
 
-    const where = {}
+    // Build tenant-scoped query
+    const where = { tenantId } // Always filter by tenant
     if (status) where.status = status
     if (dataType) where.dataType = dataType
+    // Optionally filter by user if not admin role
     if (userId && req.user?.role !== 'ADMIN') where.userId = userId
 
     const [jobs, totalCount] = await Promise.all([
@@ -520,6 +676,7 @@ router.get('/jobs', async (req, res) => {
         id: job.id,
         status: job.status,
         dataType: job.dataType,
+        totalRows: job.totalRows,
         processedRows: job.processedRows,
         succeededRows: job.succeededRows,
         failedRows: job.failedRows,
@@ -533,10 +690,15 @@ router.get('/jobs', async (req, res) => {
       totalCount,
       limit: parseInt(limit),
       offset: parseInt(offset),
+      tenant: {
+        id: tenant.id,
+        name: tenant.name,
+        tier: tenant.subscriptionTier
+      }
     })
   } catch (error) {
     console.error('List import jobs error:', error)
-    res.status(500).json({ error: error.message })
+    res.status(500).json({ success: false, error: error.message })
   }
 })
 
@@ -605,4 +767,4 @@ function calculateMappingConfidence(mapping) {
 // Export Router
 // ============================================================================
 
-module.exports = router
+export default router

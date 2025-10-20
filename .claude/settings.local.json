@@ -141,7 +141,17 @@
       "Bash(src/components/dashboard/SalesPerformanceChart.jsx)",
       "Bash(src/components/DemandForecasting.jsx )",
       "Bash(src/pages/SignInPage.jsx )",
-      "Bash(src/pages/SignUpPage.jsx)"
+      "Bash(src/pages/SignUpPage.jsx)",
+      "Bash(src/services/WorkingCapitalEngine.js)",
+      "Bash(src/services/DemandForecastingEngine.js)",
+      "Bash(src/services/APIIntegration.js)",
+      "Bash(src/components/dashboard/*.jsx)",
+      "Bash(src/services/*.js)",
+      "Bash(bmad/status/BMAD-WORKFLOW-STATUS.md)",
+      "Bash(chmod:*)",
+      "Bash(bash:*)",
+      "Bash(for i in {1..3})",
+      "Bash(do echo \"=== Run $i ===\")"
     ],
     "deny": [],
     "ask": []

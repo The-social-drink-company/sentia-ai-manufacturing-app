@@ -783,29 +783,7 @@ const DashboardEnterprise = () => {
           </div>
         ) : (
           <KPIGrid
-            kpis={performanceKpis.map((item, index) => {
-              const gradients = ['bg-gradient-revenue', 'bg-gradient-units', 'bg-gradient-margin']
-              // Parse value to extract numeric component for trend determination
-              const numericValue =
-                typeof item.value === 'string'
-                  ? parseFloat(item.value.replace(/[^\d.-]/g, ''))
-                  : item.value
-              const hasTrend = !isNaN(numericValue) && numericValue !== 0
-              return {
-                icon: ['💵', '📦', '📊'][index] || '💵',
-                value: item.value,
-                label: item.label || item.metric,
-                gradient: gradients[index % gradients.length],
-                trend: hasTrend
-                  ? {
-                      value: Math.random() * 20 - 10, // Sample trend data
-                      direction:
-                        Math.random() > 0.5 ? 'up' : Math.random() > 0.25 ? 'down' : 'neutral',
-                    }
-                  : null,
-                valueFormat: 'raw', // Performance values are pre-formatted
-              }
-            })}
+            kpis={performanceKpis}
           />
         )}
       </div>

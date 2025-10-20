@@ -182,7 +182,7 @@ describe('IntegrationService', () => {
       const result = await IntegrationService.testConnection('int-xero')
 
       expect(result.healthy).toBe(true)
-      expect(result.responseTime).toBeGreaterThan(0) // Response time is calculated from Date.now()
+      expect(result.responseTime).toBeGreaterThanOrEqual(0) // Response time can be 0 in fast tests
       expect(result.message).toBe('Health check successful')
 
       expect(prisma.adminIntegration.update).toHaveBeenCalledWith({

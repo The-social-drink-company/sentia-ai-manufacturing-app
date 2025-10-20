@@ -766,6 +766,82 @@ router.post('/impersonate/:userId', async (req, res) => {
 })
 
 // ============================================
+// AUDIT LOGS
+// ============================================
+
+/**
+ * GET /api/master-admin/audit-logs
+ * Fetch audit logs with filtering and pagination
+ */
+router.get('/audit-logs', async (req, res) => {
+  try {
+    const {
+      page = '1',
+      limit = '50',
+      action,
+      startDate,
+      endDate
+    } = req.query
+
+    const offset = (Number(page) - 1) * Number(limit)
+
+    // Build where clause
+    const where: any = {}
+
+    if (action) {
+      where.action = { contains: action as string, mode: 'insensitive' }
+    }
+
+    if (startDate || endDate) {
+      where.createdAt = {}
+      if (startDate) {
+        where.createdAt.gte = new Date(startDate as string)
+      }
+      if (endDate) {
+        where.createdAt.lte = new Date(endDate as string)
+      }
+    }
+
+    const [logs, total] = await Promise.all([
+      prisma.auditLog.findMany({
+        where,
+        skip: offset,
+        take: Number(limit),
+        orderBy: { createdAt: 'desc' },
+        include: {
+          tenant: {
+            select: {
+              id: true,
+              name: true,
+              slug: true
+            }
+          }
+        }
+      }),
+      prisma.auditLog.count({ where })
+    ])
+
+    res.json({
+      success: true,
+      data: logs,
+      pagination: {
+        page: Number(page),
+        limit: Number(limit),
+        total,
+        totalPages: Math.ceil(total / Number(limit))
+      }
+    })
+  } catch (error) {
+    console.error('Error fetching audit logs:', error)
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch audit logs',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    })
+  }
+})
+
+// ============================================
 // HELPER FUNCTIONS
 // ============================================
 

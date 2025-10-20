@@ -148,7 +148,7 @@ const Header = () => {
 
 const HeroSection = () => {
   return (
-    <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
+    <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50" aria-labelledby="hero-heading">
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Left: Text Content */}
@@ -157,11 +157,11 @@ const HeroSection = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <div className="inline-block bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-semibold mb-6">
+            <div className="inline-block bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-semibold mb-6" role="status" aria-label="Product category">
               🚀 AI-Powered Working Capital Management
             </div>
 
-            <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+            <h1 id="hero-heading" className="text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
               Optimize Working Capital,{' '}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
                 Not Just Track It
@@ -173,29 +173,31 @@ const HeroSection = () => {
               Achieve &lt;55 day cash conversion cycles with &gt;85% forecast accuracy.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 mb-8">
+            <div className="flex flex-col sm:flex-row gap-4 mb-8" role="group" aria-label="Call to action buttons">
               <Link
                 to="/sign-up"
-                className="bg-blue-600 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-blue-700 transition-all transform hover:scale-105 shadow-lg hover:shadow-xl text-center"
+                className="bg-blue-600 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-blue-700 transition-all transform hover:scale-105 shadow-lg hover:shadow-xl text-center focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2"
+                aria-label="Start your 14-day free trial - no credit card required"
               >
                 Start 14-Day Free Trial
               </Link>
               <a
                 href="#demo"
-                className="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold text-lg border-2 border-blue-600 hover:bg-blue-50 transition-colors text-center"
+                className="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold text-lg border-2 border-blue-600 hover:bg-blue-50 transition-colors text-center focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2"
+                aria-label="Watch product demo video"
               >
                 Watch Demo
               </a>
             </div>
 
             {/* Trust Indicators */}
-            <div className="flex flex-wrap items-center gap-6 text-sm text-gray-600">
-              <div className="flex items-center gap-2">
-                <Check className="w-5 h-5 text-green-500" />
+            <div className="flex flex-wrap items-center gap-6 text-sm text-gray-600" role="list" aria-label="Trust indicators">
+              <div className="flex items-center gap-2" role="listitem">
+                <Check className="w-5 h-5 text-green-500" aria-hidden="true" />
                 <span>No credit card required</span>
               </div>
-              <div className="flex items-center gap-2">
-                <Check className="w-5 h-5 text-green-500" />
+              <div className="flex items-center gap-2" role="listitem">
+                <Check className="w-5 h-5 text-green-500" aria-hidden="true" />
                 <span>14-day money-back guarantee</span>
               </div>
             </div>
@@ -207,17 +209,36 @@ const HeroSection = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
             className="relative"
+            role="img"
+            aria-label="CapLiquify dashboard preview showing cash conversion cycle of 48 days (down 23% this month) and AI forecast accuracy of 87.3%"
           >
             <div className="relative rounded-2xl shadow-2xl overflow-hidden border-8 border-white bg-gray-900">
               {/* Dashboard Mockup */}
               <div className="p-6 space-y-4">
-                <div className="h-12 bg-gray-800 rounded-lg"></div>
-                <div className="grid grid-cols-3 gap-4">
-                  <div className="h-24 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg"></div>
-                  <div className="h-24 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg"></div>
-                  <div className="h-24 bg-gradient-to-br from-green-500 to-green-600 rounded-lg"></div>
+                <div className="h-12 bg-gray-800 rounded-lg flex items-center px-4">
+                  <div className="w-32 h-3 bg-gray-700 rounded" aria-hidden="true"></div>
                 </div>
-                <div className="h-48 bg-gray-800 rounded-lg"></div>
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="h-24 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex flex-col justify-between p-3">
+                    <div className="w-12 h-2 bg-blue-300 rounded" aria-hidden="true"></div>
+                    <div className="w-16 h-4 bg-white rounded" aria-hidden="true"></div>
+                  </div>
+                  <div className="h-24 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex flex-col justify-between p-3">
+                    <div className="w-12 h-2 bg-purple-300 rounded" aria-hidden="true"></div>
+                    <div className="w-16 h-4 bg-white rounded" aria-hidden="true"></div>
+                  </div>
+                  <div className="h-24 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex flex-col justify-between p-3">
+                    <div className="w-12 h-2 bg-green-300 rounded" aria-hidden="true"></div>
+                    <div className="w-16 h-4 bg-white rounded" aria-hidden="true"></div>
+                  </div>
+                </div>
+                <div className="h-48 bg-gray-800 rounded-lg p-4">
+                  <div className="h-full flex items-end space-x-1">
+                    {[40, 60, 45, 70, 55, 75, 65, 80, 70, 85, 75, 90].map((height, i) => (
+                      <div key={i} className="flex-1 bg-gradient-to-t from-blue-400 to-purple-400 rounded-t" style={{ height: `${height}%` }} aria-hidden="true"></div>
+                    ))}
+                  </div>
+                </div>
               </div>
 
               {/* Floating Metrics */}
@@ -225,6 +246,8 @@ const HeroSection = () => {
                 animate={{ y: [0, -10, 0] }}
                 transition={{ duration: 3, repeat: Infinity }}
                 className="absolute top-4 right-4 bg-white rounded-lg shadow-lg p-4"
+                aria-live="polite"
+                aria-atomic="true"
               >
                 <div className="text-sm text-gray-600">Cash Conversion Cycle</div>
                 <div className="text-2xl font-bold text-green-600">48 days</div>
@@ -235,6 +258,8 @@ const HeroSection = () => {
                 animate={{ y: [0, 10, 0] }}
                 transition={{ duration: 3, repeat: Infinity, delay: 0.5 }}
                 className="absolute bottom-4 left-4 bg-white rounded-lg shadow-lg p-4"
+                aria-live="polite"
+                aria-atomic="true"
               >
                 <div className="text-sm text-gray-600">Forecast Accuracy</div>
                 <div className="text-2xl font-bold text-blue-600">87.3%</div>
@@ -305,10 +330,10 @@ const ProblemSection = () => {
   ]
 
   return (
-    <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
+    <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white" aria-labelledby="problems-heading">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">
+          <h2 id="problems-heading" className="text-4xl font-bold text-gray-900 mb-4">
             Manufacturing Finance is Complex. Your Software Shouldn't Be.
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
@@ -317,7 +342,7 @@ const ProblemSection = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8" role="list" aria-label="Common manufacturing finance problems">
           {problems.map((problem, index) => (
             <motion.div
               key={index}
@@ -326,8 +351,9 @@ const ProblemSection = () => {
               transition={{ duration: 0.5, delay: index * 0.1 }}
               viewport={{ once: true }}
               className="bg-gray-50 rounded-xl p-6 hover:shadow-lg transition-shadow"
+              role="listitem"
             >
-              <div className="text-blue-600 mb-4">{problem.icon}</div>
+              <div className="text-blue-600 mb-4" aria-hidden="true">{problem.icon}</div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">{problem.title}</h3>
               <p className="text-gray-600">{problem.description}</p>
             </motion.div>

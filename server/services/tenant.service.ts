@@ -273,10 +273,189 @@ export class TenantService {
   }
 
   /**
-   * Generate random schema ID
+   * Create PostgreSQL schema for tenant
    */
-  private generateSchemaId(): string {
-    return Math.random().toString(36).substring(2, 15)
+  private async createTenantSchema(schemaName: string): Promise<void> {
+    await prisma.$executeRawUnsafe(`CREATE SCHEMA IF NOT EXISTS "${schemaName}"`)
+  }
+
+  /**
+   * Provision all tenant tables (9 tables)
+   */
+  private async provisionTenantTables(schemaName: string): Promise<void> {
+    const tables = [
+      // 1. Companies
+      `CREATE TABLE "${schemaName}".companies (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        name VARCHAR(255) NOT NULL,
+        legal_name VARCHAR(255),
+        tax_id VARCHAR(50),
+        currency VARCHAR(3) DEFAULT 'USD',
+        fiscal_year_end VARCHAR(5),
+        settings JSONB,
+        is_active BOOLEAN DEFAULT TRUE,
+        created_at TIMESTAMP DEFAULT NOW(),
+        updated_at TIMESTAMP DEFAULT NOW()
+      )`,
+
+      // 2. Products
+      `CREATE TABLE "${schemaName}".products (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        company_id UUID REFERENCES "${schemaName}".companies(id),
+        sku VARCHAR(100) UNIQUE NOT NULL,
+        name VARCHAR(255) NOT NULL,
+        description TEXT,
+        category VARCHAR(100),
+        unit_cost DECIMAL(15, 2),
+        unit_price DECIMAL(15, 2),
+        currency VARCHAR(3) DEFAULT 'USD',
+        reorder_point INTEGER,
+        reorder_quantity INTEGER,
+        lead_time_days INTEGER,
+        is_active BOOLEAN DEFAULT TRUE,
+        created_at TIMESTAMP DEFAULT NOW(),
+        updated_at TIMESTAMP DEFAULT NOW()
+      )`,
+
+      // 3. Sales
+      `CREATE TABLE "${schemaName}".sales (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        company_id UUID REFERENCES "${schemaName}".companies(id),
+        product_id UUID REFERENCES "${schemaName}".products(id),
+        order_number VARCHAR(100),
+        order_date DATE NOT NULL,
+        quantity INTEGER NOT NULL,
+        unit_price DECIMAL(15, 2) NOT NULL,
+        total_amount DECIMAL(15, 2) NOT NULL,
+        currency VARCHAR(3) DEFAULT 'USD',
+        customer_name VARCHAR(255),
+        channel VARCHAR(50),
+        status VARCHAR(50) DEFAULT 'completed',
+        created_at TIMESTAMP DEFAULT NOW(),
+        updated_at TIMESTAMP DEFAULT NOW()
+      )`,
+
+      // 4. Inventory Items
+      `CREATE TABLE "${schemaName}".inventory_items (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        company_id UUID REFERENCES "${schemaName}".companies(id),
+        product_id UUID REFERENCES "${schemaName}".products(id),
+        quantity_on_hand INTEGER DEFAULT 0,
+        total_value DECIMAL(15, 2) DEFAULT 0,
+        location VARCHAR(100),
+        warehouse_id VARCHAR(100),
+        reorder_point INTEGER DEFAULT 0,
+        last_restock_date DATE,
+        created_at TIMESTAMP DEFAULT NOW(),
+        updated_at TIMESTAMP DEFAULT NOW()
+      )`,
+
+      // 5. Forecasts
+      `CREATE TABLE "${schemaName}".forecasts (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        company_id UUID REFERENCES "${schemaName}".companies(id),
+        product_id UUID REFERENCES "${schemaName}".products(id),
+        forecast_date DATE NOT NULL,
+        forecast_type VARCHAR(50),
+        predicted_quantity INTEGER,
+        confidence_score DECIMAL(5, 2),
+        model_version VARCHAR(50),
+        created_at TIMESTAMP DEFAULT NOW(),
+        updated_at TIMESTAMP DEFAULT NOW()
+      )`,
+
+      // 6. Working Capital Metrics
+      `CREATE TABLE "${schemaName}".working_capital_metrics (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        company_id UUID REFERENCES "${schemaName}".companies(id),
+        metric_date DATE NOT NULL,
+        current_assets DECIMAL(15, 2),
+        current_liabilities DECIMAL(15, 2),
+        working_capital DECIMAL(15, 2),
+        current_ratio DECIMAL(10, 4),
+        quick_ratio DECIMAL(10, 4),
+        cash DECIMAL(15, 2),
+        accounts_receivable DECIMAL(15, 2),
+        accounts_payable DECIMAL(15, 2),
+        inventory_value DECIMAL(15, 2),
+        created_at TIMESTAMP DEFAULT NOW(),
+        updated_at TIMESTAMP DEFAULT NOW()
+      )`,
+
+      // 7. Scenarios
+      `CREATE TABLE "${schemaName}".scenarios (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        company_id UUID REFERENCES "${schemaName}".companies(id),
+        name VARCHAR(255) NOT NULL,
+        description TEXT,
+        scenario_type VARCHAR(50),
+        parameters JSONB,
+        results JSONB,
+        created_by UUID,
+        created_at TIMESTAMP DEFAULT NOW(),
+        updated_at TIMESTAMP DEFAULT NOW()
+      )`,
+
+      // 8. API Credentials
+      `CREATE TABLE "${schemaName}".api_credentials (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        company_id UUID REFERENCES "${schemaName}".companies(id),
+        service_name VARCHAR(100) NOT NULL,
+        credentials JSONB,
+        is_active BOOLEAN DEFAULT TRUE,
+        last_used_at TIMESTAMP,
+        created_at TIMESTAMP DEFAULT NOW(),
+        updated_at TIMESTAMP DEFAULT NOW()
+      )`,
+
+      // 9. User Preferences
+      `CREATE TABLE "${schemaName}".user_preferences (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        user_id UUID NOT NULL,
+        preferences JSONB,
+        created_at TIMESTAMP DEFAULT NOW(),
+        updated_at TIMESTAMP DEFAULT NOW()
+      )`
+    ]
+
+    for (const sql of tables) {
+      await prisma.$executeRawUnsafe(sql)
+    }
+  }
+
+  /**
+   * Create indexes for performance
+   */
+  private async createTenantIndexes(schemaName: string): Promise<void> {
+    const indexes = [
+      // Products indexes
+      `CREATE INDEX idx_products_company ON "${schemaName}".products(company_id)`,
+      `CREATE INDEX idx_products_sku ON "${schemaName}".products(sku)`,
+      `CREATE INDEX idx_products_category ON "${schemaName}".products(category)`,
+
+      // Sales indexes
+      `CREATE INDEX idx_sales_company ON "${schemaName}".sales(company_id)`,
+      `CREATE INDEX idx_sales_product ON "${schemaName}".sales(product_id)`,
+      `CREATE INDEX idx_sales_order_date ON "${schemaName}".sales(order_date)`,
+      `CREATE INDEX idx_sales_channel ON "${schemaName}".sales(channel)`,
+
+      // Inventory indexes
+      `CREATE INDEX idx_inventory_company ON "${schemaName}".inventory_items(company_id)`,
+      `CREATE INDEX idx_inventory_product ON "${schemaName}".inventory_items(product_id)`,
+
+      // Forecasts indexes
+      `CREATE INDEX idx_forecasts_company ON "${schemaName}".forecasts(company_id)`,
+      `CREATE INDEX idx_forecasts_product ON "${schemaName}".forecasts(product_id)`,
+      `CREATE INDEX idx_forecasts_date ON "${schemaName}".forecasts(forecast_date)`,
+
+      // Working Capital indexes
+      `CREATE INDEX idx_wc_company ON "${schemaName}".working_capital_metrics(company_id)`,
+      `CREATE INDEX idx_wc_date ON "${schemaName}".working_capital_metrics(metric_date)`
+    ]
+
+    for (const sql of indexes) {
+      await prisma.$executeRawUnsafe(sql)
+    }
   }
 
   /**
@@ -288,8 +467,8 @@ export class TenantService {
         `
         SET search_path TO "${schemaName}", public;
 
-        INSERT INTO companies (name, is_active)
-        VALUES ($1, true)
+        INSERT INTO companies (name, currency, is_active)
+        VALUES ($1, 'USD', true)
         ON CONFLICT DO NOTHING;
         `,
         companyName

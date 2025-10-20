@@ -370,7 +370,7 @@ class FinancialAlgorithms {
 
   async getReceivablesData() {
     try {
-      // Try to fetch from working capital API (real Sentia data)
+      // Try to fetch from working capital API (real tenant data)
       const response = await fetch(`${this.apiEndpoints.api}/financial/working-capital`)
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`)
@@ -397,14 +397,14 @@ class FinancialAlgorithms {
       }
 
       throw new Error(
-        `Receivables data unavailable: ${error.message}. Please ensure Sentia database is connected.`
+        `Receivables data unavailable: ${error.message}. Please ensure database is connected.`
       )
     }
   }
 
   async getPayablesData() {
     try {
-      // Try to fetch from working capital API (real Sentia data)
+      // Try to fetch from working capital API (real tenant data)
       const response = await fetch(`${this.apiEndpoints.api}/financial/working-capital`)
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`)
@@ -431,7 +431,7 @@ class FinancialAlgorithms {
       }
 
       throw new Error(
-        `Payables data unavailable: ${error.message}. Please ensure Sentia database is connected.`
+        `Payables data unavailable: ${error.message}. Please ensure database is connected.`
       )
     }
   }
@@ -478,7 +478,7 @@ class FinancialAlgorithms {
       }
 
       throw new Error(
-        `Cash flow data unavailable: ${error.message}. Please ensure Sentia database is connected.`
+        `Cash flow data unavailable: ${error.message}. Please ensure database is connected.`
       )
     }
   }

@@ -1,30 +1,36 @@
 /**
- * Export API Routes
+ * Export API Routes - Multi-Tenant
  *
  * Handles data export in multiple formats (CSV, Excel, PDF, JSON)
+ * for tenant-specific data with role-based access control.
+ * All routes are tenant-scoped using tenantContext middleware.
  *
  * @module routes/export
  */
 
-const express = require('express')
-const path = require('path')
-const { PrismaClient } = require('@prisma/client')
-const {
+import express from 'express'
+import path from 'path'
+import { PrismaClient } from '@prisma/client'
+import {
   addExportJob,
   getExportJobStatus,
   cancelExportJob,
   retryExportJob,
-} = require('../queues/exportQueue')
-const {
+} from '../queues/exportQueue.js'
+import {
   listExports,
   getExportMetadata,
   deleteExport,
-} = require('../services/import/ExportGenerator')
-const { logAudit } = require('../services/audit/AuditLogger')
-const { EXPORT_ACTIONS, STATUS } = require('../services/audit/AuditCategories')
+} from '../services/import/ExportGenerator.js'
+import { logAudit } from '../services/audit/AuditLogger.js'
+import { EXPORT_ACTIONS, STATUS } from '../services/audit/AuditCategories.js'
+import { tenantContext, preventReadOnly, requireRole } from '../middleware/tenantContext.js'
 
 const router = express.Router()
 const prisma = new PrismaClient()
+
+// Apply tenant middleware to all routes in this file
+router.use(tenantContext)
 
 // ============================================================================
 // Routes
@@ -32,26 +38,30 @@ const prisma = new PrismaClient()
 
 /**
  * POST /api/export/start
- * Start export job
+ * Start export job (tenant-scoped with role check)
+ * NOTE: Sensitive exports (audit logs, full database) require admin/owner role
  */
-router.post('/start', async (req, res) => {
+router.post('/start', requireRole(['owner', 'admin']), async (req, res) => {
   try {
     const { dataType, format, filters, options } = req.body
+    const { tenant } = req
+    const tenantId = tenant.id
     const userId = req.user?.id || 'ANONYMOUS'
 
     if (!dataType || !format) {
-      return res.status(400).json({ error: 'Data type and format are required' })
+      return res.status(400).json({ success: false, error: 'Data type and format are required' })
     }
 
     // Validate format
     const allowedFormats = ['csv', 'xlsx', 'pdf', 'json']
     if (!allowedFormats.includes(format.toLowerCase())) {
       return res.status(400).json({
+        success: false,
         error: `Invalid format. Allowed formats: ${allowedFormats.join(', ')}`,
       })
     }
 
-    // Create ExportJob record
+    // Create ExportJob record (with tenant association)
     const exportJob = await prisma.exportJob.create({
       data: {
         dataType,
@@ -60,17 +70,35 @@ router.post('/start', async (req, res) => {
         options: options || {},
         status: 'PENDING',
         userId,
+        tenantId, // Associate with tenant
       },
     })
 
-    // Generate filename
+    // Generate filename with tenant context
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
-    const filename = `${dataType.toLowerCase()}-export-${timestamp}.${format}`
+    const filename = `${tenant.name.toLowerCase()}-${dataType.toLowerCase()}-${timestamp}.${format}`
 
-    // Add to queue
+    // Add to queue with tenant context
     await addExportJob(exportJob.id, userId, dataType, format, filters || {}, {
       ...options,
       filename,
+      tenantId,
+      tenantSchema: req.tenantSchema,
+    })
+
+    // Log audit trail
+    await logAudit({
+      tenantId,
+      userId,
+      action: EXPORT_ACTIONS.EXPORT_STARTED,
+      category: 'EXPORT',
+      resourceType: 'EXPORT_JOB',
+      resourceId: exportJob.id,
+      status: STATUS.SUCCESS,
+      metadata: {
+        dataType,
+        format,
+      },
     })
 
     res.json({
@@ -82,28 +110,38 @@ router.post('/start', async (req, res) => {
         format: exportJob.format,
         createdAt: exportJob.createdAt,
       },
+      tenant: {
+        id: tenant.id,
+        name: tenant.name,
+        tier: tenant.subscriptionTier
+      }
     })
   } catch (error) {
     console.error('Start export error:', error)
-    res.status(500).json({ error: error.message })
+    res.status(500).json({ success: false, error: error.message })
   }
 })
 
 /**
  * GET /api/export/status/:jobId
- * Get export job status
+ * Get export job status (tenant-scoped)
  */
 router.get('/status/:jobId', async (req, res) => {
   try {
     const { jobId } = req.params
+    const { tenant } = req
+    const tenantId = tenant.id
 
-    // Get database record
-    const exportJob = await prisma.exportJob.findUnique({
-      where: { id: jobId },
+    // Get database record (tenant-scoped query)
+    const exportJob = await prisma.exportJob.findFirst({
+      where: {
+        id: jobId,
+        tenantId, // Ensure job belongs to tenant
+      },
     })
 
     if (!exportJob) {
-      return res.status(404).json({ error: 'Export job not found' })
+      return res.status(404).json({ success: false, error: 'Export job not found' })
     }
 
     // Get queue status
@@ -124,41 +162,52 @@ router.get('/status/:jobId', async (req, res) => {
         completedAt: exportJob.completedAt,
       },
       queueStatus,
+      tenant: {
+        id: tenant.id,
+        name: tenant.name,
+        tier: tenant.subscriptionTier
+      }
     })
   } catch (error) {
     console.error('Get export status error:', error)
-    res.status(500).json({ error: error.message })
+    res.status(500).json({ success: false, error: error.message })
   }
 })
 
 /**
  * GET /api/export/download/:jobId
- * Download export file
+ * Download export file (tenant-scoped)
  */
 router.get('/download/:jobId', async (req, res) => {
   try {
     const { jobId } = req.params
+    const { tenant } = req
+    const tenantId = tenant.id
     const userId = req.user?.id || 'ANONYMOUS'
 
-    // Get export job
-    const exportJob = await prisma.exportJob.findUnique({
-      where: { id: jobId },
+    // Get export job (tenant-scoped query)
+    const exportJob = await prisma.exportJob.findFirst({
+      where: {
+        id: jobId,
+        tenantId, // Ensure job belongs to tenant
+      },
     })
 
     if (!exportJob) {
-      return res.status(404).json({ error: 'Export job not found' })
+      return res.status(404).json({ success: false, error: 'Export job not found' })
     }
 
     if (exportJob.status !== 'COMPLETED') {
-      return res.status(400).json({ error: 'Export is not completed yet' })
+      return res.status(400).json({ success: false, error: 'Export is not completed yet' })
     }
 
     if (!exportJob.filePath) {
-      return res.status(404).json({ error: 'Export file not found' })
+      return res.status(404).json({ success: false, error: 'Export file not found' })
     }
 
     // Log audit trail
     await logAudit({
+      tenantId,
       userId,
       action: EXPORT_ACTIONS.EXPORT_DOWNLOADED,
       category: 'EXPORT',
@@ -177,74 +226,139 @@ router.get('/download/:jobId', async (req, res) => {
       if (err) {
         console.error('Download error:', err)
         if (!res.headersSent) {
-          res.status(500).json({ error: 'Failed to download file' })
+          res.status(500).json({ success: false, error: 'Failed to download file' })
         }
       }
     })
   } catch (error) {
     console.error('Download export error:', error)
-    res.status(500).json({ error: error.message })
+    res.status(500).json({ success: false, error: error.message })
   }
 })
 
 /**
  * POST /api/export/cancel/:jobId
- * Cancel export job
+ * Cancel export job (tenant-scoped)
  */
-router.post('/cancel/:jobId', async (req, res) => {
+router.post('/cancel/:jobId', requireRole(['owner', 'admin']), async (req, res) => {
   try {
     const { jobId } = req.params
+    const { tenant } = req
+    const tenantId = tenant.id
     const userId = req.user?.id || 'ANONYMOUS'
 
+    // Verify job belongs to tenant before cancelling
+    const exportJob = await prisma.exportJob.findFirst({
+      where: {
+        id: jobId,
+        tenantId,
+      },
+    })
+
+    if (!exportJob) {
+      return res.status(404).json({ success: false, error: 'Export job not found' })
+    }
+
     await cancelExportJob(jobId, userId)
+
+    // Log audit trail
+    await logAudit({
+      tenantId,
+      userId,
+      action: EXPORT_ACTIONS.EXPORT_CANCELLED,
+      category: 'EXPORT',
+      resourceType: 'EXPORT_JOB',
+      resourceId: jobId,
+      status: STATUS.SUCCESS,
+    })
 
     res.json({
       success: true,
       message: 'Export job cancelled',
+      tenant: {
+        id: tenant.id,
+        name: tenant.name,
+        tier: tenant.subscriptionTier
+      }
     })
   } catch (error) {
     console.error('Cancel export error:', error)
-    res.status(500).json({ error: error.message })
+    res.status(500).json({ success: false, error: error.message })
   }
 })
 
 /**
  * POST /api/export/retry/:jobId
- * Retry failed export job
+ * Retry failed export job (tenant-scoped)
  */
-router.post('/retry/:jobId', async (req, res) => {
+router.post('/retry/:jobId', requireRole(['owner', 'admin']), async (req, res) => {
   try {
     const { jobId } = req.params
+    const { tenant } = req
+    const tenantId = tenant.id
     const userId = req.user?.id || 'ANONYMOUS'
 
+    // Verify job belongs to tenant before retrying
+    const exportJob = await prisma.exportJob.findFirst({
+      where: {
+        id: jobId,
+        tenantId,
+      },
+    })
+
+    if (!exportJob) {
+      return res.status(404).json({ success: false, error: 'Export job not found' })
+    }
+
     await retryExportJob(jobId, userId)
+
+    // Log audit trail
+    await logAudit({
+      tenantId,
+      userId,
+      action: EXPORT_ACTIONS.EXPORT_RETRIED,
+      category: 'EXPORT',
+      resourceType: 'EXPORT_JOB',
+      resourceId: jobId,
+      status: STATUS.SUCCESS,
+    })
 
     res.json({
       success: true,
       message: 'Export job retried',
+      tenant: {
+        id: tenant.id,
+        name: tenant.name,
+        tier: tenant.subscriptionTier
+      }
     })
   } catch (error) {
     console.error('Retry export error:', error)
-    res.status(500).json({ error: error.message })
+    res.status(500).json({ success: false, error: error.message })
   }
 })
 
 /**
  * DELETE /api/export/:jobId
- * Delete export job and file
+ * Delete export job and file (tenant-scoped with role check)
  */
-router.delete('/:jobId', async (req, res) => {
+router.delete('/:jobId', requireRole(['owner', 'admin']), async (req, res) => {
   try {
     const { jobId } = req.params
+    const { tenant } = req
+    const tenantId = tenant.id
     const userId = req.user?.id || 'ANONYMOUS'
 
-    // Get export job
-    const exportJob = await prisma.exportJob.findUnique({
-      where: { id: jobId },
+    // Get export job (tenant-scoped query)
+    const exportJob = await prisma.exportJob.findFirst({
+      where: {
+        id: jobId,
+        tenantId, // Ensure job belongs to tenant
+      },
     })
 
     if (!exportJob) {
-      return res.status(404).json({ error: 'Export job not found' })
+      return res.status(404).json({ success: false, error: 'Export job not found' })
     }
 
     // Delete file if exists
@@ -260,6 +374,7 @@ router.delete('/:jobId', async (req, res) => {
 
     // Log audit trail
     await logAudit({
+      tenantId,
       userId,
       action: EXPORT_ACTIONS.EXPORT_DELETED,
       category: 'EXPORT',
@@ -271,26 +386,35 @@ router.delete('/:jobId', async (req, res) => {
     res.json({
       success: true,
       message: 'Export deleted',
+      tenant: {
+        id: tenant.id,
+        name: tenant.name,
+        tier: tenant.subscriptionTier
+      }
     })
   } catch (error) {
     console.error('Delete export error:', error)
-    res.status(500).json({ error: error.message })
+    res.status(500).json({ success: false, error: error.message })
   }
 })
 
 /**
  * GET /api/export/jobs
- * List export jobs
+ * List export jobs (tenant-scoped)
  */
 router.get('/jobs', async (req, res) => {
   try {
     const { status, dataType, format, limit = 50, offset = 0 } = req.query
+    const { tenant } = req
+    const tenantId = tenant.id
     const userId = req.user?.id
 
-    const where = {}
+    // Build tenant-scoped query
+    const where = { tenantId } // Always filter by tenant
     if (status) where.status = status
     if (dataType) where.dataType = dataType
     if (format) where.format = format.toUpperCase()
+    // Optionally filter by user if not admin role
     if (userId && req.user?.role !== 'ADMIN') where.userId = userId
 
     const [jobs, totalCount] = await Promise.all([
@@ -318,10 +442,15 @@ router.get('/jobs', async (req, res) => {
       totalCount,
       limit: parseInt(limit),
       offset: parseInt(offset),
+      tenant: {
+        id: tenant.id,
+        name: tenant.name,
+        tier: tenant.subscriptionTier
+      }
     })
   } catch (error) {
     console.error('List export jobs error:', error)
-    res.status(500).json({ error: error.message })
+    res.status(500).json({ success: false, error: error.message })
   }
 })
 
@@ -454,4 +583,4 @@ router.get('/templates', async (req, res) => {
 // Export Router
 // ============================================================================
 
-module.exports = router
+export default router

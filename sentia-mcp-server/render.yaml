@@ -10,7 +10,7 @@ services:
     env: docker
     plan: pro
     region: oregon
-    repo: https://github.com/The-social-drink-company/sentia-ai-manufacturing-app
+    repo: https://github.com/The-social-drink-company/capliquify-ai-dashboard-app
     branch: production
     rootDir: sentia-mcp-server
     dockerfile: Dockerfile

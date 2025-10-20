@@ -333,7 +333,7 @@ bmad qa review-story --story "connect-xero-financial-data"
 ### Step 1: Initialize BMAD Workflow (TODAY)
 
 ```bash
-cd /c/Projects/The-social-drink-companysentia-ai-manufacturing-app/sentia-ai-manufacturing-app
+cd /c/Projects/The-social-drink-companycapliquify-ai-dashboard-app/capliquify-ai-dashboard-app
 bmad pm workflow-status
 # Follow prompts:
 # - Project context: Brownfield

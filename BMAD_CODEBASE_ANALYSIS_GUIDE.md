@@ -117,7 +117,7 @@ Located in `context/business-requirements/`:
 
 ```bash
 # Open terminal and navigate to project root
-cd /c/Projects/The-social-drink-companysentia-ai-manufacturing-app/sentia-ai-manufacturing-app
+cd /c/Projects/The-social-drink-companycapliquify-ai-dashboard-app/capliquify-ai-dashboard-app
 
 # Verify you're in the correct directory
 pwd

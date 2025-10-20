@@ -353,7 +353,7 @@ According to BMAD-METHOD Phase 4 iterative cycle:
 **Related Documents**:
 - [BMAD Story: BMAD-QA-001](./2025-10-import-export-qa-testing.md)
 - [BMAD Workflow Status](../BMAD-WORKFLOW-STATUS.md)
-- [PR #15](https://github.com/The-social-drink-company/sentia-ai-manufacturing-app/pull/15)
+- [PR #15](https://github.com/The-social-drink-company/capliquify-ai-dashboard-app/pull/15)
 
 **Deployment**:
 - Development: https://capliquify-frontend-prod.onrender.com (SUSPENDED)

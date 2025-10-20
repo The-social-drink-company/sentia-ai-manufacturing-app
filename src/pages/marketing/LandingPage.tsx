@@ -44,16 +44,18 @@ const LandingPage = () => {
   return (
     <div className="bg-white">
       <Header />
-      <HeroSection />
-      <TrustBar />
-      <ProblemSection />
-      <SolutionSection />
-      <FeaturesSection />
-      <HowItWorksSection />
-      <PricingSection />
-      <SocialProofSection />
-      <FAQSection />
-      <FinalCTASection />
+      <main id="main-content" role="main">
+        <HeroSection />
+        <TrustBar />
+        <ProblemSection />
+        <SolutionSection />
+        <FeaturesSection />
+        <HowItWorksSection />
+        <PricingSection />
+        <SocialProofSection />
+        <FAQSection />
+        <FinalCTASection />
+      </main>
       <Footer />
     </div>
   )
@@ -65,41 +67,42 @@ const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   return (
-    <header className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md z-50 border-b border-gray-200">
-      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <header className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md z-50 border-b border-gray-200" role="banner">
+      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" aria-label="Main navigation">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center">
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+          <Link to="/" className="flex items-center focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 rounded-lg" aria-label="CapLiquify Home">
+            <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center" aria-hidden="true">
               <DollarSign className="w-6 h-6 text-white" />
             </div>
             <span className="ml-2 text-xl font-bold text-gray-900">CapLiquify</span>
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            <Link to="/features" className="text-gray-700 hover:text-blue-600 transition-colors">
+          <div className="hidden md:flex items-center space-x-8" role="navigation" aria-label="Primary navigation">
+            <Link to="/features" className="text-gray-700 hover:text-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 rounded px-2 py-1">
               Features
             </Link>
-            <a href="#pricing" className="text-gray-700 hover:text-blue-600 transition-colors">
+            <a href="#pricing" className="text-gray-700 hover:text-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 rounded px-2 py-1">
               Pricing
             </a>
-            <a href="#testimonials" className="text-gray-700 hover:text-blue-600 transition-colors">
+            <a href="#testimonials" className="text-gray-700 hover:text-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 rounded px-2 py-1">
               Customers
             </a>
-            <Link to="/blog" className="text-gray-700 hover:text-blue-600 transition-colors">
+            <Link to="/blog" className="text-gray-700 hover:text-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 rounded px-2 py-1">
               Blog
             </Link>
           </div>
 
           {/* CTA Buttons */}
           <div className="hidden md:flex items-center space-x-4">
-            <Link to="/sign-in" className="text-gray-700 hover:text-blue-600 transition-colors">
+            <Link to="/sign-in" className="text-gray-700 hover:text-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 rounded px-2 py-1">
               Sign In
             </Link>
             <Link
               to="/sign-up"
-              className="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors shadow-md hover:shadow-lg"
+              className="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2"
+              aria-label="Start your 14-day free trial"
             >
               Start Free Trial
             </Link>
@@ -108,9 +111,12 @@ const Header = () => {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2"
+            className="md:hidden p-2 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 rounded"
+            aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={mobileMenuOpen}
+            aria-controls="mobile-menu"
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
@@ -118,15 +124,16 @@ const Header = () => {
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden py-4 space-y-4">
-            <Link to="/features" className="block text-gray-700">Features</Link>
-            <a href="#pricing" className="block text-gray-700">Pricing</a>
-            <a href="#testimonials" className="block text-gray-700">Customers</a>
-            <Link to="/blog" className="block text-gray-700">Blog</Link>
-            <Link to="/sign-in" className="block text-gray-700">Sign In</Link>
+          <div id="mobile-menu" className="md:hidden py-4 space-y-4" role="navigation" aria-label="Mobile navigation">
+            <Link to="/features" className="block text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 rounded px-2 py-1">Features</Link>
+            <a href="#pricing" className="block text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 rounded px-2 py-1">Pricing</a>
+            <a href="#testimonials" className="block text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 rounded px-2 py-1">Customers</a>
+            <Link to="/blog" className="block text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 rounded px-2 py-1">Blog</Link>
+            <Link to="/sign-in" className="block text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 rounded px-2 py-1">Sign In</Link>
             <Link
               to="/sign-up"
-              className="block bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold text-center"
+              className="block bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold text-center focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2"
+              aria-label="Start your 14-day free trial"
             >
               Start Free Trial
             </Link>

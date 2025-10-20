@@ -1,13 +1,16 @@
 /**
- * Tenant Service
+ * Tenant Service - Multi-Tenant Lifecycle Management
  *
- * Handles tenant creation, updates, and management operations.
+ * BMAD-MULTITENANT-002 Stories 6-8: Complete Tenant Service
+ *
+ * Handles tenant creation, deletion, and management operations with
+ * PostgreSQL schema provisioning and feature tier enforcement.
  *
  * @module server/services/tenant.service
  */
 
 import { PrismaClient } from '@prisma/client'
-import { z } from 'zod'
+import { v4 as uuidv4 } from 'uuid'
 
 const prisma = new PrismaClient()
 
@@ -30,46 +33,87 @@ export interface UpdateTenantInput {
 
 export class TenantService {
   /**
-   * Create a new tenant with schema
+   * Create a new tenant with PostgreSQL schema
+   *
+   * **Story 6: Tenant Creation Service** (BMAD-MULTITENANT-002)
+   *
+   * This method:
+   * 1. Generates tenant ID and schema name
+   * 2. Creates tenant record in public.tenants
+   * 3. Creates PostgreSQL schema
+   * 4. Provisions 9 tenant tables
+   * 5. Creates indexes for performance
+   * 6. Inserts default company record
+   * 7. Rolls back on failure (atomic operation)
    */
   async createTenant(input: CreateTenantInput) {
     const { name, slug, clerkOrganizationId, subscriptionTier, ownerEmail } = input
 
-    // Generate schema name
-    const schemaName = `tenant_${this.generateSchemaId()}`
+    const tenantId = uuidv4()
+    const schemaName = `tenant_${tenantId.replace(/-/g, '')}`
 
-    // Set tier-based limits and features
-    const { maxUsers, maxEntities, features } = this.getTierConfiguration(subscriptionTier)
+    console.log(`[TenantService] Creating tenant: ${name} (${slug})`)
+    console.log(`[TenantService] Schema name: ${schemaName}`)
 
-    // Calculate trial end date (14 days from now)
-    const trialEndsAt = new Date()
-    trialEndsAt.setDate(trialEndsAt.getDate() + 14)
+    try {
+      // Set tier-based limits and features
+      const { maxUsers, maxEntities, features } = this.getTierConfiguration(subscriptionTier)
 
-    // Create tenant in public schema
-    const tenant = await prisma.tenant.create({
-      data: {
-        name,
-        slug,
-        schemaName,
-        clerkOrganizationId,
-        subscriptionTier,
-        subscriptionStatus: 'trial',
-        trialEndsAt,
-        maxUsers,
-        maxEntities,
-        features
+      // Calculate trial end date (14 days from now)
+      const trialEndsAt = new Date()
+      trialEndsAt.setDate(trialEndsAt.getDate() + 14)
+
+      // Create tenant in public schema
+      const tenant = await prisma.tenant.create({
+        data: {
+          id: tenantId,
+          name,
+          slug,
+          schemaName,
+          clerkOrganizationId,
+          subscriptionTier,
+          subscriptionStatus: 'trial',
+          trialEndsAt,
+          maxUsers,
+          maxEntities,
+          features
+        }
+      })
+
+      console.log(`[TenantService] ✅ Tenant record created in public.tenants`)
+
+      // Create PostgreSQL schema
+      await this.createTenantSchema(schemaName)
+      console.log(`[TenantService] ✅ PostgreSQL schema created: ${schemaName}`)
+
+      // Provision tenant tables
+      await this.provisionTenantTables(schemaName)
+      console.log(`[TenantService] ✅ Tenant tables provisioned (9 tables)`)
+
+      // Create indexes
+      await this.createTenantIndexes(schemaName)
+      console.log(`[TenantService] ✅ Indexes created`)
+
+      // Create default company
+      await this.createDefaultCompany(schemaName, name)
+      console.log(`[TenantService] ✅ Default company created`)
+
+      console.log(`[TenantService] 🎉 Tenant creation complete: ${tenant.id}`)
+
+      return tenant
+    } catch (error: any) {
+      console.error(`[TenantService] ❌ Error creating tenant:`, error)
+      console.log(`[TenantService] 🔄 Rolling back tenant creation...`)
+
+      try {
+        await this.deleteTenant(tenantId)
+        console.log(`[TenantService] ✅ Rollback successful`)
+      } catch (rollbackError: any) {
+        console.error(`[TenantService] ❌ CRITICAL: Rollback failed:`, rollbackError)
       }
-    })
 
-    // Create tenant schema using raw SQL
-    await prisma.$executeRawUnsafe(`SELECT create_tenant_schema($1::UUID)`, tenant.id)
-
-    // Create default company in tenant schema
-    await this.createDefaultCompany(schemaName, name)
-
-    console.log(`✅ Tenant created: ${slug} (${schemaName})`)
-
-    return tenant
+      throw new Error(`Tenant creation failed: ${error.message}`)
+    }
   }
 
   /**
@@ -118,7 +162,44 @@ export class TenantService {
   }
 
   /**
-   * Soft delete tenant
+   * Delete a tenant and its PostgreSQL schema
+   *
+   * **Story 7: Tenant Deletion Service** (BMAD-MULTITENANT-002)
+   *
+   * **WARNING**: This is a destructive operation. All tenant data will be permanently deleted.
+   */
+  async deleteTenant(tenantId: string): Promise<void> {
+    console.log(`[TenantService] Deleting tenant: ${tenantId}`)
+
+    const tenant = await prisma.tenant.findUnique({
+      where: { id: tenantId },
+      select: { id: true, name: true, schemaName: true }
+    })
+
+    if (!tenant) {
+      throw new Error(`Tenant not found: ${tenantId}`)
+    }
+
+    try {
+      // Drop PostgreSQL schema CASCADE
+      await prisma.$executeRawUnsafe(`DROP SCHEMA IF EXISTS "${tenant.schemaName}" CASCADE`)
+      console.log(`[TenantService] ✅ Schema dropped: ${tenant.schemaName}`)
+
+      // Delete tenant from public.tenants (cascades to users, subscriptions)
+      await prisma.tenant.delete({
+        where: { id: tenantId }
+      })
+      console.log(`[TenantService] ✅ Tenant deleted from public.tenants`)
+
+      console.log(`[TenantService] 🎉 Tenant deletion complete: ${tenant.name}`)
+    } catch (error: any) {
+      console.error(`[TenantService] ❌ Error deleting tenant:`, error)
+      throw new Error(`Tenant deletion failed: ${error.message}`)
+    }
+  }
+
+  /**
+   * Soft delete tenant (mark as deleted without removing data)
    */
   async softDeleteTenant(tenantId: string) {
     const tenant = await prisma.tenant.update({
@@ -136,6 +217,8 @@ export class TenantService {
 
   /**
    * Get tier configuration (limits and features)
+   *
+   * **Story 8: Feature Tier Configuration** (BMAD-MULTITENANT-002)
    */
   private getTierConfiguration(tier: 'starter' | 'professional' | 'enterprise') {
     const configs = {
@@ -143,9 +226,13 @@ export class TenantService {
         maxUsers: 5,
         maxEntities: 500,
         features: {
+          basic_forecasting: true,
           ai_forecasting: false,
-          what_if: false,
-          api_integrations: true,
+          what_if_analysis: false,
+          multi_entity: false,
+          api_access: false,
+          white_label: false,
+          priority_support: false,
           advanced_reports: false,
           custom_integrations: false
         }
@@ -154,20 +241,28 @@ export class TenantService {
         maxUsers: 25,
         maxEntities: 5000,
         features: {
+          basic_forecasting: true,
           ai_forecasting: true,
-          what_if: true,
-          api_integrations: true,
-          advanced_reports: true,
+          what_if_analysis: true,
+          multi_entity: false,
+          api_access: false,
+          white_label: false,
+          priority_support: true,
+          advanced_reports: false,
           custom_integrations: false
         }
       },
       enterprise: {
         maxUsers: 100,
-        maxEntities: null, // unlimited
+        maxEntities: 999999, // effectively unlimited
         features: {
+          basic_forecasting: true,
           ai_forecasting: true,
-          what_if: true,
-          api_integrations: true,
+          what_if_analysis: true,
+          multi_entity: true,
+          api_access: true,
+          white_label: true,
+          priority_support: true,
           advanced_reports: true,
           custom_integrations: true
         }

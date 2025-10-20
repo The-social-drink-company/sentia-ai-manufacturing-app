@@ -43,7 +43,7 @@ This guide provides complete instructions for deploying the CapLiquify Manufactu
 ┌──────────────────────────────────────────────────────────┐
 │                    GitHub Repository                      │
 │   github.com/The-social-drink-company/                   │
-│                sentia-ai-manufacturing-app                │
+│                capliquify-ai-dashboard-app                │
 │                                                           │
 │  Branches:                                               │
 │  ├── development  (main dev branch)                     │
@@ -141,10 +141,10 @@ This guide provides complete instructions for deploying the CapLiquify Manufactu
 cd /path/to/your/projects
 
 # Clone the repository
-git clone https://github.com/The-social-drink-company/sentia-ai-manufacturing-app.git
+git clone https://github.com/The-social-drink-company/capliquify-ai-dashboard-app.git
 
 # Navigate into project
-cd sentia-ai-manufacturing-app
+cd capliquify-ai-dashboard-app
 
 # Verify you're on development branch
 git branch --show-current  # Should show: development
@@ -681,7 +681,7 @@ git push origin development
 
 **Repository**
 
-- GitHub: https://github.com/The-social-drink-company/sentia-ai-manufacturing-app
+- GitHub: https://github.com/The-social-drink-company/capliquify-ai-dashboard-app
 
 ### Key Files
 

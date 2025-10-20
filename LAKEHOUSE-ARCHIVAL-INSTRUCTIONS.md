@@ -59,7 +59,7 @@ git clone git@github.com:The-social-drink-company/sentia-financial-lakehouse.git
 cd sentia-financial-lakehouse
 
 # Copy lakehouse code from main repo
-cp -r ../sentia-ai-manufacturing-app/sentia-financial-lakehouse/* .
+cp -r ../capliquify-ai-dashboard-app/sentia-financial-lakehouse/* .
 
 # Add all files
 git add .
@@ -67,7 +67,7 @@ git add .
 # Create initial commit
 git commit -m "Initial commit: Financial Lakehouse Platform
 
-Migrated from sentia-ai-manufacturing-app repository.
+Migrated from capliquify-ai-dashboard-app repository.
 
 Contents:
 - DuckDB + Parquet analytics engine (248 lines)
@@ -122,7 +122,7 @@ git push
 
 ```bash
 # Switch back to main repo
-cd ../sentia-ai-manufacturing-app
+cd ../capliquify-ai-dashboard-app
 
 # Ensure on development branch
 git checkout development
@@ -267,7 +267,7 @@ sentia-financial-lakehouse/
 
 **Main Repository**:
 
-- https://github.com/The-social-drink-company/sentia-ai-manufacturing-app
+- https://github.com/The-social-drink-company/capliquify-ai-dashboard-app
 
 **New Lakehouse Repository** (to be created):
 

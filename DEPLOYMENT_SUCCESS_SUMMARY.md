@@ -132,7 +132,7 @@
 
 ### Backup Created
 - **Git Tag**: `pre-capliquify-baseline`
-- **GitHub URL**: https://github.com/The-social-drink-company/sentia-ai-manufacturing-app/releases/tag/pre-capliquify-baseline
+- **GitHub URL**: https://github.com/The-social-drink-company/capliquify-ai-dashboard-app/releases/tag/pre-capliquify-baseline
 - **Backup ID**: pre-capliquify-20251019-205913
 
 ### Backup Contents
@@ -246,7 +246,7 @@ git checkout -b restore-sentia-$(date +%Y%m%d)
 ### Dashboards
 - **Render**: https://dashboard.render.com
 - **Clerk**: https://dashboard.clerk.com
-- **GitHub**: https://github.com/The-social-drink-company/sentia-ai-manufacturing-app
+- **GitHub**: https://github.com/The-social-drink-company/capliquify-ai-dashboard-app
 
 ### Backup & Restore
 - **Git Tag**: pre-capliquify-baseline

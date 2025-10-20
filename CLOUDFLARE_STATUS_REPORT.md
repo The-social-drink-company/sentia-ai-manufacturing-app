@@ -379,7 +379,7 @@ TTL: Auto
 
 ### 1. Environment Variables (`.env.local`)
 
-**File Location**: `C:\Projects\The-social-drink-companysentia-ai-manufacturing-app\sentia-ai-manufacturing-app\.env.local`
+**File Location**: `C:\Projects\The-social-drink-companycapliquify-ai-dashboard-app\capliquify-ai-dashboard-app\.env.local`
 
 #### Missing Values Checklist:
 

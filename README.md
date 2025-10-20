@@ -46,7 +46,7 @@ Enterprise-grade AI platform delivering real-time manufacturing intelligence, fi
 
 ```bash
 git clone <repo-url>
-cd sentia-ai-manufacturing-app
+cd capliquify-ai-dashboard-app
 pnpm install
 ```
 

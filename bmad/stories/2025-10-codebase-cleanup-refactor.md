@@ -322,7 +322,7 @@ rg 'sentia-financial-lakehouse'
 ```bash
 # Move to separate repository
 cd ..
-git clone sentia-ai-manufacturing-app sentia-financial-lakehouse-archive
+git clone capliquify-ai-dashboard-app sentia-financial-lakehouse-archive
 cd sentia-financial-lakehouse-archive
 # Keep only lakehouse code
 # Publish as separate repo

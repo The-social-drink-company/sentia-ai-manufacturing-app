@@ -1,6 +1,6 @@
 [
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\server\\api\\business-intelligence.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\server\\api\\business-intelligence.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -11,7 +11,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\server\\api\\dashboard.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\server\\api\\dashboard.js",
     "messages": [
       {
         "ruleId": "no-unused-vars",
@@ -43,7 +43,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\server\\api\\enhanced-forecasting.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\server\\api\\enhanced-forecasting.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -54,7 +54,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\server\\api\\enterprise-api.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\server\\api\\enterprise-api.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -65,7 +65,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\server\\api\\health.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\server\\api\\health.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -76,7 +76,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\server\\api\\real-api.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\server\\api\\real-api.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -87,7 +87,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\server\\api\\shopify.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\server\\api\\shopify.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -98,7 +98,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\server\\api\\working-capital.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\server\\api\\working-capital.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -109,7 +109,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\server\\index.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\server\\index.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -120,7 +120,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\server\\integrations\\amazon.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\server\\integrations\\amazon.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -131,7 +131,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\server\\integrations\\shopify.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\server\\integrations\\shopify.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -142,7 +142,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\server\\integrations\\unleashed.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\server\\integrations\\unleashed.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -153,7 +153,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\server\\integrations\\xero.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\server\\integrations\\xero.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -164,7 +164,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\server\\lib\\redis.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\server\\lib\\redis.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -175,7 +175,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\server\\middleware\\auth.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\server\\middleware\\auth.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -186,7 +186,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\server\\middleware\\upload.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\server\\middleware\\upload.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -197,7 +197,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\server\\monitoring\\enterprise-monitoring.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\server\\monitoring\\enterprise-monitoring.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -208,7 +208,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\server\\queues\\QueueManager.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\server\\queues\\QueueManager.js",
     "messages": [
       {
         "ruleId": "no-unused-vars",
@@ -240,7 +240,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\server\\routes\\api.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\server\\routes\\api.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -251,7 +251,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\server\\routes\\auth.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\server\\routes\\auth.js",
     "messages": [
       {
         "ruleId": "no-unused-vars",
@@ -283,7 +283,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\server\\routes\\data.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\server\\routes\\data.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -294,7 +294,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\server\\routes\\index.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\server\\routes\\index.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -305,7 +305,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\server\\routes\\sse.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\server\\routes\\sse.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -316,7 +316,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\server\\security\\enterprise-security.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\server\\security\\enterprise-security.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -327,7 +327,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\server\\services\\data-validator.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\server\\services\\data-validator.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -338,7 +338,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\server\\services\\external-api-service.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\server\\services\\external-api-service.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -349,7 +349,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\server\\services\\finance\\ApprovalEngine.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\server\\services\\finance\\ApprovalEngine.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -360,7 +360,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\server\\services\\finance\\CashConversionCycle.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\server\\services\\finance\\CashConversionCycle.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -371,7 +371,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\server\\services\\finance\\CashRunway.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\server\\services\\finance\\CashRunway.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -382,7 +382,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\server\\services\\finance\\InventoryOptimization.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\server\\services\\finance\\InventoryOptimization.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -393,7 +393,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\server\\services\\finance\\MitigationPlanner.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\server\\services\\finance\\MitigationPlanner.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -404,7 +404,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\server\\services\\finance\\ScenarioModeler.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\server\\services\\finance\\ScenarioModeler.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -415,7 +415,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\server\\services\\initialization.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\server\\services\\initialization.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -426,7 +426,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\server\\services\\sse\\index.cjs",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\server\\services\\sse\\index.cjs",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -437,7 +437,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\server\\workers\\AnalyticsWorker.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\server\\workers\\AnalyticsWorker.js",
     "messages": [
       {
         "ruleId": "no-unused-vars",
@@ -507,7 +507,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\server\\workers\\ExportWorker.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\server\\workers\\ExportWorker.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -518,7 +518,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\server\\workers\\ForecastWorker.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\server\\workers\\ForecastWorker.js",
     "messages": [
       {
         "ruleId": "no-unused-vars",
@@ -569,7 +569,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\server\\workers\\ImportWorker.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\server\\workers\\ImportWorker.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -580,7 +580,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\server\\workers\\NotificationWorker.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\server\\workers\\NotificationWorker.js",
     "messages": [
       {
         "ruleId": "no-unused-vars",
@@ -612,7 +612,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\server\\workers\\OptimizationWorker.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\server\\workers\\OptimizationWorker.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -623,7 +623,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\server\\workers\\SyncWorker.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\server\\workers\\SyncWorker.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -634,7 +634,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\server\\workers\\WorkerManager.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\server\\workers\\WorkerManager.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -645,7 +645,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\App-environment-aware.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\App-environment-aware.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -656,7 +656,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\App-no-clerk.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\App-no-clerk.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -667,7 +667,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\App-root.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\App-root.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -678,7 +678,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\App-simple-environment.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\App-simple-environment.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -689,7 +689,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\AppSimple.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\AppSimple.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -700,7 +700,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\auth\\BulletproofAuthProvider.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\auth\\BulletproofAuthProvider.jsx",
     "messages": [
       {
         "ruleId": "react-hooks/exhaustive-deps",
@@ -762,7 +762,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\auth\\DevelopmentAuthProvider.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\auth\\DevelopmentAuthProvider.jsx",
     "messages": [
       {
         "ruleId": "react-refresh/only-export-components",
@@ -830,7 +830,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\auth\\MockUser.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\auth\\MockUser.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -841,7 +841,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\AIChatbot-simple.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\AIChatbot-simple.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -852,7 +852,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\AI\\AIAnalytics.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\AI\\AIAnalytics.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -863,7 +863,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\AI\\AIAnalyticsDashboard.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\AI\\AIAnalyticsDashboard.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -874,7 +874,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\AdminPanel.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\AdminPanel.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -885,7 +885,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\ChatBot.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\ChatBot.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -896,7 +896,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\DashboardLayout.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\DashboardLayout.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -907,7 +907,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\DataImport.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\DataImport.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -918,7 +918,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\DebugPanel.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\DebugPanel.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -929,7 +929,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\DemandForecasting.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\DemandForecasting.jsx",
     "messages": [],
     "suppressedMessages": [
       {
@@ -958,7 +958,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\EnterpriseAIChatbot.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\EnterpriseAIChatbot.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -969,7 +969,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\ErrorBoundary.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\ErrorBoundary.jsx",
     "messages": [
       {
         "ruleId": "react-refresh/only-export-components",
@@ -1004,7 +1004,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\ExecutiveDashboard.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\ExecutiveDashboard.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1015,7 +1015,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\ExecutiveDashboardAdvanced.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\ExecutiveDashboardAdvanced.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1026,7 +1026,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\Executive\\ExecutiveDashboard.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\Executive\\ExecutiveDashboard.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1037,7 +1037,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\FinancialReports.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\FinancialReports.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1048,7 +1048,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\InventoryManagement.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\InventoryManagement.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1059,7 +1059,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\LandingPage.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\LandingPage.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1070,7 +1070,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\LandingPageMarketing.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\LandingPageMarketing.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1081,7 +1081,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\LandingPageWithFlow.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\LandingPageWithFlow.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1092,7 +1092,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\MultiStageLoader.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\MultiStageLoader.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1103,7 +1103,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\PureLandingPage.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\PureLandingPage.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1114,7 +1114,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\Reports.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\Reports.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1125,7 +1125,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\Sidebar.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\Sidebar.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1136,7 +1136,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\WhatIfAnalysis.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\WhatIfAnalysis.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1147,7 +1147,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\WorkingCapital\\RealWorkingCapital.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\WorkingCapital\\RealWorkingCapital.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1158,7 +1158,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\XeroConnectionBanner.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\XeroConnectionBanner.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1169,7 +1169,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\admin\\SystemAdminPanel.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\admin\\SystemAdminPanel.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1180,7 +1180,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\admin\\SystemConfig.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\admin\\SystemConfig.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1191,7 +1191,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\admin\\UserManagement.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\admin\\UserManagement.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1202,7 +1202,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\analytics\\AdvancedAnalyticsDashboard.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\analytics\\AdvancedAnalyticsDashboard.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1213,7 +1213,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\analytics\\AdvancedBusinessIntelligence.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\analytics\\AdvancedBusinessIntelligence.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1224,7 +1224,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\analytics\\DemandForecasting.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\analytics\\DemandForecasting.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1235,7 +1235,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\analytics\\MultiMarketAnalytics.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\analytics\\MultiMarketAnalytics.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1246,7 +1246,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\analytics\\MultiMarketAnalyticsSimple.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\analytics\\MultiMarketAnalyticsSimple.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1257,7 +1257,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\analytics\\WhatIfAnalysis.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\analytics\\WhatIfAnalysis.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1268,7 +1268,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\auth\\AuthGuard.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\auth\\AuthGuard.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1279,7 +1279,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\auth\\AuthScaffold.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\auth\\AuthScaffold.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1290,7 +1290,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\auth\\ClerkAuthGuard.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\auth\\ClerkAuthGuard.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1301,7 +1301,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\auth\\ProtectedRoute.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\auth\\ProtectedRoute.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1312,7 +1312,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\auth\\RedirectToSignInEnvironmentAware.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\auth\\RedirectToSignInEnvironmentAware.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1323,7 +1323,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\auth\\UserButtonEnvironmentAware.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\auth\\UserButtonEnvironmentAware.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1334,7 +1334,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\auth\\clerkAppearance.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\auth\\clerkAppearance.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1345,7 +1345,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\auth\\index.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\auth\\index.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1356,7 +1356,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\automation\\AutomationDashboard.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\automation\\AutomationDashboard.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1367,7 +1367,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\charts\\ChartErrorBoundary.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\charts\\ChartErrorBoundary.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1378,7 +1378,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\charts\\ProductionFlowChart.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\charts\\ProductionFlowChart.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1389,7 +1389,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\chat\\ChatWidget.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\chat\\ChatWidget.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1400,7 +1400,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\dashboard\\CommandPalette.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\dashboard\\CommandPalette.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1411,7 +1411,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\dashboard\\PLAnalysisChart.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\dashboard\\PLAnalysisChart.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1422,7 +1422,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\dashboard\\ProductSalesChart.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\dashboard\\ProductSalesChart.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1433,7 +1433,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\dashboard\\ProgressiveDashboardLoader.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\dashboard\\ProgressiveDashboardLoader.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1444,7 +1444,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\dashboard\\QuickActions.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\dashboard\\QuickActions.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1455,7 +1455,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\dashboard\\RegionalContributionChart.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\dashboard\\RegionalContributionChart.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1466,7 +1466,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\dashboard\\StockLevelsChart.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\dashboard\\StockLevelsChart.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1477,7 +1477,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\data\\DataImportWidget.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\data\\DataImportWidget.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1488,7 +1488,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\data\\ImportTemplates.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\data\\ImportTemplates.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1499,7 +1499,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\debug\\ErrorBoundary.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\debug\\ErrorBoundary.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1510,7 +1510,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\debug\\FinancialReportsErrorBoundary.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\debug\\FinancialReportsErrorBoundary.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1521,7 +1521,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\debug\\MinimalFinancialReports.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\debug\\MinimalFinancialReports.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1532,7 +1532,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\debug\\MinimalFinancialReportsTest.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\debug\\MinimalFinancialReportsTest.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1543,7 +1543,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\debug\\ProgressiveFinancialReports.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\debug\\ProgressiveFinancialReports.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1554,7 +1554,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\financial\\FinancialCharts.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\financial\\FinancialCharts.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1565,7 +1565,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\financial\\FinancialInsights.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\financial\\FinancialInsights.jsx",
     "messages": [
       {
         "ruleId": "no-unused-vars",
@@ -1597,7 +1597,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\financial\\FinancialKPIStrip.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\financial\\FinancialKPIStrip.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1608,7 +1608,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\financial\\ProductPerformanceTable.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\financial\\ProductPerformanceTable.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1619,7 +1619,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\forecasting\\EnhancedForecasting.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\forecasting\\EnhancedForecasting.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1630,7 +1630,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\index.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\index.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1641,7 +1641,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\inventory\\InventoryDashboard.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\inventory\\InventoryDashboard.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1652,7 +1652,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\layout\\AppLayout.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\layout\\AppLayout.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1663,7 +1663,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\layout\\Header.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\layout\\Header.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1674,7 +1674,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\layout\\Layout.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\layout\\Layout.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1685,7 +1685,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\layout\\ProtectedRoute.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\layout\\ProtectedRoute.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1696,7 +1696,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\layout\\SSEStatusIndicator.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\layout\\SSEStatusIndicator.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1707,7 +1707,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\layout\\Sidebar.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\layout\\Sidebar.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1718,7 +1718,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\mobile\\MobileFloorDashboard.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\mobile\\MobileFloorDashboard.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1729,7 +1729,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\navigation\\Sidebar.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\navigation\\Sidebar.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1740,7 +1740,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\reports\\ReportConfigModal.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\reports\\ReportConfigModal.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1751,7 +1751,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\shared\\Button.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\shared\\Button.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1762,7 +1762,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\shared\\index.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\shared\\index.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1773,7 +1773,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\ui\\ErrorFallback.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\ui\\ErrorFallback.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1784,7 +1784,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\ui\\Modal.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\ui\\Modal.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1795,7 +1795,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\ui\\accordion.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\ui\\accordion.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1806,7 +1806,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\ui\\alert-dialog.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\ui\\alert-dialog.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1817,7 +1817,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\ui\\alert.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\ui\\alert.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1828,7 +1828,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\ui\\aspect-ratio.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\ui\\aspect-ratio.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1839,7 +1839,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\ui\\avatar.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\ui\\avatar.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1850,7 +1850,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\ui\\badge.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\ui\\badge.jsx",
     "messages": [
       {
         "ruleId": "react-refresh/only-export-components",
@@ -1874,7 +1874,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\ui\\breadcrumb.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\ui\\breadcrumb.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1885,7 +1885,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\ui\\button-variants.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\ui\\button-variants.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1896,7 +1896,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\ui\\button.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\ui\\button.jsx",
     "messages": [
       {
         "ruleId": "react-refresh/only-export-components",
@@ -1920,7 +1920,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\ui\\calendar.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\ui\\calendar.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1931,7 +1931,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\ui\\card.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\ui\\card.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1942,7 +1942,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\ui\\carousel.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\ui\\carousel.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1953,7 +1953,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\ui\\chart.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\ui\\chart.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1964,7 +1964,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\ui\\checkbox.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\ui\\checkbox.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1975,7 +1975,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\ui\\collapsible.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\ui\\collapsible.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1986,7 +1986,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\ui\\command.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\ui\\command.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -1997,7 +1997,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\ui\\context-menu.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\ui\\context-menu.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -2008,7 +2008,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\ui\\dialog.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\ui\\dialog.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -2019,7 +2019,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\ui\\drawer.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\ui\\drawer.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -2030,7 +2030,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\ui\\dropdown-menu.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\ui\\dropdown-menu.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -2041,7 +2041,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\ui\\form.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\ui\\form.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -2052,7 +2052,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\ui\\hover-card.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\ui\\hover-card.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -2063,7 +2063,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\ui\\index.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\ui\\index.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -2074,7 +2074,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\ui\\input-otp.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\ui\\input-otp.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -2085,7 +2085,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\ui\\input.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\ui\\input.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -2096,7 +2096,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\ui\\label.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\ui\\label.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -2107,7 +2107,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\ui\\menubar.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\ui\\menubar.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -2118,7 +2118,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\ui\\navigation-menu.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\ui\\navigation-menu.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -2129,7 +2129,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\ui\\pagination.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\ui\\pagination.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -2140,7 +2140,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\ui\\popover.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\ui\\popover.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -2151,7 +2151,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\ui\\progress.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\ui\\progress.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -2162,7 +2162,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\ui\\radio-group.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\ui\\radio-group.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -2173,7 +2173,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\ui\\resizable.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\ui\\resizable.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -2184,7 +2184,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\ui\\scroll-area.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\ui\\scroll-area.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -2195,7 +2195,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\ui\\select.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\ui\\select.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -2206,7 +2206,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\ui\\separator.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\ui\\separator.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -2217,7 +2217,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\ui\\sheet.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\ui\\sheet.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -2228,7 +2228,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\ui\\sidebar.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\ui\\sidebar.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -2239,7 +2239,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\ui\\skeleton.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\ui\\skeleton.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -2250,7 +2250,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\ui\\slider.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\ui\\slider.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -2261,7 +2261,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\ui\\sonner.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\ui\\sonner.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -2272,7 +2272,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\ui\\switch.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\ui\\switch.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -2283,7 +2283,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\ui\\table.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\ui\\table.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -2294,7 +2294,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\ui\\tabs.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\ui\\tabs.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -2305,7 +2305,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\ui\\textarea.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\ui\\textarea.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -2316,7 +2316,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\ui\\toggle-group.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\ui\\toggle-group.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -2327,7 +2327,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\ui\\toggle-variants.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\ui\\toggle-variants.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -2338,7 +2338,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\ui\\toggle.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\ui\\toggle.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -2349,7 +2349,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\ui\\tooltip.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\ui\\tooltip.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -2360,7 +2360,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\widgets\\ActivityWidget.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\widgets\\ActivityWidget.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -2371,7 +2371,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\widgets\\AlertWidget.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\widgets\\AlertWidget.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -2382,7 +2382,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\widgets\\ChartWidget.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\widgets\\ChartWidget.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -2393,7 +2393,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\widgets\\DataTableWidget.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\widgets\\DataTableWidget.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -2404,7 +2404,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\widgets\\KPIWidget.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\widgets\\KPIWidget.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -2415,7 +2415,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\components\\widgets\\StockLevelsWidget.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\components\\widgets\\StockLevelsWidget.jsx",
     "messages": [
       {
         "ruleId": "no-unused-vars",
@@ -2439,7 +2439,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\config\\server-config.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\config\\server-config.js",
     "messages": [
       {
         "ruleId": "no-undef",
@@ -3365,7 +3365,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\config\\tool-schemas.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\config\\tool-schemas.js",
     "messages": [
       {
         "ruleId": "no-unused-vars",
@@ -3397,7 +3397,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\context\\SSEProvider.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\context\\SSEProvider.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -3408,7 +3408,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\context\\sse-context.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\context\\sse-context.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -3419,7 +3419,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\contexts\\XeroContext.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\contexts\\XeroContext.jsx",
     "messages": [
       {
         "ruleId": "react-refresh/only-export-components",
@@ -3443,7 +3443,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\hooks\\use-mobile.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\hooks\\use-mobile.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -3454,7 +3454,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\hooks\\useAuth.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\hooks\\useAuth.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -3465,7 +3465,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\hooks\\useAuthRole.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\hooks\\useAuthRole.jsx",
     "messages": [
       {
         "ruleId": "react-hooks/rules-of-hooks",
@@ -3488,7 +3488,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\hooks\\useDashboardLoader.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\hooks\\useDashboardLoader.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -3499,7 +3499,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\hooks\\useDashboardSummary.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\hooks\\useDashboardSummary.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -3510,7 +3510,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\hooks\\useDashboardSummary.test.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\hooks\\useDashboardSummary.test.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -3521,7 +3521,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\hooks\\useEnvironmentAuth.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\hooks\\useEnvironmentAuth.jsx",
     "messages": [
       {
         "ruleId": "no-unused-vars",
@@ -3545,7 +3545,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\hooks\\useEnvironmentUser.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\hooks\\useEnvironmentUser.jsx",
     "messages": [
       {
         "ruleId": "no-unused-vars",
@@ -3569,7 +3569,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\hooks\\useFinancialData.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\hooks\\useFinancialData.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -3580,7 +3580,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\hooks\\useSSE.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\hooks\\useSSE.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -3591,7 +3591,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\hooks\\useWorkingCapitalData.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\hooks\\useWorkingCapitalData.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -3602,7 +3602,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\hooks\\useWorkingCapitalLiveData.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\hooks\\useWorkingCapitalLiveData.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -3613,7 +3613,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\lib\\devLog.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\lib\\devLog.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -3624,7 +3624,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\lib\\utils.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\lib\\utils.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -3635,7 +3635,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\main.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\main.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -3646,7 +3646,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\pages\\AdminPanelEnhanced.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\pages\\AdminPanelEnhanced.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -3657,7 +3657,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\pages\\Analytics.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\pages\\Analytics.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -3668,7 +3668,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\pages\\ClerkSignInEnvironmentAware.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\pages\\ClerkSignInEnvironmentAware.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -3679,7 +3679,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\pages\\DashboardEnterprise.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\pages\\DashboardEnterprise.jsx",
     "messages": [
       {
         "ruleId": null,
@@ -3701,7 +3701,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\pages\\Financial\\FinancialReports.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\pages\\Financial\\FinancialReports.jsx",
     "messages": [
       {
         "ruleId": "no-unused-vars",
@@ -3752,7 +3752,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\pages\\Forecasting.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\pages\\Forecasting.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -3763,7 +3763,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\pages\\WhatIfAnalysisComprehensive.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\pages\\WhatIfAnalysisComprehensive.jsx",
     "messages": [
       {
         "ruleId": "no-unused-vars",
@@ -3880,7 +3880,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\pages\\WorkingCapitalComprehensive.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\pages\\WorkingCapitalComprehensive.jsx",
     "messages": [
       {
         "ruleId": "react-hooks/exhaustive-deps",
@@ -3947,7 +3947,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\pages\\WorkingCapitalEnterprise.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\pages\\WorkingCapitalEnterprise.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -3958,7 +3958,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\pages\\analytics\\AnalyticsDashboard.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\pages\\analytics\\AnalyticsDashboard.jsx",
     "messages": [
       {
         "ruleId": "no-unused-vars",
@@ -3990,7 +3990,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\pages\\analytics\\WhatIfAnalysis.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\pages\\analytics\\WhatIfAnalysis.jsx",
     "messages": [
       {
         "ruleId": "no-unused-vars",
@@ -4022,7 +4022,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\pages\\auth\\SignUpPage.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\pages\\auth\\SignUpPage.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -4033,7 +4033,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\pages\\dashboard\\DrilldownModal.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\pages\\dashboard\\DrilldownModal.jsx",
     "messages": [
       {
         "ruleId": "no-unused-vars",
@@ -4179,7 +4179,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\pages\\dashboard\\KPIStrip.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\pages\\dashboard\\KPIStrip.jsx",
     "messages": [
       {
         "ruleId": "no-unused-vars",
@@ -4211,7 +4211,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\pages\\dashboard\\QuickActions.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\pages\\dashboard\\QuickActions.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -4222,7 +4222,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\pages\\dashboard\\WorkingCapitalSnapshot.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\pages\\dashboard\\WorkingCapitalSnapshot.jsx",
     "messages": [
       {
         "ruleId": "no-unused-vars",
@@ -4257,7 +4257,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\pages\\dashboard\\charts\\ChartCard.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\pages\\dashboard\\charts\\ChartCard.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -4268,7 +4268,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\pages\\dashboard\\charts\\InventoryLevelsChart.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\pages\\dashboard\\charts\\InventoryLevelsChart.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -4279,7 +4279,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\pages\\dashboard\\charts\\ProductionOutputChart.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\pages\\dashboard\\charts\\ProductionOutputChart.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -4290,7 +4290,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\pages\\dashboard\\charts\\SalesRevenueChart.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\pages\\dashboard\\charts\\SalesRevenueChart.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -4301,7 +4301,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\pages\\dashboard\\charts\\index.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\pages\\dashboard\\charts\\index.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -4312,7 +4312,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\pages\\forecasting\\ForecastResults.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\pages\\forecasting\\ForecastResults.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -4323,7 +4323,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\pages\\forecasting\\ForecastingDashboard.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\pages\\forecasting\\ForecastingDashboard.jsx",
     "messages": [
       {
         "ruleId": "no-unused-vars",
@@ -4393,7 +4393,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\pages\\forecasting\\ModelComparison.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\pages\\forecasting\\ModelComparison.jsx",
     "messages": [
       {
         "ruleId": "no-unused-vars",
@@ -4417,7 +4417,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\pages\\inventory\\InventoryDashboard.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\pages\\inventory\\InventoryDashboard.jsx",
     "messages": [
       {
         "ruleId": "no-unused-vars",
@@ -4449,7 +4449,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\pages\\inventory\\StockAlerts.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\pages\\inventory\\StockAlerts.jsx",
     "messages": [
       {
         "ruleId": "no-unused-vars",
@@ -4481,7 +4481,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\pages\\production\\DowntimeTracker.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\pages\\production\\DowntimeTracker.jsx",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -4492,7 +4492,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\pages\\production\\OEEDashboard.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\pages\\production\\OEEDashboard.jsx",
     "messages": [
       {
         "ruleId": "no-unused-vars",
@@ -4524,7 +4524,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\pages\\production\\ProductionDashboard.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\pages\\production\\ProductionDashboard.jsx",
     "messages": [
       {
         "ruleId": "no-unused-vars",
@@ -4613,7 +4613,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\pages\\production\\ProductionJobBoard.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\pages\\production\\ProductionJobBoard.jsx",
     "messages": [
       {
         "ruleId": "no-unused-vars",
@@ -4702,7 +4702,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\pages\\production\\QualityMetrics.jsx",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\pages\\production\\QualityMetrics.jsx",
     "messages": [
       {
         "ruleId": "no-unused-vars",
@@ -4753,7 +4753,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\server.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\server.js",
     "messages": [
       {
         "ruleId": "no-unused-vars",
@@ -5049,7 +5049,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\services\\APIIntegration.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\services\\APIIntegration.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -5060,7 +5060,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\services\\DemandForecastingEngine.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\services\\DemandForecastingEngine.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -5071,7 +5071,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\services\\FinancialAlgorithms.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\services\\FinancialAlgorithms.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -5082,7 +5082,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\services\\WorkingCapitalEngine.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\services\\WorkingCapitalEngine.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -5093,7 +5093,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\services\\ai\\aiInferenceService.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\services\\ai\\aiInferenceService.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -5104,7 +5104,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\services\\api.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\services\\api.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -5115,7 +5115,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\services\\api\\analyticsApi.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\services\\api\\analyticsApi.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -5126,7 +5126,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\services\\api\\apiClient.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\services\\api\\apiClient.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -5137,7 +5137,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\services\\api\\baseApi.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\services\\api\\baseApi.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -5148,7 +5148,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\services\\api\\baseApi.old.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\services\\api\\baseApi.old.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -5159,7 +5159,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\services\\api\\dashboardApi.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\services\\api\\dashboardApi.js",
     "messages": [
       {
         "ruleId": "no-unused-vars",
@@ -5191,7 +5191,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\services\\api\\forecastingApi.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\services\\api\\forecastingApi.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -5202,7 +5202,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\services\\api\\plAnalysisApi.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\services\\api\\plAnalysisApi.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -5213,7 +5213,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\services\\api\\productSalesApi.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\services\\api\\productSalesApi.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -5224,7 +5224,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\services\\api\\regionalPerformanceApi.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\services\\api\\regionalPerformanceApi.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -5235,7 +5235,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\services\\api\\stockLevelsApi.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\services\\api\\stockLevelsApi.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -5246,7 +5246,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\services\\api\\workingCapitalApi.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\services\\api\\workingCapitalApi.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -5257,7 +5257,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\services\\dashboardService.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\services\\dashboardService.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -5268,7 +5268,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\services\\logger\\enterprise-logger.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\services\\logger\\enterprise-logger.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -5279,7 +5279,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\services\\mcpClient.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\services\\mcpClient.js",
     "messages": [
       {
         "ruleId": "no-undef",
@@ -5333,7 +5333,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\services\\monitoring\\healthMonitor.test.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\services\\monitoring\\healthMonitor.test.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -5344,7 +5344,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\services\\pdfService.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\services\\pdfService.js",
     "messages": [
       {
         "ruleId": "no-unused-vars",
@@ -5401,7 +5401,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\services\\realtime\\sseClient.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\services\\realtime\\sseClient.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -5412,7 +5412,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\services\\reportGenerator.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\services\\reportGenerator.js",
     "messages": [
       {
         "ruleId": "no-unused-vars",
@@ -5444,7 +5444,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\utils\\cn.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\utils\\cn.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -5455,7 +5455,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\utils\\error-handler.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\utils\\error-handler.js",
     "messages": [
       {
         "ruleId": "no-unused-vars",
@@ -5506,7 +5506,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\utils\\exportUtils.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\utils\\exportUtils.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -5517,7 +5517,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\utils\\logger.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\utils\\logger.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -5528,7 +5528,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\utils\\resilience.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\utils\\resilience.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,
@@ -5539,7 +5539,7 @@
     "usedDeprecatedRules": []
   },
   {
-    "filePath": "C:\\Projects\\The-social-drink-companysentia-ai-manufacturing-app\\sentia-ai-manufacturing-app\\src\\utils\\structuredLogger.js",
+    "filePath": "C:\\Projects\\The-social-drink-companycapliquify-ai-dashboard-app\\capliquify-ai-dashboard-app\\src\\utils\\structuredLogger.js",
     "messages": [],
     "suppressedMessages": [],
     "errorCount": 0,

@@ -107,7 +107,7 @@ This guide:
 
 ```powershell
 # 1. Create analysis directory
-cd C:\Projects\The-social-drink-companysentia-ai-manufacturing-app\sentia-ai-manufacturing-app
+cd C:\Projects\The-social-drink-companycapliquify-ai-dashboard-app\capliquify-ai-dashboard-app
 mkdir analysis
 mkdir analysis\stories
 

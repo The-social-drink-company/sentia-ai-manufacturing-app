@@ -105,7 +105,7 @@ corepack enable && pnpm exec prisma migrate resolve --rolled-back 20251017171256
 ✓ [Prisma Safe Migrate] Migration process completed successfully
 ═══════════════════════════════════════════════════════
 
-> sentia-ai-manufacturing-app@1.0.0 start:render
+> capliquify-ai-dashboard-app@1.0.0 start:render
 > node server.js
 
 Server listening on port 10000

@@ -91,7 +91,7 @@ TTL:
 
 #### 2.5 Update .env.local
 
-1. Open: `C:\Projects\The-social-drink-companysentia-ai-manufacturing-app\sentia-ai-manufacturing-app\.env.local`
+1. Open: `C:\Projects\The-social-drink-companycapliquify-ai-dashboard-app\capliquify-ai-dashboard-app\.env.local`
 2. Find line 47:
    ```bash
    CLOUDFLARE_API_TOKEN=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
@@ -458,7 +458,7 @@ Once setup is complete:
 ### 1. Test Local Development
 
 ```bash
-cd C:\Projects\The-social-drink-companysentia-ai-manufacturing-app\sentia-ai-manufacturing-app
+cd C:\Projects\The-social-drink-companycapliquify-ai-dashboard-app\capliquify-ai-dashboard-app
 pnpm install
 pnpm run dev
 ```

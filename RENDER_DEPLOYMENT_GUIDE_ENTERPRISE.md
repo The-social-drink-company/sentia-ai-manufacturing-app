@@ -165,8 +165,8 @@ Development → Testing → Production
 
 ```bash
 # Clone repository
-git clone https://github.com/The-social-drink-company/sentia-ai-manufacturing-app.git
-cd sentia-ai-manufacturing-app
+git clone https://github.com/The-social-drink-company/capliquify-ai-dashboard-app.git
+cd capliquify-ai-dashboard-app
 
 # Verify branch structure
 git branch -a

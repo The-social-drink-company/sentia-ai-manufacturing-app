@@ -13,7 +13,7 @@ The Sentia AI Manufacturing repo now reflects the merged original implementation
 
 ```bash
 git clone <repo-url>
-cd sentia-ai-manufacturing-app
+cd capliquify-ai-dashboard-app
 pnpm install
 ```
 

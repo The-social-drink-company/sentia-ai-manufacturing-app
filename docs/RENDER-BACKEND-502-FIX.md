@@ -82,7 +82,7 @@ The production database already has the tables from previous deployments. The mi
 ✓ [Prisma Safe Migrate] Migration process completed successfully
 ═══════════════════════════════════════════════════════
 
-> sentia-ai-manufacturing-app@1.0.0 start:render
+> capliquify-ai-dashboard-app@1.0.0 start:render
 > node server.js
 
 Server listening on port 10000
@@ -126,7 +126,7 @@ Health check endpoint: /api/health
    ```
    ✔ Migration 20251017171256_init marked as applied.
    ✔ No pending migrations to apply.
-   > sentia-ai-manufacturing-app@1.0.0 start:render
+   > capliquify-ai-dashboard-app@1.0.0 start:render
    > node server.js
    Server listening on port 10000
    ```

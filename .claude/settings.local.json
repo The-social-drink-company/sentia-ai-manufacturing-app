@@ -118,7 +118,9 @@
       "Bash(test:*)",
       "Bash(npm install)",
       "Bash(xargs:*)",
-      "Bash(gh pr merge:*)"
+      "Bash(gh pr merge:*)",
+      "Bash(git rebase:*)",
+      "Bash(pnpm test:e2e:*)"
     ],
     "deny": [],
     "ask": []

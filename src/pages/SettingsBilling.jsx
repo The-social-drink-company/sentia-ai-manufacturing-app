@@ -10,11 +10,15 @@
 
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { CreditCard, CheckCircle, AlertCircle, Zap, Rocket, Crown } from 'lucide-react';
+import { CreditCard, CheckCircle, AlertCircle, Zap, Rocket, Crown, Loader2 } from 'lucide-react';
 import { useTenant } from '../hooks/useTenant';
 import { useTierInfo } from '../hooks/useFeatureAccess';
 import { TierBadge } from '../components/features';
 import { PRICING_TIERS, formatFeatureValue, FEATURE_NAMES } from '../config/pricing.config';
+import { subscriptionService } from '../services/subscriptionService';
+import { toast } from 'react-hot-toast';
+import confetti from 'canvas-confetti';
+import DowngradeImpactModal from '../components/features/DowngradeImpactModal';
 
 export default function SettingsBilling() {
   const { tenant } = useTenant();
@@ -22,6 +26,10 @@ export default function SettingsBilling() {
   const [searchParams] = useSearchParams();
   const suggestedUpgrade = searchParams.get('upgrade');
   const [selectedTier, setSelectedTier] = useState(tierInfo.tier);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [processingTier, setProcessingTier] = useState(null);
+  const [downgradeModalOpen, setDowngradeModalOpen] = useState(false);
+  const [downgradeData, setDowngradeData] = useState(null);
 
   useEffect(() => {
     if (suggestedUpgrade) {
@@ -54,10 +62,136 @@ export default function SettingsBilling() {
     }
   };
 
-  const handleUpgrade = (tierId) => {
-    // In production, this would integrate with Stripe
-    console.log('Upgrading to:', tierId);
-    alert(`Upgrade to ${tierId} tier selected. In production, this would integrate with Stripe payment flow.`);
+  const handleDowngradeConfirm = async () => {
+    if (!downgradeData) return;
+
+    setDowngradeModalOpen(false);
+    setIsProcessing(true);
+    setProcessingTier(downgradeData.targetTier);
+
+    try {
+      const toastId = toast.loading('Scheduling downgrade...');
+
+      const result = await subscriptionService.scheduleDowngrade(downgradeData.targetTier);
+
+      if (!result.success) {
+        toast.error(result.error, { id: toastId });
+        setIsProcessing(false);
+        setProcessingTier(null);
+        return;
+      }
+
+      toast.success(
+        `Downgrade scheduled for ${new Date(result.effectiveDate).toLocaleDateString()}`,
+        { id: toastId }
+      );
+
+      // Reload page after 2 seconds
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
+    } catch (error) {
+      console.error('Downgrade error:', error);
+      toast.error('Failed to schedule downgrade. Please try again.');
+      setIsProcessing(false);
+      setProcessingTier(null);
+    }
+  };
+
+  const handleUpgrade = async (tierId) => {
+    const targetTier = PRICING_TIERS.find((t) => t.id === tierId);
+    const isUpgrade = tierId > (tierInfo.tier || 'starter');
+
+    setIsProcessing(true);
+    setProcessingTier(tierId);
+
+    try {
+      // Step 1: Preview the change
+      const toastId = toast.loading(
+        isUpgrade ? 'Calculating upgrade cost...' : 'Checking downgrade impact...'
+      );
+
+      if (isUpgrade) {
+        // Preview upgrade
+        const preview = await subscriptionService.previewUpgrade(tierId, 'monthly');
+
+        if (!preview.success) {
+          toast.error(preview.error, { id: toastId });
+          setIsProcessing(false);
+          setProcessingTier(null);
+          return;
+        }
+
+        // Show preview and confirm
+        const confirmed = window.confirm(
+          `Upgrade to ${targetTier.name}?\n\n` +
+            `Cost: $${preview.data.totalCost} (prorated)\n` +
+            `Next billing: ${new Date(preview.data.nextBillingDate).toLocaleDateString()}\n\n` +
+            `Click OK to proceed with payment.`
+        );
+
+        if (!confirmed) {
+          toast.dismiss(toastId);
+          setIsProcessing(false);
+          setProcessingTier(null);
+          return;
+        }
+
+        // Step 2: Process upgrade
+        toast.loading('Processing upgrade...', { id: toastId });
+        const result = await subscriptionService.processUpgrade(tierId, 'monthly');
+
+        if (!result.success) {
+          toast.error(result.error, { id: toastId });
+          setIsProcessing(false);
+          setProcessingTier(null);
+          return;
+        }
+
+        // Success!
+        toast.success(result.message || 'Upgrade successful!', { id: toastId });
+
+        // Trigger confetti celebration
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 },
+        });
+
+        // Reload page after 2 seconds to show new tier
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
+      } else {
+        // Check downgrade impact
+        const impact = await subscriptionService.checkDowngradeImpact(tierId);
+
+        if (!impact.success) {
+          toast.error(impact.error, { id: toastId });
+          setIsProcessing(false);
+          setProcessingTier(null);
+          return;
+        }
+
+        // Dismiss loading toast
+        toast.dismiss(toastId);
+
+        // Show modal with impact data
+        setDowngradeData({
+          targetTier: tierId,
+          currentTier: tierInfo.tier,
+          impactData: impact.data,
+        });
+        setDowngradeModalOpen(true);
+        setIsProcessing(false);
+        setProcessingTier(null);
+      }
+    } catch (error) {
+      console.error('Subscription change error:', error);
+      toast.error('An unexpected error occurred. Please try again.');
+      setIsProcessing(false);
+      setProcessingTier(null);
+    }
   };
 
   return (
@@ -185,10 +319,12 @@ export default function SettingsBilling() {
 
                 <button
                   onClick={() => handleUpgrade(tier.id)}
-                  disabled={isCurrent}
+                  disabled={isCurrent || (isProcessing && processingTier !== tier.id)}
                   className={`w-full py-3 rounded-lg font-semibold transition-all duration-200 flex items-center justify-center gap-2 ${
                     isCurrent
                       ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                      : isProcessing && processingTier !== tier.id
+                      ? 'bg-gray-100 text-gray-400 cursor-not-allowed opacity-50'
                       : tier.popular
                       ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 shadow-lg'
                       : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
@@ -198,6 +334,11 @@ export default function SettingsBilling() {
                     <>
                       <CheckCircle className="w-5 h-5" />
                       Current Plan
+                    </>
+                  ) : isProcessing && processingTier === tier.id ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      Processing...
                     </>
                   ) : (
                     <>
@@ -252,6 +393,19 @@ export default function SettingsBilling() {
           </div>
         </div>
       </div>
+
+      {/* Downgrade Impact Modal */}
+      <DowngradeImpactModal
+        isOpen={downgradeModalOpen}
+        onClose={() => {
+          setDowngradeModalOpen(false);
+          setDowngradeData(null);
+        }}
+        onConfirm={handleDowngradeConfirm}
+        targetTier={downgradeData?.targetTier}
+        currentTier={downgradeData?.currentTier}
+        impactData={downgradeData?.impactData}
+      />
     </div>
   );
 }

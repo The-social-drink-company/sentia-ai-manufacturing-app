@@ -23,6 +23,11 @@ export interface Tenant {
     entities: number;
     integrations: number;
   };
+  currentUsage?: {
+    users: number;
+    entities: number;
+    integrations: number;
+  };
 }
 
 export function useTenant() {
@@ -49,6 +54,11 @@ export function useTenant() {
           users: 25,
           entities: 5000,
           integrations: 10,
+        },
+        currentUsage: {
+          users: 18, // 72% of limit (approaching warning threshold)
+          entities: 3842, // 77% of limit (approaching warning threshold)
+          integrations: 6, // 60% of limit (healthy)
         },
       }
     : null;

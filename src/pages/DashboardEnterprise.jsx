@@ -19,6 +19,7 @@ const PLAnalysisChart = lazy(() => import('@/components/dashboard/PLAnalysisChar
 const ProductSalesChart = lazy(() => import('@/components/dashboard/ProductSalesChart'))
 const StockLevelsWidget = lazy(() => import('@/components/widgets/StockLevelsWidget'))
 const QuickActions = lazy(() => import('@/components/dashboard/QuickActions'))
+const UsageWidget = lazy(() => import('@/components/widgets/UsageWidget'))
 
 // Import API services
 import plAnalysisApi from '@/services/api/plAnalysisApi'
@@ -835,15 +836,28 @@ const DashboardEnterprise = () => {
         </Suspense>
       </div>
 
-      {/* Working Capital Card */}
-      <WorkingCapitalCard
-        data={{
-          currentWC: 869000,
-          daysCCC: 43.6,
-          optimizationPotential: 150000,
-          percentOfRevenue: 8.1,
-        }}
-      />
+      {/* Working Capital and Usage Section */}
+      <div className="grid gap-6 lg:grid-cols-3">
+        <div className="lg:col-span-2">
+          <WorkingCapitalCard
+            data={{
+              currentWC: 869000,
+              daysCCC: 43.6,
+              optimizationPotential: 150000,
+              percentOfRevenue: 8.1,
+            }}
+          />
+        </div>
+        <div>
+          <Suspense
+            fallback={
+              <div className="h-64 rounded-xl bg-muted/30 animate-pulse"></div>
+            }
+          >
+            <UsageWidget />
+          </Suspense>
+        </div>
+      </div>
 
       {/* Quick Actions Section */}
       <div data-tour="quick-actions">

@@ -865,12 +865,42 @@ model Tenant {
   deletedAt DateTime? @map("deleted_at") // Soft delete
 
   // Relations
-  subscriptions Subscription[]
+  subscriptions      Subscription[]
+  onboardingProgress OnboardingProgress[]
 
   @@index([slug])
   @@index([subscriptionStatus])
   @@index([isInTrial])
   @@map("tenants")
+}
+
+model OnboardingProgress {
+  id       String @id @default(uuid())
+  tenantId String @map("tenant_id")
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  // Progress Tracking
+  currentStep    Int  @default(0) @map("current_step") // 0-3 for 4-step wizard
+  completedSteps Json @default("[]") @map("completed_steps") @db.Json // Array of step IDs
+
+  // Step Data
+  companyData     Json? @map("company_data") @db.Json // Company details step
+  integrationsData Json? @map("integrations_data") @db.Json // Selected integrations
+  teamData        Json? @map("team_data") @db.Json // Team invites
+  importData      Json? @map("import_data") @db.Json // Data import method
+
+  // Status
+  isComplete Boolean   @default(false) @map("is_complete")
+  completedAt DateTime? @map("completed_at")
+  skipped    Boolean   @default(false)
+
+  // Metadata
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([tenantId])
+  @@index([isComplete])
+  @@map("onboarding_progress")
 }
 
 model Subscription {

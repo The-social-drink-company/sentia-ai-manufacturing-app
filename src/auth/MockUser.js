@@ -62,8 +62,8 @@ export const mockSession = {
 
 export const mockOrganization = {
   id: 'org_dev_12345',
-  name: 'Sentia Spirits Development',
-  slug: 'sentia-dev',
+  name: 'CapLiquify Platform',
+  slug: 'capliquify-dev',
   imageUrl: null,
   hasImage: false,
   createdAt: new Date(),

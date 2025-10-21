@@ -129,7 +129,7 @@ const DashboardSidebar = ({ isOpen = false, onClose = () => {} }) => {
             <div className="flex flex-col">
               <h1 className="text-lg font-bold leading-tight text-slate-50">CapLiquify Platform</h1>
               <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Multi-tenant SaaS</p>
-              <p className="text-xs text-slate-300">Tenant: Sentia Spirits</p>
+
             </div>
           </div>
         </div>
@@ -196,7 +196,7 @@ const DashboardSidebar = ({ isOpen = false, onClose = () => {} }) => {
         <div className="border-t border-slate-700 p-4">
           <div className="rounded-lg bg-slate-900 p-3 space-y-1">
             <p className="text-xs text-slate-400">© {new Date().getFullYear()} CapLiquify</p>
-            <p className="text-xs text-slate-500">Current tenant: Sentia Spirits</p>
+
           </div>
         </div>
       </aside>

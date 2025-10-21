@@ -463,9 +463,9 @@ export default function AdminDashboard() {
 
   const defaultTenantApis = [
     {
-      id: 'sentia-spirits',
-      tenantName: 'Sentia Spirits',
-      slug: 'sentia-spirits',
+      id: 'demo-tenant',
+      tenantName: 'Demo Manufacturing Co',
+      slug: 'demo-tenant',
       plan: 'Enterprise',
       environment: 'Production',
       lastDeployment: new Date().toISOString(),

@@ -69,8 +69,7 @@ const DashboardLayout = ({ children }) => {
         <footer className="border-t border-slate-200 bg-white px-4 py-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-7xl text-center">
             <p className="text-xs text-slate-500">© {new Date().getFullYear()} CapLiquify. All rights reserved.</p>
-            <p className="text-xs text-slate-400">Current tenant: Sentia Spirits</p>
-            <p className="text-xs text-slate-400">Enterprise workspace powered by CapLiquify multi-tenant SaaS</p>
+            <p className="text-xs text-slate-400">Enterprise workspace powered by CapLiquify</p>
           </div>
         </footer>
       </div>

@@ -77,14 +77,14 @@ const BlogListPage = () => {
       image: '/blog/inventory-optimization.jpg'
     },
     {
-      slug: 'sentia-spirits-case-study',
-      title: 'Case Study: How Sentia Spirits Reduced CCC from 78 to 52 Days',
+      slug: 'manufacturing-ccc-reduction-case-study',
+      title: 'Case Study: How a UK Manufacturer Reduced CCC from 78 to 52 Days',
       excerpt: 'A deep dive into the strategies and technology behind a 33% CCC reduction in 4 months.',
-      author: 'Dudley Peacock',
+      author: 'Brendan Playford',
       date: '2025-09-28',
       category: 'case-studies',
       readTime: '7 min read',
-      image: '/blog/sentia-case-study.jpg'
+      image: '/blog/manufacturing-case-study.jpg'
     }
   ]
 

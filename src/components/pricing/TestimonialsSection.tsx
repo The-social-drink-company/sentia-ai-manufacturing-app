@@ -17,7 +17,7 @@ export const TestimonialsSection = () => {
     {
       name: 'Sarah Johnson',
       role: 'CFO',
-      company: 'Sentia Spirits',
+      company: 'Premium Beverages Ltd',
       image: '/testimonials/sarah.jpg',
       quote:
         'CapLiquify reduced our cash conversion cycle from 82 to 51 days. That freed up over $2M in working capital.',

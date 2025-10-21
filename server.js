@@ -28,6 +28,7 @@ import invitationsRouter from './server/routes/invitations.js'
 import usersRouter from './server/routes/users.js'
 import subscriptionRouter from './server/api/subscription.js'
 import stripeWebhookRouter from './server/routes/webhooks/stripe.js'
+import contactRouter from './server/routes/contact.js'
 
 // Import background jobs
 import { startTrialExpirationJob } from './server/jobs/trial-expiration.job.js'
@@ -378,6 +379,7 @@ app.use('/api/invitations', invitationsRouter)
 app.use('/api/users', usersRouter)
 app.use('/api/subscription', subscriptionRouter)
 app.use('/api/webhooks/stripe', stripeWebhookRouter)
+app.use('/api/contact', contactRouter)
 
 // Health check endpoint with REAL status
 app.get('/health', async (req, res) => {

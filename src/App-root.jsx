@@ -1,6 +1,15 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { lazy, Suspense } from 'react'
-import PureLandingPage from '@/components/PureLandingPage'
+
+// Marketing pages (NO Clerk required)
+import LandingPage from '@/pages/marketing/LandingPage'
+import PricingPage from '@/pages/marketing/PricingPage'
+import BlogListPage from '@/pages/marketing/BlogListPage'
+import BlogPostPage from '@/pages/marketing/BlogPostPage'
+import AboutPage from '@/pages/marketing/AboutPage'
+import FeaturesPage from '@/pages/marketing/FeaturesPage'
+import TeamPage from '@/pages/marketing/TeamPage'
+import ContactPage from '@/pages/marketing/ContactPage'
 
 // Lazy load the Clerk app to avoid loading Clerk unless needed
 const ClerkApp = lazy(() => import('./App-enterprise'))
@@ -17,9 +26,15 @@ const Loader = () => (
 const AppRoot = () => (
   <BrowserRouter>
     <Routes>
-      {/* Marketing site - NO CLERK */}
-      <Route path="/" element={<PureLandingPage />} />
-      <Route path="/landing" element={<PureLandingPage />} />
+      {/* Marketing site routes - NO CLERK */}
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/pricing" element={<PricingPage />} />
+      <Route path="/blog" element={<BlogListPage />} />
+      <Route path="/blog/:slug" element={<BlogPostPage />} />
+      <Route path="/about" element={<AboutPage />} />
+      <Route path="/features" element={<FeaturesPage />} />
+      <Route path="/team" element={<TeamPage />} />
+      <Route path="/contact" element={<ContactPage />} />
 
       {/* Application routes - WITH CLERK */}
       <Route
@@ -31,10 +46,45 @@ const AppRoot = () => (
         }
       />
 
-      {/* Fallback */}
-      <Route path="*" element={<PureLandingPage />} />
+      {/* Auth routes - WITH CLERK (handled by ClerkApp) */}
+      <Route
+        path="/sign-in/*"
+        element={
+          <Suspense fallback={<Loader />}>
+            <ClerkApp />
+          </Suspense>
+        }
+      />
+      <Route
+        path="/sign-up/*"
+        element={
+          <Suspense fallback={<Loader />}>
+            <ClerkApp />
+          </Suspense>
+        }
+      />
+      <Route
+        path="/trial/*"
+        element={
+          <Suspense fallback={<Loader />}>
+            <ClerkApp />
+          </Suspense>
+        }
+      />
+      <Route
+        path="/dashboard/*"
+        element={
+          <Suspense fallback={<Loader />}>
+            <ClerkApp />
+          </Suspense>
+        }
+      />
+
+      {/* Fallback to landing page */}
+      <Route path="*" element={<LandingPage />} />
     </Routes>
   </BrowserRouter>
 )
 
 export default AppRoot
+

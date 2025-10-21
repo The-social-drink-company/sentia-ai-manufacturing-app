@@ -21,11 +21,11 @@
 - Historical log entries referencing commits d162a468, ae434622, and b967de6b confirmed as part of mainline history; no reconciliation needed for commit existence, but metrics still require validation.
 - Working tree review confirmed uncommitted docs-only edits in `bmad/status/BMAD-WORKFLOW-STATUS.md` and `bmad/status/daily-log.md`; all code directories remain pristine.
 
-### Reality Check Update (09:02 UTC)
-- Latest commit on branch main: f6e39c3c9 (docs: sync BMAD status with latest deployment audit); `git rev-list --left-right --count origin/main...main` → `0 0` (remote fully synced).
-- PR status unknown—GitHub dashboard inaccessible inside sandbox; to be confirmed externally.
-- Render verification deferred: outbound checks blocked and `scripts/check-render-deployment.js` fails on `RENDER_URL` typo; follow-up task queued to patch script and rerun when network access is granted.
-- Logged same notes in `BMAD-WORKFLOW-STATUS.md` to keep the framework dashboard in sync.
+### Reality Check Update (08:11 UTC)
+- Latest commit on branch main: b14256511 (docs(bmad): log deployment and lint follow-ups); `git rev-list --left-right --count origin/main...main` → `0 1` (ahead by one pending push).
+- PR status unknown—GitHub dashboard inaccessible inside sandbox; needs external confirmation.
+- Render production manually verified: `app.capliquify.com` 200, `api.capliquify.com/api/health` `{ status: healthy, version: 2.0.0-bulletproof, uptime ≈ 4,603 s }`, `mcp.capliquify.com/health` `{ status: healthy, database.connected: true }`; legacy dev endpoint remains 404.
+- Updated `BMAD-WORKFLOW-STATUS.md` with the same findings and tracked lint migration/action items.
 
 - Rebuilt /api/real-api endpoints to rely on WorkingCapital, InventoryItem, ProductionJob, and QualityRecord data while returning actionable 503 guidance for missing regional metrics.
 - Updated /api/working-capital to use the existing InventoryItem schema, remove missing-table queries, and surface a clear 503 when Xero is disconnected.
@@ -442,3 +442,4 @@
 - Render health checks (app/api/mcp) all HTTP 200 with production metadata; legacy dev endpoint still 404 (inactive).
 - Workspace consolidated via stash 'BMAD triage snapshot 2025-10-21'; pending review before reapplying relevant changes.
 - Next: curate stashed diff, update BMAD workflow document once scope finalized.
+

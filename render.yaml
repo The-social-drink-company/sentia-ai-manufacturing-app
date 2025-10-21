@@ -3,16 +3,16 @@
 # Free-tier compatible configuration
 
 databases:
-  - name: sentia-db-prod
-    databaseName: sentia_prod_db
-    user: sentia_user
+  - name: capliquify-db-prod
+    databaseName: capliquify_prod_db
+    user: capliquify_user
     plan: free
     region: oregon
 
 services:
   # 1. MCP Server - Handles external API integrations (Xero, Shopify, Amazon, Unleashed)
   - type: web
-    name: sentia-mcp-prod
+    name: capliquify-mcp-prod
     branch: main
     runtime: node
     region: oregon
@@ -29,7 +29,7 @@ services:
         value: info
       - key: DATABASE_URL
         fromDatabase:
-          name: sentia-db-prod
+          name: capliquify-db-prod
           property: connectionString
       - key: XERO_CLIENT_ID
         sync: false
@@ -74,7 +74,7 @@ services:
 
   # 2. Backend API - Main application server with Express and Prisma
   - type: web
-    name: sentia-backend-prod
+    name: capliquify-backend-prod
     branch: main
     runtime: node
     region: oregon
@@ -92,12 +92,12 @@ services:
         value: production
       - key: DATABASE_URL
         fromDatabase:
-          name: sentia-db-prod
+          name: capliquify-db-prod
           property: connectionString
       - key: MCP_SERVER_URL
         fromService:
           type: web
-          name: sentia-mcp-prod
+          name: capliquify-mcp-prod
           envVarKey: RENDER_EXTERNAL_URL
       - key: CLERK_SECRET_KEY
         sync: false
@@ -110,7 +110,7 @@ services:
 
   # 3. Frontend - React application served as static site
   - type: web
-    name: sentia-frontend-prod
+    name: capliquify-frontend-prod
     branch: main
     runtime: static
     buildCommand: |
@@ -133,7 +133,7 @@ services:
       - key: VITE_API_BASE_URL
         fromService:
           type: web
-          name: sentia-backend-prod
+          name: capliquify-backend-prod
           envVarKey: RENDER_EXTERNAL_URL
       - key: VITE_DEVELOPMENT_MODE
         value: "false"

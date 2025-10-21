@@ -73,7 +73,7 @@ app.use(logger)
 // Health check endpoint (for Render healthCheckPath: /api/health)
 const healthResponse = () => ({
   status: 'healthy',
-  service: 'sentia-manufacturing-dashboard',
+  service: 'capliquify-platform',
   version: '2.0.0-bulletproof',
   environment: process.env.NODE_ENV || 'development',
   timestamp: new Date().toISOString(),
@@ -115,7 +115,7 @@ app.get('/api/status', (req, res) => {
   res.json({
     success: true,
     data: {
-      service: 'sentia-manufacturing-dashboard',
+      service: 'capliquify-platform',
       version: '2.0.0-bulletproof',
       environment: process.env.NODE_ENV || 'development',
       timestamp: new Date().toISOString(),
@@ -275,7 +275,7 @@ app.use((err, req, res) => {
 // Start server
 app.listen(PORT, '0.0.0.0', () => {
   console.log('\n========================================')
-  console.log('SENTIA MANUFACTURING DASHBOARD')
+  console.log('CAPLIQUIFY PLATFORM')
   console.log('BULLETPROOF CONFIGURATION')
   console.log('========================================')
   console.log(`Server: http://localhost:${PORT}`)

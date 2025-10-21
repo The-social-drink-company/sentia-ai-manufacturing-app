@@ -473,7 +473,7 @@ const DashboardEnterprise = () => {
         setKpiLoading(false)
       }
     }
-    fetchKPIData()
+    fetchPLData()
   }, [xeroConnected])
   // Fetch product sales data
   useEffect(() => {

@@ -13,6 +13,20 @@
 - Attempted `node scripts/check-render-deployment.js`; syntax error prevented the Render health check, so deployment status remains unverified inside the sandbox.
 - Flagged need for external Render dashboard + GitHub PR review before declaring deployment 100% complete.
 ## 2025-10-21
+### Security Note (10:05 UTC)
+- Render API key received (rnd_o***XTsNAqM). Store in Render secrets manager or CI vault only; do not commit to repo. Key must be rotated after external health checks are complete.
+
+### Configuration Note (08:37 UTC)
+- Documented Render static site settings for capliquify-frontend-prod: branch main, build command corepack enable && pnpm install --frozen-lockfile && pnpm run build, publish directory dist, auto-deploy on commit.
+- Deploy hook recorded (key redacted) and marked for rotation due to exposure; custom domains remain app.capliquify.com, capliquify.com, www.capliquify.com, plus render subdomain sentia-frontend-prod.onrender.com.
+- Added summary to RENDER_DEPLOYMENT_STATUS.md pending external health verification.
+
+### Reality Check Update (09:55 UTC)
+- git status -sb -> `## main...origin/main [ahead 1]`; only tracked change is `prisma.config.ts`.
+- git log -1 --oneline -> `b14256511 docs(bmad): log deployment and lint follow-ups`; git rev-list --left-right --count origin/main...main -> `0 1` (local ahead; push still pending).
+- PR status remains unknown inside the sandbox; needs external GitHub confirmation.
+- Render deployment health still unverified locally. `RENDER_DEPLOYMENT_STATUS.md` (2025-10-20) records backend 502 errors and missing Clerk key; waiting on out-of-band verification.
+- Logged the updated findings in `bmad/status/BMAD-WORKFLOW-STATUS.md` for BMAD tracking.
 ### Reality Check Update (07:05 UTC)
 - Latest commit on branch main: 1e6f697c (feat(tenant): add legacy compatibility context); branch matches origin/main.
 - Workspace remains dirty with several dozen modified files and 8 untracked items spanning server routes, onboarding flows, middleware tests, and tenant tooling; no commits created in this session.
@@ -23,9 +37,21 @@
 
 ### Reality Check Update (08:11 UTC)
 - Latest commit on branch main: b14256511 (docs(bmad): log deployment and lint follow-ups); `git rev-list --left-right --count origin/main...main` → `0 1` (ahead by one pending push).
+- Workspace changes: ESLint migration in flight (`eslint.config.js` removed, temporary `eslint.config.js.disabled`), `package.json` edits, settings downgrade adjustments, and new `src/routes/` assets plus `.eslintrc.gating.json` awaiting triage.
 - PR status unknown—GitHub dashboard inaccessible inside sandbox; needs external confirmation.
 - Render production manually verified: `app.capliquify.com` 200, `api.capliquify.com/api/health` `{ status: healthy, version: 2.0.0-bulletproof, uptime ≈ 4,603 s }`, `mcp.capliquify.com/health` `{ status: healthy, database.connected: true }`; legacy dev endpoint remains 404.
 - Updated `BMAD-WORKFLOW-STATUS.md` with the same findings and tracked lint migration/action items.
+
+### Reality Check Update (08:29 UTC)
+- `git status -sb` → `## main...origin/main` (only documentation edits pending commit); `git rev-list --left-right --count origin/main...main` → `0 0`.
+- Automated Render health script now targets `https://api.capliquify.com`; `/api/health` and `/api/status` returned 200 and the script treats `/` 404 as expected for the API host. Manual curls confirmed MCP health as well.
+- Legacy dev service (`https://sentia-manufacturing-development.onrender.com`) slated for redeployment to restore staging coverage—need Render deploy hook/credentials before triggering.
+- Outstanding follow-ups: confirm GitHub PR status via UI and continue the lint/test remediation tasks noted earlier.
+
+### Reality Check Update (08:43 UTC)
+- Attempted automated redeploy of `sentia-manufacturing-development` with Render’s build command `corepack enable && pnpm install --frozen-lockfile && pnpm exec prisma generate`.
+- Build halted because Render ignores lifecycle scripts (`@prisma/client`, `prisma`, `esbuild`, etc.); log recommends running `pnpm approve-builds` to allow those packages to execute.
+- Action items: adjust the dev service build command (install with `--prod=false` or `pnpm dlx prisma`) **and** run the build approval flow so Prisma’s postinstall can execute during future deploys.
 
 - Rebuilt /api/real-api endpoints to rely on WorkingCapital, InventoryItem, ProductionJob, and QualityRecord data while returning actionable 503 guidance for missing regional metrics.
 - Updated /api/working-capital to use the existing InventoryItem schema, remove missing-table queries, and surface a clear 503 when Xero is disconnected.
@@ -443,3 +469,43 @@
 - Workspace consolidated via stash 'BMAD triage snapshot 2025-10-21'; pending review before reapplying relevant changes.
 - Next: curate stashed diff, update BMAD workflow document once scope finalized.
 
+
+### Reality Check Update (08:34 UTC)
+- Latest commit on branch main: 0091c5c1a (docs(bmad): refresh status after 21 Oct verification); git rev-list --left-right --count origin/main...main -> 0 0 (local and remote in sync, no pending pushes).
+- Workspace still dirty: .npmrc, package.json, prisma.config.ts, scripts/check-render-deployment.js, BMAD status docs, removal of eslint.config.js, and new eslint-gating.config.cjs/src/routes awaiting triage.
+- PR status remains unknown in-sandbox; external GitHub confirmation required.
+- Render production reconfirmed healthy (08:37 UTC): app.capliquify.com 200, api.capliquify.com/api/health { status: healthy, version: 2.0.0-bulletproof, clerk.configured true }, mcp.capliquify.com/health { status: healthy, database.connected: true }; legacy dev endpoint still 404.
+- Updated `prisma.config.ts` to import Prisma defineConfig from `prisma/config`; `pnpm exec prisma generate` now succeeds without requiring `@prisma/cli`.
+- Logged updates in BMAD-WORKFLOW-STATUS.md and noted need to complete TypeScript-aware ESLint migration before next push.
+
+### Reality Check Update (08:46 UTC)
+- Extended `render.yaml` blueprint with a `sentia-manufacturing-development` static service (branch `development`) so the Render development endpoint can be provisioned.
+- Build command uses `pnpm exec vite build --mode development`; `VITE_API_BASE_URL` temporarily points at the production API until a dev backend is restored.
+- Next step: run the Render blueprint (or create the service manually) so `https://sentia-manufacturing-development.onrender.com` returns 200 instead of 404.
+
+
+
+## 2025-10-21 Deployment Check (08:45 UTC)
+- git status -sb -> ## main...origin/main with .npmrc, prisma.config.ts, scripts/check-render-deployment.js, BMAD status docs, removal of eslint.config.js, and new eslint-gating.config.cjs/src/routes/ pending triage.
+- git log -1 --oneline -> 0091c5c1a docs(bmad): refresh status after 21 Oct verification; git rev-list --left-right --count origin/main...HEAD -> 0 0 (local == remote).
+- Latest Render build (07:45 UTC) pulled commit f6e39c3c (pre-fix) and failed postinstall: prisma config still imports @prisma/cli; pnpm skipped scripts for Prisma/Clerk/esbuild.
+- Local workspace already updated (.npmrc allow-scripts + prisma.config.ts using prisma/config) and verified via pnpm install --frozen-lockfile.
+- Deploy status: [FAIL] Not up to date; requires pushing config fixes then redeploying with cache clear.
+- Action: Stage/commit/push config + allow-scripts updates, reopen PR (if any), trigger Render deploy with cache clear to confirm health.
+### Automation & Deploy Check (08:59 UTC)
+- `git status -sb` → `## main...origin/main`; confirm branch aligned with origin/main, workspace still carries legacy lint gating edits and Prisma config fix.
+- `git log -1 --oneline` → `0091c5c1a docs(bmad): refresh status after 21 Oct verification`; `git rev-list --left-right --count origin/main...main` → `0 0`.
+- Manual `Invoke-WebRequest`/`Invoke-RestMethod` checks returned 200 for app/api/mcp; health payload timestamp `2025-10-21T08:58:16Z`, status `healthy`, Clerk flagged configured.
+- Restored `prisma.config.ts` with `defineConfig` from `prisma/config`; reran `pnpm exec prisma generate` (success).
+- Patched and executed `node scripts/check-render-deployment.js`; all 3 endpoints passed (health/status/404).
+- Updated `RENDER_DEPLOYMENT_STATUS.md` and `BMAD-WORKFLOW-STATUS.md` with verification evidence; next actions focus on Render build approvals and lint/test remediation.
+
+
+
+- 08:26 UTC build pulled commit 0091c5c1a; pnpm skipped build scripts for Prisma/Clerk/esbuild again. Prisma generate succeeded only because engines were cached. Deploy remains at risk until allow-scripts config lands and cache cleared.
+## 2025-10-21 Package Sync (09:55 UTC)
+- Restored package.json after accidental truncation; removed inline comment causing invalid JSON.
+- pnpm install (non-frozen) now succeeds, regenerating Prisma client via prisma.config.js.
+- Peer dependency warnings remain for React 19 vs library ranges (documented for follow-up); no install blockers.
+- Render deploy still failing on commit 0091c5c1a because allow-scripts/prisma config not yet pushed and cache not cleared.
+- Sentia Render API key ([Render API key redacted - rotate after deploy]) received; store via Render secrets manager, rotate after redeploy, and do not commit to repo.

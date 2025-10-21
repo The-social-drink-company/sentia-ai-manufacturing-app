@@ -64,6 +64,26 @@ declare global {
         email: string;       // User email address
         role: string;        // owner | admin | member | viewer
       };
+
+      /**
+       * Convenience alias for downstream code expecting tenantSchema
+       */
+      tenantSchema?: string;
+
+      /**
+       * Cached user role for legacy middleware compatibility
+       */
+      userRole?: 'owner' | 'admin' | 'member' | 'viewer';
+
+      /**
+       * Indicates whether the tenant is in read-only mode (e.g. past_due)
+       */
+      readOnly?: boolean;
+
+      /**
+       * Allows route handlers to attach resource identifiers for audit logging
+       */
+      auditResourceId?: string | number | null;
     }
   }
 }
@@ -323,6 +343,14 @@ export async function tenantMiddleware(
       email: user.email,
       role: user.role
     };
+
+    // Legacy compatibility fields for existing middleware/routes
+    req.tenantSchema = tenant.schemaName;
+    req.userRole = (user.role as 'owner' | 'admin' | 'member' | 'viewer');
+    req.readOnly = tenant.subscriptionStatus === 'past_due';
+    if (typeof req.auditResourceId === 'undefined') {
+      req.auditResourceId = null;
+    }
 
     // ====================================
     // STEP 10: Set PostgreSQL search_path to Tenant Schema

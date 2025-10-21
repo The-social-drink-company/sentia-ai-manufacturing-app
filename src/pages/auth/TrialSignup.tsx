@@ -630,4 +630,19 @@ export default function TrialSignup() {
       </div>
     </div>
   )
-}
+}const handleResendCode = async () => {
+    if (!isClerkLoaded || !signUp) {
+      setError('Unable to resend code right now. Please try again in a moment.')
+      return
+    }
+
+    try {
+      setError('')
+      await signUp.prepareEmailAddressVerification({ strategy: 'email_code' })
+    } catch (err: unknown) {
+      const message = (err as any)?.errors?.[0]?.message ?? (err as Error)?.message ?? 'Could not resend verification code.'
+      setError(message)
+    }
+  }
+
+

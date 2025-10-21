@@ -13,6 +13,13 @@
 - Attempted `node scripts/check-render-deployment.js`; syntax error prevented the Render health check, so deployment status remains unverified inside the sandbox.
 - Flagged need for external Render dashboard + GitHub PR review before declaring deployment 100% complete.
 ## 2025-10-21
+### Reality Check Update (07:05 UTC)
+- Latest commit on branch main: 1e6f697c (feat(tenant): add legacy compatibility context); branch matches origin/main.
+- Workspace remains dirty with several dozen modified files and 8 untracked items spanning server routes, onboarding flows, middleware tests, and tenant tooling; no commits created in this session.
+- Render custom domains responding 200 OK: https://app.capliquify.com, https://api.capliquify.com/api/health (status healthy, version 2.0.0-bulletproof), https://mcp.capliquify.com/health (database.connected true).
+- Legacy dev endpoint https://sentia-manufacturing-development.onrender.com returns 404 with x-render-routing: no-server; treat as inactive until redeployed.
+- Historical log entries referencing commits d162a468, ae434622, and b967de6b confirmed as part of mainline history; no reconciliation needed for commit existence, but metrics still require validation.
+
 - Rebuilt /api/real-api endpoints to rely on WorkingCapital, InventoryItem, ProductionJob, and QualityRecord data while returning actionable 503 guidance for missing regional metrics.
 - Updated /api/working-capital to use the existing InventoryItem schema, remove missing-table queries, and surface a clear 503 when Xero is disconnected.
 - Restored /server/routes/api.js to aggregate first-party routers under /api, preventing runtime import failures during server start.
@@ -423,3 +430,8 @@
 
 **Handoff Complete**: Documentation provides complete instructions for user to implement trial automation system without further development assistance.
 2025-10-24 16:45 UTC - Updated CashConversionCycle service to rely on existing workingCapital/inventoryItem schema and skip persistence to nonexistent tables; prevents runtime TypeError from missing Prisma models.
+## 2025-10-21 Verification (08:35 UTC)
+- git status -sb -> clean; latest commit 1e6f697c on main aligned with origin/main.
+- Render health checks (app/api/mcp) all HTTP 200 with production metadata; legacy dev endpoint still 404 (inactive).
+- Workspace consolidated via stash 'BMAD triage snapshot 2025-10-21'; pending review before reapplying relevant changes.
+- Next: curate stashed diff, update BMAD workflow document once scope finalized.
